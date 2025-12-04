@@ -1,0 +1,328 @@
+/**
+ * Array Coding Exercises
+ *
+ * Collection of common array manipulation problems frequently asked in coding interviews.
+ * These exercises cover various techniques including two-pointers, sliding window,
+ * dynamic programming, and in-place modifications.
+ */
+
+/**
+ * Remove Element (LeetCode 27)
+ *
+ * Removes all instances of a value from an array in-place.
+ * Returns the new length of the array.
+ *
+ * Algorithm (Two-Pointer):
+ * 1. Use pointer k to track position for next valid element
+ * 2. Iterate through array
+ * 3. When element != val, place it at position k and increment k
+ * 4. Return k (new length)
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1) - in-place modification
+ *
+ * @param nums - Array to modify (modified in-place)
+ * @param val - Value to remove
+ * @returns New length of array after removing val
+ *
+ * @example
+ * const arr = [3, 2, 2, 3];
+ * removeElement(arr, 3); // Returns 2, arr is now [2, 2, _, _]
+ *
+ * @example
+ * const arr = [0, 1, 2, 2, 3, 0, 4, 2];
+ * removeElement(arr, 2); // Returns 5, arr is now [0, 1, 3, 0, 4, _, _, _]
+ */
+export function removeElement(nums: number[], val: number): number {
+	let k = 0; // Position for next valid element
+
+	for (let i = 0; i < nums.length; i++) {
+		if (nums[i] !== val) {
+			nums[k] = nums[i]!;
+			k++;
+		}
+	}
+
+	return k;
+}
+
+/**
+ * Find Max and Min
+ *
+ * Finds both maximum and minimum values in an array in a single pass.
+ *
+ * Algorithm:
+ * 1. Initialize max and min to first element
+ * 2. Iterate through remaining elements
+ * 3. Update max and min as needed
+ * 4. Return tuple [max, min]
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1)
+ *
+ * @param arr - Array to search (must be non-empty)
+ * @returns Tuple of [max, min] values
+ * @throws Error if array is empty
+ *
+ * @example
+ * findMaxMin([3, 1, 4, 1, 5, 9, 2, 6]); // [9, 1]
+ * findMaxMin([42]); // [42, 42]
+ * findMaxMin([-5, -1, -10, -3]); // [-1, -10]
+ */
+export function findMaxMin(arr: number[]): [number, number] {
+	if (arr.length === 0) {
+		throw new Error("Array must not be empty");
+	}
+
+	let max = arr[0]!;
+	let min = arr[0]!;
+
+	for (let i = 1; i < arr.length; i++) {
+		const current = arr[i]!;
+		if (current > max) max = current;
+		if (current < min) min = current;
+	}
+
+	return [max, min];
+}
+
+/**
+ * Find Longest String
+ *
+ * Finds the longest string in an array of strings.
+ * If multiple strings have the same maximum length, returns the first one.
+ *
+ * Algorithm:
+ * 1. Initialize longest to first string
+ * 2. Iterate through remaining strings
+ * 3. Update longest if current string is longer
+ * 4. Return longest string
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1) - only stores reference
+ *
+ * @param strings - Array of strings (must be non-empty)
+ * @returns The longest string
+ * @throws Error if array is empty
+ *
+ * @example
+ * findLongestString(["apple", "banana", "kiwi"]); // "banana"
+ * findLongestString(["a", "bb", "cc"]); // "bb" (first max)
+ * findLongestString(["hello"]); // "hello"
+ */
+export function findLongestString(strings: string[]): string {
+	if (strings.length === 0) {
+		throw new Error("Array must not be empty");
+	}
+
+	let longest = strings[0]!;
+
+	for (let i = 1; i < strings.length; i++) {
+		const current = strings[i]!;
+		if (current.length > longest.length) {
+			longest = current;
+		}
+	}
+
+	return longest;
+}
+
+/**
+ * Remove Duplicates from Sorted Array (LeetCode 26)
+ *
+ * Removes duplicates from a sorted array in-place.
+ * Returns the number of unique elements.
+ *
+ * Algorithm (Two-Pointer):
+ * 1. Use pointer k to track position for next unique element
+ * 2. Iterate through array starting from index 1
+ * 3. When nums[i] != nums[k], increment k and place nums[i] there
+ * 4. Return k + 1 (count of unique elements)
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1) - in-place modification
+ *
+ * @param nums - Sorted array to modify (modified in-place)
+ * @returns Number of unique elements
+ *
+ * @example
+ * const arr = [1, 1, 2];
+ * removeDuplicates(arr); // Returns 2, arr is now [1, 2, _]
+ *
+ * @example
+ * const arr = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+ * removeDuplicates(arr); // Returns 5, arr is now [0, 1, 2, 3, 4, _, _, _, _, _]
+ */
+export function removeDuplicates(nums: number[]): number {
+	if (nums.length === 0) return 0;
+
+	let k = 0; // Position of last unique element
+
+	for (let i = 1; i < nums.length; i++) {
+		if (nums[i] !== nums[k]) {
+			k++;
+			nums[k] = nums[i]!;
+		}
+	}
+
+	return k + 1;
+}
+
+/**
+ * Best Time to Buy and Sell Stock (LeetCode 121)
+ *
+ * Finds the maximum profit from buying and selling a stock once.
+ * You must buy before you sell.
+ *
+ * Algorithm (Single Pass):
+ * 1. Track minimum price seen so far
+ * 2. Track maximum profit seen so far
+ * 3. For each price:
+ *    - Update min price if current is lower
+ *    - Update max profit if (current - min) is higher
+ * 4. Return max profit
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1)
+ *
+ * @param prices - Array of stock prices (prices[i] is price on day i)
+ * @returns Maximum profit, or 0 if no profit possible
+ *
+ * @example
+ * maxProfit([7, 1, 5, 3, 6, 4]); // 5 (buy at 1, sell at 6)
+ * maxProfit([7, 6, 4, 3, 1]); // 0 (no profit possible)
+ * maxProfit([2, 4, 1]); // 2 (buy at 2, sell at 4)
+ */
+export function maxProfit(prices: number[]): number {
+	if (prices.length === 0) return 0;
+
+	let minPrice = prices[0]!;
+	let maxProfit = 0;
+
+	for (let i = 1; i < prices.length; i++) {
+		const currentPrice = prices[i]!;
+
+		// Update minimum price if we found a lower one
+		if (currentPrice < minPrice) {
+			minPrice = currentPrice;
+		}
+
+		// Calculate profit if we sell at current price
+		const profit = currentPrice - minPrice;
+
+		// Update maximum profit if current is better
+		if (profit > maxProfit) {
+			maxProfit = profit;
+		}
+	}
+
+	return maxProfit;
+}
+
+/**
+ * Rotate Array (LeetCode 189)
+ *
+ * Rotates an array to the right by k steps.
+ * Modified in-place with O(1) extra space.
+ *
+ * Algorithm (Triple Reverse):
+ * 1. Normalize k to be within array bounds (k %= n)
+ * 2. Reverse entire array
+ * 3. Reverse first k elements
+ * 4. Reverse remaining n-k elements
+ *
+ * Example: [1,2,3,4,5,6,7], k=3
+ * - Reverse all: [7,6,5,4,3,2,1]
+ * - Reverse first 3: [5,6,7,4,3,2,1]
+ * - Reverse last 4: [5,6,7,1,2,3,4] ✓
+ *
+ * Time Complexity: O(n) - three passes
+ * Space Complexity: O(1) - in-place
+ *
+ * @param nums - Array to rotate (modified in-place)
+ * @param k - Number of steps to rotate right
+ *
+ * @example
+ * const arr = [1, 2, 3, 4, 5, 6, 7];
+ * rotate(arr, 3); // arr is now [5, 6, 7, 1, 2, 3, 4]
+ *
+ * @example
+ * const arr = [-1, -100, 3, 99];
+ * rotate(arr, 2); // arr is now [3, 99, -1, -100]
+ */
+export function rotate(nums: number[], k: number): void {
+	const n = nums.length;
+	if (n === 0) return;
+
+	// Normalize k to be within array bounds
+	k = k % n;
+	if (k === 0) return;
+
+	// Helper function to reverse array segment
+	const reverse = (start: number, end: number) => {
+		while (start < end) {
+			[nums[start], nums[end]] = [nums[end]!, nums[start]!];
+			start++;
+			end--;
+		}
+	};
+
+	// Step 1: Reverse entire array
+	reverse(0, n - 1);
+
+	// Step 2: Reverse first k elements
+	reverse(0, k - 1);
+
+	// Step 3: Reverse remaining n-k elements
+	reverse(k, n - 1);
+}
+
+/**
+ * Maximum Subarray (LeetCode 53) - Kadane's Algorithm
+ *
+ * Finds the contiguous subarray with the largest sum.
+ *
+ * Algorithm (Kadane's Algorithm):
+ * 1. Track current sum (resets to current element if negative)
+ * 2. Track maximum sum seen so far
+ * 3. For each element:
+ *    - Add to current sum
+ *    - If current sum becomes negative, reset to current element
+ *    - Update max sum if current sum is larger
+ * 4. Return max sum
+ *
+ * Key Insight: If current sum becomes negative, it can't help future sums,
+ * so we restart from the next element.
+ *
+ * Time Complexity: O(n) - single pass
+ * Space Complexity: O(1)
+ *
+ * @param nums - Array of integers (must be non-empty)
+ * @returns Maximum sum of contiguous subarray
+ *
+ * @example
+ * maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]); // 6 ([4,-1,2,1])
+ * maxSubArray([1]); // 1
+ * maxSubArray([5, 4, -1, 7, 8]); // 23 (entire array)
+ * maxSubArray([-1, -2, -3]); // -1 (best single element)
+ */
+export function maxSubArray(nums: number[]): number {
+	if (nums.length === 0) {
+		throw new Error("Array must not be empty");
+	}
+
+	let currentSum = nums[0]!;
+	let maxSum = nums[0]!;
+
+	for (let i = 1; i < nums.length; i++) {
+		const current = nums[i]!;
+
+		// Either extend current subarray or start new one
+		currentSum = Math.max(current, currentSum + current);
+
+		// Update maximum sum if current is better
+		maxSum = Math.max(maxSum, currentSum);
+	}
+
+	return maxSum;
+}

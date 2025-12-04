@@ -1,0 +1,19 @@
+{
+  "name": "code-practice",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "check": "bunx biome check --write src",
+    "test": "bun test",
+    "generate:practice": "bun run scripts/generate-practice.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.6",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
