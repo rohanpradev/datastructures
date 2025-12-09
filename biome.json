@@ -1,12 +1,17 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+	"$schema": "node_modules/@biomejs/biome/configuration_schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": true,
+		"includes": [
+			"**",
+			"!**/*.test.ts",
+			"!test"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -21,7 +26,9 @@
 					"level": "error",
 					"options": {
 						"strictCase": true,
-						"filenameCases": ["kebab-case"]
+						"filenameCases": [
+							"kebab-case"
+						]
 					}
 				},
 				"noNonNullAssertion": "off"
@@ -34,14 +41,6 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
 		}
 	}
 }

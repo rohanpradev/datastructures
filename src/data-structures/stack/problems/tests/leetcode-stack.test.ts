@@ -4,6 +4,7 @@ import {
 	QueueUsingStacks,
 	reverseString,
 	sortStack,
+	evaluate
 } from "@/data-structures/stack/problems/leetcode-stack";
 import { Stack } from "@/data-structures/stack/stack";
 
@@ -834,4 +835,153 @@ describe("QueueUsingStacks", () => {
 			expect(output).toEqual(input);
 		});
 	});
+
+	describe("evaluate()", () => {
+		//
+		// BASIC EXPRESSIONS
+		//
+		describe("basic arithmetic", () => {
+			test("should evaluate a single number", () => {
+				expect(evaluate("5")).toBe(5);
+			});
+
+			test("should evaluate simple addition", () => {
+				expect(evaluate("1 + 2")).toBe(3);
+			});
+
+			test("should evaluate simple subtraction", () => {
+				expect(evaluate("5 - 3")).toBe(2);
+			});
+
+			test("should evaluate simple multiplication", () => {
+				expect(evaluate("4 * 3")).toBe(12);
+			});
+
+			test("should evaluate simple division", () => {
+				expect(evaluate("10 / 2")).toBe(5);
+			});
+		});
+
+		//
+		// OPERATOR PRECEDENCE
+		//
+		describe("operator precedence", () => {
+			test("should apply multiplication before addition", () => {
+				expect(evaluate("2 + 3 * 4")).toBe(14);
+			});
+
+			test("should apply division before subtraction", () => {
+				expect(evaluate("10 - 6 / 3")).toBe(8);
+			});
+
+			test("should evaluate complex precedence", () => {
+				expect(evaluate("2 + 3 * 4 - 5")).toBe(9);
+			});
+
+			test("should evaluate mixed precedence correctly", () => {
+				expect(evaluate("10 + 2 * 3 - 4 / 2")).toBe(14);
+			});
+		});
+
+		//
+		// PARENTHESES
+		//
+		describe("parentheses handling", () => {
+			test("should evaluate simple parentheses", () => {
+				expect(evaluate("(1 + 2)")).toBe(3);
+			});
+
+			test("should override precedence with parentheses", () => {
+				expect(evaluate("(2 + 3) * 4")).toBe(20);
+			});
+
+			test("should evaluate nested parentheses", () => {
+				expect(evaluate("(1 + (2 + 3))")).toBe(6);
+			});
+
+			test("should evaluate your given example", () => {
+				expect(evaluate("( 1 + 3 + ( 4 * 2 ) - 6 )")).toBe(6);
+			});
+
+			test("should handle deep nested parentheses", () => {
+				expect(evaluate("(((((3)))))")).toBe(3);
+			});
+		});
+
+		//
+		// SPACING
+		//
+		describe("spacing variations", () => {
+			test("should handle no spaces", () => {
+				expect(evaluate("1+2*3")).toBe(7);
+			});
+
+			test("should handle extra spaces", () => {
+				expect(evaluate("  1   +   2  * 3 ")).toBe(7);
+			});
+
+			test("should handle spaces inside parentheses", () => {
+				expect(evaluate("(  4 *   5 )")).toBe(20);
+			});
+		});
+
+		//
+		// NEGATIVE NUMBERS (if supported)
+		//
+		describe("negative numbers & unary minus", () => {
+			test("should handle negative result", () => {
+				expect(evaluate("1 - 5")).toBe(-4);
+			});
+
+			test("should handle negative in parentheses", () => {
+				expect(evaluate("(2 - 5)")).toBe(-3);
+			});
+
+			// If unary minus is allowed:
+			// test("should evaluate unary negative number", () => {
+			//     expect(evaluate("-5 + 3")).toBe(-2);
+			// });
+		});
+
+		//
+		// COMPLEX EXPRESSIONS
+		//
+		describe("complex expressions", () => {
+			test("should evaluate multi-operator with parentheses", () => {
+				expect(evaluate("3 + (4 * 2) - (6 / 3)")).toBe(3 + 8 - 2);
+			});
+
+			test("should evaluate long expression", () => {
+				expect(evaluate("1 + 2 + 3 * 4 + (5 * 6) - 7")).toBe(1 + 2 + 12 + 30 - 7);
+			});
+
+			test("should handle many parentheses", () => {
+				const expr = "((2 + 3) * (4 + 5) - (6 / 3) + (8 * (1 + 1)))";
+				expect(evaluate(expr)).toBe((2 + 3) * (4 + 5) - (6 / 3) + (8 * (1 + 1)));
+			});
+		});
+
+		//
+		// LARGE INPUTS
+		//
+		describe("long inputs", () => {
+			test("should handle long addition chain", () => {
+				let expr = "";
+				let sum = 0;
+
+				for (let i = 1; i <= 50; i++) {
+					expr += i + (i < 50 ? "+" : "");
+					sum += i;
+				}
+
+				expect(evaluate(expr)).toBe(sum);
+			});
+
+			test("should handle repeated nested expressions", () => {
+				const expr = "(".repeat(10) + "5" + ")".repeat(10);
+				expect(evaluate(expr)).toBe(5);
+			});
+		});
+	});
+
 });

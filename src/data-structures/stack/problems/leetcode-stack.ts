@@ -575,4 +575,155 @@ class QueueUsingStacks<T> {
 	}
 }
 
-export { reverseString, isBalanced, sortStack, QueueUsingStacks };
+
+/**
+ * Evaluates a mathematical expression represented as a string.
+ * Supports +, -, *, /, and parentheses.
+ *
+ * Time Complexity: O(n)
+ * - Each character is processed once
+ * - Stack operations are O(1)
+ *
+ * Algorithm Overview:
+ * 1. Process the expression left to right
+ * 2. Use two stacks:
+ *    - values[] → stores numbers
+ *    - ops[] → stores operators (+ - * / and '(')
+ * 3. For each character:
+ *    - If it's a number → parse the full number and push to values
+ *    - If it's '(' → push to ops
+ *    - If it's ')' → evaluate until matching '('
+ *    - If it's an operator:
+ *        • Apply previously stacked operators with higher or equal precedence
+ *        • Then push the new operator
+ * 4. After the loop, apply all remaining operators
+ *
+ * Example:
+ * evaluate("( 1 + 3 + ( 4 * 2 ) - 6 )")
+ * → 6
+ */
+function evaluate(expr: string): number {
+	/** Stack storing numeric values */
+	const values: number[] = [];
+
+	/** Stack storing operators (+ - * / '(') */
+	const ops: string[] = [];
+
+	/**
+	 * Returns precedence level of an operator.
+	 * Higher number → higher precedence.
+	 *
+	 * @param op - operator character
+	 */
+	function precedence(op: string): number {
+		if (op === '+' || op === '-') return 1;
+		if (op === '*' || op === '/') return 2;
+		return 0;
+	}
+
+	/**
+	 * Applies an operator to two numbers.
+	 *
+	 * @param op - operator (+ - * /)
+	 * @param b  - second operand
+	 * @param a  - first operand
+	 * @returns result of a (op) b
+	 *
+	 * Example:
+	 * applyOp('+', 3, 1) → 4
+	 */
+	function applyOp(op: string, b: number, a: number): number {
+		switch (op) {
+			case '+': return a + b;
+			case '-': return a - b;
+			case '*': return a * b;
+			case '/': return a / b;
+			default: throw new Error("Unknown operator: " + op);
+		}
+	}
+
+	/** Main evaluation loop */
+	for (let i = 0; i < expr.length; i++) {
+		const c = expr[i];
+
+		// Skip spaces
+		if (c === ' ') continue;
+
+		/**
+		 * 1. If digit → build the full number
+		 * Supports multi-digit values (e.g., 42)
+		 */
+		if (!isNaN(Number(c))) {
+			let num = 0;
+
+			// Build number character-by-character
+			while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== ' ') {
+				num = num * 10 + Number(expr[i]);
+				i++;
+			}
+
+			// Step back since loop moved one extra position
+			i--;
+
+			values.push(num);
+			continue;
+		}
+
+		/** 2. Opening parenthesis → push to ops */
+		if (c === '(') {
+			ops.push(c);
+			continue;
+		}
+
+		/**
+		 * 3. Closing parenthesis → resolve entire sub-expression
+		 * Evaluate until matching '(' is found
+		 */
+		if (c === ')') {
+			while (ops.length && ops[ops.length - 1] !== '(') {
+				const op = ops.pop()!;
+				const b = values.pop()!;
+				const a = values.pop()!;
+				values.push(applyOp(op, b, a));
+			}
+
+			// Remove the '(' from the stack
+			ops.pop();
+			continue;
+		}
+
+		/**
+		 * 4. Operator encountered (+ - * /)
+		 *
+		 * Before pushing the operator:
+		 * - Apply any operators already on the stack with higher or equal precedence
+		 */
+		if (['+', '-', '*', '/'].includes(c!)) {
+			while (
+				ops.length &&
+				precedence(ops[ops.length - 1]!) >= precedence(c!)
+			) {
+				const op = ops.pop()!;
+				const b = values.pop()!;
+				const a = values.pop()!;
+				values.push(applyOp(op, b, a));
+			}
+
+			// Push the current operator
+			ops.push(c!);
+		}
+	}
+
+	/** 5. Apply remaining operators after full scan */
+	while (ops.length) {
+		const op = ops.pop()!;
+		const b = values.pop()!;
+		const a = values.pop()!;
+		values.push(applyOp(op, b, a));
+	}
+
+	/** Final value in the values stack is the result */
+	return values.pop()!;
+}
+
+export { evaluate, reverseString, isBalanced, sortStack, QueueUsingStacks };
