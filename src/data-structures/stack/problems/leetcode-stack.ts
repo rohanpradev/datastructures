@@ -644,7 +644,7 @@ function evaluate(expr: string): number {
 
 	/** Main evaluation loop */
 	for (let i = 0; i < expr.length; i++) {
-		const c = expr[i];
+		const c = expr.charAt(i);
 
 		// Skip spaces
 		if (c === ' ') continue;

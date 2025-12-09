@@ -573,6 +573,278 @@ Pop elements that violate property
 
 ---
 
+# 📘 Understanding the `evaluate()` Function
+
+*A line-by-line explanation with an example*
+
+This function evaluates a **mathematical expression string** such as:
+
+```
+"3 + 5 * (2 - 1)"
+```
+
+It correctly handles:
+
+* Numbers (multi-digit)
+* Operators: `+ - * /`
+* Parentheses
+* Operator precedence (PEMDAS)
+
+---
+
+# 🧱 High-Level Idea
+
+The algorithm uses **two stacks**:
+
+1. **values stack** → stores numbers
+2. **ops stack** → stores operators and parentheses
+
+It follows the standard **Shunting Yard** / **Stack Evaluation** technique.
+
+---
+
+# 📦 Code Explained
+
+```ts
+function evaluate(expr: string): number {
+```
+
+Starts the function, accepting a string like `"3 + 2 * 5"`.
+
+---
+
+## 🧮 Stacks Setup
+
+```ts
+const values: number[] = [];
+const ops: string[] = [];
+```
+
+* `values` holds numbers
+* `ops` holds operators (`+ - * / (`)
+
+---
+
+## ⚖️ Operator Precedence Function
+
+```ts
+function precedence(op: string): number {
+	if (op === '+' || op === '-') return 1;
+	if (op === '*' || op === '/') return 2;
+	return 0;
+}
+```
+
+Defines which operators are “stronger”:
+
+* `*` and `/` (2)
+* `+` and `-` (1)
+
+Used later when deciding whether an operator on the stack should be applied before adding a new one.
+
+---
+
+## 🧩 Operator Application Helper
+
+```ts
+function applyOp(op: string, b: number, a: number): number {
+	switch (op) {
+		case '+': return a + b;
+		case '-': return a - b;
+		case '*': return a * b;
+		case '/': return a / b;
+		default: throw new Error("Unknown operator: " + op);
+	}
+}
+```
+
+Takes two numbers (`a op b`) and computes the result.
+
+Example:
+
+```
+applyOp('*', 5, 2) → 10
+```
+
+---
+
+# 🔁 Main Loop — Scan Each Character
+
+```ts
+for (let i = 0; i < expr.length; i++) {
+	const c = expr.charAt(i);
+```
+
+We walk through the expression one character at a time.
+
+---
+
+## ⏭️ Ignore Spaces
+
+```ts
+if (c === ' ') continue;
+```
+
+Spaces are meaningless in math expressions.
+
+---
+
+## 1️⃣ If Digit → Build Full Number
+
+```ts
+if (!isNaN(Number(c))) {
+	let num = 0;
+
+	while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== ' ') {
+		num = num * 10 + Number(expr[i]);
+		i++;
+	}
+
+	i--;
+	values.push(num);
+	continue;
+}
+```
+
+This block supports **multi-digit numbers** like `42`, not just `4` and `2`.
+
+Example:
+Expression: `"123 + 4"`
+
+* Reads `'1'` → num = 1
+* Reads `'2'` → num = 12
+* Reads `'3'` → num = 123
+* Pushes **123** to `values`
+
+---
+
+## 2️⃣ Opening Parenthesis
+
+```ts
+if (c === '(') {
+	ops.push(c);
+	continue;
+}
+```
+
+Just push it onto the operator stack.
+
+---
+
+## 3️⃣ Closing Parenthesis
+
+```ts
+if (c === ')') {
+	while (ops.length && ops[ops.length - 1] !== '(') {
+		const op = ops.pop()!;
+		const b = values.pop()!;
+		const a = values.pop()!;
+		values.push(applyOp(op, b, a));
+	}
+
+	ops.pop(); // remove '('
+	continue;
+}
+```
+
+When we hit `)`:
+
+* Resolve everything **until** the matching `(`
+* Remove that `(` from the operator stack
+
+This handles sub-expressions like `(2 + 3)`.
+
+---
+
+## 4️⃣ Operator Handling
+
+```ts
+if (['+', '-', '*', '/'].includes(c!)) {
+	while (
+		ops.length &&
+		precedence(ops[ops.length - 1]!) >= precedence(c!)
+	) {
+		const op = ops.pop()!;
+		const b = values.pop()!;
+		const a = values.pop()!;
+		values.push(applyOp(op, b, a));
+	}
+
+	ops.push(c!);
+}
+```
+
+Before adding a new operator:
+
+* If there’s an **older operator with higher or equal precedence**, apply it first.
+
+Example:
+Expression: `3 + 5 * 2`
+
+* `+` is on stack
+* See `*`
+* Precedence(`*`) > precedence(`+`) → do **NOT** apply `+`
+* Push `*`
+
+---
+
+# 🏁 Final Cleanup
+
+```ts
+while (ops.length) {
+	const op = ops.pop()!;
+	const b = values.pop()!;
+	const a = values.pop()!;
+	values.push(applyOp(op, b, a));
+}
+```
+
+After scanning the whole string, apply any leftover operators.
+
+---
+
+## 🎉 Return Result
+
+```ts
+return values.pop()!;
+```
+
+The values stack should now contain **one final result**.
+
+---
+
+# ✅ Full Example Walkthrough
+
+### Expression:
+
+```
+3 + 5 * (2 - 1)
+```
+
+### Step-by-step:
+
+| Character              | Action                   | values stack | ops stack    |
+| ---------------------- | ------------------------ | ------------ | ------------ |
+| `3`                    | number → push            | [3]          | []           |
+| `+`                    | push op                  | [3]          | [+]          |
+| `5`                    | number → push            | [3,5]        | [+]          |
+| `*`                    | higher precedence → push | [3,5]        | [+, *]       |
+| `(`                    | push                     | [3,5]        | [+, *, (]    |
+| `2`                    | push                     | [3,5,2]      | [+, *, (]    |
+| `-`                    | push                     | [3,5,2]      | [+, *, (, -] |
+| `1`                    | push                     | [3,5,2,1]    | [+, *, (, -] |
+| `)`                    | resolve until `(`        | [3,5, 1]     | [+, *]       |
+| (apply `-`: 2 - 1 = 1) |                          |              |              |
+
+Now evaluate main expression left:
+
+`5 * 1 = 5`
+`3 + 5 = 8`
+
+### Final result: **8**
+
+---
+
 ## Complexity Cheat Sheet
 
 | Problem | Time | Space | Key Technique |
