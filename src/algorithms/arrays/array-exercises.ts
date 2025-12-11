@@ -372,9 +372,8 @@ export function maxSubArray(nums: number[]): number {
 export function canFinishPrinting(
 	batches: number[],
 	maxDays: number,
-	maxPagesPerDay: number
+	maxPagesPerDay: number,
 ): boolean {
-
 	let day = 1;
 	let dayLoad = 0;
 	let batchIndex = 0;
