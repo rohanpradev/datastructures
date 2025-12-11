@@ -9,7 +9,7 @@
 		"includes": [
 			"**",
 			"!**/*.test.ts",
-			"scripts/**"
+			"!scripts/**"
 		]
 	},
 	"formatter": {
