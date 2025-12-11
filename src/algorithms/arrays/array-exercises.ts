@@ -326,3 +326,77 @@ export function maxSubArray(nums: number[]): number {
 
 	return maxSum;
 }
+
+/**
+ * Printing Press Capacity Check
+ *
+ * Determines whether a printing press can print all page batches
+ * (in their given order, without reordering) within a fixed number of days,
+ * where each day has a maximum page capacity.
+ *
+ * Problem Summary:
+ * - `batches[i]` = number of pages in batch `i`
+ * - Batches must be printed in **exact order**
+ * - Each day can print at most `maxPagesPerDay`
+ * - If the next batch would exceed the daily limit, printing moves to the next day
+ * - Goal: Determine if **all batches** can be printed within `maxDays`
+ *
+ * Algorithm:
+ * 1. Track the current day (`day`) and pages printed today (`dayLoad`)
+ * 2. Process batches in order (`batchIndex`)
+ * 3. For each batch:
+ *    - If a single batch exceeds daily capacity → impossible, return false
+ *    - If adding this batch exceeds today's limit → advance to next day
+ *    - Otherwise, print the batch and continue
+ * 4. Once all batches are processed, return true
+ *
+ * Key Insight:
+ * - This is a classic "partition array into ≤ K segments with max sum limit" problem
+ * - Because batches must remain in order, the algorithm greedily fills each day
+ *   until it cannot fit the next batch.
+ *
+ * Time Complexity: O(n) — single pass through the batches
+ * Space Complexity: O(1)
+ *
+ * @param batches - Array of page counts that must be printed in order
+ * @param maxDays - Total number of days available
+ * @param maxPagesPerDay - Max printable pages per day
+ * @returns `true` if all batches fit within maxDays, otherwise `false`
+ *
+ * @example
+ * canFinishPrinting([5, 3, 4], 2, 10); // true  (Day1: 5+3, Day2: 4)
+ * canFinishPrinting([6, 6, 6], 2, 10); // false (requires 3 days)
+ * canFinishPrinting([12], 10, 10);    // false (single batch exceeds capacity)
+ * canFinishPrinting([], 1, 10);       // true (nothing to print)
+ */
+export function canFinishPrinting(
+	batches: number[],
+	maxDays: number,
+	maxPagesPerDay: number
+): boolean {
+
+	let day = 1;
+	let dayLoad = 0;
+	let batchIndex = 0;
+
+	while (day <= maxDays && batchIndex < batches.length) {
+		const nextBatch = batches[batchIndex]!;
+
+		// If a single batch exceeds capacity, impossible.
+		if (nextBatch > maxPagesPerDay) return false;
+
+		// If adding this batch exceeds the limit, go to next day
+		if (dayLoad + nextBatch > maxPagesPerDay) {
+			day++;
+			dayLoad = 0; // reset for new day
+			continue;
+		}
+
+		// Otherwise, print this batch
+		dayLoad += nextBatch;
+		batchIndex++;
+	}
+
+	// We succeed if all batches were printed
+	return batchIndex === batches.length;
+}

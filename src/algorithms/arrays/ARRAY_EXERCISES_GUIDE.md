@@ -563,6 +563,161 @@ export function maxSubArray(nums: number[]): number {
 
 ---
 
+## Problem 8: Printing Press Capacity Check – Practice Guide
+
+This guide covers a scheduling-style array problem involving page batches and daily printing capacity. It is similar to classic partitioning and load-balancing interview problems. The challenge is determining whether all page batches can be printed in order within a limited number of days, without reordering and without exceeding the printing press’s daily page limit.
+
+This problem teaches:
+
+Greedy decision-making
+
+Prefix accumulation with daily resets
+
+Understanding constraints-based scheduling
+
+Problem: Printing Press Capacity Check
+Problem Statement
+
+You are given:
+
+batches[i]: number of pages in batch i
+
+maxDays: maximum number of days the press can operate
+
+maxPagesPerDay: maximum pages the press can print each day
+
+Rules:
+
+Batches must be printed in order (no reordering).
+
+If adding the next batch would exceed the daily limit, you must move to the next day.
+
+Determine if all batches can be printed within maxDays.
+
+Example
+Input:
+batches = [5, 3, 4]
+maxDays = 2
+maxPagesPerDay = 10
+
+Output: true
+
+Explanation:
+Day 1 → 5 + 3 = 8 pages  
+Day 2 → 4 pages  
+All printed within 2 days.
+
+
+Another example:
+
+Input:
+batches = [6, 6, 6]
+maxDays = 2
+maxPagesPerDay = 10
+
+Output: false
+
+Explanation:
+Each batch fits individually, but printing them requires 3 days.
+
+
+Single batch too large:
+
+Input:
+batches = [12]
+maxDays = 5
+maxPagesPerDay = 10
+
+Output: false
+
+Explanation:
+A single batch exceeds daily capacity.
+
+Visual Explanation
+batches = [4, 8, 3, 7]
+maxDays = 3
+maxPagesPerDay = 10
+
+Day 1:
+  Try 4 → OK (total = 4)
+  Try 8 → exceeds 10
+  Move to Day 2
+
+Day 2:
+  Try 8 → OK (total = 8)
+  Try 3 → exceeds 10
+  Move to Day 3
+
+Day 3:
+  Try 3 → OK (total = 3)
+  Try 7 → exceeds 10 → need Day 4 (not allowed)
+
+Result: false
+
+Algorithm
+1. Start at day = 1, dailyLoad = 0, batchIndex = 0.
+2. For each batch in order:
+   - If batch > maxPagesPerDay:
+       Impossible → return false.
+
+   - If dailyLoad + batch exceeds maxPagesPerDay:
+       Move to next day, reset dailyLoad.
+
+   - Otherwise:
+       Add batch to today's load and move to the next batch.
+
+3. When all batches are processed, return true.
+
+Key Insight
+
+This problem is equivalent to splitting an array into at most maxDays segments where each segment’s sum does not exceed maxPagesPerDay.
+Because order is fixed, the optimal solution is greedy: pack as many batches as possible each day.
+
+Implementation Steps
+```
+export function canFinishPrinting(
+    batches: number[],
+    maxDays: number,
+    maxPagesPerDay: number
+): boolean {
+	// TODO: Start with day = 1 and daily load = 0
+
+	// TODO: For each batch:
+	//   - If batch exceeds daily cap → impossible
+	//   - If it doesn't fit into today's load → start new day
+	//   - Otherwise add to today's load
+
+	// TODO: Return true only if all batches processed
+}
+```
+
+### Complexity
+
+Time: O(n) — one pass through the batches
+
+Space: O(1) — uses only counters
+
+Example Behaviors
+Fits within 1 day
+batches = [5, 10, 20]
+maxDays = 1
+maxPagesPerDay = 100
+
+Everything fits → true
+
+Requires more days than allowed
+batches = [4, 4, 4, 4]
+maxDays = 1
+maxPagesPerDay = 8
+
+Needs 2 days → false
+
+Empty array
+batches = []
+Always true (nothing to print)
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

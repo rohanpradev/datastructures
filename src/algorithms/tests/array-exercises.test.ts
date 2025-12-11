@@ -7,6 +7,7 @@ import {
 	removeDuplicates,
 	removeElement,
 	rotate,
+	canFinishPrinting
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -420,3 +421,100 @@ describe("Array Exercises Integration", () => {
 		expect(unique.length).toBe(uniqueLength);
 	});
 });
+
+describe("canFinishPrinting", () => {
+
+	test("should return true when batches fit exactly within days", () => {
+		const result = canFinishPrinting([5, 5, 5], 3, 5);
+		expect(result).toBe(true); // Each batch = 1 day
+	});
+
+	test("should return true when batches fit with leftover space", () => {
+		const result = canFinishPrinting([3, 3, 3], 2, 10);
+		// Day 1: 3+3+3 = 9 → all fit in 1 day but 2 allowed
+		expect(result).toBe(true);
+	});
+
+	test("should return true for typical multi-day scenario", () => {
+		const result = canFinishPrinting([5, 3, 4], 2, 10);
+		// Day1: 5+3 = 8, Day2: 4
+		expect(result).toBe(true);
+	});
+
+	test("should return false when batches require more days than allowed", () => {
+		const result = canFinishPrinting([6, 6, 6], 2, 10);
+		// Needs 3 days
+		expect(result).toBe(false);
+	});
+
+	test("should return false when a single batch exceeds daily capacity", () => {
+		const result = canFinishPrinting([12], 3, 10);
+		expect(result).toBe(false);
+	});
+
+	test("should return true for empty batch list", () => {
+		const result = canFinishPrinting([], 5, 10);
+		expect(result).toBe(true); // nothing to print
+	});
+
+	test("should handle single batch that fits", () => {
+		const result = canFinishPrinting([7], 1, 10);
+		expect(result).toBe(true);
+	});
+
+	test("should return false when single batch doesn't fit in 1 day", () => {
+		const result = canFinishPrinting([7], 1, 5);
+		expect(result).toBe(false);
+	});
+
+	test("should handle day boundary transitions correctly", () => {
+		const result = canFinishPrinting([4, 4, 4, 4], 2, 8);
+		// Day1: 4+4, Day2: 4+4
+		expect(result).toBe(true);
+	});
+
+	test("should fail when transitions exceed allowed days", () => {
+		const result = canFinishPrinting([4, 4, 4, 4], 1, 8);
+		// Would require 2 days
+		expect(result).toBe(false);
+	});
+
+	test("should handle maxPagesPerDay = 0", () => {
+		const result = canFinishPrinting([1, 2, 3], 5, 0);
+		expect(result).toBe(false); // nothing can be printed
+	});
+
+	test("should handle maxDays = 0", () => {
+		const result = canFinishPrinting([1, 2, 3], 0, 10);
+		expect(result).toBe(false);
+	});
+
+	test("should handle very large capacity allowing all in 1 day", () => {
+		const result = canFinishPrinting([5, 10, 20], 1, 100);
+		expect(result).toBe(true);
+	});
+
+	test("should handle multiple daily resets", () => {
+		const result = canFinishPrinting([3, 8, 2, 7, 5], 3, 10);
+		// Day1: 3+8 exceeds → 3 only, next day
+		// Day2: 8+2 = 10
+		// Day3: 7 (5 cannot be reached → fail)
+		expect(result).toBe(false);
+	});
+
+	test("should pass scenario where exact last day is used fully", () => {
+		const result = canFinishPrinting([5, 5, 10], 2, 10);
+		// Day1: 5+5 = 10
+		// Day2: 10
+		expect(result).toBe(true);
+	});
+
+	test("should fail when exceeding last day by one batch", () => {
+		const result = canFinishPrinting([5, 5, 10, 1], 2, 10);
+		// Day1: 10
+		// Day2: 10
+		// Day3 needed for 1 → fail
+		expect(result).toBe(false);
+	});
+});
+
