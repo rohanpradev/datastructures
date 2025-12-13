@@ -370,16 +370,13 @@ export function maxSubArray(nums: number[]): number {
  * canFinishPrinting([], 1, 10);       // true (nothing to print)
  */
 export function canFinishPrinting(
-  batches: number[],
-  maxDays: number,
-  maxPagesPerDay: number,
+	batches: number[],
+	maxDays: number,
+	maxPagesPerDay: number,
 ): boolean {
-  let day = 1;
-  let dayLoad = 0;
-  let batchIndex = 0;
-
-  while (day <= maxDays && batchIndex < batches.length) {
-    const nextBatch = batches[batchIndex]!;
+	let day = 1;
+	let dayLoad = 0;
+	let batchIndex = 0;
 
     // If a single batch exceeds capacity, impossible.
     if (nextBatch > maxPagesPerDay) return false;

@@ -6,11 +6,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": [
-			"**",
-			"!**/*.test.ts",
-			"!scripts/**"
-		]
+		"includes": ["**", "!**/*.test.ts", "!scripts"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -25,9 +21,7 @@
 					"level": "error",
 					"options": {
 						"strictCase": true,
-						"filenameCases": [
-							"kebab-case"
-						]
+						"filenameCases": ["kebab-case"]
 					}
 				},
 				"noNonNullAssertion": "off"

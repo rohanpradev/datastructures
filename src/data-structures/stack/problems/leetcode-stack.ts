@@ -575,7 +575,6 @@ class QueueUsingStacks<T> {
 	}
 }
 
-
 /**
  * Evaluates a mathematical expression represented as a string.
  * Supports +, -, *, /, and parentheses.
@@ -616,8 +615,8 @@ function evaluate(expr: string): number {
 	 * @param op - operator character
 	 */
 	function precedence(op: string): number {
-		if (op === '+' || op === '-') return 1;
-		if (op === '*' || op === '/') return 2;
+		if (op === "+" || op === "-") return 1;
+		if (op === "*" || op === "/") return 2;
 		return 0;
 	}
 
@@ -634,11 +633,16 @@ function evaluate(expr: string): number {
 	 */
 	function applyOp(op: string, b: number, a: number): number {
 		switch (op) {
-			case '+': return a + b;
-			case '-': return a - b;
-			case '*': return a * b;
-			case '/': return a / b;
-			default: throw new Error("Unknown operator: " + op);
+			case "+":
+				return a + b;
+			case "-":
+				return a - b;
+			case "*":
+				return a * b;
+			case "/":
+				return a / b;
+			default:
+				throw new Error("Unknown operator: " + op);
 		}
 	}
 
@@ -647,7 +651,7 @@ function evaluate(expr: string): number {
 		const c = expr.charAt(i);
 
 		// Skip spaces
-		if (c === ' ') continue;
+		if (c === " ") continue;
 
 		/**
 		 * 1. If digit → build the full number
@@ -657,7 +661,7 @@ function evaluate(expr: string): number {
 			let num = 0;
 
 			// Build number character-by-character
-			while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== ' ') {
+			while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
 				num = num * 10 + Number(expr[i]);
 				i++;
 			}
@@ -670,7 +674,7 @@ function evaluate(expr: string): number {
 		}
 
 		/** 2. Opening parenthesis → push to ops */
-		if (c === '(') {
+		if (c === "(") {
 			ops.push(c);
 			continue;
 		}
@@ -679,8 +683,8 @@ function evaluate(expr: string): number {
 		 * 3. Closing parenthesis → resolve entire sub-expression
 		 * Evaluate until matching '(' is found
 		 */
-		if (c === ')') {
-			while (ops.length && ops[ops.length - 1] !== '(') {
+		if (c === ")") {
+			while (ops.length && ops[ops.length - 1] !== "(") {
 				const op = ops.pop()!;
 				const b = values.pop()!;
 				const a = values.pop()!;
@@ -698,11 +702,8 @@ function evaluate(expr: string): number {
 		 * Before pushing the operator:
 		 * - Apply any operators already on the stack with higher or equal precedence
 		 */
-		if (['+', '-', '*', '/'].includes(c!)) {
-			while (
-				ops.length &&
-				precedence(ops[ops.length - 1]!) >= precedence(c!)
-			) {
+		if (["+", "-", "*", "/"].includes(c!)) {
+			while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
 				const op = ops.pop()!;
 				const b = values.pop()!;
 				const a = values.pop()!;
