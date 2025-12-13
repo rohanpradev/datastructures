@@ -34,16 +34,16 @@
  * removeElement(arr, 2); // Returns 5, arr is now [0, 1, 3, 0, 4, _, _, _]
  */
 export function removeElement(nums: number[], val: number): number {
-	let k = 0; // Position for next valid element
+  let k = 0; // Position for next valid element
 
-	for (let i = 0; i < nums.length; i++) {
-		if (nums[i] !== val) {
-			nums[k] = nums[i]!;
-			k++;
-		}
-	}
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] !== val) {
+      nums[k] = nums[i]!;
+      k++;
+    }
+  }
 
-	return k;
+  return k;
 }
 
 /**
@@ -70,20 +70,20 @@ export function removeElement(nums: number[], val: number): number {
  * findMaxMin([-5, -1, -10, -3]); // [-1, -10]
  */
 export function findMaxMin(arr: number[]): [number, number] {
-	if (arr.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (arr.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let max = arr[0]!;
-	let min = arr[0]!;
+  let max = arr[0]!;
+  let min = arr[0]!;
 
-	for (let i = 1; i < arr.length; i++) {
-		const current = arr[i]!;
-		if (current > max) max = current;
-		if (current < min) min = current;
-	}
+  for (let i = 1; i < arr.length; i++) {
+    const current = arr[i]!;
+    if (current > max) max = current;
+    if (current < min) min = current;
+  }
 
-	return [max, min];
+  return [max, min];
 }
 
 /**
@@ -111,20 +111,20 @@ export function findMaxMin(arr: number[]): [number, number] {
  * findLongestString(["hello"]); // "hello"
  */
 export function findLongestString(strings: string[]): string {
-	if (strings.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (strings.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let longest = strings[0]!;
+  let longest = strings[0]!;
 
-	for (let i = 1; i < strings.length; i++) {
-		const current = strings[i]!;
-		if (current.length > longest.length) {
-			longest = current;
-		}
-	}
+  for (let i = 1; i < strings.length; i++) {
+    const current = strings[i]!;
+    if (current.length > longest.length) {
+      longest = current;
+    }
+  }
 
-	return longest;
+  return longest;
 }
 
 /**
@@ -154,18 +154,18 @@ export function findLongestString(strings: string[]): string {
  * removeDuplicates(arr); // Returns 5, arr is now [0, 1, 2, 3, 4, _, _, _, _, _]
  */
 export function removeDuplicates(nums: number[]): number {
-	if (nums.length === 0) return 0;
+  if (nums.length === 0) return 0;
 
-	let k = 0; // Position of last unique element
+  let k = 0; // Position of last unique element
 
-	for (let i = 1; i < nums.length; i++) {
-		if (nums[i] !== nums[k]) {
-			k++;
-			nums[k] = nums[i]!;
-		}
-	}
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] !== nums[k]) {
+      k++;
+      nums[k] = nums[i]!;
+    }
+  }
 
-	return k + 1;
+  return k + 1;
 }
 
 /**
@@ -194,29 +194,29 @@ export function removeDuplicates(nums: number[]): number {
  * maxProfit([2, 4, 1]); // 2 (buy at 2, sell at 4)
  */
 export function maxProfit(prices: number[]): number {
-	if (prices.length === 0) return 0;
+  if (prices.length === 0) return 0;
 
-	let minPrice = prices[0]!;
-	let maxProfit = 0;
+  let minPrice = prices[0]!;
+  let maxProfit = 0;
 
-	for (let i = 1; i < prices.length; i++) {
-		const currentPrice = prices[i]!;
+  for (let i = 1; i < prices.length; i++) {
+    const currentPrice = prices[i]!;
 
-		// Update minimum price if we found a lower one
-		if (currentPrice < minPrice) {
-			minPrice = currentPrice;
-		}
+    // Update minimum price if we found a lower one
+    if (currentPrice < minPrice) {
+      minPrice = currentPrice;
+    }
 
-		// Calculate profit if we sell at current price
-		const profit = currentPrice - minPrice;
+    // Calculate profit if we sell at current price
+    const profit = currentPrice - minPrice;
 
-		// Update maximum profit if current is better
-		if (profit > maxProfit) {
-			maxProfit = profit;
-		}
-	}
+    // Update maximum profit if current is better
+    if (profit > maxProfit) {
+      maxProfit = profit;
+    }
+  }
 
-	return maxProfit;
+  return maxProfit;
 }
 
 /**
@@ -251,30 +251,30 @@ export function maxProfit(prices: number[]): number {
  * rotate(arr, 2); // arr is now [3, 99, -1, -100]
  */
 export function rotate(nums: number[], k: number): void {
-	const n = nums.length;
-	if (n === 0) return;
+  const n = nums.length;
+  if (n === 0) return;
 
-	// Normalize k to be within array bounds
-	k = k % n;
-	if (k === 0) return;
+  // Normalize k to be within array bounds
+  k = k % n;
+  if (k === 0) return;
 
-	// Helper function to reverse array segment
-	const reverse = (start: number, end: number) => {
-		while (start < end) {
-			[nums[start], nums[end]] = [nums[end]!, nums[start]!];
-			start++;
-			end--;
-		}
-	};
+  // Helper function to reverse array segment
+  const reverse = (start: number, end: number) => {
+    while (start < end) {
+      [nums[start], nums[end]] = [nums[end]!, nums[start]!];
+      start++;
+      end--;
+    }
+  };
 
-	// Step 1: Reverse entire array
-	reverse(0, n - 1);
+  // Step 1: Reverse entire array
+  reverse(0, n - 1);
 
-	// Step 2: Reverse first k elements
-	reverse(0, k - 1);
+  // Step 2: Reverse first k elements
+  reverse(0, k - 1);
 
-	// Step 3: Reverse remaining n-k elements
-	reverse(k, n - 1);
+  // Step 3: Reverse remaining n-k elements
+  reverse(k, n - 1);
 }
 
 /**
@@ -307,24 +307,24 @@ export function rotate(nums: number[], k: number): void {
  * maxSubArray([-1, -2, -3]); // -1 (best single element)
  */
 export function maxSubArray(nums: number[]): number {
-	if (nums.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (nums.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let currentSum = nums[0]!;
-	let maxSum = nums[0]!;
+  let currentSum = nums[0]!;
+  let maxSum = nums[0]!;
 
-	for (let i = 1; i < nums.length; i++) {
-		const current = nums[i]!;
+  for (let i = 1; i < nums.length; i++) {
+    const current = nums[i]!;
 
-		// Either extend current subarray or start new one
-		currentSum = Math.max(current, currentSum + current);
+    // Either extend current subarray or start new one
+    currentSum = Math.max(current, currentSum + current);
 
-		// Update maximum sum if current is better
-		maxSum = Math.max(maxSum, currentSum);
-	}
+    // Update maximum sum if current is better
+    maxSum = Math.max(maxSum, currentSum);
+  }
 
-	return maxSum;
+  return maxSum;
 }
 
 /**
@@ -370,33 +370,97 @@ export function maxSubArray(nums: number[]): number {
  * canFinishPrinting([], 1, 10);       // true (nothing to print)
  */
 export function canFinishPrinting(
-	batches: number[],
-	maxDays: number,
-	maxPagesPerDay: number
+  batches: number[],
+  maxDays: number,
+  maxPagesPerDay: number,
 ): boolean {
+  let day = 1;
+  let dayLoad = 0;
+  let batchIndex = 0;
 
-	let day = 1;
-	let dayLoad = 0;
-	let batchIndex = 0;
+  while (day <= maxDays && batchIndex < batches.length) {
+    const nextBatch = batches[batchIndex]!;
 
-	while (day <= maxDays && batchIndex < batches.length) {
-		const nextBatch = batches[batchIndex]!;
+    // If a single batch exceeds capacity, impossible.
+    if (nextBatch > maxPagesPerDay) return false;
 
-		// If a single batch exceeds capacity, impossible.
-		if (nextBatch > maxPagesPerDay) return false;
+    // If adding this batch exceeds the limit, go to next day
+    if (dayLoad + nextBatch > maxPagesPerDay) {
+      day++;
+      dayLoad = 0; // reset for new day
+      continue;
+    }
 
-		// If adding this batch exceeds the limit, go to next day
-		if (dayLoad + nextBatch > maxPagesPerDay) {
-			day++;
-			dayLoad = 0; // reset for new day
-			continue;
-		}
+    // Otherwise, print this batch
+    dayLoad += nextBatch;
+    batchIndex++;
+  }
 
-		// Otherwise, print this batch
-		dayLoad += nextBatch;
-		batchIndex++;
-	}
+  // We succeed if all batches were printed
+  return batchIndex === batches.length;
+}
 
-	// We succeed if all batches were printed
-	return batchIndex === batches.length;
+/**
+ * Two Sum (Hash Map Approach)
+ *
+ * Determines whether there exist two numbers in the array whose sum equals
+ * the given target, and returns their **indices**.
+ *
+ * Problem Summary:
+ * - `arr[i]` = number at index `i`
+ * - Find two **distinct indices** `i` and `j` such that:
+ *     arr[i] + arr[j] === target
+ * - Each element may be used **at most once**
+ * - Order of indices does not matter
+ *
+ * Algorithm:
+ * 1. Create a hash map (`seen`) to store numbers we have already visited
+ *    along with their indices.
+ * 2. Iterate through the array from left to right.
+ * 3. For each element:
+ *    - Compute the required complement: `target - current`
+ *    - If the complement already exists in the map:
+ *        → we found a valid pair, return their indices
+ *    - Otherwise, store the current number with its index in the map
+ * 4. If no pair is found after the loop, return `undefined`
+ *
+ * Key Insight:
+ * - By trading space for time, we reduce the problem from O(n²) to O(n)
+ * - The hash map allows constant-time lookups for complements
+ *
+ * Time Complexity: O(n) — single pass through the array
+ * Space Complexity: O(n) — hash map storing seen values
+ *
+ * @param arr - Array of numbers to search
+ * @param target - Desired sum of two numbers
+ * @returns A tuple of indices `[i, j]` if a pair exists, otherwise `undefined`
+ *
+ * @example
+ * twoSum([2, 7, 11, 15], 9);  // [0, 1]
+ * twoSum([3, 2, 4], 6);      // [1, 2]
+ * twoSum([3, 3], 6);         // [0, 1]
+ * twoSum([1, 2, 3], 7);      // undefined
+ */
+export function twoSum(
+  arr: number[],
+  target: number,
+): [number, number] | undefined {
+  // Map from value → index where it was first seen
+  const seen: Record<number, number> = {};
+
+  for (let i = 0; i < arr.length; i++) {
+    const current = arr[i]!;
+    const complement = target - current;
+
+    // If we've already seen the complement, we have a solution
+    if (seen[complement] !== undefined) {
+      return [seen[complement], i];
+    }
+
+    // Store the current value with its index
+    seen[current] = i;
+  }
+
+  // No valid pair found
+  return undefined;
 }
