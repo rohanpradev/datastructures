@@ -370,21 +370,29 @@ export function maxSubArray(nums: number[]): number {
  * canFinishPrinting([], 1, 10);       // true (nothing to print)
  */
 export function canFinishPrinting(
-	batches: number[],
-	maxDays: number,
-	maxPagesPerDay: number,
+  batches: number[],
+  maxDays: number,
+  maxPagesPerDay: number,
 ): boolean {
-	let day = 1;
-	let dayLoad = 0;
-	let batchIndex = 0;
+  let day = 1;
+  let dayLoad = 0;
+  let batchIndex = 0;
 
-    // If a single batch exceeds capacity, impossible.
-    if (nextBatch > maxPagesPerDay) return false;
+  while (batchIndex < batches.length) {
+    const nextBatch = batches[batchIndex]!;
 
-    // If adding this batch exceeds the limit, go to next day
+    // If a single batch exceeds daily capacity, impossible
+    if (nextBatch > maxPagesPerDay) {
+      return false;
+    }
+
+    // If adding this batch exceeds the limit, move to next day
     if (dayLoad + nextBatch > maxPagesPerDay) {
       day++;
-      dayLoad = 0; // reset for new day
+      if (day > maxDays) {
+        return false;
+      }
+      dayLoad = 0;
       continue;
     }
 
@@ -393,8 +401,8 @@ export function canFinishPrinting(
     batchIndex++;
   }
 
-  // We succeed if all batches were printed
-  return batchIndex === batches.length;
+  // All batches printed within maxDays
+  return true;
 }
 
 /**
@@ -460,4 +468,69 @@ export function twoSum(
 
   // No valid pair found
   return undefined;
+}
+
+/**
+ * Validate Subsequence (Two-Pointer Approach)
+ *
+ * Determines whether a given `sequence` is a subsequence of `array`.
+ * A subsequence appears in the same **relative order**, but elements
+ * do **not** need to be contiguous.
+ *
+ * Problem Summary:
+ * - Given two arrays:
+ *     - `array`: the source array
+ *     - `sequence`: the array we want to validate as a subsequence
+ * - Determine whether all elements in `sequence` appear in `array`
+ *   in the same order
+ * - Elements do not need to be adjacent
+ *
+ * Algorithm:
+ * 1. Use two pointers:
+ *    - `arrayIndex` traverses the main array
+ *    - `sequenceIndex` tracks progress in the sequence
+ * 2. Iterate through `array`:
+ *    - If `array[arrayIndex] === sequence[sequenceIndex]`,
+ *      advance `sequenceIndex`
+ *    - Always advance `arrayIndex`
+ * 3. Stop early if the entire sequence has been matched
+ * 4. After iteration, check whether all sequence elements were matched
+ *
+ * Key Insight:
+ * - You only move forward in the sequence when a match is found
+ * - This guarantees order preservation without backtracking
+ *
+ * Time Complexity: O(n) — where `n` is the length of the main array
+ * Space Complexity: O(1) — constant extra space
+ *
+ * @param array - The array to search within
+ * @param sequence - The sequence to validate
+ * @returns `true` if `sequence` is a subsequence of `array`, otherwise `false`
+ *
+ * @example
+ * validateSubsequence([5, 1, 22, 25, 6, -1, 8, 10], [1, 6, -1, 10]); // true
+ * validateSubsequence([1, 2, 3, 4], [2, 4]);                       // true
+ * validateSubsequence([1, 2, 3, 4], [2, 5]);                       // false
+ * validateSubsequence([1, 2, 3], [3, 2]);                          // false
+ */
+export function validateSubsequence(
+  array: number[],
+  sequence: number[],
+): boolean {
+  let arrayIndex = 0; // Pointer for the main array
+  let sequenceIndex = 0; // Pointer for the sequence we are matching
+
+  // Traverse the main array while there are still sequence elements to match
+  while (arrayIndex < array.length && sequenceIndex < sequence.length) {
+    // If elements match, move forward in the sequence
+    if (array[arrayIndex] === sequence[sequenceIndex]) {
+      sequenceIndex++;
+    }
+
+    // Always move forward in the main array
+    arrayIndex++;
+  }
+
+  // If all sequence elements were matched, it is a valid subsequence
+  return sequenceIndex === sequence.length;
 }

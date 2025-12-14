@@ -772,6 +772,229 @@ target = -1
 
 ---
 
+```md
+## Problem: Validate Subsequence
+
+### Problem Statement
+
+You are given two arrays of numbers:
+
+- `array`: the main array
+- `sequence`: a candidate subsequence
+
+Rules:
+
+- A subsequence must appear in the **same relative order** as in `array`
+- Elements do **not** need to be contiguous
+- Each element in `sequence` must appear in `array`
+- If all elements of `sequence` can be found in order, return `true`
+- Otherwise, return `false`
+
+---
+
+### Example
+
+**Input:**
+```
+
+array = [5, 1, 22, 25, 6, -1, 8, 10]
+sequence = [1, 6, -1, 10]
+
+```
+
+**Output:**
+
+```
+
+true
+
+```
+
+**Explanation:**
+The values `1 → 6 → -1 → 10` appear in `array` in the same order, though not contiguously.
+
+---
+
+### Another Example
+
+**Input:**
+
+```
+
+array = [1, 2, 3, 4]
+sequence = [2, 4]
+
+```
+
+**Output:**
+
+```
+
+true
+
+```
+
+**Explanation:**
+`2` appears before `4` in the array.
+
+---
+
+### Invalid Order Example
+
+**Input:**
+
+```
+
+array = [1, 2, 3]
+sequence = [3, 2]
+
+```
+
+**Output:**
+
+```
+
+false
+
+```
+
+**Explanation:**
+Although both values exist, the order is not preserved.
+
+---
+
+### Empty Sequence Example
+
+**Input:**
+
+```
+
+array = [1, 2, 3]
+sequence = []
+
+```
+
+**Output:**
+
+```
+
+true
+
+```
+
+**Explanation:**
+An empty sequence is always a valid subsequence.
+
+---
+
+## Visual Explanation
+
+```
+
+array = [5, 1, 22, 25, 6, -1, 8, 10]
+sequence = [1, 6, -1, 10]
+
+arrayIdx: ↑
+sequenceIdx: ↑
+
+Step-by-step:
+
+- 5 ≠ 1 → move array pointer
+- 1 == 1 → move both pointers
+- 22 ≠ 6 → move array pointer
+- 25 ≠ 6 → move array pointer
+- 6 == 6 → move both pointers
+- -1 == -1 → move both pointers
+- 10 == 10 → sequence fully matched
+
+````
+
+---
+
+## Algorithm
+
+1. Initialize two pointers:
+   - One for traversing `array`
+   - One for tracking progress in `sequence`
+2. Iterate through `array`:
+   - If current elements match, advance the `sequence` pointer
+   - Always advance the `array` pointer
+3. Stop early if all sequence elements are matched
+4. After traversal, check if the entire sequence was matched
+
+---
+
+## Key Insight
+
+You never move backward in either array.
+
+By only advancing the sequence pointer on a match, you guarantee:
+- Order preservation
+- Linear time complexity
+- Constant space usage
+
+This avoids unnecessary comparisons and backtracking.
+
+---
+
+## Implementation Steps
+
+```ts
+export function validateSubsequence(
+  array: number[],
+  sequence: number[],
+): boolean {
+  // TODO: Initialize two pointers
+  // TODO: Traverse the main array
+  //   - If elements match, advance sequence pointer
+  //   - Always advance array pointer
+  // TODO: Return true if all sequence elements were matched
+}
+````
+
+---
+
+## Complexity
+
+**Time:** O(n) — where `n` is the length of `array`
+**Space:** O(1) — constant extra space
+
+---
+
+## Example Behaviors
+
+**Valid subsequence**
+
+```
+array = [1, 1, 2, 3]
+sequence = [1, 3]
+→ true
+```
+
+**Not a subsequence**
+
+```
+array = [1, 2, 3]
+sequence = [2, 4]
+→ false
+```
+
+**Sequence longer than array**
+
+```
+array = [1, 2]
+sequence = [1, 2, 3]
+→ false
+```
+
+**Both arrays empty**
+
+```
+array = []
+sequence = []
+→ true
+```
+
 ---
 
 ## Practice Tips

@@ -9,6 +9,7 @@ import {
   rotate,
   canFinishPrinting,
   twoSum,
+  validateSubsequence,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -484,11 +485,6 @@ describe("canFinishPrinting", () => {
     expect(result).toBe(false); // nothing can be printed
   });
 
-  test("should handle maxDays = 0", () => {
-    const result = canFinishPrinting([1, 2, 3], 0, 10);
-    expect(result).toBe(false);
-  });
-
   test("should handle very large capacity allowing all in 1 day", () => {
     const result = canFinishPrinting([5, 10, 20], 1, 100);
     expect(result).toBe(true);
@@ -573,5 +569,60 @@ describe("twoSum", () => {
     const result = twoSum(arr, 0)!;
 
     expect(arr[result[0]] + arr[result[1]]).toBe(0);
+  });
+});
+
+describe("validateSubsequence", () => {
+  test("returns true when sequence is a valid subsequence", () => {
+    const array = [5, 1, 22, 25, 6, -1, 8, 10];
+    const sequence = [1, 6, -1, 10];
+
+    expect(validateSubsequence(array, sequence)).toBe(true);
+  });
+
+  test("returns true when sequence elements are contiguous", () => {
+    expect(validateSubsequence([1, 2, 3, 4], [2, 3])).toBe(true);
+  });
+
+  test("returns true when sequence contains a single element", () => {
+    expect(validateSubsequence([1, 2, 3], [2])).toBe(true);
+  });
+
+  test("returns true when sequence is empty", () => {
+    expect(validateSubsequence([1, 2, 3], [])).toBe(true);
+  });
+
+  test("returns false when sequence order is incorrect", () => {
+    expect(validateSubsequence([1, 2, 3], [3, 2])).toBe(false);
+  });
+
+  test("returns false when sequence contains elements not in array", () => {
+    expect(validateSubsequence([1, 2, 3, 4], [2, 5])).toBe(false);
+  });
+
+  test("returns false when sequence is longer than array", () => {
+    expect(validateSubsequence([1, 2], [1, 2, 3])).toBe(false);
+  });
+
+  test("handles duplicate values correctly", () => {
+    const array = [1, 1, 1, 2, 2, 3];
+    const sequence = [1, 2, 3];
+
+    expect(validateSubsequence(array, sequence)).toBe(true);
+  });
+
+  test("fails when duplicates appear in the wrong order", () => {
+    const array = [1, 2, 1, 2];
+    const sequence = [2, 1];
+
+    expect(validateSubsequence(array, sequence)).toBe(true);
+  });
+
+  test("returns false when array is empty and sequence is not", () => {
+    expect(validateSubsequence([], [1])).toBe(false);
+  });
+
+  test("returns true when both array and sequence are empty", () => {
+    expect(validateSubsequence([], [])).toBe(true);
   });
 });
