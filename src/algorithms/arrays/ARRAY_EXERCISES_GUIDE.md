@@ -1090,6 +1090,158 @@ nums = []
 
 ---
 
+## Tournament Winner
+
+Determines the overall winner of a tournament based on match results.
+Each match consists of a **home team** and an **away team**, and results
+indicate which team won.
+
+---
+
+## Problem Summary
+
+- `competitions[i]` = `[homeTeam, awayTeam]`
+- `results[i]`:
+  - `1` → home team wins
+  - `0` → away team wins
+- Each win is worth **1 point**
+- The team with the **highest total wins** is the tournament winner
+- There is always exactly **one winner**
+
+---
+
+## Algorithm
+
+1. Initialize a hash map to track win counts for each team.
+2. Track the current tournament leader and their win count.
+3. Iterate through all competitions:
+   - Determine the winner based on the result.
+   - Increment the winner’s count in the map.
+   - Update the leader if this team has more wins than the current leader.
+4. Return the team with the highest win count.
+
+---
+
+## Key Insight
+
+You don’t need to wait until the end to find the winner.
+
+By updating the tournament leader **as you process each match**, you:
+
+- Avoid an extra pass over the data
+- Maintain linear time complexity
+- Keep the logic simple and efficient
+
+The hash map allows constant-time score updates.
+
+---
+
+## Implementation
+
+````ts
+export function tournamentWinner(
+  competitions: Array<[string, string]>,
+  results: number[],
+): string {
+  const winCounts: Record<string, number> = {};
+  let currentLeader = "";
+  let maxWins = 0;
+
+  for (let i = 0; i < competitions.length; i++) {
+    const [homeTeam, awayTeam] = competitions[i];
+    const winner = results[i] === 1 ? homeTeam : awayTeam;
+
+    winCounts[winner] = (winCounts[winner] ?? 0) + 1;
+
+    if (winCounts[winner] > maxWins) {
+      maxWins = winCounts[winner];
+      currentLeader = winner;
+    }
+  }
+
+  return currentLeader;
+}
+
+---
+
+## The "1 Logic" in Non-Constructible Change
+
+The key insight is based on the number **1** and constructing sums incrementally.
+
+### Problem Recap
+
+- You have a set of positive integers (coins) `nums`.
+- You want the **smallest amount of change** you **cannot** create using any subset of these coins.
+- Coins can only be used once per sum.
+
+---
+
+## Core Idea
+
+1. Sort the coins in **ascending order**.
+2. Track the **maximum constructible change so far** with a variable `change`.
+   - Initially, `change = 0` because we can construct nothing yet.
+3. For each coin `val` in sorted order:
+   - If `val > change + 1`:
+     - There is a **gap**.
+       Example: if `change = 3` and `val = 5`, then `4` cannot be formed.
+     - Return `change + 1` immediately.
+   - Otherwise:
+     - Extend the constructible range: `change += val`.
+4. After processing all coins, return `change + 1` as the smallest non-constructible value.
+
+---
+
+## Why `1` Is Special
+
+- **The smallest possible sum we need to construct is 1**.
+  If the array does **not contain 1**, then **1 is immediately unconstructible**.
+- Sorting ensures that we always start from the smallest coin:
+  - If the first coin is > 1 → return 1 immediately.
+  - Otherwise, we incrementally build up sums starting from 1.
+
+---
+
+## Example Walkthrough
+
+```ts
+nums = [1, 1, 3, 4];
+sorted = [1, 1, 3, 4];
+
+change = 0
+
+val = 1 → change = 1
+val = 1 → change = 2
+val = 3 → change = 5
+val = 4 → change = 9
+
+// All sums from 1 to 9 are constructible
+return change + 1 → 10
+````
+
+**Another example without 1:**
+
+```ts
+nums = [2, 3, 4]
+sorted = [2, 3, 4]
+
+change = 0
+val = 2 → val > change + 1 → return 1
+```
+
+- Since the first coin is 2, the smallest change we **cannot make is 1**.
+
+---
+
+## Key Takeaways
+
+- Always check **for 1 first** implicitly by the greedy algorithm.
+- The algorithm **builds the constructible range incrementally**.
+- If a coin ever exceeds `change + 1`, the **gap** identifies the non-constructible change.
+- This approach is **O(n log n)** due to sorting, then **O(n)** for the scan.
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

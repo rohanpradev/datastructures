@@ -11,6 +11,8 @@ import {
   twoSum,
   validateSubsequence,
   sortedSquaredArray,
+  tournamentWinner,
+  nonConstructableChange,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -678,5 +680,104 @@ describe("sortedSquaredArray", () => {
     sortedSquaredArray(nums);
 
     expect(nums).toEqual(copy);
+  });
+});
+
+describe("tournamentWinner", () => {
+  test("should return the correct winner for a basic tournament", () => {
+    const competitions: Array<[string, string]> = [
+      ["HTML", "C#"],
+      ["C#", "Python"],
+      ["Python", "HTML"],
+    ];
+    const results = [0, 0, 1];
+
+    expect(tournamentWinner(competitions, results)).toBe("Python");
+  });
+
+  test("should handle a single match", () => {
+    expect(tournamentWinner([["A", "B"]], [1])).toBe("A");
+  });
+
+  test("should handle all wins by the same team", () => {
+    const competitions: Array<[string, string]> = [
+      ["A", "B"],
+      ["A", "C"],
+      ["A", "D"],
+    ];
+    const results = [1, 1, 1];
+
+    expect(tournamentWinner(competitions, results)).toBe("A");
+  });
+
+  test("should handle alternating winners", () => {
+    const competitions: Array<[string, string]> = [
+      ["A", "B"],
+      ["B", "C"],
+      ["C", "A"],
+      ["A", "C"],
+    ];
+    const results = [1, 1, 1, 0];
+
+    // C ends with the most wins (2)
+    expect(tournamentWinner(competitions, results)).toBe("C");
+  });
+
+  test("should keep first leader when all teams tie", () => {
+    const competitions: Array<[string, string]> = [
+      ["X", "Y"],
+      ["Y", "Z"],
+      ["Z", "X"],
+    ];
+    const results = [1, 1, 1];
+
+    // All teams have 1 win → first leader remains
+    expect(tournamentWinner(competitions, results)).toBe("X");
+  });
+
+  test("should return empty string when no competitions are played", () => {
+    expect(tournamentWinner([], [])).toBe("");
+  });
+});
+
+describe("nonConstructableChange", () => {
+  test("should handle basic example", () => {
+    const nums = [1, 2, 5];
+    expect(nonConstructableChange(nums)).toBe(4);
+  });
+
+  test("should handle sequential coins", () => {
+    const nums = [1, 1, 1, 1];
+    expect(nonConstructableChange(nums)).toBe(5);
+  });
+
+  test("should return 1 when first coin is greater than 1", () => {
+    const nums = [2, 3, 4];
+    expect(nonConstructableChange(nums)).toBe(1);
+  });
+
+  test("should handle empty array", () => {
+    const nums: number[] = [];
+    expect(nonConstructableChange(nums)).toBe(1);
+  });
+
+  test("should handle single coin equal to 1", () => {
+    const nums = [1];
+    expect(nonConstructableChange(nums)).toBe(2);
+  });
+
+  test("should handle single coin greater than 1", () => {
+    const nums = [7];
+    expect(nonConstructableChange(nums)).toBe(1);
+  });
+
+  test("should handle larger random set", () => {
+    const nums = [1, 1, 3, 4, 7, 10];
+    expect(nonConstructableChange(nums)).toBe(27);
+  });
+
+  test("should handle unsorted input array", () => {
+    const nums = [5, 1, 3, 1];
+    expect(nonConstructableChange(nums)).toBe(11);
   });
 });
