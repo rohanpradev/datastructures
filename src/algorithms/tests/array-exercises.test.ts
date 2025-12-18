@@ -10,6 +10,7 @@ import {
   canFinishPrinting,
   twoSum,
   validateSubsequence,
+  sortedSquaredArray,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -624,5 +625,58 @@ describe("validateSubsequence", () => {
 
   test("returns true when both array and sequence are empty", () => {
     expect(validateSubsequence([], [])).toBe(true);
+  });
+});
+
+describe("sortedSquaredArray", () => {
+  test("should handle mixed negative and positive numbers", () => {
+    const nums = [-4, -1, 0, 3, 10];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([0, 1, 9, 16, 100]);
+  });
+
+  test("should handle all negative numbers", () => {
+    const nums = [-7, -5, -3, -1];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([1, 9, 25, 49]);
+  });
+
+  test("should handle all positive numbers", () => {
+    const nums = [1, 2, 3, 4];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([1, 4, 9, 16]);
+  });
+
+  test("should handle array with zeros", () => {
+    const nums = [-2, 0, 0, 3];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([0, 0, 4, 9]);
+  });
+
+  test("should handle single element", () => {
+    const nums = [-5];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([25]);
+  });
+
+  test("should handle empty array", () => {
+    const nums: number[] = [];
+    const result = sortedSquaredArray(nums);
+
+    expect(result).toEqual([]);
+  });
+
+  test("should not mutate the original array", () => {
+    const nums = [-3, -1, 2];
+    const copy = [...nums];
+
+    sortedSquaredArray(nums);
+
+    expect(nums).toEqual(copy);
   });
 });

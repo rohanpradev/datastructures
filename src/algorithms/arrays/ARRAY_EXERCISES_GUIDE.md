@@ -997,6 +997,99 @@ sequence = []
 
 ---
 
+## Algorithm
+
+1. Initialize two pointers:
+   - `left` starting at the beginning of the array
+   - `right` starting at the end of the array
+2. Create a result array of the same length as the input.
+3. Fill the result array from right to left:
+   - Compare the absolute values at `left` and `right`
+   - Square the larger absolute value and place it at the current position
+4. Move the corresponding pointer inward.
+5. Continue until all elements are processed.
+
+---
+
+## Key Insight
+
+The largest square will always come from one of the **ends** of the sorted array.
+
+Because:
+
+- Negative numbers with large magnitude produce large squares
+- Positive numbers at the end also produce large squares
+
+By comparing absolute values at both ends, we can:
+
+- Avoid sorting after squaring
+- Maintain linear time complexity
+- Preserve correctness with a single pass
+
+---
+
+## Implementation Steps
+
+```ts
+export function sortedSquaredArray(nums: number[]): number[] {
+  // TODO: Initialize left and right pointers
+  // TODO: Create a result array
+  // TODO: Fill result from right to left
+  //   - Compare absolute values at both pointers
+  //   - Square the larger value and insert
+  // TODO: Move pointers inward
+  // TODO: Return the result array
+}
+```
+
+---
+
+## Complexity
+
+**Time:** O(n) — single pass through the array
+**Space:** O(n) — output array required
+
+---
+
+## Example Behaviors
+
+**Mixed negative and positive values**
+
+```
+nums = [-4, -1, 0, 3, 10]
+→ [0, 1, 9, 16, 100]
+```
+
+**All negative numbers**
+
+```
+nums = [-7, -5, -3, -1]
+→ [1, 9, 25, 49]
+```
+
+**All positive numbers**
+
+```
+nums = [1, 2, 3, 4]
+→ [1, 4, 9, 16]
+```
+
+**Single element**
+
+```
+nums = [-5]
+→ [25]
+```
+
+**Empty array**
+
+```
+nums = []
+→ []
+```
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
@@ -1040,14 +1133,18 @@ sequence = []
 
 ### Time Complexity Cheat Sheet
 
-| Problem           | Time | Space | Technique          |
-| ----------------- | ---- | ----- | ------------------ |
-| Remove Element    | O(n) | O(1)  | Two-Pointer        |
-| Find Max Min      | O(n) | O(1)  | Single Pass        |
-| Longest String    | O(n) | O(1)  | Single Pass        |
-| Remove Duplicates | O(n) | O(1)  | Two-Pointer        |
-| Max Profit        | O(n) | O(1)  | Greedy             |
-| Rotate Array      | O(n) | O(1)  | Triple Reverse     |
-| Max Subarray      | O(n) | O(1)  | Kadane's Algorithm |
+| Problem                 | Time | Space | Technique / Pattern         |
+| ----------------------- | ---- | ----- | --------------------------- |
+| Remove Element          | O(n) | O(1)  | Two-Pointer                 |
+| Find Max Min            | O(n) | O(1)  | Single Pass                 |
+| Longest String          | O(n) | O(1)  | Single Pass                 |
+| Remove Duplicates       | O(n) | O(1)  | Two-Pointer                 |
+| Max Profit              | O(n) | O(1)  | Greedy                      |
+| Rotate Array            | O(n) | O(1)  | Triple Reverse              |
+| Max Subarray            | O(n) | O(1)  | Kadane’s Algorithm          |
+| Two Sum                 | O(n) | O(n)  | Hash Map                    |
+| Validate Subsequence    | O(n) | O(1)  | Two-Pointer                 |
+| Sorted Squared Array    | O(n) | O(n)  | Two-Pointer (Ends Inward)   |
+| Printing Press Capacity | O(n) | O(1)  | Greedy / Array Partitioning |
 
 Happy Coding! 🚀
