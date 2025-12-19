@@ -715,20 +715,20 @@ export function nonConstructableChange(nums: number[]): number {
  *   so a new matrix must be created.
  */
 export function transpose(matrix: number[][]): number[][] {
-  const rows = matrix.length;
-  const cols = matrix[0].length;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
 
-  // Create a new matrix with swapped dimensions (cols × rows)
-  const result: number[][] = Array.from({ length: cols }, () => Array(rows));
+	// Create a new matrix with swapped dimensions (cols × rows)
+	const result: number[][] = Array.from({ length: cols }, () => Array(rows));
 
-  // Copy values to their transposed positions
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      result[j][i] = matrix[i][j];
-    }
-  }
+	// Copy values to their transposed positions
+	for (let i = 0; i < rows; i++) {
+		for (let j = 0; j < cols; j++) {
+			result[j][i] = matrix[i][j];
+		}
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -745,54 +745,54 @@ export function transpose(matrix: number[][]): number[][] {
  * @returns {boolean} True if both strings are equal after applying backspaces
  */
 export function backspaceStringCompare(str1: string, str2: string): boolean {
-  // Pointers starting from the end of each string
-  let i = str1.length - 1;
-  let j = str2.length - 1;
+	// Pointers starting from the end of each string
+	let i = str1.length - 1;
+	let j = str2.length - 1;
 
-  // Counters for how many characters to skip due to '#'
-  let skip1 = 0;
-  let skip2 = 0;
+	// Counters for how many characters to skip due to '#'
+	let skip1 = 0;
+	let skip2 = 0;
 
-  // Continue while there are characters left in either string
-  while (i >= 0 || j >= 0) {
-    // Move i to the next valid character in str1
-    while (i >= 0) {
-      if (str1[i] === "#") {
-        skip1++; // Found a backspace
-        i--;
-      } else if (skip1 > 0) {
-        skip1--; // Skip a character due to backspace
-        i--;
-      } else {
-        break; // Valid character found
-      }
-    }
+	// Continue while there are characters left in either string
+	while (i >= 0 || j >= 0) {
+		// Move i to the next valid character in str1
+		while (i >= 0) {
+			if (str1[i] === "#") {
+				skip1++; // Found a backspace
+				i--;
+			} else if (skip1 > 0) {
+				skip1--; // Skip a character due to backspace
+				i--;
+			} else {
+				break; // Valid character found
+			}
+		}
 
-    // Move j to the next valid character in str2
-    while (j >= 0) {
-      if (str2[j] === "#") {
-        skip2++;
-        j--;
-      } else if (skip2 > 0) {
-        skip2--;
-        j--;
-      } else {
-        break;
-      }
-    }
+		// Move j to the next valid character in str2
+		while (j >= 0) {
+			if (str2[j] === "#") {
+				skip2++;
+				j--;
+			} else if (skip2 > 0) {
+				skip2--;
+				j--;
+			} else {
+				break;
+			}
+		}
 
-    // Compare the current valid characters
-    const char1 = i >= 0 ? str1[i] : null;
-    const char2 = j >= 0 ? str2[j] : null;
+		// Compare the current valid characters
+		const char1 = i >= 0 ? str1[i] : null;
+		const char2 = j >= 0 ? str2[j] : null;
 
-    // If characters differ, strings are not equal
-    if (char1 !== char2) return false;
+		// If characters differ, strings are not equal
+		if (char1 !== char2) return false;
 
-    // Move both pointers left
-    i--;
-    j--;
-  }
+		// Move both pointers left
+		i--;
+		j--;
+	}
 
-  // All characters matched
-  return true;
+	// All characters matched
+	return true;
 }
