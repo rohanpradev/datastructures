@@ -13,6 +13,8 @@ import {
   sortedSquaredArray,
   tournamentWinner,
   nonConstructableChange,
+  transpose,
+  backspaceStringCompare,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -779,5 +781,139 @@ describe("nonConstructableChange", () => {
   test("should handle unsorted input array", () => {
     const nums = [5, 1, 3, 1];
     expect(nonConstructableChange(nums)).toBe(11);
+  });
+});
+
+describe("transpose", () => {
+  test("transposes a square matrix", () => {
+    const input = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
+
+    const output = [
+      [1, 4, 7],
+      [2, 5, 8],
+      [3, 6, 9],
+    ];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("transposes a rectangular matrix (more rows than columns)", () => {
+    const input = [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ];
+
+    const output = [
+      [1, 3, 5],
+      [2, 4, 6],
+    ];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("transposes a rectangular matrix (more columns than rows)", () => {
+    const input = [[1, 2, 3]];
+
+    const output = [[1], [2], [3]];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("handles a single-element matrix", () => {
+    const input = [[42]];
+    const output = [[42]];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("handles a single row matrix", () => {
+    const input = [[1, 2, 3, 4]];
+    const output = [[1], [2], [3], [4]];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("handles a single column matrix", () => {
+    const input = [[1], [2], [3]];
+    const output = [[1, 2, 3]];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("handles negative numbers and zero", () => {
+    const input = [
+      [0, -1],
+      [-2, 3],
+    ];
+
+    const output = [
+      [0, -2],
+      [-1, 3],
+    ];
+
+    expect(transpose(input)).toEqual(output);
+  });
+
+  test("does not mutate the original matrix", () => {
+    const input = [
+      [1, 2],
+      [3, 4],
+    ];
+
+    const original = structuredClone(input);
+    transpose(input);
+
+    expect(input).toEqual(original);
+  });
+});
+
+describe("backspaceStringCompare", () => {
+  test("returns true for identical strings without backspaces", () => {
+    expect(backspaceStringCompare("abc", "abc")).toBe(true);
+  });
+
+  test("handles single backspace correctly", () => {
+    expect(backspaceStringCompare("ab#c", "ac")).toBe(true);
+  });
+
+  test("handles multiple backspaces in a row", () => {
+    expect(backspaceStringCompare("a##c", "#a#c")).toBe(true);
+  });
+
+  test("returns false when final strings differ", () => {
+    expect(backspaceStringCompare("a#c", "b")).toBe(false);
+  });
+
+  test("handles backspaces at the beginning", () => {
+    expect(backspaceStringCompare("###abc", "abc")).toBe(true);
+  });
+
+  test("handles backspaces that exceed character count", () => {
+    expect(backspaceStringCompare("abc####", "")).toBe(true);
+  });
+
+  test("handles empty strings", () => {
+    expect(backspaceStringCompare("", "")).toBe(true);
+  });
+
+  test("handles one empty and one non-empty string", () => {
+    expect(backspaceStringCompare("", "a")).toBe(false);
+  });
+
+  test("handles only backspaces", () => {
+    expect(backspaceStringCompare("###", "####")).toBe(true);
+  });
+
+  test("handles interleaved characters and backspaces", () => {
+    expect(backspaceStringCompare("bxj##tw", "bxo#j##tw")).toBe(true);
+  });
+
+  test("detects mismatch after backspaces", () => {
+    expect(backspaceStringCompare("xy#z", "xzz#")).toBe(true);
   });
 });

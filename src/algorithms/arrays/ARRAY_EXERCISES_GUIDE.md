@@ -1233,6 +1233,306 @@ val = 2 → val > change + 1 → return 1
 
 ---
 
+## Backspace String Compare
+
+This problem focuses on comparing two strings where the `#` character behaves like a **backspace** in a text editor.
+
+---
+
+## Problem Recap
+
+- You are given **two strings** `s` and `t`.
+- The character `#` represents a **backspace**, which deletes the previous character (if any).
+- Each string is typed into an empty editor.
+- Return `true` if both strings result in the **same final text**, otherwise `false`.
+
+---
+
+## Core Idea
+
+Instead of rebuilding the strings, we:
+
+1. Traverse **both strings from right to left**.
+2. Use **skip counters** to track how many characters should be ignored due to backspaces.
+3. Compare only the **valid characters** that remain after applying backspaces.
+
+This avoids extra memory and keeps the solution efficient.
+
+---
+
+## Why Right-to-Left Works
+
+- A backspace (`#`) only affects characters **before it**.
+- By scanning from the end:
+  - We can immediately decide whether a character should be skipped.
+  - No need to build the full string or use a stack.
+
+---
+
+## Algorithm Steps
+
+1. Initialize two pointers at the **end of each string**.
+2. Maintain two counters (`skipS`, `skipT`) for pending backspaces.
+3. For each string:
+   - If the current character is `#`, increment the skip counter.
+   - If `skip > 0`, skip the character and decrement the counter.
+   - Otherwise, the character is valid.
+
+4. Compare the current valid characters from both strings.
+   - If they differ → return `false`.
+
+5. Continue until both strings are fully processed.
+6. If all comparisons match → return `true`.
+
+---
+
+## Example Walkthrough
+
+### Example 1
+
+```ts
+s = "ab#c";
+t = "ad#c";
+```
+
+Processing:
+
+- `#` removes `b` and `d`
+- Final strings → `"ac"` and `"ac"`
+
+✅ Result: `true`
+
+---
+
+### Example 2
+
+```ts
+s = "a#c";
+t = "b";
+```
+
+Processing:
+
+- `s` → `"c"`
+- `t` → `"b"`
+
+❌ Result: `false`
+
+---
+
+## Implementation
+
+```ts
+/**
+ * Compares two strings where '#' represents a backspace.
+ *
+ * @param s - First input string
+ * @param t - Second input string
+ * @returns True if both strings are equal after applying backspaces
+ */
+function backspaceStringCompare(s: string, t: string): boolean {
+  let i = s.length - 1;
+  let j = t.length - 1;
+
+  let skipS = 0;
+  let skipT = 0;
+
+  while (i >= 0 || j >= 0) {
+    // Find next valid character in s
+    while (i >= 0) {
+      if (s[i] === "#") {
+        skipS++;
+        i--;
+      } else if (skipS > 0) {
+        skipS--;
+        i--;
+      } else {
+        break;
+      }
+    }
+
+    // Find next valid character in t
+    while (j >= 0) {
+      if (t[j] === "#") {
+        skipT++;
+        j--;
+      } else if (skipT > 0) {
+        skipT--;
+        j--;
+      } else {
+        break;
+      }
+    }
+
+    const charS = i >= 0 ? s[i] : null;
+    const charT = j >= 0 ? t[j] : null;
+
+    if (charS !== charT) return false;
+
+    i--;
+    j--;
+  }
+
+  return true;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n + m)`
+  - Each character in both strings is visited at most once.
+
+- **Space Complexity:** `O(1)`
+  - No extra data structures are used.
+
+---
+
+## Key Takeaways
+
+- Backspaces affect **previous characters**, not future ones.
+- Right-to-left traversal is the key insight.
+- Skip counters allow us to process backspaces efficiently.
+- This is the **optimal solution** expected in interviews.
+
+---
+
+# Transpose Matrix
+
+This problem focuses on **transposing a 2D matrix**, turning rows into columns and columns into rows.
+
+---
+
+## Problem Recap
+
+- You are given a **2D array** (matrix) of size `m x n`.
+- Your task is to return a **new matrix** where:
+  - The first row becomes the first column
+  - The second row becomes the second column
+  - And so on…
+
+Formally:
+If `matrix[i][j] = x`, then in the transposed matrix: `transposed[j][i] = x`.
+
+---
+
+## Core Idea
+
+1. Determine the size of the new matrix:
+   - If original is `m x n`, transposed will be `n x m`.
+
+2. Iterate over the original matrix:
+   - For each element `matrix[i][j]`, place it in `transposed[j][i]`.
+
+3. Return the transposed matrix.
+
+---
+
+## Why It Works
+
+- **Rows become columns**:
+  - Iterating through rows and columns ensures each element is placed in the correct position.
+
+- **Rectangular matrices are supported**:
+  - Works for `m ≠ n` because we calculate dimensions dynamically.
+
+- **Immutable**:
+  - Original matrix is not modified (good for functional programming and testing).
+
+---
+
+## Example Walkthrough
+
+### Example 1: Square Matrix
+
+```ts
+matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+];
+```
+
+Transpose:
+
+```
+[
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9],
+]
+```
+
+---
+
+### Example 2: Rectangular Matrix
+
+```ts
+matrix = [
+  [1, 2],
+  [3, 4],
+  [5, 6],
+];
+```
+
+Transpose:
+
+```
+[
+  [1, 3, 5],
+  [2, 4, 6],
+]
+```
+
+---
+
+### Example 3: Single Row / Column
+
+```ts
+matrix = [[1, 2, 3]];
+```
+
+Transpose:
+
+```
+[
+  [1],
+  [2],
+  [3],
+]
+```
+
+```ts
+matrix = [[1], [2], [3]];
+```
+
+Transpose:
+
+```
+[[1, 2, 3]]
+```
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(m * n)`
+  Every element is visited exactly once.
+- **Space Complexity:** `O(n * m)`
+  The new transposed matrix requires space proportional to the original size.
+
+---
+
+## Key Takeaways
+
+- Transpose swaps **rows and columns** systematically.
+- Works for both **square** and **rectangular** matrices.
+- Common in **linear algebra**, **image processing**, and **data manipulation**.
+- Knowing dimensions and iterating carefully ensures correctness.
+
+---
+
 ## Key Takeaways
 
 - Always check **for 1 first** implicitly by the greedy algorithm.

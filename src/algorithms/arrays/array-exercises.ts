@@ -684,3 +684,115 @@ export function nonConstructableChange(nums: number[]): number {
   // All values are constructible up to `change`
   return change + 1;
 }
+
+/**
+ * Transposes a matrix.
+ *
+ * The transpose of a matrix flips it over its diagonal,
+ * converting rows into columns and columns into rows.
+ *
+ * Example:
+ * [
+ *   [1, 2, 3],
+ *   [4, 5, 6]
+ * ]
+ * becomes:
+ * [
+ *   [1, 4],
+ *   [2, 5],
+ *   [3, 6]
+ * ]
+ *
+ * @param {number[][]} matrix - A 2D array representing the matrix
+ * @returns {number[][]} A new matrix that is the transpose of the input
+ *
+ * Time Complexity:  O(m × n)
+ * Space Complexity: O(m × n)
+ *   where m = number of rows, n = number of columns
+ *
+ * Note:
+ * - In-place transpose is NOT possible for non-square matrices,
+ *   so a new matrix must be created.
+ */
+export function transpose(matrix: number[][]): number[][] {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  // Create a new matrix with swapped dimensions (cols × rows)
+  const result: number[][] = Array.from({ length: cols }, () => Array(rows));
+
+  // Copy values to their transposed positions
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      result[j][i] = matrix[i][j];
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Compares two strings where '#' represents a backspace character.
+ *
+ * The function processes both strings from right to left,
+ * skipping characters that are "deleted" by '#'.
+ *
+ * Time Complexity: O(n + m)
+ * Space Complexity: O(1)
+ *
+ * @param {string} str1 - First input string
+ * @param {string} str2 - Second input string
+ * @returns {boolean} True if both strings are equal after applying backspaces
+ */
+export function backspaceStringCompare(str1: string, str2: string): boolean {
+  // Pointers starting from the end of each string
+  let i = str1.length - 1;
+  let j = str2.length - 1;
+
+  // Counters for how many characters to skip due to '#'
+  let skip1 = 0;
+  let skip2 = 0;
+
+  // Continue while there are characters left in either string
+  while (i >= 0 || j >= 0) {
+    // Move i to the next valid character in str1
+    while (i >= 0) {
+      if (str1[i] === "#") {
+        skip1++; // Found a backspace
+        i--;
+      } else if (skip1 > 0) {
+        skip1--; // Skip a character due to backspace
+        i--;
+      } else {
+        break; // Valid character found
+      }
+    }
+
+    // Move j to the next valid character in str2
+    while (j >= 0) {
+      if (str2[j] === "#") {
+        skip2++;
+        j--;
+      } else if (skip2 > 0) {
+        skip2--;
+        j--;
+      } else {
+        break;
+      }
+    }
+
+    // Compare the current valid characters
+    const char1 = i >= 0 ? str1[i] : null;
+    const char2 = j >= 0 ? str2[j] : null;
+
+    // If characters differ, strings are not equal
+    if (char1 !== char2) return false;
+
+    // Move both pointers left
+    i--;
+    j--;
+  }
+
+  // All characters matched
+  return true;
+}
