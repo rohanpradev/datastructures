@@ -1542,6 +1542,162 @@ Transpose:
 
 ---
 
+## Problem : Maximize Number of Planes Stopped Before Landing (HackerRank)
+
+### Problem Statement
+
+You are given two arrays of length `N`:
+
+- `initialDistance[]` — where `initialDistance[i]` is the **starting distance** of the _i-th_ plane from the runway
+- `landingSpeed[]` — where `landingSpeed[i]` is the **speed** at which the _i-th_ plane is approaching the runway
+
+At **every second**, you can shoot down **at most one plane**.
+
+A plane lands once its distance becomes **less than or equal to zero**.
+
+Your task is to determine the **maximum number of planes** that can be stopped before they land.
+
+---
+
+### Example
+
+```
+initialDistance = [1, 3, 5, 4, 8]
+landingSpeed    = [1, 2, 2, 1, 2]
+
+Output: 4
+```
+
+---
+
+### Key Insight
+
+Each plane has a **deadline** — the time (in seconds) at which it will land:
+
+```
+landingTime[i] = ceil(initialDistance[i] / landingSpeed[i])
+```
+
+This converts the problem into a **task scheduling problem**:
+
+- Each plane is a task
+- Each task takes **1 second**
+- Each task has a **deadline**
+- Only **one task per second** can be completed
+
+To maximize the number of planes stopped:
+
+> **Always stop the plane that will land the earliest.**
+
+---
+
+### Visual Explanation
+
+```
+Plane   Distance   Speed   Landing Time
+P1         1         1         1
+P2         3         2         2
+P3         5         2         3
+P4         4         1         4
+P5         8         2         4
+
+Sorted landing times:
+[1, 2, 3, 4, 4]
+
+Time (seconds): 1  2  3  4
+Plane stopped:  ✓  ✓  ✓  ✓
+
+Maximum planes stopped = 4
+```
+
+---
+
+### Algorithm (Greedy Scheduling)
+
+```
+function maxPlanesStopped(initialDistance, landingSpeed):
+	landingTimes = []
+
+	for i in range N:
+		timeToLand = ceil(initialDistance[i] / landingSpeed[i])
+		landingTimes.push(timeToLand)
+
+	sort landingTimes in ascending order
+
+	currentSecond = 0
+	stoppedPlanes = 0
+
+	for each landingTime in landingTimes:
+		if currentSecond < landingTime:
+			currentSecond += 1
+			stoppedPlanes += 1
+
+	return stoppedPlanes
+```
+
+---
+
+### Implementation Steps
+
+```typescript
+function maxPlanesStopped(
+  initialDistance: number[],
+  landingSpeed: number[],
+): number {
+  // 1. Compute landing time for each plane
+  // 2. Sort landing times
+  // 3. Greedily stop planes before deadlines
+  // 4. Return count of planes stopped
+}
+```
+
+---
+
+### Edge Cases
+
+- No planes → return `0`
+- Multiple planes landing at the same second
+- Very fast planes (small landing times)
+- All planes land too early
+- Large input sizes
+
+---
+
+### Complexity
+
+- **Time:** `O(n log n)` — sorting landing times
+- **Space:** `O(n)` — storing deadlines
+
+---
+
+### Common Mistakes
+
+- Using floor division instead of **ceiling**
+- Ignoring the “one plane per second” rule
+- Shooting planes in arbitrary order
+- Simulating second-by-second instead of scheduling
+
+---
+
+### Interview Tips
+
+- Identify this as a **deadline scheduling** problem
+- Mention similarity to job scheduling with deadlines
+- Explain why greedy sorting works
+- Clarify constraints before coding
+- Discuss how the solution scales
+
+---
+
+### Summary
+
+- Convert distances and speeds into **landing deadlines**
+- Sort by earliest landing
+- Greedily stop planes to maximize count
+- Clean, optimal, and interview-ready solution
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

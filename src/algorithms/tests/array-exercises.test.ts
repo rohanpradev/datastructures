@@ -15,6 +15,7 @@ import {
   nonConstructableChange,
   transpose,
   backspaceStringCompare,
+  maxPlanesStopped,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -915,5 +916,59 @@ describe("backspaceStringCompare", () => {
 
   test("detects mismatch after backspaces", () => {
     expect(backspaceStringCompare("xy#z", "xzz#")).toBe(true);
+  });
+});
+
+describe("Problem - Max Planes Stopped Before Landing", () => {
+  test("should return 0 when there are no planes", () => {
+    const result = maxPlanesStopped([], []);
+    expect(result).toBe(0);
+  });
+
+  test("should handle a single plane", () => {
+    const result = maxPlanesStopped([5], [1]);
+    expect(result).toBe(1);
+  });
+
+  test("should return the maximum planes stopped for given example", () => {
+    const initialDistance = [1, 3, 5, 4, 8];
+    const landingSpeed = [1, 2, 2, 1, 2];
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(4);
+  });
+
+  test("should handle planes landing at the same time", () => {
+    const initialDistance = [2, 4, 6];
+    const landingSpeed = [2, 4, 6]; // landing times: [1,1,1]
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(1); // only one plane per second can be stopped
+  });
+
+  test("should handle planes with large distances and speeds", () => {
+    const initialDistance = [100, 200, 300];
+    const landingSpeed = [10, 20, 30]; // landing times: [10,10,10]
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(3); // stop one per second before deadline
+  });
+
+  test("should handle fast planes landing before others", () => {
+    const initialDistance = [5, 10, 15];
+    const landingSpeed = [5, 1, 1]; // landing times: [1,10,15]
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(3);
+  });
+
+  test("should handle planes where some land too quickly", () => {
+    const initialDistance = [1, 5, 6, 7];
+    const landingSpeed = [2, 1, 1, 1]; // landing times: [1,5,6,7]
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(4);
+  });
+
+  test("should handle unsorted input arrays", () => {
+    const initialDistance = [10, 2, 8, 1];
+    const landingSpeed = [2, 1, 4, 1]; // landing times: [5,2,2,1]
+    const result = maxPlanesStopped(initialDistance, landingSpeed);
+    expect(result).toBe(3);
   });
 });

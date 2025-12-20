@@ -9,13 +9,16 @@ This guide covers common BST problems found in coding interviews, demonstrating 
 ## Problem 1: Validate BST (LeetCode 98)
 
 ### Problem Statement
+
 Determine if a binary tree is a valid Binary Search Tree.
 
 **BST Property:** For every node:
+
 - All values in left subtree < node.value
 - All values in right subtree > node.value
 
 ### Example
+
 ```
 Valid BST:
        5
@@ -34,6 +37,7 @@ Invalid BST:
 ```
 
 ### Visual Explanation
+
 ```
 Valid BST must satisfy range constraints:
 
@@ -53,14 +57,15 @@ For each node, check:
 ```
 
 ### Algorithm
+
 ```
 function isValid(node, min, max):
 	if node is null:
 		return true
-	
+
 	if node.value <= min or node.value >= max:
 		return false
-	
+
 	return isValid(node.left, min, node.value) AND
 	       isValid(node.right, node.value, max)
 
@@ -68,6 +73,7 @@ Initial call: isValid(root, -∞, +∞)
 ```
 
 ### Step-by-Step Example
+
 ```
 Tree:     5
          / \
@@ -82,25 +88,23 @@ Step 3: Check 6 (range: -∞, 3) ❌
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function validateBST(
-	node: BSTNode | null,
-	min: number = -Infinity,
-	max: number = Infinity
+  node: BSTNode | null,
+  min: number = -Infinity,
+  max: number = Infinity,
 ): boolean {
-	// TODO: Base case - null node is valid
-	
-	// TODO: Check if current value violates range
-	
-	// TODO: Recursively validate left subtree (update max)
-	
-	// TODO: Recursively validate right subtree (update min)
-	
-	// TODO: Return true if both subtrees valid
+  // TODO: Base case - null node is valid
+  // TODO: Check if current value violates range
+  // TODO: Recursively validate left subtree (update max)
+  // TODO: Recursively validate right subtree (update min)
+  // TODO: Return true if both subtrees valid
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - visit each node once
 - **Space:** O(h) - recursion stack (h = height)
 
@@ -109,11 +113,13 @@ export function validateBST(
 ## Problem 2: Lowest Common Ancestor (LeetCode 235)
 
 ### Problem Statement
+
 Find the Lowest Common Ancestor (LCA) of two nodes in a BST.
 
 **LCA Definition:** The lowest node that has both nodes as descendants (a node can be its own ancestor).
 
 ### Example
+
 ```
         6
        / \
@@ -129,6 +135,7 @@ LCA(3, 5) = 4
 ```
 
 ### Visual Explanation
+
 ```
 BST Property helps us navigate:
 
@@ -149,41 +156,41 @@ At 4: 3 < 4 < 5 → FOUND LCA!
 ```
 
 ### Algorithm
+
 ```
 function LCA(root, p, q):
 	if root is null:
 		return null
-	
+
 	// Both in left subtree
 	if p.value < root.value AND q.value < root.value:
 		return LCA(root.left, p, q)
-	
+
 	// Both in right subtree
 	if p.value > root.value AND q.value > root.value:
 		return LCA(root.right, p, q)
-	
+
 	// Split point found!
 	return root
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function lowestCommonAncestor(
-	root: BSTNode | null,
-	p: BSTNode,
-	q: BSTNode
+  root: BSTNode | null,
+  p: BSTNode,
+  q: BSTNode,
 ): BSTNode | null {
-	// TODO: Handle null root
-	
-	// TODO: If both values less than root, search left
-	
-	// TODO: If both values greater than root, search right
-	
-	// TODO: Otherwise, root is LCA
+  // TODO: Handle null root
+  // TODO: If both values less than root, search left
+  // TODO: If both values greater than root, search right
+  // TODO: Otherwise, root is LCA
 }
 ```
 
 ### Complexity
+
 - **Time:** O(h) - traverse down tree height
 - **Space:** O(h) - recursion stack
 
@@ -192,9 +199,11 @@ export function lowestCommonAncestor(
 ## Problem 3: Invert Binary Tree (LeetCode 226)
 
 ### Problem Statement
+
 Invert a binary tree (swap left and right children at every node).
 
 ### Example
+
 ```
 Before:          After:
      4             4
@@ -205,6 +214,7 @@ Before:          After:
 ```
 
 ### Visual Explanation
+
 ```
 Process (Post-order):
 
@@ -231,38 +241,37 @@ Step 3: Swap root's children
 ```
 
 ### Algorithm
+
 ```
 function invert(node):
 	if node is null:
 		return null
-	
+
 	// Recursively invert subtrees
 	left = invert(node.left)
 	right = invert(node.right)
-	
+
 	// Swap children
 	node.left = right
 	node.right = left
-	
+
 	return node
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function invertTree(node: BSTNode | null): BSTNode | null {
-	// TODO: Base case - null node
-	
-	// TODO: Recursively invert left subtree
-	
-	// TODO: Recursively invert right subtree
-	
-	// TODO: Swap children
-	
-	// TODO: Return node
+  // TODO: Base case - null node
+  // TODO: Recursively invert left subtree
+  // TODO: Recursively invert right subtree
+  // TODO: Swap children
+  // TODO: Return node
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - visit each node once
 - **Space:** O(h) - recursion stack
 
@@ -271,9 +280,11 @@ export function invertTree(node: BSTNode | null): BSTNode | null {
 ## Problem 4: Kth Smallest Element (LeetCode 230)
 
 ### Problem Statement
+
 Find the kth smallest element in a BST (1-indexed).
 
 ### Example
+
 ```
        5
       / \
@@ -290,6 +301,7 @@ k=4 → 4
 ```
 
 ### Visual Explanation
+
 ```
 In-order traversal of BST gives SORTED order!
 
@@ -320,51 +332,48 @@ Result: [1, 2, 3, 4, 5, 6]
 ```
 
 ### Algorithm (In-order Traversal)
+
 ```
 function kthSmallest(root, k):
 	count = 0
 	result = null
-	
+
 	function inOrder(node):
 		if node is null:
 			return
-		
+
 		// Traverse left
 		inOrder(node.left)
-		
+
 		// Process current
 		count++
 		if count == k:
 			result = node.value
 			return
-		
+
 		// Traverse right
 		inOrder(node.right)
-	
+
 	inOrder(root)
 	return result
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function kthSmallest(root: BSTNode | null, k: number): number | null {
-	// TODO: Initialize count and result variables
-	
-	// TODO: Create helper function for in-order traversal
-	
-	// TODO: In helper: base case for null
-	
-	// TODO: Traverse left subtree
-	
-	// TODO: Increment count, check if count === k
-	
-	// TODO: Traverse right subtree
-	
-	// TODO: Call helper and return result
+  // TODO: Initialize count and result variables
+  // TODO: Create helper function for in-order traversal
+  // TODO: In helper: base case for null
+  // TODO: Traverse left subtree
+  // TODO: Increment count, check if count === k
+  // TODO: Traverse right subtree
+  // TODO: Call helper and return result
 }
 ```
 
 ### Complexity
+
 - **Time:** O(h + k) - traverse to kth node
 - **Space:** O(h) - recursion stack
 
@@ -373,11 +382,13 @@ export function kthSmallest(root: BSTNode | null, k: number): number | null {
 ## Problem 5: Sorted Array to BST (LeetCode 108)
 
 ### Problem Statement
+
 Convert a sorted array into a height-balanced BST.
 
 **Height-balanced:** Left and right subtrees differ in height by at most 1.
 
 ### Example
+
 ```
 Input: [-10, -3, 0, 5, 9]
 
@@ -397,6 +408,7 @@ Another valid BST:
 ```
 
 ### Visual Explanation
+
 ```
 Key insight: Middle element becomes root!
 
@@ -440,40 +452,37 @@ Step 5: Right of 5 = 9
 ```
 
 ### Algorithm
+
 ```
 function arrayToBST(arr, left, right):
 	if left > right:
 		return null
-	
+
 	mid = (left + right) / 2
 	node = new Node(arr[mid])
-	
+
 	node.left = arrayToBST(arr, left, mid - 1)
 	node.right = arrayToBST(arr, mid + 1, right)
-	
+
 	return node
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function sortedArrayToBST(nums: number[]): BSTNode | null {
-	// TODO: Create helper function with left/right pointers
-	
-	// TODO: Base case - if left > right, return null
-	
-	// TODO: Calculate middle index
-	
-	// TODO: Create node with middle element
-	
-	// TODO: Recursively build left subtree
-	
-	// TODO: Recursively build right subtree
-	
-	// TODO: Return node
+  // TODO: Create helper function with left/right pointers
+  // TODO: Base case - if left > right, return null
+  // TODO: Calculate middle index
+  // TODO: Create node with middle element
+  // TODO: Recursively build left subtree
+  // TODO: Recursively build right subtree
+  // TODO: Return node
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - visit each element once
 - **Space:** O(log n) - recursion stack for balanced tree
 
@@ -482,9 +491,11 @@ export function sortedArrayToBST(nums: number[]): BSTNode | null {
 ## Problem 6: Range Sum of BST (LeetCode 938)
 
 ### Problem Statement
+
 Find the sum of all node values within a given range [low, high].
 
 ### Example
+
 ```
        10
       /  \
@@ -497,6 +508,7 @@ Sum = 7 + 10 + 15 = 32
 ```
 
 ### Visual Explanation
+
 ```
 BST property helps prune search:
 
@@ -518,50 +530,48 @@ Sum = 7 + 10 + 15 = 32
 ```
 
 ### Algorithm
+
 ```
 function rangeSum(node, low, high):
 	if node is null:
 		return 0
-	
+
 	sum = 0
-	
+
 	// Include current if in range
 	if low <= node.value <= high:
 		sum += node.value
-	
+
 	// Check left if current > low
 	if node.value > low:
 		sum += rangeSum(node.left, low, high)
-	
+
 	// Check right if current < high
 	if node.value < high:
 		sum += rangeSum(node.right, low, high)
-	
+
 	return sum
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function rangeSumBST(
-	root: BSTNode | null,
-	low: number,
-	high: number
+  root: BSTNode | null,
+  low: number,
+  high: number,
 ): number {
-	// TODO: Base case - null node returns 0
-	
-	// TODO: Initialize sum
-	
-	// TODO: If current in range, add to sum
-	
-	// TODO: If current > low, search left
-	
-	// TODO: If current < high, search right
-	
-	// TODO: Return sum
+  // TODO: Base case - null node returns 0
+  // TODO: Initialize sum
+  // TODO: If current in range, add to sum
+  // TODO: If current > low, search left
+  // TODO: If current < high, search right
+  // TODO: Return sum
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) worst case, O(h + k) average (k = nodes in range)
 - **Space:** O(h) - recursion stack
 
@@ -570,9 +580,11 @@ export function rangeSumBST(
 ## Problem 7: Delete Node in BST (LeetCode 450)
 
 ### Problem Statement
+
 Delete a node from a BST while maintaining BST property.
 
 ### Example
+
 ```
 Before delete 3:        After:
        5                  5
@@ -583,6 +595,7 @@ Before delete 3:        After:
 ```
 
 ### Visual Explanation
+
 ```
 Three cases to handle:
 
@@ -617,59 +630,223 @@ Example: Delete 3
 ```
 
 ### Algorithm
+
 ```
 function deleteNode(root, key):
 	if root is null:
 		return null
-	
+
 	if key < root.value:
 		root.left = deleteNode(root.left, key)
 	else if key > root.value:
 		root.right = deleteNode(root.right, key)
 	else:
 		// Found node to delete
-		
+
 		// Case 1 & 2: 0 or 1 child
 		if root.left is null:
 			return root.right
 		if root.right is null:
 			return root.left
-		
+
 		// Case 3: 2 children
 		min = findMin(root.right)
 		root.value = min.value
 		root.right = deleteNode(root.right, min.value)
-	
+
 	return root
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function deleteNode(root: BSTNode | null, key: number): BSTNode | null {
-	// TODO: Base case - null node
-	
-	// TODO: If key < root, search left
-	
-	// TODO: If key > root, search right
-	
-	// TODO: Found node - handle 3 cases:
-	//       1. No left child
-	//       2. No right child
-	//       3. Two children (find successor)
-	
-	// TODO: Return root
+  // TODO: Base case - null node
+  // TODO: If key < root, search left
+  // TODO: If key > root, search right
+  // TODO: Found node - handle 3 cases:
+  //       1. No left child
+  //       2. No right child
+  //       3. Two children (find successor)
+  // TODO: Return root
 }
 ```
 
 ### Complexity
+
 - **Time:** O(h) - traverse to node + find successor
 - **Space:** O(h) - recursion stack
+
+---
+
+## Problem 9: Closest Value in a Binary Search Tree
+
+### Problem Statement
+
+Given the root of a **Binary Search Tree (BST)** and a target value `k`, return the value in the tree that is **closest to `k`**.
+
+If multiple values are equally close, returning any one of them is acceptable.
+
+---
+
+### Why This Problem Matters
+
+- Tests understanding of **BST ordering properties**
+- Reinforces **binary search–style traversal**
+- Demonstrates how constraints enable **time complexity optimization**
+- Common interview problem with a clear follow-up optimization
+
+---
+
+### Key Insight (BST Optimization)
+
+In a BST:
+
+- All values in the left subtree are **less than** the current node
+- All values in the right subtree are **greater than** the current node
+
+This means:
+
+- If `k < node.value` → the closest value must be **left**
+- If `k > node.value` → the closest value must be **right**
+
+⚡ **We only need to traverse one path from root to leaf**, not the entire tree.
+
+---
+
+### Example
+
+```
+Tree:
+       10
+      /  \
+     5    15
+    / \     \
+   2   7     20
+
+Target k = 9
+Closest value = 10
+```
+
+---
+
+### Visual Walkthrough
+
+```
+Start at 10 → closest = 10
+k < 10 → go left
+
+At 5 → |5 - 9| = 4 (worse)
+k > 5 → go right
+
+At 7 → |7 - 9| = 2 (worse)
+Right is null → stop
+
+Result = 10
+```
+
+---
+
+### Algorithm (Optimized for BST)
+
+```
+function closestValue(root, k):
+	if root is null:
+		return null
+
+	closest = root.value
+	current = root
+
+	while current is not null:
+		if |current.value - k| < |closest - k|:
+			closest = current.value
+
+		if k < current.value:
+			current = current.left
+		else if k > current.value:
+			current = current.right
+		else:
+			return current.value
+
+	return closest
+```
+
+---
+
+### Implementation Steps
+
+```typescript
+export function closestValue(
+  root: TreeNode<number> | null,
+  k: number,
+): number | null {
+  // 1. Handle empty tree
+  // 2. Initialize closest with root value
+  // 3. Traverse down the BST
+  // 4. Update closest using absolute difference
+  // 5. Move left or right using BST property
+  // 6. Return closest value
+}
+```
+
+---
+
+### Edge Cases
+
+- Empty tree → return `null`
+- Single-node tree → return that value
+- Exact match → return immediately
+- Skewed BST → degrades to linear traversal
+- Multiple equally close values → return either
+
+---
+
+### Complexity
+
+| Scenario                       | Time         | Space    |
+| ------------------------------ | ------------ | -------- |
+| Balanced BST                   | **O(log n)** | **O(1)** |
+| Skewed BST                     | O(n)         | O(1)     |
+| General binary tree (fallback) | O(n)         | O(n)     |
+
+---
+
+### Common Mistakes
+
+- Traversing the entire tree despite BST guarantee
+- Tracking distance instead of value
+- Forgetting absolute difference
+- Not handling exact match early
+- Assuming the tree is always balanced
+
+---
+
+### Interview Tips
+
+- Ask whether the tree is **guaranteed to be a BST**
+- Start with the **O(h)** optimized solution
+- Mention fallback **O(n)** solution for non-BST trees
+- Highlight how constraints change complexity
+- Extend discussion to:
+  - Kth closest value
+  - Closest value ≤ k or ≥ k
+  - Frequent queries (augmented BST)
+
+---
+
+### Summary
+
+- BST property enables **binary-search-like traversal**
+- Optimal solution runs in **O(h)** time
+- Clean, iterative approach with **constant space**
+- Excellent example of constraint-driven optimization
 
 ---
 
 ## BST Traversal Patterns
 
 ### In-order (Left → Root → Right)
+
 ```
        4
       / \
@@ -681,6 +858,7 @@ Result: [1, 2, 3, 4, 5, 6, 7] (SORTED!)
 ```
 
 ### Pre-order (Root → Left → Right)
+
 ```
 Same tree:
 Result: [4, 2, 1, 3, 6, 5, 7]
@@ -688,6 +866,7 @@ Use: Clone tree, serialize tree
 ```
 
 ### Post-order (Left → Right → Root)
+
 ```
 Same tree:
 Result: [1, 3, 2, 5, 7, 6, 4]
@@ -699,6 +878,7 @@ Use: Delete tree, calculate height
 ## Common BST Properties
 
 ### BST Invariant
+
 ```
 For every node:
 - All left descendants < node.value
@@ -706,12 +886,14 @@ For every node:
 ```
 
 ### Height of Balanced BST
+
 ```
 Minimum height: log₂(n) - complete tree
 Maximum height: n - degenerate tree (linked list)
 ```
 
 ### Search Complexity
+
 ```
 Balanced BST: O(log n)
 Unbalanced BST: O(n)
@@ -722,11 +904,13 @@ Unbalanced BST: O(n)
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** validateBST, kthSmallest (traversal basics)
 2. **Then:** invertTree, sortedArrayToBST (construction)
 3. **Finally:** lowestCommonAncestor, deleteNode (complex logic)
 
 ### Common Mistakes
+
 1. ❌ Not maintaining range constraints in validateBST
 2. ❌ Forgetting to handle all 3 cases in deleteNode
 3. ❌ Not using BST property to prune search
@@ -734,6 +918,7 @@ Unbalanced BST: O(n)
 5. ❌ Off-by-one errors in array-to-BST
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty tree
 ✓ Single node
@@ -748,14 +933,14 @@ Unbalanced BST: O(n)
 
 ## Complexity Cheat Sheet
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Validate BST | O(n) | O(h) | Range validation |
-| Lowest Common Ancestor | O(h) | O(h) | BST property navigation |
-| Invert Tree | O(n) | O(h) | Post-order recursion |
-| Kth Smallest | O(h+k) | O(h) | In-order traversal |
-| Sorted Array to BST | O(n) | O(log n) | Middle element |
-| Range Sum BST | O(n) | O(h) | Pruned traversal |
-| Delete Node | O(h) | O(h) | 3-case handling |
+| Problem                | Time   | Space    | Key Technique           |
+| ---------------------- | ------ | -------- | ----------------------- |
+| Validate BST           | O(n)   | O(h)     | Range validation        |
+| Lowest Common Ancestor | O(h)   | O(h)     | BST property navigation |
+| Invert Tree            | O(n)   | O(h)     | Post-order recursion    |
+| Kth Smallest           | O(h+k) | O(h)     | In-order traversal      |
+| Sorted Array to BST    | O(n)   | O(log n) | Middle element          |
+| Range Sum BST          | O(n)   | O(h)     | Pruned traversal        |
+| Delete Node            | O(h)   | O(h)     | 3-case handling         |
 
 Happy Coding! 🚀
