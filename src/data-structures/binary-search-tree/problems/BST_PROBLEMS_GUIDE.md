@@ -791,6 +791,131 @@ export function closestValue(
 
 ---
 
+Here’s an updated **README.md** with the **implementation removed** and replaced by a clear **TODO section**, while keeping the explanation, complexity, and examples intact.
+
+---
+
+# Branch Sum (Binary Tree)
+
+This module is intended to compute the **sum of values along every root-to-leaf branch** in a binary tree.
+
+A _branch_ is defined as any path that starts at the root node and ends at a leaf node.  
+The result should be an array containing the sum for each of these branches.
+
+---
+
+## 📌 Problem Overview
+
+Given a binary tree, calculate the sum of all node values from the root to each leaf.
+
+### Example Tree
+
+```
+
+```
+
+    1
+
+/ \
+ 2 3
+/ \ \
+4 5 6
+
+```
+
+```
+
+### Expected Output
+
+```
+
+[7, 8, 10]
+
+```
+
+**Explanation:**
+
+- `1 → 2 → 4 = 7`
+- `1 → 2 → 5 = 8`
+- `1 → 3 → 6 = 10`
+
+---
+
+## 🧠 Intended Approach
+
+The recommended approach is **Depth-First Search (DFS)** using recursion.
+
+High-level idea:
+
+1. Start at the root with a running sum of `0`
+2. Add each node’s value to the running sum as you traverse
+3. When a leaf node is reached, store the accumulated sum
+4. Continue until all root-to-leaf paths are explored
+
+This approach naturally follows the tree structure and is easy to reason about.
+
+---
+
+## 🧩 Implementation Status
+
+🚧 **TODO**
+
+- Implement `branchSum` to return all root-to-leaf branch sums
+- Use a recursive helper or an iterative stack-based approach
+- Ensure the function handles:
+  - Empty trees
+  - Single-node trees
+  - Unbalanced trees
+
+---
+
+## ⏱️ Time & Space Complexity (Target)
+
+### Time Complexity
+
+**O(n)**
+Each node should be visited exactly once.
+
+### Space Complexity
+
+**O(h)**
+Where `h` is the height of the tree:
+
+- Balanced tree: `O(log n)`
+- Skewed tree: `O(n)`
+
+Space usage comes from the recursion stack (or an explicit stack if implemented iteratively).
+
+---
+
+## ✅ Edge Cases to Consider
+
+- Empty tree (`null` root) → should return `[]`
+- Tree with only one node
+- Highly unbalanced trees
+- Trees containing negative values
+
+---
+
+## 📚 Use Cases
+
+- Binary tree traversal practice
+- Coding interview preparation
+- Teaching recursion and DFS
+- Path-based tree analysis problems
+
+---
+
+## 🛠️ Requirements
+
+- TypeScript
+- A `TreeNode<T>` structure with:
+  - `value`
+  - `left`
+  - `right`
+
+---
+
 ### Edge Cases
 
 - Empty tree → return `null`
@@ -848,29 +973,36 @@ export function closestValue(
 ### In-order (Left → Root → Right)
 
 ```
+
        4
       / \
      2   6
     / \ / \
-   1  3 5  7
+
+1 3 5 7
 
 Result: [1, 2, 3, 4, 5, 6, 7] (SORTED!)
+
 ```
 
 ### Pre-order (Root → Left → Right)
 
 ```
+
 Same tree:
 Result: [4, 2, 1, 3, 6, 5, 7]
 Use: Clone tree, serialize tree
+
 ```
 
 ### Post-order (Left → Right → Root)
 
 ```
+
 Same tree:
 Result: [1, 3, 2, 5, 7, 6, 4]
 Use: Delete tree, calculate height
+
 ```
 
 ---
@@ -880,24 +1012,175 @@ Use: Delete tree, calculate height
 ### BST Invariant
 
 ```
+
 For every node:
+
 - All left descendants < node.value
 - All right descendants > node.value
+
 ```
 
 ### Height of Balanced BST
 
 ```
+
 Minimum height: log₂(n) - complete tree
 Maximum height: n - degenerate tree (linked list)
+
 ```
 
 ### Search Complexity
 
 ```
+
 Balanced BST: O(log n)
 Unbalanced BST: O(n)
+
 ```
+
+---
+
+# Node Depths (Recursive DFS)
+
+## Problem Statement
+
+Given the root of a binary tree, calculate the **sum of the depths of all nodes** in the tree.
+
+- The **root node** has a depth of `0`
+- Each child node has a depth of **parent depth + 1**
+- If the tree is empty, return `0`
+
+---
+
+## Example
+
+```
+        1
+       / \
+      2   3
+     /
+    4
+```
+
+### Depth Calculation
+
+- Node `1` → depth `0`
+- Node `2` → depth `1`
+- Node `3` → depth `1`
+- Node `4` → depth `2`
+
+**Total Depth Sum:**
+`0 + 1 + 1 + 2 = 4`
+
+---
+
+## Recursive Intuition
+
+At each node:
+
+1. Add the current node’s depth
+2. Recursively calculate depth sums of the left subtree
+3. Recursively calculate depth sums of the right subtree
+
+The recursion naturally follows a **depth-first traversal**.
+
+---
+
+## Algorithm
+
+```
+function nodeDepth(node, depth):
+    if node is null:
+        return 0
+
+    return depth
+         + nodeDepth(node.left, depth + 1)
+         + nodeDepth(node.right, depth + 1)
+```
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Calculates the sum of depths of all nodes in a binary tree using recursion.
+ */
+export function nodeDepth(root: TreeNode<number> | null, depth = 0): number {
+  if (root === null) {
+    return 0;
+  }
+
+  return (
+    depth + nodeDepth(root.left, depth + 1) + nodeDepth(root.right, depth + 1)
+  );
+}
+```
+
+---
+
+## Test Cases
+
+```ts
+describe("nodeDepth()", () => {
+  describe("basic functionality", () => {
+    test("should return 0 for a null tree", () => {
+      expect(nodeDepth(null)).toBe(0);
+    });
+
+    test("should return 0 for a single-node tree", () => {
+      const tree = new TreeNode(1);
+      expect(nodeDepth(tree)).toBe(0);
+    });
+  });
+
+  describe("balanced trees", () => {
+    test("should calculate correct depth sum", () => {
+      const tree = new TreeNode(1);
+      tree.left = new TreeNode(2);
+      tree.right = new TreeNode(3);
+      tree.left.left = new TreeNode(4);
+      tree.left.right = new TreeNode(5);
+
+      expect(nodeDepth(tree)).toBe(6);
+    });
+  });
+});
+```
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Each node is visited once
+
+- **Space Complexity:** `O(h)`
+  - `h` is the height of the tree (recursion stack)
+
+---
+
+## Advantages of the Recursive Approach
+
+- Simple and expressive
+- Closely matches the problem definition
+- Easy to reason about and implement
+
+---
+
+## Limitations
+
+⚠️ For **very deep trees**, recursion may cause stack overflow.
+In such cases, consider an **iterative solution using a stack**.
+
+---
+
+## Related Concepts
+
+- Binary Trees
+- Depth-First Search (DFS)
+- Recursion
+- Tree Traversal
 
 ---
 

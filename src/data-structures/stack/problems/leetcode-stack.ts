@@ -1,3 +1,4 @@
+import type { TreeNode } from "@/data-structures/binary-search-tree/binary-search-tree";
 import { Stack } from "@/data-structures/stack/stack";
 
 /**
@@ -69,30 +70,30 @@ import { Stack } from "@/data-structures/stack/stack";
  * reverseString("");
  * // Returns: ""
  */
-function reverseString(str: string): string {
-	// Handle empty string
-	if (str.length === 0) {
-		return "";
-	}
+export function reverseString(str: string): string {
+  // Handle empty string
+  if (str.length === 0) {
+    return "";
+  }
 
-	// Create stack to hold characters
-	const stack = new Stack<string>();
+  // Create stack to hold characters
+  const stack = new Stack<string>();
 
-	// Push all characters onto stack
-	for (const char of str) {
-		stack.push(char);
-	}
+  // Push all characters onto stack
+  for (const char of str) {
+    stack.push(char);
+  }
 
-	// Pop all characters to build reversed string
-	let reversed = "";
-	while (!stack.isEmpty()) {
-		const char = stack.pop();
-		if (char !== undefined) {
-			reversed += char;
-		}
-	}
+  // Pop all characters to build reversed string
+  let reversed = "";
+  while (!stack.isEmpty()) {
+    const char = stack.pop();
+    if (char !== undefined) {
+      reversed += char;
+    }
+  }
 
-	return reversed;
+  return reversed;
 }
 
 /**
@@ -196,46 +197,46 @@ function reverseString(str: string): string {
  * isBalanced("{[()]}");
  * // Returns: true
  */
-function isBalanced(str: string): boolean {
-	// Handle empty string (considered valid)
-	if (str.length === 0) {
-		return true;
-	}
+export function isBalanced(str: string): boolean {
+  // Handle empty string (considered valid)
+  if (str.length === 0) {
+    return true;
+  }
 
-	// Create stack to track opening brackets
-	const stack = new Stack<string>();
+  // Create stack to track opening brackets
+  const stack = new Stack<string>();
 
-	// Map closing brackets to their matching opening brackets
-	const pairs: Record<string, string> = {
-		")": "(",
-		"}": "{",
-		"]": "[",
-	};
+  // Map closing brackets to their matching opening brackets
+  const pairs: Record<string, string> = {
+    ")": "(",
+    "}": "{",
+    "]": "[",
+  };
 
-	// Process each character
-	for (const char of str) {
-		// If opening bracket, push to stack
-		if (char === "(" || char === "{" || char === "[") {
-			stack.push(char);
-		}
-		// If closing bracket
-		else if (char === ")" || char === "}" || char === "]") {
-			// Check if there's a matching opening bracket
-			if (stack.isEmpty()) {
-				return false; // Closing bracket with no opening
-			}
+  // Process each character
+  for (const char of str) {
+    // If opening bracket, push to stack
+    if (char === "(" || char === "{" || char === "[") {
+      stack.push(char);
+    }
+    // If closing bracket
+    else if (char === ")" || char === "}" || char === "]") {
+      // Check if there's a matching opening bracket
+      if (stack.isEmpty()) {
+        return false; // Closing bracket with no opening
+      }
 
-			const top = stack.pop();
-			// Verify the brackets match
-			if (top !== pairs[char]) {
-				return false; // Mismatched bracket types
-			}
-		}
-		// Ignore non-bracket characters (if any)
-	}
+      const top = stack.pop();
+      // Verify the brackets match
+      if (top !== pairs[char]) {
+        return false; // Mismatched bracket types
+      }
+    }
+    // Ignore non-bracket characters (if any)
+  }
 
-	// All brackets should be matched (stack should be empty)
-	return stack.isEmpty();
+  // All brackets should be matched (stack should be empty)
+  return stack.isEmpty();
 }
 
 /**
@@ -340,53 +341,53 @@ function isBalanced(str: string): boolean {
  * sortStack(stack);
  * // Stack now (top to bottom): [1, 3, 5, 9]
  */
-function sortStack(stack: Stack<number>): void {
-	// Handle empty stack
-	if (stack.isEmpty()) {
-		return;
-	}
+export function sortStack(stack: Stack<number>): void {
+  // Handle empty stack
+  if (stack.isEmpty()) {
+    return;
+  }
 
-	// Create temporary stack to hold sorted elements
-	const tempStack = new Stack<number>();
+  // Create temporary stack to hold sorted elements
+  const tempStack = new Stack<number>();
 
-	// Process all elements from original stack
-	while (!stack.isEmpty()) {
-		// Remove top element from original stack
-		const temp = stack.pop();
+  // Process all elements from original stack
+  while (!stack.isEmpty()) {
+    // Remove top element from original stack
+    const temp = stack.pop();
 
-		if (temp === undefined) {
-			break;
-		}
+    if (temp === undefined) {
+      break;
+    }
 
-		// Move elements from tempStack back to original stack
-		// while they are greater than temp
-		while (!tempStack.isEmpty()) {
-			const tempTop = tempStack.peek();
+    // Move elements from tempStack back to original stack
+    // while they are greater than temp
+    while (!tempStack.isEmpty()) {
+      const tempTop = tempStack.peek();
 
-			// If top of tempStack is greater than temp,
-			// move it back to original stack
-			if (tempTop !== undefined && tempTop > temp) {
-				const moved = tempStack.pop();
-				if (moved !== undefined) {
-					stack.push(moved);
-				}
-			} else {
-				break;
-			}
-		}
+      // If top of tempStack is greater than temp,
+      // move it back to original stack
+      if (tempTop !== undefined && tempTop > temp) {
+        const moved = tempStack.pop();
+        if (moved !== undefined) {
+          stack.push(moved);
+        }
+      } else {
+        break;
+      }
+    }
 
-		// Push temp onto tempStack in its correct sorted position
-		tempStack.push(temp);
-	}
+    // Push temp onto tempStack in its correct sorted position
+    tempStack.push(temp);
+  }
 
-	// Transfer all elements back to original stack
-	// This reverses the order, so smallest is now on top
-	while (!tempStack.isEmpty()) {
-		const element = tempStack.pop();
-		if (element !== undefined) {
-			stack.push(element);
-		}
-	}
+  // Transfer all elements back to original stack
+  // This reverses the order, so smallest is now on top
+  while (!tempStack.isEmpty()) {
+    const element = tempStack.pop();
+    if (element !== undefined) {
+      stack.push(element);
+    }
+  }
 }
 
 /**
@@ -469,110 +470,110 @@ function sortStack(stack: Stack<number>): void {
  * - Can we implement stack using two queues? (Yes, but less efficient)
  * - How to optimize for more enqueues than dequeues? (Current design is optimal)
  */
-class QueueUsingStacks<T> {
-	private stack1: Stack<T>; // For enqueue operations
-	private stack2: Stack<T>; // For dequeue operations
+export class QueueUsingStacks<T> {
+  private stack1: Stack<T>; // For enqueue operations
+  private stack2: Stack<T>; // For dequeue operations
 
-	/**
-	 * Creates a new queue using two stacks
-	 * Time Complexity: O(1)
-	 *
-	 * @example
-	 * const queue = new QueueUsingStacks<number>();
-	 */
-	constructor() {
-		this.stack1 = new Stack<T>();
-		this.stack2 = new Stack<T>();
-	}
+  /**
+   * Creates a new queue using two stacks
+   * Time Complexity: O(1)
+   *
+   * @example
+   * const queue = new QueueUsingStacks<number>();
+   */
+  constructor() {
+    this.stack1 = new Stack<T>();
+    this.stack2 = new Stack<T>();
+  }
 
-	/**
-	 * Adds an element to the rear of the queue
-	 * Time Complexity: O(1)
-	 *
-	 * Algorithm:
-	 * 1. Simply push element onto stack1
-	 * 2. No transfer needed for enqueue
-	 *
-	 * @param value - The value to enqueue
-	 *
-	 * @example
-	 * queue.enqueue(1);
-	 * queue.enqueue(2);
-	 * queue.enqueue(3);
-	 */
-	enqueue(value: T): void {
-		this.stack1.push(value);
-	}
+  /**
+   * Adds an element to the rear of the queue
+   * Time Complexity: O(1)
+   *
+   * Algorithm:
+   * 1. Simply push element onto stack1
+   * 2. No transfer needed for enqueue
+   *
+   * @param value - The value to enqueue
+   *
+   * @example
+   * queue.enqueue(1);
+   * queue.enqueue(2);
+   * queue.enqueue(3);
+   */
+  enqueue(value: T): void {
+    this.stack1.push(value);
+  }
 
-	/**
-	 * Removes and returns the element from the front of the queue
-	 * Time Complexity: Amortized O(1)
-	 *
-	 * Algorithm:
-	 * 1. If stack2 is empty, transfer all elements from stack1 to stack2
-	 *    - This reverses the order, making oldest element accessible
-	 * 2. Pop from stack2 (this is the oldest element)
-	 * 3. Return the popped value (or undefined if queue was empty)
-	 *
-	 * @returns The dequeued value, or undefined if queue is empty
-	 *
-	 * @example
-	 * queue.enqueue(1);
-	 * queue.enqueue(2);
-	 * queue.dequeue(); // Returns: 1
-	 * queue.dequeue(); // Returns: 2
-	 */
-	dequeue(): T | undefined {
-		// If stack2 is empty, transfer elements from stack1
-		if (this.stack2.isEmpty()) {
-			// Transfer all elements from stack1 to stack2
-			// This reverses the order
-			while (!this.stack1.isEmpty()) {
-				const element = this.stack1.pop();
-				if (element !== undefined) {
-					this.stack2.push(element);
-				}
-			}
-		}
+  /**
+   * Removes and returns the element from the front of the queue
+   * Time Complexity: Amortized O(1)
+   *
+   * Algorithm:
+   * 1. If stack2 is empty, transfer all elements from stack1 to stack2
+   *    - This reverses the order, making oldest element accessible
+   * 2. Pop from stack2 (this is the oldest element)
+   * 3. Return the popped value (or undefined if queue was empty)
+   *
+   * @returns The dequeued value, or undefined if queue is empty
+   *
+   * @example
+   * queue.enqueue(1);
+   * queue.enqueue(2);
+   * queue.dequeue(); // Returns: 1
+   * queue.dequeue(); // Returns: 2
+   */
+  dequeue(): T | undefined {
+    // If stack2 is empty, transfer elements from stack1
+    if (this.stack2.isEmpty()) {
+      // Transfer all elements from stack1 to stack2
+      // This reverses the order
+      while (!this.stack1.isEmpty()) {
+        const element = this.stack1.pop();
+        if (element !== undefined) {
+          this.stack2.push(element);
+        }
+      }
+    }
 
-		// Pop from stack2 (oldest element)
-		return this.stack2.pop();
-	}
+    // Pop from stack2 (oldest element)
+    return this.stack2.pop();
+  }
 
-	/**
-	 * Returns the element at the front without removing it
-	 * Time Complexity: Amortized O(1)
-	 *
-	 * @returns The front element, or undefined if queue is empty
-	 *
-	 * @example
-	 * queue.enqueue(1);
-	 * queue.peek(); // Returns: 1
-	 * queue.peek(); // Returns: 1 (not removed)
-	 */
-	peek(): T | undefined {
-		// If stack2 is empty, transfer elements from stack1
-		if (this.stack2.isEmpty()) {
-			while (!this.stack1.isEmpty()) {
-				const element = this.stack1.pop();
-				if (element !== undefined) {
-					this.stack2.push(element);
-				}
-			}
-		}
+  /**
+   * Returns the element at the front without removing it
+   * Time Complexity: Amortized O(1)
+   *
+   * @returns The front element, or undefined if queue is empty
+   *
+   * @example
+   * queue.enqueue(1);
+   * queue.peek(); // Returns: 1
+   * queue.peek(); // Returns: 1 (not removed)
+   */
+  peek(): T | undefined {
+    // If stack2 is empty, transfer elements from stack1
+    if (this.stack2.isEmpty()) {
+      while (!this.stack1.isEmpty()) {
+        const element = this.stack1.pop();
+        if (element !== undefined) {
+          this.stack2.push(element);
+        }
+      }
+    }
 
-		return this.stack2.peek();
-	}
+    return this.stack2.peek();
+  }
 
-	/**
-	 * Checks if the queue is empty
-	 * Time Complexity: O(1)
-	 *
-	 * @returns true if queue is empty, false otherwise
-	 */
-	isEmpty(): boolean {
-		return this.stack1.isEmpty() && this.stack2.isEmpty();
-	}
+  /**
+   * Checks if the queue is empty
+   * Time Complexity: O(1)
+   *
+   * @returns true if queue is empty, false otherwise
+   */
+  isEmpty(): boolean {
+    return this.stack1.isEmpty() && this.stack2.isEmpty();
+  }
 }
 
 /**
@@ -601,130 +602,178 @@ class QueueUsingStacks<T> {
  * evaluate("( 1 + 3 + ( 4 * 2 ) - 6 )")
  * → 6
  */
-function evaluate(expr: string): number {
-	/** Stack storing numeric values */
-	const values: number[] = [];
+export function evaluate(expr: string): number {
+  /** Stack storing numeric values */
+  const values: number[] = [];
 
-	/** Stack storing operators (+ - * / '(') */
-	const ops: string[] = [];
+  /** Stack storing operators (+ - * / '(') */
+  const ops: string[] = [];
 
-	/**
-	 * Returns precedence level of an operator.
-	 * Higher number → higher precedence.
-	 *
-	 * @param op - operator character
-	 */
-	function precedence(op: string): number {
-		if (op === "+" || op === "-") return 1;
-		if (op === "*" || op === "/") return 2;
-		return 0;
-	}
+  /**
+   * Returns precedence level of an operator.
+   * Higher number → higher precedence.
+   *
+   * @param op - operator character
+   */
+  function precedence(op: string): number {
+    if (op === "+" || op === "-") return 1;
+    if (op === "*" || op === "/") return 2;
+    return 0;
+  }
 
-	/**
-	 * Applies an operator to two numbers.
-	 *
-	 * @param op - operator (+ - * /)
-	 * @param b  - second operand
-	 * @param a  - first operand
-	 * @returns result of a (op) b
-	 *
-	 * Example:
-	 * applyOp('+', 3, 1) → 4
-	 */
-	function applyOp(op: string, b: number, a: number): number {
-		switch (op) {
-			case "+":
-				return a + b;
-			case "-":
-				return a - b;
-			case "*":
-				return a * b;
-			case "/":
-				return a / b;
-			default:
-				throw new Error("Unknown operator: " + op);
-		}
-	}
+  /**
+   * Applies an operator to two numbers.
+   *
+   * @param op - operator (+ - * /)
+   * @param b  - second operand
+   * @param a  - first operand
+   * @returns result of a (op) b
+   *
+   * Example:
+   * applyOp('+', 3, 1) → 4
+   */
+  function applyOp(op: string, b: number, a: number): number {
+    switch (op) {
+      case "+":
+        return a + b;
+      case "-":
+        return a - b;
+      case "*":
+        return a * b;
+      case "/":
+        return a / b;
+      default:
+        throw new Error("Unknown operator: " + op);
+    }
+  }
 
-	/** Main evaluation loop */
-	for (let i = 0; i < expr.length; i++) {
-		const c = expr.charAt(i);
+  /** Main evaluation loop */
+  for (let i = 0; i < expr.length; i++) {
+    const c = expr.charAt(i);
 
-		// Skip spaces
-		if (c === " ") continue;
+    // Skip spaces
+    if (c === " ") continue;
 
-		/**
-		 * 1. If digit → build the full number
-		 * Supports multi-digit values (e.g., 42)
-		 */
-		if (!isNaN(Number(c))) {
-			let num = 0;
+    /**
+     * 1. If digit → build the full number
+     * Supports multi-digit values (e.g., 42)
+     */
+    if (!isNaN(Number(c))) {
+      let num = 0;
 
-			// Build number character-by-character
-			while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
-				num = num * 10 + Number(expr[i]);
-				i++;
-			}
+      // Build number character-by-character
+      while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
+        num = num * 10 + Number(expr[i]);
+        i++;
+      }
 
-			// Step back since loop moved one extra position
-			i--;
+      // Step back since loop moved one extra position
+      i--;
 
-			values.push(num);
-			continue;
-		}
+      values.push(num);
+      continue;
+    }
 
-		/** 2. Opening parenthesis → push to ops */
-		if (c === "(") {
-			ops.push(c);
-			continue;
-		}
+    /** 2. Opening parenthesis → push to ops */
+    if (c === "(") {
+      ops.push(c);
+      continue;
+    }
 
-		/**
-		 * 3. Closing parenthesis → resolve entire sub-expression
-		 * Evaluate until matching '(' is found
-		 */
-		if (c === ")") {
-			while (ops.length && ops[ops.length - 1] !== "(") {
-				const op = ops.pop()!;
-				const b = values.pop()!;
-				const a = values.pop()!;
-				values.push(applyOp(op, b, a));
-			}
+    /**
+     * 3. Closing parenthesis → resolve entire sub-expression
+     * Evaluate until matching '(' is found
+     */
+    if (c === ")") {
+      while (ops.length && ops[ops.length - 1] !== "(") {
+        const op = ops.pop()!;
+        const b = values.pop()!;
+        const a = values.pop()!;
+        values.push(applyOp(op, b, a));
+      }
 
-			// Remove the '(' from the stack
-			ops.pop();
-			continue;
-		}
+      // Remove the '(' from the stack
+      ops.pop();
+      continue;
+    }
 
-		/**
-		 * 4. Operator encountered (+ - * /)
-		 *
-		 * Before pushing the operator:
-		 * - Apply any operators already on the stack with higher or equal precedence
-		 */
-		if (["+", "-", "*", "/"].includes(c!)) {
-			while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
-				const op = ops.pop()!;
-				const b = values.pop()!;
-				const a = values.pop()!;
-				values.push(applyOp(op, b, a));
-			}
+    /**
+     * 4. Operator encountered (+ - * /)
+     *
+     * Before pushing the operator:
+     * - Apply any operators already on the stack with higher or equal precedence
+     */
+    if (["+", "-", "*", "/"].includes(c!)) {
+      while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
+        const op = ops.pop()!;
+        const b = values.pop()!;
+        const a = values.pop()!;
+        values.push(applyOp(op, b, a));
+      }
 
-			// Push the current operator
-			ops.push(c!);
-		}
-	}
+      // Push the current operator
+      ops.push(c!);
+    }
+  }
 
-	/** 5. Apply remaining operators after full scan */
-	while (ops.length) {
-		const op = ops.pop()!;
-		const b = values.pop()!;
-		const a = values.pop()!;
-		values.push(applyOp(op, b, a));
-	}
+  /** 5. Apply remaining operators after full scan */
+  while (ops.length) {
+    const op = ops.pop()!;
+    const b = values.pop()!;
+    const a = values.pop()!;
+    values.push(applyOp(op, b, a));
+  }
 
-	/** Final value in the values stack is the result */
-	return values.pop()!;
+  /** Final value in the values stack is the result */
+  return values.pop()!;
 }
 
-export { evaluate, reverseString, isBalanced, sortStack, QueueUsingStacks };
+/**
+ * Calculates the sum of depths of all nodes in a binary tree.
+ *
+ * The depth of the root node is `0`.
+ * Each child node has a depth equal to its parent’s depth + 1.
+ *
+ * This implementation uses an **iterative depth-first traversal**
+ * with a stack to avoid recursion.
+ *
+ * Time Complexity: O(n)
+ *   - Each node is visited exactly once.
+ *
+ * Space Complexity: O(h)
+ *   - Where `h` is the height of the tree (stack size).
+ *
+ * @param root - The root node of the binary tree
+ * @returns The sum of depths for all nodes in the tree
+ */
+export function nodeDepths(root: TreeNode<number>): number {
+  // Stack stores nodes along with their depth
+  const stack: Array<{ node: TreeNode<number>; depth: number }> = [
+    { node: root, depth: 0 },
+  ];
+
+  let sumOfDepths = 0;
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) continue;
+
+    const { node, depth } = current;
+
+    // Add the current node's depth to the total
+    sumOfDepths += depth;
+
+    const nextDepth = depth + 1;
+
+    // Push children only if they exist
+    if (node.left) {
+      stack.push({ node: node.left, depth: nextDepth });
+    }
+
+    if (node.right) {
+      stack.push({ node: node.right, depth: nextDepth });
+    }
+  }
+
+  return sumOfDepths;
+}

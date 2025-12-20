@@ -9,9 +9,11 @@ This guide covers stack and queue problems demonstrating LIFO (Last-In-First-Out
 ## Problem 1: Reverse String Using Stack
 
 ### Problem Statement
+
 Reverse a string using a stack.
 
 ### Example
+
 ```
 Input: "hello"
 Output: "olleh"
@@ -21,6 +23,7 @@ Output: "dlrow"
 ```
 
 ### Visual Explanation
+
 ```
 String: "hello"
 
@@ -38,6 +41,7 @@ Result: "olleh"
 ```
 
 ### Algorithm
+
 ```
 1. Create empty stack
 2. Push each character onto stack
@@ -46,19 +50,18 @@ Result: "olleh"
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function reverseString(str: string): string {
-	// TODO: Create stack (array)
-	
-	// TODO: Push each character
-	
-	// TODO: Pop all characters to build result
-	
-	// TODO: Return reversed string
+  // TODO: Create stack (array)
+  // TODO: Push each character
+  // TODO: Pop all characters to build result
+  // TODO: Return reversed string
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - push n, pop n
 - **Space:** O(n) - stack storage
 
@@ -67,11 +70,14 @@ export function reverseString(str: string): string {
 ## Problem 2: Balanced Parentheses (LeetCode 20)
 
 ### Problem Statement
+
 Check if a string of parentheses is valid. Valid means:
+
 1. Open brackets must be closed by same type
 2. Open brackets must be closed in correct order
 
 ### Example
+
 ```
 Input: "()"
 Output: true
@@ -90,6 +96,7 @@ Output: true
 ```
 
 ### Visual Explanation
+
 ```
 String: "{[]}"
 
@@ -127,6 +134,7 @@ Step 3: )
 ```
 
 ### Algorithm
+
 ```
 1. Create empty stack
 2. Create map of matching pairs: ) → (, ] → [, } → {
@@ -139,23 +147,20 @@ Step 3: )
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function isBalanced(str: string): boolean {
-	// TODO: Create stack
-	
-	// TODO: Create map of closing → opening pairs
-	
-	// TODO: Loop through characters
-	
-	// TODO: Handle opening brackets
-	
-	// TODO: Handle closing brackets (check match)
-	
-	// TODO: Return true if stack empty
+  // TODO: Create stack
+  // TODO: Create map of closing → opening pairs
+  // TODO: Loop through characters
+  // TODO: Handle opening brackets
+  // TODO: Handle closing brackets (check match)
+  // TODO: Return true if stack empty
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single pass
 - **Space:** O(n) - stack storage
 
@@ -164,15 +169,18 @@ export function isBalanced(str: string): boolean {
 ## Problem 3: Sort Stack
 
 ### Problem Statement
+
 Sort a stack (smallest on top) using only stack operations and one additional stack.
 
 ### Example
+
 ```
 Input: [3, 1, 4, 2]  (4 on top)
 Output: [4, 3, 2, 1]  (1 on top, sorted)
 ```
 
 ### Visual Explanation
+
 ```
 Original stack:    Temp stack:
 | 2 |              |   |
@@ -225,6 +233,7 @@ Final:
 ```
 
 ### Algorithm
+
 ```
 1. Create temp stack
 2. While original stack not empty:
@@ -237,23 +246,20 @@ Final:
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function sortStack(stack: number[]): void {
-	// TODO: Create temp stack
-	
-	// TODO: While original stack not empty
-	
-	// TODO: Pop element, find correct position in temp
-	
-	// TODO: Move elements back if needed
-	
-	// TODO: Push element to temp
-	
-	// TODO: Move all from temp back to original
+  // TODO: Create temp stack
+  // TODO: While original stack not empty
+  // TODO: Pop element, find correct position in temp
+  // TODO: Move elements back if needed
+  // TODO: Push element to temp
+  // TODO: Move all from temp back to original
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n²) - nested while loops
 - **Space:** O(n) - temp stack
 
@@ -262,15 +268,18 @@ export function sortStack(stack: number[]): void {
 ## Problem 4: Queue Using Two Stacks (LeetCode 232)
 
 ### Problem Statement
+
 Implement a queue using two stacks.
 
 **Queue operations:**
+
 - enqueue(x): Add element to back
 - dequeue(): Remove element from front
 - peek(): Get front element
 - isEmpty(): Check if empty
 
 ### Example
+
 ```
 enqueue(1)
 enqueue(2)
@@ -280,6 +289,7 @@ isEmpty() → false
 ```
 
 ### Visual Explanation
+
 ```
 Use two stacks: stack1 (enqueue), stack2 (dequeue)
 
@@ -295,7 +305,7 @@ Dequeue():
   If stack2 empty, move all from stack1:
   stack1: []
   stack2: [2, 1]  (1 on top)
-  
+
   Pop from stack2:
   Result: 1
 
@@ -311,26 +321,27 @@ Dequeue():
   stack2 empty, move from stack1:
   stack1: []
   stack2: [3]
-  
+
   Pop:
   Result: 3
 ```
 
 ### Algorithm
+
 ```
 class QueueWithStacks:
 	stack1 = []  // for enqueue
 	stack2 = []  // for dequeue
-	
+
 	enqueue(x):
 		stack1.push(x)
-	
+
 	dequeue():
 		if stack2.isEmpty():
 			while !stack1.isEmpty():
 				stack2.push(stack1.pop())
 		return stack2.pop()
-	
+
 	peek():
 		if stack2.isEmpty():
 			while !stack1.isEmpty():
@@ -339,32 +350,34 @@ class QueueWithStacks:
 ```
 
 ### Implementation Steps
+
 ```typescript
 class QueueUsingStacks<T> {
-	private stack1: T[] = [];
-	private stack2: T[] = [];
-	
-	enqueue(value: T): void {
-		// TODO: Push to stack1
-	}
-	
-	dequeue(): T | undefined {
-		// TODO: If stack2 empty, move all from stack1
-		// TODO: Pop from stack2
-	}
-	
-	peek(): T | undefined {
-		// TODO: If stack2 empty, move all from stack1
-		// TODO: Return top of stack2
-	}
-	
-	isEmpty(): boolean {
-		// TODO: Check if both stacks empty
-	}
+  private stack1: T[] = [];
+  private stack2: T[] = [];
+
+  enqueue(value: T): void {
+    // TODO: Push to stack1
+  }
+
+  dequeue(): T | undefined {
+    // TODO: If stack2 empty, move all from stack1
+    // TODO: Pop from stack2
+  }
+
+  peek(): T | undefined {
+    // TODO: If stack2 empty, move all from stack1
+    // TODO: Return top of stack2
+  }
+
+  isEmpty(): boolean {
+    // TODO: Check if both stacks empty
+  }
 }
 ```
 
 ### Complexity
+
 - **Enqueue:** O(1)
 - **Dequeue:** O(1) amortized (worst case O(n) when moving)
 - **Space:** O(n)
@@ -374,9 +387,11 @@ class QueueUsingStacks<T> {
 ## Problem 5: Min Stack (LeetCode 155)
 
 ### Problem Statement
+
 Design a stack that supports push, pop, top, and retrieving minimum element in O(1) time.
 
 ### Example
+
 ```
 push(3)
 push(5)
@@ -390,6 +405,7 @@ getMin() → 3
 ```
 
 ### Visual Explanation
+
 ```
 Use two stacks: main and min
 
@@ -419,55 +435,58 @@ getMin() → 2
 ```
 
 ### Algorithm
+
 ```
 class MinStack:
 	mainStack = []
 	minStack = []
-	
+
 	push(x):
 		mainStack.push(x)
 		if minStack.isEmpty() or x <= minStack.top():
 			minStack.push(x)
 		else:
 			minStack.push(minStack.top())
-	
+
 	pop():
 		mainStack.pop()
 		minStack.pop()
-	
+
 	top():
 		return mainStack.top()
-	
+
 	getMin():
 		return minStack.top()
 ```
 
 ### Implementation Steps
+
 ```typescript
 class MinStack {
-	private stack: number[] = [];
-	private minStack: number[] = [];
-	
-	push(value: number): void {
-		// TODO: Push to main stack
-		// TODO: Update min stack
-	}
-	
-	pop(): number | undefined {
-		// TODO: Pop from both stacks
-	}
-	
-	top(): number | undefined {
-		// TODO: Return top of main stack
-	}
-	
-	getMin(): number | undefined {
-		// TODO: Return top of min stack
-	}
+  private stack: number[] = [];
+  private minStack: number[] = [];
+
+  push(value: number): void {
+    // TODO: Push to main stack
+    // TODO: Update min stack
+  }
+
+  pop(): number | undefined {
+    // TODO: Pop from both stacks
+  }
+
+  top(): number | undefined {
+    // TODO: Return top of main stack
+  }
+
+  getMin(): number | undefined {
+    // TODO: Return top of min stack
+  }
 }
 ```
 
 ### Complexity
+
 - **All operations:** O(1)
 - **Space:** O(n) - two stacks
 
@@ -476,6 +495,7 @@ class MinStack {
 ## Stack vs Queue Comparison
 
 ### Stack (LIFO)
+
 ```
 Push → [3, 2, 1] → Pop
        ↓       ↑
@@ -495,6 +515,7 @@ Use cases:
 ```
 
 ### Queue (FIFO)
+
 ```
 Enqueue → [1, 2, 3] → Dequeue
           ↑       ↓
@@ -518,6 +539,7 @@ Use cases:
 ## Common Patterns
 
 ### Parentheses Matching
+
 ```
 Use stack to match pairs:
 - Push opening brackets
@@ -525,6 +547,7 @@ Use stack to match pairs:
 ```
 
 ### Next Greater Element
+
 ```
 Use stack to track unseen elements:
 while stack.top() < current:
@@ -533,12 +556,14 @@ push current
 ```
 
 ### Expression Evaluation
+
 ```
 Two stacks: operands and operators
 Process by operator precedence
 ```
 
 ### Monotonic Stack
+
 ```
 Maintain increasing/decreasing stack
 Pop elements that violate property
@@ -549,11 +574,13 @@ Pop elements that violate property
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** reverseString, isBalanced (basic operations)
 2. **Then:** sortStack, queueUsingStacks (two-stack patterns)
 3. **Finally:** minStack (optimization)
 
 ### Common Mistakes
+
 1. ❌ Not checking if stack/queue is empty before pop
 2. ❌ Forgetting to update auxiliary data structures
 3. ❌ Off-by-one errors in indices
@@ -561,6 +588,7 @@ Pop elements that violate property
 5. ❌ Modifying stack while iterating
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty stack/queue
 ✓ Single element
@@ -575,7 +603,7 @@ Pop elements that violate property
 
 # 📘 Understanding the `evaluate()` Function
 
-*A line-by-line explanation with an example*
+_A line-by-line explanation with an example_
 
 This function evaluates a **mathematical expression string** such as:
 
@@ -585,10 +613,10 @@ This function evaluates a **mathematical expression string** such as:
 
 It correctly handles:
 
-* Numbers (multi-digit)
-* Operators: `+ - * /`
-* Parentheses
-* Operator precedence (PEMDAS)
+- Numbers (multi-digit)
+- Operators: `+ - * /`
+- Parentheses
+- Operator precedence (PEMDAS)
 
 ---
 
@@ -620,8 +648,8 @@ const values: number[] = [];
 const ops: string[] = [];
 ```
 
-* `values` holds numbers
-* `ops` holds operators (`+ - * / (`)
+- `values` holds numbers
+- `ops` holds operators (`+ - * / (`)
 
 ---
 
@@ -629,16 +657,16 @@ const ops: string[] = [];
 
 ```ts
 function precedence(op: string): number {
-	if (op === '+' || op === '-') return 1;
-	if (op === '*' || op === '/') return 2;
-	return 0;
+  if (op === "+" || op === "-") return 1;
+  if (op === "*" || op === "/") return 2;
+  return 0;
 }
 ```
 
 Defines which operators are “stronger”:
 
-* `*` and `/` (2)
-* `+` and `-` (1)
+- `*` and `/` (2)
+- `+` and `-` (1)
 
 Used later when deciding whether an operator on the stack should be applied before adding a new one.
 
@@ -648,13 +676,18 @@ Used later when deciding whether an operator on the stack should be applied befo
 
 ```ts
 function applyOp(op: string, b: number, a: number): number {
-	switch (op) {
-		case '+': return a + b;
-		case '-': return a - b;
-		case '*': return a * b;
-		case '/': return a / b;
-		default: throw new Error("Unknown operator: " + op);
-	}
+  switch (op) {
+    case "+":
+      return a + b;
+    case "-":
+      return a - b;
+    case "*":
+      return a * b;
+    case "/":
+      return a / b;
+    default:
+      throw new Error("Unknown operator: " + op);
+  }
 }
 ```
 
@@ -682,7 +715,7 @@ We walk through the expression one character at a time.
 ## ⏭️ Ignore Spaces
 
 ```ts
-if (c === ' ') continue;
+if (c === " ") continue;
 ```
 
 Spaces are meaningless in math expressions.
@@ -693,16 +726,16 @@ Spaces are meaningless in math expressions.
 
 ```ts
 if (!isNaN(Number(c))) {
-	let num = 0;
+  let num = 0;
 
-	while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== ' ') {
-		num = num * 10 + Number(expr[i]);
-		i++;
-	}
+  while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
+    num = num * 10 + Number(expr[i]);
+    i++;
+  }
 
-	i--;
-	values.push(num);
-	continue;
+  i--;
+  values.push(num);
+  continue;
 }
 ```
 
@@ -711,19 +744,19 @@ This block supports **multi-digit numbers** like `42`, not just `4` and `2`.
 Example:
 Expression: `"123 + 4"`
 
-* Reads `'1'` → num = 1
-* Reads `'2'` → num = 12
-* Reads `'3'` → num = 123
-* Pushes **123** to `values`
+- Reads `'1'` → num = 1
+- Reads `'2'` → num = 12
+- Reads `'3'` → num = 123
+- Pushes **123** to `values`
 
 ---
 
 ## 2️⃣ Opening Parenthesis
 
 ```ts
-if (c === '(') {
-	ops.push(c);
-	continue;
+if (c === "(") {
+  ops.push(c);
+  continue;
 }
 ```
 
@@ -734,23 +767,23 @@ Just push it onto the operator stack.
 ## 3️⃣ Closing Parenthesis
 
 ```ts
-if (c === ')') {
-	while (ops.length && ops[ops.length - 1] !== '(') {
-		const op = ops.pop()!;
-		const b = values.pop()!;
-		const a = values.pop()!;
-		values.push(applyOp(op, b, a));
-	}
+if (c === ")") {
+  while (ops.length && ops[ops.length - 1] !== "(") {
+    const op = ops.pop()!;
+    const b = values.pop()!;
+    const a = values.pop()!;
+    values.push(applyOp(op, b, a));
+  }
 
-	ops.pop(); // remove '('
-	continue;
+  ops.pop(); // remove '('
+  continue;
 }
 ```
 
 When we hit `)`:
 
-* Resolve everything **until** the matching `(`
-* Remove that `(` from the operator stack
+- Resolve everything **until** the matching `(`
+- Remove that `(` from the operator stack
 
 This handles sub-expressions like `(2 + 3)`.
 
@@ -759,32 +792,29 @@ This handles sub-expressions like `(2 + 3)`.
 ## 4️⃣ Operator Handling
 
 ```ts
-if (['+', '-', '*', '/'].includes(c!)) {
-	while (
-		ops.length &&
-		precedence(ops[ops.length - 1]!) >= precedence(c!)
-	) {
-		const op = ops.pop()!;
-		const b = values.pop()!;
-		const a = values.pop()!;
-		values.push(applyOp(op, b, a));
-	}
+if (["+", "-", "*", "/"].includes(c!)) {
+  while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
+    const op = ops.pop()!;
+    const b = values.pop()!;
+    const a = values.pop()!;
+    values.push(applyOp(op, b, a));
+  }
 
-	ops.push(c!);
+  ops.push(c!);
 }
 ```
 
 Before adding a new operator:
 
-* If there’s an **older operator with higher or equal precedence**, apply it first.
+- If there’s an **older operator with higher or equal precedence**, apply it first.
 
 Example:
 Expression: `3 + 5 * 2`
 
-* `+` is on stack
-* See `*`
-* Precedence(`*`) > precedence(`+`) → do **NOT** apply `+`
-* Push `*`
+- `+` is on stack
+- See `*`
+- Precedence(`*`) > precedence(`+`) → do **NOT** apply `+`
+- Push `*`
 
 ---
 
@@ -792,10 +822,10 @@ Expression: `3 + 5 * 2`
 
 ```ts
 while (ops.length) {
-	const op = ops.pop()!;
-	const b = values.pop()!;
-	const a = values.pop()!;
-	values.push(applyOp(op, b, a));
+  const op = ops.pop()!;
+  const b = values.pop()!;
+  const a = values.pop()!;
+  values.push(applyOp(op, b, a));
 }
 ```
 
@@ -845,14 +875,172 @@ Now evaluate main expression left:
 
 ---
 
+## Problem: Node Depths (Binary Tree)
+
+### Problem Statement
+
+Given the root of a binary tree, calculate the **sum of the depths of all nodes** in the tree.
+
+- The **depth** of the root node is `0`
+- Each child node has a depth of **parent depth + 1**
+
+### Example
+
+Consider the following binary tree:
+
+```
+        1
+       / \
+      2   3
+     / \
+    4   5
+```
+
+**Depths:**
+
+- Node `1` → depth `0`
+- Node `2` → depth `1`
+- Node `3` → depth `1`
+- Node `4` → depth `2`
+- Node `5` → depth `2`
+
+**Sum of depths:**
+`0 + 1 + 1 + 2 + 2 = 6`
+
+---
+
+### Visual Explanation (Depth-First Traversal)
+
+We traverse the tree while keeping track of each node’s depth.
+
+```
+Stack (node, depth):
+
+Start:
+[(1, 0)]
+
+Pop (1, 0):
+sum = 0
+Push children:
+[(2, 1), (3, 1)]
+
+Pop (3, 1):
+sum = 1
+
+Pop (2, 1):
+sum = 2
+Push children:
+[(4, 2), (5, 2)]
+
+Pop (5, 2):
+sum = 4
+
+Pop (4, 2):
+sum = 6
+```
+
+Final result → **6**
+
+---
+
+### Algorithm (Iterative DFS)
+
+```
+function nodeDepths(root):
+    stack ← [(root, 0)]
+    sum ← 0
+
+    while stack is not empty:
+        node, depth ← stack.pop()
+        sum ← sum + depth
+
+        if node.left exists:
+            stack.push(node.left, depth + 1)
+
+        if node.right exists:
+            stack.push(node.right, depth + 1)
+
+    return sum
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+/**
+ * Calculates the sum of depths of all nodes in a binary tree.
+ */
+export function nodeDepths(root: TreeNode<number>): number {
+  const stack = [{ node: root, depth: 0 }];
+  let sumOfDepths = 0;
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) continue;
+
+    const { node, depth } = current;
+    sumOfDepths += depth;
+
+    const nextDepth = depth + 1;
+
+    if (node.left) {
+      stack.push({ node: node.left, depth: nextDepth });
+    }
+
+    if (node.right) {
+      stack.push({ node: node.right, depth: nextDepth });
+    }
+  }
+
+  return sumOfDepths;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Every node is visited exactly once
+
+- **Space Complexity:** `O(h)`
+  - `h` is the height of the tree (stack size)
+
+---
+
+### Key Concepts Used
+
+- Binary Trees
+- Depth-First Search (DFS)
+- Stack (Iterative traversal)
+- Tree node depth tracking
+
+---
+
+### DFS vs BFS for This Problem
+
+**DFS (used here):**
+
+- Uses a stack
+- Easy to track depth
+- Space-efficient for balanced trees
+
+**BFS (alternative):**
+
+- Uses a queue
+- Also valid, but typically uses more memory level-by-level
+
+---
+
 ## Complexity Cheat Sheet
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Reverse String | O(n) | O(n) | Basic stack ops |
-| Balanced Parentheses | O(n) | O(n) | Stack matching |
-| Sort Stack | O(n²) | O(n) | Two stacks |
-| Queue with Stacks | O(1) amortized | O(n) | Amortized analysis |
-| Min Stack | O(1) | O(n) | Auxiliary stack |
+| Problem              | Time           | Space | Key Technique      |
+| -------------------- | -------------- | ----- | ------------------ |
+| Reverse String       | O(n)           | O(n)  | Basic stack ops    |
+| Balanced Parentheses | O(n)           | O(n)  | Stack matching     |
+| Sort Stack           | O(n²)          | O(n)  | Two stacks         |
+| Queue with Stacks    | O(1) amortized | O(n)  | Amortized analysis |
+| Min Stack            | O(1)           | O(n)  | Auxiliary stack    |
 
 Happy Coding! 🚀

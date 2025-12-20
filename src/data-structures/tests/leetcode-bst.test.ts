@@ -12,6 +12,8 @@ import {
   maxDepth,
   validateBST,
   closestValue,
+  branchSum,
+  nodeDepth,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -658,5 +660,197 @@ describe("Problem 9 - Closest Value in a Binary Tree", () => {
 
     const result = closestValue(root, 3.8);
     expect([3, 4]).toContain(result);
+  });
+});
+
+describe("branchSum", () => {
+  test("should return empty array for empty tree", () => {
+    expect(branchSum(null)).toEqual([]);
+  });
+
+  test("should return single value for single node tree", () => {
+    const root = new TreeNode(5);
+    expect(branchSum(root)).toEqual([5]);
+  });
+
+  test("should compute branch sums for simple tree", () => {
+    /*
+        1
+       / \
+      2   3
+    */
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.right = new TreeNode(3);
+
+    expect(branchSum(root)).toEqual([3, 4]);
+  });
+
+  test("should compute branch sums for multi-level tree", () => {
+    /*
+            1
+           / \
+          2   3
+         / \   \
+        4   5   6
+    */
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.right = new TreeNode(3);
+    root.left.left = new TreeNode(4);
+    root.left.right = new TreeNode(5);
+    root.right.right = new TreeNode(6);
+
+    expect(branchSum(root)).toEqual([7, 8, 10]);
+  });
+
+  test("should handle tree with only left children", () => {
+    /*
+        5
+       /
+      4
+     /
+    3
+    */
+    const root = new TreeNode(5);
+    root.left = new TreeNode(4);
+    root.left.left = new TreeNode(3);
+
+    expect(branchSum(root)).toEqual([12]);
+  });
+
+  test("should handle tree with only right children", () => {
+    /*
+    5
+     \
+      6
+       \
+        7
+    */
+    const root = new TreeNode(5);
+    root.right = new TreeNode(6);
+    root.right.right = new TreeNode(7);
+
+    expect(branchSum(root)).toEqual([18]);
+  });
+
+  test("should handle negative values", () => {
+    /*
+        1
+       / \
+     -2   3
+       \
+       -4
+    */
+    const root = new TreeNode(1);
+    root.left = new TreeNode(-2);
+    root.right = new TreeNode(3);
+    root.left.right = new TreeNode(-4);
+
+    expect(branchSum(root)).toEqual([-5, 4]);
+  });
+
+  test("should handle complex tree", () => {
+    /*
+             10
+            /  \
+           5    15
+          / \     \
+         2   7     20
+            /
+           6
+    */
+    const root = new TreeNode(10);
+    root.left = new TreeNode(5);
+    root.right = new TreeNode(15);
+    root.left.left = new TreeNode(2);
+    root.left.right = new TreeNode(7);
+    root.left.right.left = new TreeNode(6);
+    root.right.right = new TreeNode(20);
+
+    expect(branchSum(root)).toEqual([17, 28, 45]);
+  });
+});
+
+describe("nodeDepth()", () => {
+  describe("basic functionality", () => {
+    test("should return 0 for a null tree", () => {
+      expect(nodeDepth(null)).toBe(0);
+    });
+
+    test("should return 0 for a single-node tree", () => {
+      const tree = new TreeNode(1);
+      expect(nodeDepth(tree)).toBe(0);
+    });
+  });
+
+  describe("balanced trees", () => {
+    test("should calculate correct depth sum for a balanced tree", () => {
+      //        1
+      //       / \
+      //      2   3
+      //     / \
+      //    4   5
+      const tree = new TreeNode(1);
+      tree.left = new TreeNode(2);
+      tree.right = new TreeNode(3);
+      tree.left.left = new TreeNode(4);
+      tree.left.right = new TreeNode(5);
+
+      // depths: 0 + 1 + 1 + 2 + 2 = 6
+      expect(nodeDepth(tree)).toBe(6);
+    });
+  });
+
+  describe("unbalanced trees", () => {
+    test("should handle left-skewed tree", () => {
+      // 1 → 2 → 3 → 4
+      const tree = new TreeNode(1);
+      tree.left = new TreeNode(2);
+      tree.left.left = new TreeNode(3);
+      tree.left.left.left = new TreeNode(4);
+
+      // depths: 0 + 1 + 2 + 3 = 6
+      expect(nodeDepth(tree)).toBe(6);
+    });
+
+    test("should handle right-skewed tree", () => {
+      // 1 → 2 → 3
+      const tree = new TreeNode(1);
+      tree.right = new TreeNode(2);
+      tree.right.right = new TreeNode(3);
+
+      // depths: 0 + 1 + 2 = 3
+      expect(nodeDepth(tree)).toBe(3);
+    });
+  });
+
+  describe("trees with missing children", () => {
+    test("should handle nodes with one child", () => {
+      //   1
+      //    \
+      //     2
+      //    /
+      //   3
+      const tree = new TreeNode(1);
+      tree.right = new TreeNode(2);
+      tree.right.left = new TreeNode(3);
+
+      // depths: 0 + 1 + 2 = 3
+      expect(nodeDepth(tree)).toBe(3);
+    });
+  });
+
+  describe("edge cases", () => {
+    test("should work with deeper trees", () => {
+      const tree = new TreeNode(1);
+      tree.left = new TreeNode(2);
+      tree.left.left = new TreeNode(3);
+      tree.left.left.left = new TreeNode(4);
+      tree.left.left.left.left = new TreeNode(5);
+
+      // depths: 0 + 1 + 2 + 3 + 4 = 10
+      expect(nodeDepth(tree)).toBe(10);
+    });
   });
 });
