@@ -14,6 +14,7 @@ import {
   closestValue,
   branchSum,
   nodeDepth,
+  evaluateExpressionTree,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -627,7 +628,7 @@ describe("Problem 9 - Closest Value in a Binary Tree", () => {
     root.right = new TreeNode(7);
 
     const result = closestValue(root, 6);
-    expect([5, 7]).toContain(result);
+    expect([5, 7]).toContain(result!);
   });
 
   test("should work with a skewed tree", () => {
@@ -659,7 +660,7 @@ describe("Problem 9 - Closest Value in a Binary Tree", () => {
     root.right.right = new TreeNode(2);
 
     const result = closestValue(root, 3.8);
-    expect([3, 4]).toContain(result);
+    expect([3, 4]).toContain(result!);
   });
 });
 
@@ -852,5 +853,73 @@ describe("nodeDepth()", () => {
       // depths: 0 + 1 + 2 + 3 + 4 = 10
       expect(nodeDepth(tree)).toBe(10);
     });
+  });
+});
+
+describe("evaluateExpressionTree", () => {
+  test("should return value for single leaf node", () => {
+    const tree = new TreeNode(5);
+    expect(evaluateExpressionTree(tree)).toBe(5);
+  });
+
+  test("should evaluate addition", () => {
+    // 3 + 2 = 5
+    const tree = new TreeNode(-1);
+    tree.left = new TreeNode(3);
+    tree.right = new TreeNode(2);
+
+    expect(evaluateExpressionTree(tree)).toBe(5);
+  });
+
+  test("should evaluate subtraction", () => {
+    // 7 - 4 = 3
+    const tree = new TreeNode(-2);
+    tree.left = new TreeNode(7);
+    tree.right = new TreeNode(4);
+
+    expect(evaluateExpressionTree(tree)).toBe(3);
+  });
+
+  test("should evaluate multiplication", () => {
+    // 6 * 5 = 30
+    const tree = new TreeNode(-4);
+    tree.left = new TreeNode(6);
+    tree.right = new TreeNode(5);
+
+    expect(evaluateExpressionTree(tree)).toBe(30);
+  });
+
+  test("should evaluate integer division (floored)", () => {
+    // 7 / 2 = 3
+    const tree = new TreeNode(-3);
+    tree.left = new TreeNode(7);
+    tree.right = new TreeNode(2);
+
+    expect(evaluateExpressionTree(tree)).toBe(3);
+  });
+
+  test("should evaluate nested expression tree", () => {
+    // (3 + 2) * (4 - 1) = 15
+    const tree = new TreeNode(-4);
+
+    tree.left = new TreeNode(-1);
+    tree.left.left = new TreeNode(3);
+    tree.left.right = new TreeNode(2);
+
+    tree.right = new TreeNode(-2);
+    tree.right.left = new TreeNode(4);
+    tree.right.right = new TreeNode(1);
+
+    expect(evaluateExpressionTree(tree)).toBe(15);
+  });
+
+  test("should throw error when operator node is missing children", () => {
+    const tree = new TreeNode(-1);
+    tree.left = new TreeNode(3);
+    // right is missing
+
+    expect(() => evaluateExpressionTree(tree)).toThrow(
+      "Operator node must have both left and right children",
+    );
   });
 });

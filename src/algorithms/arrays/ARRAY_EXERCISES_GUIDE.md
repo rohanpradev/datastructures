@@ -578,7 +578,7 @@ export function maxSubArray(nums: number[]): number {
 
 ---
 
-## Problem 9: Two Sum – Practice Guide
+## Problem 8: Two Sum – Practice Guide
 
 This guide covers a classic array + hash map problem that appears frequently in coding interviews. The challenge is to determine whether two numbers in an array add up to a given target value, and to return their indices efficiently.
 
@@ -772,7 +772,6 @@ target = -1
 
 ---
 
-```md
 ## Problem: Validate Subsequence
 
 ### Problem Statement
@@ -795,6 +794,7 @@ Rules:
 ### Example
 
 **Input:**
+
 ```
 
 array = [5, 1, 22, 25, 6, -1, 8, 10]
@@ -907,7 +907,7 @@ Step-by-step:
 - -1 == -1 → move both pointers
 - 10 == 10 → sequence fully matched
 
-````
+```
 
 ---
 
@@ -929,6 +929,7 @@ Step-by-step:
 You never move backward in either array.
 
 By only advancing the sequence pointer on a match, you guarantee:
+
 - Order preservation
 - Linear time complexity
 - Constant space usage
@@ -950,7 +951,7 @@ export function validateSubsequence(
   //   - Always advance array pointer
   // TODO: Return true if all sequence elements were matched
 }
-````
+```
 
 ---
 

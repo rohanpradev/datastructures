@@ -791,11 +791,8 @@ export function closestValue(
 
 ---
 
-Here’s an updated **README.md** with the **implementation removed** and replaced by a clear **TODO section**, while keeping the explanation, complexity, and examples intact.
 
----
-
-# Branch Sum (Binary Tree)
+# Problem 10: Branch Sum (Binary Tree)
 
 This module is intended to compute the **sum of values along every root-to-leaf branch** in a binary tree.
 
@@ -885,6 +882,159 @@ Where `h` is the height of the tree:
 - Skewed tree: `O(n)`
 
 Space usage comes from the recursion stack (or an explicit stack if implemented iteratively).
+
+---
+
+## Problem 11: Evaluate Expression Tree
+
+### Problem Statement
+
+Given a binary expression tree, evaluate the arithmetic expression it represents and return the resulting number.
+
+### Expression Tree Rules
+
+- **Leaf nodes** contain **non-negative integers** (operands)
+- **Internal nodes** contain **negative integers** representing operators:
+
+| Value | Operator                        |
+| ----: | ------------------------------- |
+|    -1 | Addition (`+`)                  |
+|    -2 | Subtraction (`-`)               |
+|    -3 | Integer Division (`÷`, floored) |
+|    -4 | Multiplication (`*`)            |
+
+Each operator node has **exactly two children**.
+
+---
+
+### Example
+
+```
+Expression Tree for: (3 + 2) * (4 - 1)
+
+            -4 (*)
+           /      \
+        -1 (+)    -2 (-)
+        /   \     /   \
+       3     2   4     1
+```
+
+**Evaluation:**
+
+```
+(3 + 2) = 5
+(4 - 1) = 3
+5 * 3 = 15
+```
+
+**Result:** `15`
+
+---
+
+### Visual Explanation
+
+```
+Post-order evaluation (Left → Right → Root):
+
+            *
+           / \
+          +   -
+         / \ / \
+        3  2 4  1
+
+Step 1: Evaluate leaves → 3, 2, 4, 1
+Step 2: Apply + → 3 + 2 = 5
+Step 3: Apply - → 4 - 1 = 3
+Step 4: Apply * → 5 * 3 = 15
+```
+
+---
+
+### Algorithm
+
+```
+function evaluate(node):
+    if node is a leaf:
+        return node.value
+
+    left = evaluate(node.left)
+    right = evaluate(node.right)
+
+    if node.value == -1:
+        return left + right
+    if node.value == -2:
+        return left - right
+    if node.value == -3:
+        return floor(left / right)
+    if node.value == -4:
+        return left * right
+```
+
+---
+
+### Step-by-Step Example
+
+```
+Tree Node: -1 (+)
+Left: 3
+Right: 2
+
+Step 1: Evaluate left → 3
+Step 2: Evaluate right → 2
+Step 3: Apply operator → 3 + 2 = 5
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+export function evaluateExpressionTree(tree: TreeNode<number>): number {
+  // Base case: leaf node (operand)
+  if (tree.value >= 0) {
+    return tree.value;
+  }
+
+  // Operator nodes must have both children
+  if (tree.left === null || tree.right === null) {
+    throw new Error("Operator node must have both left and right children");
+  }
+
+  // Recursively evaluate subtrees
+  const leftValue = evaluateExpressionTree(tree.left);
+  const rightValue = evaluateExpressionTree(tree.right);
+
+  // Apply operator
+  switch (tree.value) {
+    case -1: // addition
+      return leftValue + rightValue;
+    case -2: // subtraction
+      return leftValue - rightValue;
+    case -3: // integer division
+      return Math.floor(leftValue / rightValue);
+    case -4: // multiplication
+      return leftValue * rightValue;
+    default:
+      throw new Error(`Unknown operator: ${tree.value}`);
+  }
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n)` — each node is evaluated once
+- **Space:** `O(h)` — recursion stack, where `h` is the height of the tree
+
+---
+
+### Key Takeaways
+
+- This is a classic **post-order traversal** problem
+- Leaf nodes return values directly
+- Internal nodes combine results from children
+- Recursive evaluation mirrors how expressions are computed
 
 ---
 
