@@ -887,32 +887,32 @@ export function minimumWaitingTime(nums: number[]): number {
  * @returns True if a valid class photo arrangement exists, otherwise false
  */
 export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
-  // If the groups are not the same size, a valid photo is impossible
-  if (redShirts.length !== blueShirts.length) return false;
+	// If the groups are not the same size, a valid photo is impossible
+	if (redShirts.length !== blueShirts.length) return false;
 
-  // Sort both arrays from tallest to shortest
-  redShirts.sort((a, b) => b - a);
-  blueShirts.sort((a, b) => b - a);
+	// Sort both arrays from tallest to shortest
+	redShirts.sort((a, b) => b - a);
+	blueShirts.sort((a, b) => b - a);
 
-  // If the tallest students are the same height, no valid back row exists
-  if (redShirts[0] === blueShirts[0]) return false;
+	// If the tallest students are the same height, no valid back row exists
+	if (redShirts[0] === blueShirts[0]) return false;
 
-  // Determine which color must be in the back row
-  const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
+	// Determine which color must be in the back row
+	const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
 
-  // Compare each pair of students by height
-  for (let i = 0; i < redShirts.length; i++) {
-    if (backRow === "red") {
-      // Red shirts must be strictly taller than blue shirts
-      if (redShirts[i] <= blueShirts[i]) return false;
-    } else {
-      // Blue shirts must be strictly taller than red shirts
-      if (blueShirts[i] <= redShirts[i]) return false;
-    }
-  }
+	// Compare each pair of students by height
+	for (let i = 0; i < redShirts.length; i++) {
+		if (backRow === "red") {
+			// Red shirts must be strictly taller than blue shirts
+			if (redShirts[i] <= blueShirts[i]) return false;
+		} else {
+			// Blue shirts must be strictly taller than red shirts
+			if (blueShirts[i] <= redShirts[i]) return false;
+		}
+	}
 
-  // All students satisfy the height requirement
-  return true;
+	// All students satisfy the height requirement
+	return true;
 }
 
 /**
@@ -927,35 +927,35 @@ export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
  * @returns The total speed of all tandem bicycles
  */
 export function tandemBicycle(
-  redShirtSpeeds: number[],
-  blueShirtSpeeds: number[],
-  fastest: boolean,
+	redShirtSpeeds: number[],
+	blueShirtSpeeds: number[],
+	fastest: boolean,
 ): number {
-  // Sort both arrays in ascending order
-  redShirtSpeeds.sort((a, b) => a - b);
-  blueShirtSpeeds.sort((a, b) => a - b);
+	// Sort both arrays in ascending order
+	redShirtSpeeds.sort((a, b) => a - b);
+	blueShirtSpeeds.sort((a, b) => a - b);
 
-  let totalSpeed = 0;
-  const n = redShirtSpeeds.length;
+	let totalSpeed = 0;
+	const n = redShirtSpeeds.length;
 
-  // Pointer for blue-shirt riders
-  let blueIndex = fastest ? n - 1 : 0;
+	// Pointer for blue-shirt riders
+	let blueIndex = fastest ? n - 1 : 0;
 
-  // Always iterate from slowest red to fastest red
-  for (let i = 0; i < n; i++) {
-    const redSpeed = redShirtSpeeds[i];
-    const blueSpeed = blueShirtSpeeds[blueIndex];
+	// Always iterate from slowest red to fastest red
+	for (let i = 0; i < n; i++) {
+		const redSpeed = redShirtSpeeds[i];
+		const blueSpeed = blueShirtSpeeds[blueIndex];
 
-    // Tandem speed is determined by the faster rider
-    totalSpeed += Math.max(redSpeed, blueSpeed);
+		// Tandem speed is determined by the faster rider
+		totalSpeed += Math.max(redSpeed, blueSpeed);
 
-    // Adjust blue pointer based on goal
-    if (fastest) {
-      blueIndex--; // pair slow red with fast blue
-    } else {
-      blueIndex++; // pair slow red with slow blue
-    }
-  }
+		// Adjust blue pointer based on goal
+		if (fastest) {
+			blueIndex--; // pair slow red with fast blue
+		} else {
+			blueIndex++; // pair slow red with slow blue
+		}
+	}
 
-  return totalSpeed;
+	return totalSpeed;
 }
