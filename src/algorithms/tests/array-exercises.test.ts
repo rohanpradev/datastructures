@@ -17,6 +17,8 @@ import {
   backspaceStringCompare,
   maxPlanesStopped,
   minimumWaitingTime,
+  classPhoto,
+  tandemBicycle,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1005,5 +1007,189 @@ describe("minimumWaitingTime", () => {
   test("should handle large numbers", () => {
     // [10, 20, 30] → sort → [10,20,30] → waiting times: 0,10,30 → total 40
     expect(minimumWaitingTime([10, 20, 30])).toBe(40);
+  });
+});
+
+describe("classPhoto", () => {
+  test("should return true when one group is strictly taller", () => {
+    const redShirts = [5, 8, 1, 3, 4];
+    const blueShirts = [6, 9, 2, 4, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should return false when heights are equal at any position", () => {
+    const redShirts = [5, 6, 7];
+    const blueShirts = [5, 6, 7];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should return false when rows cannot be arranged", () => {
+    const redShirts = [6, 5, 4];
+    const blueShirts = [7, 3, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should handle single student per row", () => {
+    const redShirts = [5];
+    const blueShirts = [6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should return false for single student of equal height", () => {
+    const redShirts = [5];
+    const blueShirts = [5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should return false when array lengths differ", () => {
+    const redShirts = [5, 6];
+    const blueShirts = [7];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should work when red shirts are in the back row", () => {
+    const redShirts = [10, 8, 6];
+    const blueShirts = [9, 7, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should handle already sorted arrays", () => {
+    const redShirts = [9, 7, 5];
+    const blueShirts = [10, 8, 6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should handle unsorted arrays", () => {
+    const redShirts = [3, 6, 1, 8];
+    const blueShirts = [4, 7, 2, 9];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should fail if any back-row student is not strictly taller", () => {
+    const redShirts = [9, 7, 5];
+    const blueShirts = [10, 6, 6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+});
+
+describe("classPhoto", () => {
+  test("should return true when one group is strictly taller", () => {
+    const redShirts = [5, 8, 1, 3, 4];
+    const blueShirts = [6, 9, 2, 4, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should return false when heights are equal at any position", () => {
+    const redShirts = [5, 6, 7];
+    const blueShirts = [5, 6, 7];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should return false when rows cannot be arranged", () => {
+    const redShirts = [6, 5, 4];
+    const blueShirts = [7, 3, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should handle a single student per row", () => {
+    const redShirts = [5];
+    const blueShirts = [6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should return false for a single student of equal height", () => {
+    const redShirts = [5];
+    const blueShirts = [5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should return false when array lengths differ", () => {
+    const redShirts = [5, 6];
+    const blueShirts = [7];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
+  });
+
+  test("should work when red shirts are in the back row", () => {
+    const redShirts = [10, 8, 6];
+    const blueShirts = [9, 7, 5];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should handle already sorted arrays", () => {
+    const redShirts = [9, 7, 5];
+    const blueShirts = [10, 8, 6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should handle unsorted arrays", () => {
+    const redShirts = [3, 6, 1, 8];
+    const blueShirts = [4, 7, 2, 9];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(true);
+  });
+
+  test("should fail if any back-row student is not strictly taller", () => {
+    const redShirts = [9, 7, 5];
+    const blueShirts = [10, 6, 6];
+
+    const result = classPhoto(redShirts, blueShirts);
+
+    expect(result).toBe(false);
   });
 });

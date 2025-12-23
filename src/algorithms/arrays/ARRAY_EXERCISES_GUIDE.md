@@ -1791,6 +1791,263 @@ Step 3: Total waiting time = 0+1+3+5+8 = 17
 
 ---
 
+## Problem: Class Photo (Height Ordering)
+
+### Problem Statement
+
+You are given two arrays of positive integers:
+
+- `redShirts` — heights of students wearing red shirts
+- `blueShirts` — heights of students wearing blue shirts
+
+Each array represents a group of students. You want to take a class photo where:
+
+- Students wear **only one shirt color per row**
+- One color is entirely in the **back row**
+- The other color is entirely in the **front row**
+- **Every student in the back row must be strictly taller** than the student directly in front of them
+
+Return `true` if a valid photo arrangement is possible, otherwise return `false`.
+
+---
+
+### Example
+
+```
+Input:
+redShirts  = [5, 8, 1, 3, 4]
+blueShirts = [6, 9, 2, 4, 5]
+
+Output:
+true
+```
+
+**Explanation:**
+Blue shirts can be placed in the back row, where each blue-shirt student is taller than the corresponding red-shirt student.
+
+---
+
+### Visual Explanation
+
+```
+Sorted (tallest → shortest):
+
+Red:  [8, 5, 4, 3, 1]
+Blue: [9, 6, 5, 4, 2]
+
+Back Row:  Blue
+Front Row: Red
+
+Comparison:
+9  >  8  ✔
+6  >  5  ✔
+5  >  4  ✔
+4  >  3  ✔
+2  >  1  ✔
+
+All pairs satisfy the height condition → Valid photo
+```
+
+---
+
+### Key Observations
+
+- Both rows must have the **same number of students**
+- Sorting helps compare students **pairwise**
+- Only **one color** can be the back row
+- Heights must be **strictly greater**, not equal
+
+---
+
+### Algorithm
+
+```
+1. If arrays have different lengths → return false
+2. Sort both arrays in descending order
+3. If tallest students have equal height → return false
+4. Decide which color is in the back row
+5. For each index:
+   - Ensure back-row student is strictly taller
+6. If all comparisons pass → return true
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+/**
+ * Determines whether a class photo can be taken such that
+ * one shirt color is entirely in the back row and every student
+ * in the back row is strictly taller than the student in front.
+ *
+ * @param redShirts - Heights of students wearing red shirts
+ * @param blueShirts - Heights of students wearing blue shirts
+ * @returns True if a valid class photo arrangement exists, otherwise false
+ */
+export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
+  // If the groups are not the same size, a valid photo is impossible
+  if (redShirts.length !== blueShirts.length) return false;
+
+  // Sort both arrays from tallest to shortest
+  redShirts.sort((a, b) => b - a);
+  blueShirts.sort((a, b) => b - a);
+
+  // If the tallest students are the same height, no valid back row exists
+  if (redShirts[0] === blueShirts[0]) return false;
+
+  // Determine which color must be in the back row
+  const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
+
+  // Compare each pair of students by height
+  for (let i = 0; i < redShirts.length; i++) {
+    if (backRow === "red") {
+      if (redShirts[i] <= blueShirts[i]) return false;
+    } else {
+      if (blueShirts[i] <= redShirts[i]) return false;
+    }
+  }
+
+  return true;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n log n)`
+  (sorting both arrays)
+
+- **Space Complexity:** `O(1)`
+  (in-place sorting, constant extra space)
+
+---
+
+# 🧑‍🏫 Class Photo (Height Ordering)
+
+## 📘 Problem Statement
+
+You are given two arrays of positive integers:
+
+- `redShirts` — heights of students wearing red shirts
+- `blueShirts` — heights of students wearing blue shirts
+
+Each array represents a group of students. You want to take a class photo where:
+
+- Students wear **only one shirt color per row**
+- One color is entirely in the **back row**
+- The other color is entirely in the **front row**
+- **Every student in the back row must be strictly taller** than the student directly in front of them
+
+Return `true` if a valid photo arrangement is possible, otherwise return `false`.
+
+---
+
+## ✅ Example
+
+### Input
+
+```txt
+redShirts  = [5, 8, 1, 3, 4]
+blueShirts = [6, 9, 2, 4, 5]
+```
+
+### Output
+
+```txt
+true
+```
+
+### Explanation
+
+Blue-shirt students can be placed in the back row. After sorting and comparing students pairwise, every blue-shirt student is strictly taller than the corresponding red-shirt student in front.
+
+---
+
+## 🖼️ Visual Explanation
+
+```txt
+Sorted (tallest → shortest):
+
+Red:  [8, 5, 4, 3, 1]
+Blue: [9, 6, 5, 4, 2]
+
+Back Row:   Blue
+Front Row: Red
+
+Comparison:
+9  >  8  ✔
+6  >  5  ✔
+5  >  4  ✔
+4  >  3  ✔
+2  >  1  ✔
+
+✔ Valid photo arrangement
+```
+
+---
+
+## 🔍 Key Observations
+
+- Both rows must contain the **same number of students**
+- Only **one shirt color** can be in the back row
+- Heights must be **strictly greater**, not equal
+- Sorting allows **direct pairwise comparison**
+- The decision is **greedy** and depends on the tallest students
+
+---
+
+## 🧠 Algorithm Outline
+
+```txt
+1. Ensure both arrays have the same length
+2. Sort both arrays by height
+3. Determine which color must be the back row
+4. Compare students pairwise by height
+5. If any comparison fails → return false
+6. Otherwise → return true
+```
+
+---
+
+## 🧩 Implementation Reference (TypeScript)
+
+```ts
+function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
+  // 1. If the arrays have different lengths, return false
+  // 2. Sort both arrays in descending order
+  // 3. Compare the tallest students to determine the back row
+  // 4. For each index:
+  //    - Ensure the back-row student is strictly taller
+  // 5. Return true if all comparisons pass
+}
+```
+
+---
+
+## ⏱️ Complexity Analysis
+
+- **Time Complexity:** `O(n log n)`
+  (sorting both arrays)
+
+- **Space Complexity:** `O(1)`
+  (in-place sorting, constant extra space)
+
+---
+
+## 📌 Notes
+
+This problem focuses on:
+
+- Sorting fundamentals
+- Greedy pairing strategies
+- Careful handling of equality edge cases
+
+The key insight is that **once the tallest students determine the back row**, the rest of the comparison follows naturally.
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
