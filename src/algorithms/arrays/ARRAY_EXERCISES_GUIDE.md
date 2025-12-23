@@ -1699,6 +1699,98 @@ function maxPlanesStopped(
 
 ---
 
+# Problem: Minimum Waiting Time
+
+### Problem Statement
+
+You are given an array of positive integers representing the **duration of tasks**. Tasks are executed **sequentially**, one after another.
+
+The **waiting time** for a task is the total time it waits for **all previous tasks to complete**.
+
+Your goal is to **minimize the total waiting time** for all tasks by choosing the optimal order to execute them.
+
+---
+
+### Example
+
+```ts
+Input: [3, 2, 1, 2, 6]
+
+// Sort in ascending order: [1, 2, 2, 3, 6]
+
+Waiting times per task:
+Task 1 (1) → waits 0
+Task 2 (2) → waits 1
+Task 3 (2) → waits 1 + 2 = 3
+Task 4 (3) → waits 1 + 2 + 2 = 5
+Task 5 (6) → waits 1 + 2 + 2 + 3 = 8
+
+Total waiting time = 0 + 1 + 3 + 5 + 8 = 17
+```
+
+---
+
+### Algorithm
+
+1. **Sort tasks** in ascending order (shortest first)
+2. Initialize `totalWaitingTime = 0`
+3. For each task:
+   - Multiply its duration by the number of tasks **after it**
+   - Add this to `totalWaitingTime`
+
+4. Return `totalWaitingTime`
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+/**
+ * Calculates the minimum total waiting time for a list of tasks.
+ *
+ * @param nums - Array of positive integers representing task durations
+ * @returns Minimum total waiting time
+ */
+function minimumWaitingTime(nums: number[]): number {
+  nums.sort((a, b) => a - b);
+  let total = 0;
+
+  for (let i = 0; i < nums.length; i++) {
+    total += nums[i] * (nums.length - i - 1);
+  }
+
+  return total;
+}
+
+// Example
+console.log(minimumWaitingTime([3, 2, 1, 2, 6])); // 17
+```
+
+---
+
+### Step-by-Step Example
+
+```
+Input: [3, 2, 1, 2, 6]
+Step 1: Sort → [1, 2, 2, 3, 6]
+Step 2: Calculate waiting times
+  1 → 0
+  2 → 1
+  2 → 1+2 = 3
+  3 → 1+2+2 = 5
+  6 → 1+2+2+3 = 8
+Step 3: Total waiting time = 0+1+3+5+8 = 17
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n log n)` → sorting the array
+- **Space:** `O(1)` → in-place calculations
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

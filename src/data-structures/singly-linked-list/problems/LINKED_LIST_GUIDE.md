@@ -9,9 +9,11 @@ This guide covers essential linked list problems demonstrating pointer manipulat
 ## Problem 1: Find Middle Node (LeetCode 876)
 
 ### Problem Statement
+
 Find the middle node of a singly linked list. If there are two middle nodes, return the second one.
 
 ### Example
+
 ```
 Input: 1 → 2 → 3 → 4 → 5
 Output: 3
@@ -21,6 +23,7 @@ Output: 4 (second middle)
 ```
 
 ### Visual Explanation (Fast & Slow Pointers)
+
 ```
 Technique: Tortoise and Hare
 
@@ -40,6 +43,7 @@ S   F             (start)
 ```
 
 ### Algorithm
+
 ```
 1. Initialize slow = head, fast = head
 2. While fast and fast.next exist:
@@ -49,17 +53,17 @@ S   F             (start)
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function findMiddleNode(head: Node | null): Node | null {
-	// TODO: Initialize slow and fast pointers
-	
-	// TODO: Move fast 2 steps, slow 1 step until fast reaches end
-	
-	// TODO: Return slow pointer
+  // TODO: Initialize slow and fast pointers
+  // TODO: Move fast 2 steps, slow 1 step until fast reaches end
+  // TODO: Return slow pointer
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single traversal
 - **Space:** O(1) - only two pointers
 
@@ -68,9 +72,11 @@ export function findMiddleNode(head: Node | null): Node | null {
 ## Problem 2: Has Loop (Floyd's Cycle Detection)
 
 ### Problem Statement
+
 Detect if a linked list has a cycle.
 
 ### Example
+
 ```
 No cycle:
 1 → 2 → 3 → 4 → null
@@ -78,10 +84,11 @@ No cycle:
 Has cycle:
 1 → 2 → 3 → 4
     ↑       ↓
-    ← ← ← ← 
+    ← ← ← ←
 ```
 
 ### Visual Explanation
+
 ```
 Fast pointer moves 2 steps
 Slow pointer moves 1 step
@@ -90,7 +97,7 @@ If there's a cycle, they WILL meet!
 
 1 → 2 → 3 → 4
 ↑           ↓
-← ← ← ← ← ← 
+← ← ← ← ← ←
 
 Step 1: S=1, F=1
 Step 2: S=2, F=3
@@ -102,6 +109,7 @@ If no cycle, fast reaches null
 ```
 
 ### Algorithm
+
 ```
 1. If list is empty, return false
 2. Initialize slow = head, fast = head
@@ -114,19 +122,18 @@ If no cycle, fast reaches null
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function hasLoop(head: Node | null): boolean {
-	// TODO: Handle empty list
-	
-	// TODO: Initialize slow and fast pointers
-	
-	// TODO: Move pointers until they meet or fast reaches end
-	
-	// TODO: Return true if pointers meet, false otherwise
+  // TODO: Handle empty list
+  // TODO: Initialize slow and fast pointers
+  // TODO: Move pointers until they meet or fast reaches end
+  // TODO: Return true if pointers meet, false otherwise
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - at most n steps in cycle
 - **Space:** O(1) - only two pointers
 
@@ -135,9 +142,11 @@ export function hasLoop(head: Node | null): boolean {
 ## Problem 3: Find Kth From End
 
 ### Problem Statement
+
 Find the kth node from the end of the linked list (1-indexed).
 
 ### Example
+
 ```
 List: 1 → 2 → 3 → 4 → 5
 k=1 → 5
@@ -146,6 +155,7 @@ k=3 → 3
 ```
 
 ### Visual Explanation (Two-Pointer with Gap)
+
 ```
 Create a gap of k between two pointers
 
@@ -165,6 +175,7 @@ Result: 4
 ```
 
 ### Algorithm
+
 ```
 1. Initialize slow = head, fast = head
 2. Move fast k steps ahead:
@@ -179,21 +190,19 @@ Result: 4
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function findKthFromEnd(head: Node | null, k: number): Node | null {
-	// TODO: Initialize slow and fast pointers
-	
-	// TODO: Move fast k steps ahead
-	
-	// TODO: Handle case where k > length
-	
-	// TODO: Move both pointers until fast reaches end
-	
-	// TODO: Return slow
+  // TODO: Initialize slow and fast pointers
+  // TODO: Move fast k steps ahead
+  // TODO: Handle case where k > length
+  // TODO: Move both pointers until fast reaches end
+  // TODO: Return slow
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single traversal
 - **Space:** O(1) - two pointers
 
@@ -202,15 +211,18 @@ export function findKthFromEnd(head: Node | null, k: number): Node | null {
 ## Problem 4: Remove Duplicates
 
 ### Problem Statement
+
 Remove all duplicate values from a sorted linked list.
 
 ### Example
+
 ```
 Input: 1 → 1 → 2 → 3 → 3 → 4
 Output: 1 → 2 → 3 → 4
 ```
 
 ### Visual Explanation
+
 ```
 1 → 1 → 2 → 3 → 3 → 4
 C
@@ -240,6 +252,7 @@ Step 5: C.value = 3, next.value = 4 (different)
 ```
 
 ### Algorithm
+
 ```
 1. If list empty, return null
 2. current = head
@@ -252,23 +265,20 @@ Step 5: C.value = 3, next.value = 4 (different)
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function removeDuplicates(head: Node | null): Node | null {
-	// TODO: Handle empty list
-	
-	// TODO: Initialize current pointer
-	
-	// TODO: Loop while current and current.next exist
-	
-	// TODO: If duplicate, skip node
-	
-	// TODO: Otherwise, move to next
-	
-	// TODO: Return head
+  // TODO: Handle empty list
+  // TODO: Initialize current pointer
+  // TODO: Loop while current and current.next exist
+  // TODO: If duplicate, skip node
+  // TODO: Otherwise, move to next
+  // TODO: Return head
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single traversal
 - **Space:** O(1) - in-place modification
 
@@ -277,15 +287,18 @@ export function removeDuplicates(head: Node | null): Node | null {
 ## Problem 5: Reverse Between (LeetCode 92)
 
 ### Problem Statement
+
 Reverse nodes from position left to right (1-indexed).
 
 ### Example
+
 ```
 Input: 1 → 2 → 3 → 4 → 5, left=2, right=4
 Output: 1 → 4 → 3 → 2 → 5
 ```
 
 ### Visual Explanation
+
 ```
 Original: 1 → 2 → 3 → 4 → 5
           ^   ^       ^   ^
@@ -310,6 +323,7 @@ L.next = after (2 → 5)
 ```
 
 ### Algorithm
+
 ```
 1. Create dummy node before head
 2. Move to node before left position
@@ -319,25 +333,23 @@ L.next = after (2 → 5)
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function reverseBetween(
-	head: Node | null,
-	left: number,
-	right: number
+  head: Node | null,
+  left: number,
+  right: number,
 ): Node | null {
-	// TODO: Create dummy node
-	
-	// TODO: Find node before left position
-	
-	// TODO: Reverse sublist
-	
-	// TODO: Reconnect pointers
-	
-	// TODO: Return dummy.next
+  // TODO: Create dummy node
+  // TODO: Find node before left position
+  // TODO: Reverse sublist
+  // TODO: Reconnect pointers
+  // TODO: Return dummy.next
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - traverse and reverse
 - **Space:** O(1) - in-place
 
@@ -346,15 +358,18 @@ export function reverseBetween(
 ## Problem 6: Partition List (LeetCode 86)
 
 ### Problem Statement
+
 Partition list around value x such that all nodes < x come before nodes ≥ x.
 
 ### Example
+
 ```
 Input: 1 → 4 → 3 → 2 → 5 → 2, x=3
 Output: 1 → 2 → 2 → 4 → 3 → 5
 ```
 
 ### Visual Explanation
+
 ```
 Create two lists: less and greater
 
@@ -390,6 +405,7 @@ Result: 1 → 2 → 2 → 4 → 3 → 5
 ```
 
 ### Algorithm
+
 ```
 1. Create two dummy nodes (less, greater)
 2. For each node:
@@ -400,23 +416,20 @@ Result: 1 → 2 → 2 → 4 → 3 → 5
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function partitionList(head: Node | null, x: number): Node | null {
-	// TODO: Create two dummy nodes
-	
-	// TODO: Initialize pointers for both lists
-	
-	// TODO: Traverse original list
-	
-	// TODO: Add to appropriate list based on value
-	
-	// TODO: Connect less list to greater list
-	
-	// TODO: Return result
+  // TODO: Create two dummy nodes
+  // TODO: Initialize pointers for both lists
+  // TODO: Traverse original list
+  // TODO: Add to appropriate list based on value
+  // TODO: Connect less list to greater list
+  // TODO: Return result
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single traversal
 - **Space:** O(1) - reuse existing nodes
 
@@ -425,9 +438,11 @@ export function partitionList(head: Node | null, x: number): Node | null {
 ## Problem 7: Merge Two Sorted Lists (LeetCode 21)
 
 ### Problem Statement
+
 Merge two sorted linked lists into one sorted list.
 
 ### Example
+
 ```
 Input:
   list1: 1 → 2 → 4
@@ -436,6 +451,7 @@ Output: 1 → 1 → 2 → 3 → 4 → 4
 ```
 
 ### Visual Explanation
+
 ```
 list1: 1 → 2 → 4
 list2: 1 → 3 → 4
@@ -483,6 +499,7 @@ dummy → 1 → 1 → 2 → 3 → 4 → 4
 ```
 
 ### Algorithm
+
 ```
 1. Create dummy node
 2. current = dummy
@@ -495,26 +512,149 @@ dummy → 1 → 1 → 2 → 3 → 4 → 4
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function mergeTwoLists(
-	list1: Node | null,
-	list2: Node | null
+  list1: Node | null,
+  list2: Node | null,
 ): Node | null {
-	// TODO: Create dummy node
-	
-	// TODO: Initialize current pointer
-	
-	// TODO: Compare and merge while both lists have nodes
-	
-	// TODO: Attach remaining nodes
-	
-	// TODO: Return dummy.next
+  // TODO: Create dummy node
+  // TODO: Initialize current pointer
+  // TODO: Compare and merge while both lists have nodes
+  // TODO: Attach remaining nodes
+  // TODO: Return dummy.next
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n + m) - visit all nodes once
 - **Space:** O(1) - reuse existing nodes
+
+---
+
+## Problem: Add Two Numbers (LeetCode 2)
+
+### Problem Statement
+
+You are given two non-empty linked lists representing two non-negative integers.
+The digits are stored in **reverse order**, and each node contains a **single digit**.
+
+Add the two numbers and return the sum as a linked list.
+
+> You may assume the two numbers do not contain any leading zeros, except the number 0 itself.
+
+---
+
+### Example
+
+```
+Input:
+l1: 2 → 4 → 3
+l2: 5 → 6 → 4
+
+Output:
+7 → 0 → 8
+```
+
+**Explanation:**
+342 + 465 = 807
+
+---
+
+### Visual Explanation
+
+```
+l1: 2 → 4 → 3
+l2: 5 → 6 → 4
+
+Carry starts at 0
+
+Step 1:
+2 + 5 + 0 = 7
+Result: 7
+Carry: 0
+
+Step 2:
+4 + 6 + 0 = 10
+Result: 7 → 0
+Carry: 1
+
+Step 3:
+3 + 4 + 1 = 8
+Result: 7 → 0 → 8
+Carry: 0
+
+Final Result:
+7 → 0 → 8
+```
+
+---
+
+### Key Insight
+
+For each digit addition:
+
+```
+digit = sum % 10      // stays in current node
+carry = sum / 10      // moves to next node
+```
+
+Carry represents **overflow**, not a digit.
+
+---
+
+### Algorithm
+
+```
+1. Create a dummy head node for the result list
+2. Initialize carry = 0
+3. While there are nodes in l1 or l2:
+   - Read values from current nodes (use 0 if null)
+   - Add values and carry
+   - Store (sum % 10) in a new node
+   - Update carry = floor(sum / 10)
+4. If carry remains, append a new node
+5. Return dummy.next
+```
+
+---
+
+### Implementation Steps
+
+```typescript
+export function addTwoNumbers(
+  l1: Node<number> | null,
+  l2: Node<number> | null,
+): Node<number> | null {
+  // TODO: Handle edge case when both lists are null
+  // TODO: Create dummy head node
+  // TODO: Initialize current pointer and carry
+  // TODO: Traverse both lists while nodes remain
+  // TODO: Add digits + carry and create new node
+  // TODO: Append remaining carry if present
+  // TODO: Return dummy.next
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** O(max(n, m)) — traverse both lists once
+- **Space:** O(max(n, m)) — new list for result
+
+---
+
+### Notes
+
+- Input lists are **not modified**
+- Works for:
+  - Different length lists
+  - Large lists
+  - Final carry overflow
+
+- Uses only `Node<T>` — no linked list wrapper class
 
 ---
 
@@ -523,6 +663,7 @@ export function mergeTwoLists(
 ### Two-Pointer Patterns
 
 #### Fast & Slow (Tortoise & Hare)
+
 ```
 Uses:
 - Find middle node
@@ -538,6 +679,7 @@ while fast and fast.next:
 ```
 
 #### Two-Pointer with Gap
+
 ```
 Uses:
 - Find kth from end
@@ -550,6 +692,7 @@ Move both until fast reaches end
 ```
 
 ### Dummy Node Pattern
+
 ```
 Uses:
 - Handle edge cases (empty list, delete head)
@@ -563,6 +706,7 @@ return dummy.next
 ```
 
 ### Reversal Pattern
+
 ```
 Uses:
 - Reverse entire list
@@ -585,15 +729,17 @@ return prev
 ## Common Linked List Operations
 
 ### Traverse
+
 ```typescript
 let current = head;
 while (current) {
-	// process current
-	current = current.next;
+  // process current
+  current = current.next;
 }
 ```
 
 ### Insert at Beginning
+
 ```typescript
 const newNode = new Node(value);
 newNode.next = head;
@@ -601,34 +747,36 @@ head = newNode;
 ```
 
 ### Insert at End
+
 ```typescript
 const newNode = new Node(value);
 if (!head) {
-	head = newNode;
+  head = newNode;
 } else {
-	let current = head;
-	while (current.next) {
-		current = current.next;
-	}
-	current.next = newNode;
+  let current = head;
+  while (current.next) {
+    current = current.next;
+  }
+  current.next = newNode;
 }
 ```
 
 ### Delete Node
+
 ```typescript
 // Delete node with value
 let current = head;
 let prev = null;
 while (current && current.value !== target) {
-	prev = current;
-	current = current.next;
+  prev = current;
+  current = current.next;
 }
 if (current) {
-	if (prev) {
-		prev.next = current.next;
-	} else {
-		head = current.next;
-	}
+  if (prev) {
+    prev.next = current.next;
+  } else {
+    head = current.next;
+  }
 }
 ```
 
@@ -637,11 +785,13 @@ if (current) {
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** findMiddleNode, hasLoop (two-pointer basics)
 2. **Then:** findKthFromEnd, removeDuplicates (pointer manipulation)
 3. **Finally:** reverseBetween, partitionList, mergeTwoLists (advanced)
 
 ### Common Mistakes
+
 1. ❌ Not handling empty list
 2. ❌ Losing reference to head
 3. ❌ Not updating .next before moving pointer
@@ -649,6 +799,7 @@ if (current) {
 5. ❌ Forgetting to check null before accessing .next
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty list (null)
 ✓ Single node
@@ -660,6 +811,7 @@ if (current) {
 ```
 
 ### Drawing Diagrams
+
 ```
 Always draw before coding!
 
@@ -673,14 +825,14 @@ Always draw before coding!
 
 ## Complexity Cheat Sheet
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Find Middle | O(n) | O(1) | Fast & Slow |
-| Has Loop | O(n) | O(1) | Floyd's Detection |
-| Find Kth From End | O(n) | O(1) | Gap Two-Pointer |
-| Remove Duplicates | O(n) | O(1) | Single Pointer |
-| Reverse Between | O(n) | O(1) | Reversal Pattern |
-| Partition List | O(n) | O(1) | Two Lists |
-| Merge Sorted Lists | O(n+m) | O(1) | Dummy Node |
+| Problem            | Time   | Space | Key Technique     |
+| ------------------ | ------ | ----- | ----------------- |
+| Find Middle        | O(n)   | O(1)  | Fast & Slow       |
+| Has Loop           | O(n)   | O(1)  | Floyd's Detection |
+| Find Kth From End  | O(n)   | O(1)  | Gap Two-Pointer   |
+| Remove Duplicates  | O(n)   | O(1)  | Single Pointer    |
+| Reverse Between    | O(n)   | O(1)  | Reversal Pattern  |
+| Partition List     | O(n)   | O(1)  | Two Lists         |
+| Merge Sorted Lists | O(n+m) | O(1)  | Dummy Node        |
 
 Happy Coding! 🚀

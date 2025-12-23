@@ -16,6 +16,7 @@ import {
   transpose,
   backspaceStringCompare,
   maxPlanesStopped,
+  minimumWaitingTime,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -970,5 +971,39 @@ describe("Problem - Max Planes Stopped Before Landing", () => {
     const landingSpeed = [2, 1, 4, 1]; // landing times: [5,2,2,1]
     const result = maxPlanesStopped(initialDistance, landingSpeed);
     expect(result).toBe(3);
+  });
+});
+
+describe("minimumWaitingTime", () => {
+  test("should return correct waiting time for example input", () => {
+    expect(minimumWaitingTime([3, 2, 1, 2, 6])).toBe(17);
+  });
+
+  test("should return 0 for empty array", () => {
+    expect(minimumWaitingTime([])).toBe(0);
+  });
+
+  test("should return 0 for single task", () => {
+    expect(minimumWaitingTime([5])).toBe(0);
+  });
+
+  test("should return correct waiting time for already sorted tasks", () => {
+    // [1, 2, 3, 4] → waiting times: 0, 1, 3, 6 → total 10
+    expect(minimumWaitingTime([1, 2, 3, 4])).toBe(10);
+  });
+
+  test("should return correct waiting time for reverse sorted tasks", () => {
+    // [4, 3, 2, 1] → sort → [1, 2, 3, 4] → total 10
+    expect(minimumWaitingTime([4, 3, 2, 1])).toBe(10);
+  });
+
+  test("should handle tasks with duplicate durations", () => {
+    // [2, 2, 2] → waiting times: 0, 2, 4 → total 6
+    expect(minimumWaitingTime([2, 2, 2])).toBe(6);
+  });
+
+  test("should handle large numbers", () => {
+    // [10, 20, 30] → sort → [10,20,30] → waiting times: 0,10,30 → total 40
+    expect(minimumWaitingTime([10, 20, 30])).toBe(40);
   });
 });
