@@ -9,6 +9,7 @@ import {
   removeDuplicates,
   reverseBetween,
   addTwoNumbers,
+  removeDuplicatesFromSortedLinkedList,
 } from "@/data-structures/singly-linked-list/problems/leetcode-sll";
 import {
   SinglyLinkedList,
@@ -2439,5 +2440,72 @@ describe("addTwoNumbers", () => {
 
   test("null inputs", () => {
     expect(addTwoNumbers(null, null)).toBeNull();
+  });
+});
+
+describe("removeDuplicatesFromSortedLinkedList()", () => {
+  test("should remove duplicates from a typical sorted list", () => {
+    const list = new SinglyLinkedList<number>();
+    [1, 1, 2, 3, 3, 3, 4].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2, 3, 4]);
+    expect(list.getLength()).toBe(4);
+  });
+
+  test("should handle list with no duplicates", () => {
+    const list = new SinglyLinkedList<number>();
+    [1, 2, 3, 4].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2, 3, 4]);
+    expect(list.getLength()).toBe(4);
+  });
+
+  test("should handle list where all elements are duplicates", () => {
+    const list = new SinglyLinkedList<number>();
+    [5, 5, 5, 5].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([5]);
+    expect(list.getLength()).toBe(1);
+  });
+
+  test("should remove consecutive duplicates at start and end", () => {
+    const list = new SinglyLinkedList<number>();
+    [1, 1, 2, 3, 4, 4].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2, 3, 4]);
+    expect(list.getLength()).toBe(4);
+  });
+
+  test("should handle empty list", () => {
+    const list = new SinglyLinkedList<number>();
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([]);
+    expect(list.getLength()).toBe(0);
+  });
+
+  test("should handle single-node list", () => {
+    const list = new SinglyLinkedList<number>(7);
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([7]);
+    expect(list.getLength()).toBe(1);
+  });
+
+  test("should handle alternating duplicates", () => {
+    const list = new SinglyLinkedList<number>();
+    [1, 1, 2, 2, 3, 3].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2, 3]);
+    expect(list.getLength()).toBe(3);
+  });
+
+  test("should work after pushing more elements", () => {
+    const list = new SinglyLinkedList<number>();
+    [1, 1, 2, 2].forEach((n) => list.push(n));
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2]);
+    list.push(2).push(3).push(3);
+    removeDuplicatesFromSortedLinkedList(list);
+    expect(list.peek()).toEqual([1, 2, 3]);
+    expect(list.getLength()).toBe(3);
   });
 });

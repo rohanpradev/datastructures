@@ -782,6 +782,159 @@ if (current) {
 
 ---
 
+## Problem: Remove Duplicates from a Sorted Linked List
+
+### Problem Statement
+
+You are given a **sorted singly linked list**.
+Your task is to **remove all duplicate values in place**, so that each value appears **only once**.
+
+Constraints:
+
+- The list is sorted in **non-decreasing order**
+- You must modify the **existing list** (no extra list allowed)
+
+---
+
+### Example
+
+```
+Input:
+1 → 1 → 2 → 3 → 3 → 3 → 4
+
+Output:
+1 → 2 → 3 → 4
+```
+
+---
+
+### Key Insight
+
+> Because the list is sorted, **duplicate values are always adjacent**.
+
+This means:
+
+- We only need to compare each node with its **next** node
+- No extra memory is required
+
+---
+
+### Visual Explanation
+
+```
+Initial list:
+1 → 1 → 2 → 3 → 3 → 4
+^
+current
+```
+
+**Step 1:**
+
+```
+current.value === current.next.value
+→ skip the next node
+
+1 → 2 → 3 → 3 → 4
+^
+current
+```
+
+**Step 2:**
+
+```
+current.value !== current.next.value
+→ move forward
+
+1 → 2 → 3 → 3 → 4
+    ^
+```
+
+**Step 3:**
+
+```
+current.value === current.next.value
+→ skip duplicate
+
+1 → 2 → 3 → 4
+          ^
+```
+
+---
+
+### Algorithm (In-Place Pointer Manipulation)
+
+```
+1. Start from the head of the list
+2. While current and current.next exist:
+   a. If current.value == current.next.value:
+      - Skip the next node
+   b. Else:
+      - Move current forward
+3. Return the modified list
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+export function removeDuplicatesFromSortedLinkedList(
+  list: SinglyLinkedList<number>,
+): SinglyLinkedList<number> {
+  let current = list.head;
+
+  while (current && current.next) {
+    if (current.value === current.next.value) {
+      current.next = current.next.next;
+    } else {
+      current = current.next;
+    }
+  }
+
+  return list;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Each node is visited once
+
+- **Space Complexity:** `O(1)`
+  - No extra memory used
+
+---
+
+### Edge Cases to Consider
+
+- Empty list → return empty list
+- Single node → no changes
+- All values duplicated → one node remains
+- No duplicates → list remains unchanged
+
+---
+
+### Common Mistakes
+
+- ❌ Using extra data structures unnecessarily
+- ❌ Forgetting to advance `current`
+- ❌ Trying this approach on an **unsorted** list
+
+---
+
+### Learning Pattern
+
+This problem teaches:
+
+- Linked list traversal
+- Pointer manipulation
+- How **problem constraints** (sorted input) simplify solutions
+- In-place algorithm design
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
