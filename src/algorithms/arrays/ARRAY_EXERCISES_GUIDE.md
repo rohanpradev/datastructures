@@ -2036,6 +2036,193 @@ function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
 
 ---
 
+## Problem: Optimal Freelancing (Job Sequencing with Deadlines)
+
+### Problem Statement
+
+You are given a list of freelance jobs. Each job has:
+
+- a **deadline** (the latest day the job can be completed)
+- a **payment**
+
+Rules:
+
+- Each job takes **exactly one day**
+- You can complete **at most one job per day**
+- You can work for **7 days total**
+
+Your goal is to **maximize the total payment** by choosing which jobs to complete.
+
+---
+
+### Example
+
+```
+Input:
+jobs = [
+  { deadline: 1, payment: 100 },
+  { deadline: 2, payment: 19 },
+  { deadline: 2, payment: 27 },
+  { deadline: 1, payment: 25 },
+  { deadline: 3, payment: 15 }
+]
+
+Output:
+142
+```
+
+**Explanation**
+
+An optimal schedule is:
+
+- Day 1 → payment 100
+- Day 2 → payment 27
+- Day 3 → payment 15
+
+Total = `100 + 27 + 15 = 142`
+
+---
+
+### Visual Explanation
+
+We have 7 available days:
+
+```
+Days:    1   2   3   4   5   6   7
+Slots:  [ ] [ ] [ ] [ ] [ ] [ ] [ ]
+```
+
+#### Step 1: Sort jobs by payment (descending)
+
+```
+(1,100), (2,27), (1,25), (2,19), (3,15)
+```
+
+---
+
+#### Step 2: Schedule each job as late as possible
+
+**Job (deadline=1, payment=100)**
+→ Place on Day 1
+
+```
+[100] [ ] [ ] [ ] [ ] [ ] [ ]
+```
+
+**Job (deadline=2, payment=27)**
+→ Place on Day 2
+
+```
+[100] [27] [ ] [ ] [ ] [ ] [ ]
+```
+
+**Job (deadline=1, payment=25)**
+→ Day 1 is taken → skip
+
+**Job (deadline=2, payment=19)**
+→ Day 2 is taken → Day 1 is taken → skip
+
+**Job (deadline=3, payment=15)**
+→ Place on Day 3
+
+```
+[100] [27] [15] [ ] [ ] [ ] [ ]
+```
+
+---
+
+### Key Insight
+
+> **Always schedule the highest-paying job first, and place it as late as possible.**
+
+Why?
+
+- High-paying jobs are hard to replace
+- Scheduling late keeps earlier days free for jobs with tighter deadlines
+
+---
+
+### Algorithm (Greedy Strategy)
+
+```
+1. Sort jobs by payment in descending order
+2. Create an array of 7 slots (one per day)
+3. For each job:
+   a. Start from min(deadline, 7)
+   b. Move backward to find the latest free day
+   c. If found, schedule the job
+4. Return total payment
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+export function optimalFreelancing(
+  jobs: Array<{ deadline: number; payment: number }>,
+): number {
+  const slots: Array<number | undefined> = new Array(7).fill(undefined);
+
+  // Step 1: Sort by highest payment first
+  jobs.sort((a, b) => b.payment - a.payment);
+
+  let totalMoney = 0;
+
+  // Step 2: Try to schedule each job
+  for (const job of jobs) {
+    // Convert deadline (1–7) to index (0–6)
+    let idx = Math.min(job.deadline - 1, 6);
+
+    // Step 3: Find the latest available day
+    while (idx >= 0) {
+      if (slots[idx] === undefined) {
+        slots[idx] = job.payment;
+        totalMoney += job.payment;
+        break;
+      }
+      idx--;
+    }
+  }
+
+  return totalMoney;
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n log n)` — sorting jobs
+- **Space:** `O(1)` — only 7 slots used
+
+---
+
+### Common Mistakes to Avoid
+
+- ❌ Scheduling jobs on the **earliest** available day
+- ❌ Ignoring already-used days
+- ❌ Not sorting by payment first
+- ❌ Allowing more than one job per day
+
+---
+
+### Learning Pattern
+
+This problem is a classic example of:
+
+- **Greedy algorithms**
+- **Scheduling problems**
+- **“Do the most valuable work first” strategy**
+
+You’ll see this pattern again in:
+
+- CPU task scheduling
+- Interval scheduling
+- Resource allocation problems
+
+---
+
 ## 📌 Notes
 
 This problem focuses on:

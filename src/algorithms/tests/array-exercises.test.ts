@@ -19,6 +19,7 @@ import {
   minimumWaitingTime,
   classPhoto,
   tandemBicycle,
+  optimalFreelancing,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -922,7 +923,7 @@ describe("backspaceStringCompare", () => {
   });
 });
 
-describe("Problem - Max Planes Stopped Before Landing", () => {
+describe("Max Planes Stopped Before Landing", () => {
   test("should return 0 when there are no planes", () => {
     const result = maxPlanesStopped([], []);
     expect(result).toBe(0);
@@ -1102,94 +1103,135 @@ describe("classPhoto", () => {
   });
 });
 
-describe("classPhoto", () => {
-  test("should return true when one group is strictly taller", () => {
-    const redShirts = [5, 8, 1, 3, 4];
-    const blueShirts = [6, 9, 2, 4, 5];
+test("returns fastest total speed", () => {
+  const red = [5, 5, 3, 9, 2];
+  const blue = [3, 6, 7, 2, 1];
 
-    const result = classPhoto(redShirts, blueShirts);
+  const result = tandemBicycle(red, blue, true);
+  expect(result).toBe(32);
+});
 
-    expect(result).toBe(true);
+test("returns slowest total speed", () => {
+  const red = [5, 5, 3, 9, 2];
+  const blue = [3, 6, 7, 2, 1];
+
+  const result = tandemBicycle(red, blue, false);
+  expect(result).toBe(25);
+});
+
+test("works with equal speeds", () => {
+  const red = [4, 4, 4];
+  const blue = [4, 4, 4];
+
+  expect(tandemBicycle(red, blue, true)).toBe(12);
+  expect(tandemBicycle(red, blue, false)).toBe(12);
+});
+
+test("works with a single rider", () => {
+  const red = [10];
+  const blue = [3];
+
+  expect(tandemBicycle(red, blue, true)).toBe(10);
+  expect(tandemBicycle(red, blue, false)).toBe(10);
+});
+
+test("handles unsorted input arrays", () => {
+  const red = [1, 7, 3];
+  const blue = [6, 2, 4];
+
+  expect(tandemBicycle(red, blue, true)).toBe(17);
+  expect(tandemBicycle(red, blue, false)).toBe(13);
+});
+
+test("handles already sorted arrays", () => {
+  const red = [1, 2, 3];
+  const blue = [4, 5, 6];
+
+  expect(tandemBicycle(red, blue, true)).toBe(15);
+  expect(tandemBicycle(red, blue, false)).toBe(15);
+});
+
+describe("optimalFreelancing", () => {
+  test("should schedule jobs to maximize total payment", () => {
+    const jobs = [
+      { deadline: 1, payment: 100 },
+      { deadline: 2, payment: 19 },
+      { deadline: 2, payment: 27 },
+      { deadline: 1, payment: 25 },
+      { deadline: 3, payment: 15 },
+    ];
+
+    const result = optimalFreelancing(jobs);
+
+    // Optimal schedule: 100 (day 1) + 27 (day 2) + 15 (day 3)
+    expect(result).toBe(142);
   });
 
-  test("should return false when heights are equal at any position", () => {
-    const redShirts = [5, 6, 7];
-    const blueShirts = [5, 6, 7];
+  test("should handle jobs with same deadline", () => {
+    const jobs = [
+      { deadline: 1, payment: 50 },
+      { deadline: 1, payment: 40 },
+      { deadline: 1, payment: 30 },
+    ];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(false);
+    // Only one job can be done on day 1
+    expect(result).toBe(50);
   });
 
-  test("should return false when rows cannot be arranged", () => {
-    const redShirts = [6, 5, 4];
-    const blueShirts = [7, 3, 5];
+  test("should schedule jobs as late as possible", () => {
+    const jobs = [
+      { deadline: 3, payment: 20 },
+      { deadline: 1, payment: 100 },
+      { deadline: 2, payment: 50 },
+    ];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(false);
+    // Day 1 → 100, Day 2 → 50, Day 3 → 20
+    expect(result).toBe(170);
   });
 
-  test("should handle a single student per row", () => {
-    const redShirts = [5];
-    const blueShirts = [6];
+  test("should skip jobs that cannot be scheduled", () => {
+    const jobs = [
+      { deadline: 1, payment: 100 },
+      { deadline: 1, payment: 90 },
+      { deadline: 1, payment: 80 },
+    ];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(true);
+    // Only one job fits on day 1
+    expect(result).toBe(100);
   });
 
-  test("should return false for a single student of equal height", () => {
-    const redShirts = [5];
-    const blueShirts = [5];
+  test("should handle empty job list", () => {
+    const jobs: Array<{ deadline: number; payment: number }> = [];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(false);
+    expect(result).toBe(0);
   });
 
-  test("should return false when array lengths differ", () => {
-    const redShirts = [5, 6];
-    const blueShirts = [7];
+  test("should handle single job", () => {
+    const jobs = [{ deadline: 5, payment: 75 }];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(false);
+    expect(result).toBe(75);
   });
 
-  test("should work when red shirts are in the back row", () => {
-    const redShirts = [10, 8, 6];
-    const blueShirts = [9, 7, 5];
+  test("should ignore jobs with deadline <= 0", () => {
+    const jobs = [
+      { deadline: 0, payment: 100 },
+      { deadline: -1, payment: 50 },
+      { deadline: 1, payment: 30 },
+    ];
 
-    const result = classPhoto(redShirts, blueShirts);
+    const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(true);
-  });
-
-  test("should handle already sorted arrays", () => {
-    const redShirts = [9, 7, 5];
-    const blueShirts = [10, 8, 6];
-
-    const result = classPhoto(redShirts, blueShirts);
-
-    expect(result).toBe(true);
-  });
-
-  test("should handle unsorted arrays", () => {
-    const redShirts = [3, 6, 1, 8];
-    const blueShirts = [4, 7, 2, 9];
-
-    const result = classPhoto(redShirts, blueShirts);
-
-    expect(result).toBe(true);
-  });
-
-  test("should fail if any back-row student is not strictly taller", () => {
-    const redShirts = [9, 7, 5];
-    const blueShirts = [10, 6, 6];
-
-    const result = classPhoto(redShirts, blueShirts);
-
-    expect(result).toBe(false);
+    // Only the valid job can be scheduled
+    expect(result).toBe(30);
   });
 });
