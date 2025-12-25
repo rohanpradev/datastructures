@@ -1,6 +1,6 @@
 import {
-  Node,
-  SinglyLinkedList,
+	Node,
+	SinglyLinkedList,
 } from "@/data-structures/singly-linked-list/singly-linked-list";
 
 /**
@@ -41,25 +41,25 @@ import {
  * console.log(middle?.value); // 3
  */
 export function findMiddleNode<T>(list: SinglyLinkedList<T>): Node<T> | null {
-  // Handle empty list
-  if (!list.head) return null;
+	// Handle empty list
+	if (!list.head) return null;
 
-  // Initialize both pointers at the head
-  let slowPointer: Node<T> | null = list.head;
-  let fastPointer: Node<T> | null = list.head;
+	// Initialize both pointers at the head
+	let slowPointer: Node<T> | null = list.head;
+	let fastPointer: Node<T> | null = list.head;
 
-  // Move fast pointer 2 steps, slow pointer 1 step
-  // When fast reaches end, slow is at middle
-  while (fastPointer && fastPointer.next) {
-    slowPointer = slowPointer!.next; // Slow moves 1 step
-    fastPointer = fastPointer?.next?.next; // Fast moves 2 steps
-  }
+	// Move fast pointer 2 steps, slow pointer 1 step
+	// When fast reaches end, slow is at middle
+	while (fastPointer && fastPointer.next) {
+		slowPointer = slowPointer!.next; // Slow moves 1 step
+		fastPointer = fastPointer?.next?.next; // Fast moves 2 steps
+	}
 
-  // slowPointer is guaranteed to be non-null here because:
-  // - We checked list.head is not null
-  // - slowPointer starts at head
-  // - slowPointer only moves when fastPointer exists
-  return slowPointer;
+	// slowPointer is guaranteed to be non-null here because:
+	// - We checked list.head is not null
+	// - slowPointer starts at head
+	// - slowPointer only moves when fastPointer exists
+	return slowPointer;
 }
 
 /**
@@ -112,20 +112,20 @@ export function findMiddleNode<T>(list: SinglyLinkedList<T>): Node<T> | null {
  * hasLoop(normalList); // Returns false (no loop)
  */
 export function hasLoop<T>(list: SinglyLinkedList<T>): boolean {
-  if (!list.head) return false;
-  let slowPointer: Node<T> | null = list.head;
-  let fastPointer: Node<T> | null = list.head;
+	if (!list.head) return false;
+	let slowPointer: Node<T> | null = list.head;
+	let fastPointer: Node<T> | null = list.head;
 
-  while (fastPointer && fastPointer.next) {
-    slowPointer = slowPointer!.next; // Slow moves 1 step
-    fastPointer = fastPointer.next.next; // Fast moves 2 steps
+	while (fastPointer && fastPointer.next) {
+		slowPointer = slowPointer!.next; // Slow moves 1 step
+		fastPointer = fastPointer.next.next; // Fast moves 2 steps
 
-    if (slowPointer === fastPointer) {
-      return true; // Loop detected
-    }
-  }
+		if (slowPointer === fastPointer) {
+			return true; // Loop detected
+		}
+	}
 
-  return false; // No loop
+	return false; // No loop
 }
 
 /**
@@ -206,30 +206,30 @@ export function hasLoop<T>(list: SinglyLinkedList<T>): boolean {
  * console.log(kthNode); // null (only 3 nodes in list)
  */
 export function findKthFromEnd<T>(
-  list: SinglyLinkedList<T>,
-  k: number,
+	list: SinglyLinkedList<T>,
+	k: number,
 ): Node<T> | null {
-  // Handle invalid k or empty list
-  if (k <= 0 || !list.head) return null;
+	// Handle invalid k or empty list
+	if (k <= 0 || !list.head) return null;
 
-  // Initialize both pointers at the head
-  let lagPointer: Node<T> | null = list.head;
-  let leadPointer: Node<T> | null = list.head;
+	// Initialize both pointers at the head
+	let lagPointer: Node<T> | null = list.head;
+	let leadPointer: Node<T> | null = list.head;
 
-  // Step 1: Move lead pointer k steps ahead to create the gap
-  for (let i = 0; i < k; i++) {
-    if (!leadPointer) return null;
-    leadPointer = leadPointer.next;
-  }
+	// Step 1: Move lead pointer k steps ahead to create the gap
+	for (let i = 0; i < k; i++) {
+		if (!leadPointer) return null;
+		leadPointer = leadPointer.next;
+	}
 
-  // Step 2: Move both pointers until lead reaches null (end of list)
-  while (leadPointer) {
-    lagPointer = lagPointer!.next; // Lag moves 1 step
-    leadPointer = leadPointer.next; // Lead moves 1 step
-  }
+	// Step 2: Move both pointers until lead reaches null (end of list)
+	while (leadPointer) {
+		lagPointer = lagPointer!.next; // Lag moves 1 step
+		leadPointer = leadPointer.next; // Lead moves 1 step
+	}
 
-  // When lead is null, lag is at kth from end
-  return lagPointer;
+	// When lead is null, lag is at kth from end
+	return lagPointer;
 }
 
 /**
@@ -283,39 +283,39 @@ export function findKthFromEnd<T>(
  * console.log(list.peek()); // [3]
  */
 export function removeDuplicates<T>(list: SinglyLinkedList<T>): void {
-  // Handle empty list or single element
-  if (!list.head || !list.head.next) return;
+	// Handle empty list or single element
+	if (!list.head || !list.head.next) return;
 
-  // Set to track values we've already seen
-  const seen = new Set<T>();
+	// Set to track values we've already seen
+	const seen = new Set<T>();
 
-  // Add the first node's value to the set
-  seen.add(list.head.value);
+	// Add the first node's value to the set
+	seen.add(list.head.value);
 
-  // Previous pointer starts at head, current at second node
-  let previous: Node<T> = list.head;
-  let current: Node<T> | null = list.head.next;
+	// Previous pointer starts at head, current at second node
+	let previous: Node<T> = list.head;
+	let current: Node<T> | null = list.head.next;
 
-  // Traverse the list
-  while (current) {
-    if (seen.has(current.value)) {
-      // Duplicate found - remove current node
-      previous.next = current.next;
-      list.length--; // Update length
+	// Traverse the list
+	while (current) {
+		if (seen.has(current.value)) {
+			// Duplicate found - remove current node
+			previous.next = current.next;
+			list.length--; // Update length
 
-      // If we removed the tail, update tail pointer
-      if (current === list.tail) {
-        list.tail = previous;
-      }
+			// If we removed the tail, update tail pointer
+			if (current === list.tail) {
+				list.tail = previous;
+			}
 
-      current = current.next; // Move to next node
-    } else {
-      // New value - add to set and move previous pointer
-      seen.add(current.value);
-      previous = current;
-      current = current.next;
-    }
-  }
+			current = current.next; // Move to next node
+		} else {
+			// New value - add to set and move previous pointer
+			seen.add(current.value);
+			previous = current;
+			current = current.next;
+		}
+	}
 }
 
 /**
@@ -385,19 +385,19 @@ export function removeDuplicates<T>(list: SinglyLinkedList<T>): void {
  * console.log(decimal); // 0
  */
 export function binaryToDecimal(list: SinglyLinkedList<number>): number {
-  // Handle empty list
-  if (!list.head) return 0;
+	// Handle empty list
+	if (!list.head) return 0;
 
-  let num = 0;
-  let temp: Node<number> | null = list.head;
+	let num = 0;
+	let temp: Node<number> | null = list.head;
 
-  // Traverse the list and build decimal value
-  while (temp) {
-    num = num * 2 + temp.value;
-    temp = temp.next;
-  }
+	// Traverse the list and build decimal value
+	while (temp) {
+		num = num * 2 + temp.value;
+		temp = temp.next;
+	}
 
-  return num;
+	return num;
 }
 
 /**
@@ -464,57 +464,57 @@ export function binaryToDecimal(list: SinglyLinkedList<number>): number {
  * console.log(list.peek()); // [1, 2, 2, 4, 3, 5] - maintains relative order within partitions
  */
 export function partitionList(
-  list: SinglyLinkedList<number>,
-  x: number,
+	list: SinglyLinkedList<number>,
+	x: number,
 ): SinglyLinkedList<number> {
-  // Handle empty list
-  if (!list.head) return list;
+	// Handle empty list
+	if (!list.head) return list;
 
-  // Create dummy nodes for two partitions
-  const dummyLess = new SinglyLinkedList<number>(0);
-  const dummyGreater = new SinglyLinkedList<number>(0);
+	// Create dummy nodes for two partitions
+	const dummyLess = new SinglyLinkedList<number>(0);
+	const dummyGreater = new SinglyLinkedList<number>(0);
 
-  // Pointers to build the two lists
-  let prevLess = dummyLess.head!;
-  let prevGreater = dummyGreater.head!;
+	// Pointers to build the two lists
+	let prevLess = dummyLess.head!;
+	let prevGreater = dummyGreater.head!;
 
-  // Traverse the original list
-  let current: Node<number> | null = list.head;
+	// Traverse the original list
+	let current: Node<number> | null = list.head;
 
-  while (current) {
-    const next: Node<number> | null = current.next; // Save next pointer before modifying
+	while (current) {
+		const next: Node<number> | null = current.next; // Save next pointer before modifying
 
-    if (current.value < x) {
-      // Add to "less than x" partition
-      prevLess.next = current;
-      prevLess = prevLess.next;
-    } else {
-      // Add to "greater or equal to x" partition
-      prevGreater.next = current;
-      prevGreater = prevGreater.next;
-    }
+		if (current.value < x) {
+			// Add to "less than x" partition
+			prevLess.next = current;
+			prevLess = prevLess.next;
+		} else {
+			// Add to "greater or equal to x" partition
+			prevGreater.next = current;
+			prevGreater = prevGreater.next;
+		}
 
-    current = next;
-  }
+		current = next;
+	}
 
-  // CRITICAL: Terminate the greater list to avoid cycles
-  prevGreater.next = null;
+	// CRITICAL: Terminate the greater list to avoid cycles
+	prevGreater.next = null;
 
-  // Connect the two partitions: less → greater
-  prevLess.next = dummyGreater.head!.next;
+	// Connect the two partitions: less → greater
+	prevLess.next = dummyGreater.head!.next;
 
-  // Update the list's head (skip dummy node)
-  list.head = dummyLess.head!.next;
+	// Update the list's head (skip dummy node)
+	list.head = dummyLess.head!.next;
 
-  // Update the tail pointer
-  // Tail is either the last node of greater list (if it has nodes) or last node of less list
-  if (dummyGreater.head!.next) {
-    list.tail = prevGreater;
-  } else {
-    list.tail = prevLess;
-  }
+	// Update the tail pointer
+	// Tail is either the last node of greater list (if it has nodes) or last node of less list
+	if (dummyGreater.head!.next) {
+		list.tail = prevGreater;
+	} else {
+		list.tail = prevLess;
+	}
 
-  return list;
+	return list;
 }
 
 /**
@@ -593,54 +593,54 @@ export function partitionList(
  * console.log(list.peek()); // [2, 1, 3]
  */
 export function reverseBetween<T>(
-  list: SinglyLinkedList<T>,
-  left: number,
-  right: number,
+	list: SinglyLinkedList<T>,
+	left: number,
+	right: number,
 ): SinglyLinkedList<T> {
-  // Handle edge cases
-  if (!list.head || left === right) return list;
+	// Handle edge cases
+	if (!list.head || left === right) return list;
 
-  // Create a dummy node to handle the case when left = 1
-  const dummy = { next: list.head } as Node<T>;
-  let beforeLeft: Node<T> | typeof dummy = dummy;
+	// Create a dummy node to handle the case when left = 1
+	const dummy = { next: list.head } as Node<T>;
+	let beforeLeft: Node<T> | typeof dummy = dummy;
 
-  // Phase 1: Navigate to the node before the left position
-  for (let i = 1; i < left; i++) {
-    beforeLeft = beforeLeft.next!;
-  }
+	// Phase 1: Navigate to the node before the left position
+	for (let i = 1; i < left; i++) {
+		beforeLeft = beforeLeft.next!;
+	}
 
-  // leftNode will become the last node of the reversed section
-  const leftNode = beforeLeft.next!;
+	// leftNode will become the last node of the reversed section
+	const leftNode = beforeLeft.next!;
 
-  // Phase 2: Reverse the sublist from left to right
-  let prev: Node<T> | null = null;
-  let current: Node<T> | null = leftNode;
+	// Phase 2: Reverse the sublist from left to right
+	let prev: Node<T> | null = null;
+	let current: Node<T> | null = leftNode;
 
-  // Reverse nodes from position left to right (inclusive)
-  for (let i = 0; i <= right - left; i++) {
-    const next: Node<T> | null = current!.next;
-    current!.next = prev;
-    prev = current;
-    current = next;
-  }
+	// Reverse nodes from position left to right (inclusive)
+	for (let i = 0; i <= right - left; i++) {
+		const next: Node<T> | null = current!.next;
+		current!.next = prev;
+		prev = current;
+		current = next;
+	}
 
-  // Phase 3: Reconnect the reversed portion
-  // prev now points to the new start of the reversed section (rightNode)
-  // current points to the node after right position
-  beforeLeft.next = prev;
-  leftNode.next = current;
+	// Phase 3: Reconnect the reversed portion
+	// prev now points to the new start of the reversed section (rightNode)
+	// current points to the node after right position
+	beforeLeft.next = prev;
+	leftNode.next = current;
 
-  // Update head if we reversed from position 1
-  if (left === 1) {
-    list.head = dummy.next;
-  }
+	// Update head if we reversed from position 1
+	if (left === 1) {
+		list.head = dummy.next;
+	}
 
-  // Update tail if we reversed to the end
-  if (!current) {
-    list.tail = leftNode;
-  }
+	// Update tail if we reversed to the end
+	if (!current) {
+		list.tail = leftNode;
+	}
 
-  return list;
+	return list;
 }
 
 /**
@@ -672,38 +672,38 @@ export function reverseBetween<T>(
  * // merged contains: 1 -> 2 -> 3 -> 4 -> 5 -> 6
  */
 export function mergeTwoSortedLists<T>(
-  list1: SinglyLinkedList<T>,
-  list2: SinglyLinkedList<T>,
+	list1: SinglyLinkedList<T>,
+	list2: SinglyLinkedList<T>,
 ): SinglyLinkedList<T> {
-  const result = new SinglyLinkedList<T>();
+	const result = new SinglyLinkedList<T>();
 
-  let current1 = list1.head;
-  let current2 = list2.head;
+	let current1 = list1.head;
+	let current2 = list2.head;
 
-  // Merge while both lists have nodes
-  while (current1 && current2) {
-    if ((current1.value as any) <= (current2.value as any)) {
-      result.push(current1.value);
-      current1 = current1.next;
-    } else {
-      result.push(current2.value);
-      current2 = current2.next;
-    }
-  }
+	// Merge while both lists have nodes
+	while (current1 && current2) {
+		if ((current1.value as any) <= (current2.value as any)) {
+			result.push(current1.value);
+			current1 = current1.next;
+		} else {
+			result.push(current2.value);
+			current2 = current2.next;
+		}
+	}
 
-  // Add remaining nodes from list1
-  while (current1) {
-    result.push(current1.value);
-    current1 = current1.next;
-  }
+	// Add remaining nodes from list1
+	while (current1) {
+		result.push(current1.value);
+		current1 = current1.next;
+	}
 
-  // Add remaining nodes from list2
-  while (current2) {
-    result.push(current2.value);
-    current2 = current2.next;
-  }
+	// Add remaining nodes from list2
+	while (current2) {
+		result.push(current2.value);
+		current2 = current2.next;
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -715,52 +715,52 @@ export function mergeTwoSortedLists<T>(
  * @returns Head of the resulting linked list
  */
 export function addTwoNumbers(
-  l1: Node<number> | null,
-  l2: Node<number> | null,
+	l1: Node<number> | null,
+	l2: Node<number> | null,
 ): Node<number> | null {
-  // Dummy head node to simplify list construction
-  const resultHead = new Node<number>(0);
+	// Dummy head node to simplify list construction
+	const resultHead = new Node<number>(0);
 
-  // Pointer used to build the result list
-  let current = resultHead;
+	// Pointer used to build the result list
+	let current = resultHead;
 
-  // Carry from previous digit addition (0 or 1)
-  let carry = 0;
+	// Carry from previous digit addition (0 or 1)
+	let carry = 0;
 
-  let temp1 = l1;
-  let temp2 = l2;
+	let temp1 = l1;
+	let temp2 = l2;
 
-  // Continue while there are digits left in either list
-  while (temp1 || temp2) {
-    // Use 0 if one list is shorter
-    const val1 = temp1 ? temp1.value : 0;
-    const val2 = temp2 ? temp2.value : 0;
+	// Continue while there are digits left in either list
+	while (temp1 || temp2) {
+		// Use 0 if one list is shorter
+		const val1 = temp1 ? temp1.value : 0;
+		const val2 = temp2 ? temp2.value : 0;
 
-    // Add digits plus carry
-    const sum = val1 + val2 + carry;
+		// Add digits plus carry
+		const sum = val1 + val2 + carry;
 
-    // Current digit is the last digit of sum
-    const digit = sum % 10;
+		// Current digit is the last digit of sum
+		const digit = sum % 10;
 
-    // Carry is everything beyond the last digit
-    carry = Math.floor(sum / 10);
+		// Carry is everything beyond the last digit
+		carry = Math.floor(sum / 10);
 
-    // Append the digit to the result list
-    current.next = new Node<number>(digit);
-    current = current.next;
+		// Append the digit to the result list
+		current.next = new Node<number>(digit);
+		current = current.next;
 
-    // Move input pointers forward
-    if (temp1) temp1 = temp1.next;
-    if (temp2) temp2 = temp2.next;
-  }
+		// Move input pointers forward
+		if (temp1) temp1 = temp1.next;
+		if (temp2) temp2 = temp2.next;
+	}
 
-  // If a carry remains, append it
-  if (carry) {
-    current.next = new Node<number>(carry);
-  }
+	// If a carry remains, append it
+	if (carry) {
+		current.next = new Node<number>(carry);
+	}
 
-  // Return the real head (skip dummy node)
-  return resultHead.next;
+	// Return the real head (skip dummy node)
+	return resultHead.next;
 }
 
 /**
@@ -792,26 +792,26 @@ export function addTwoNumbers(
  * @returns The same linked list with duplicates removed
  */
 export function removeDuplicatesFromSortedLinkedList<T>(
-  list: SinglyLinkedList<T>,
+	list: SinglyLinkedList<T>,
 ): SinglyLinkedList<T> {
-  if (!list.head) return list; // empty list
+	if (!list.head) return list; // empty list
 
-  let current = list.head;
+	let current = list.head;
 
-  while (current && current.next) {
-    const nextNode = current.next; // store next node separately
-    if (current.value === nextNode.value) {
-      // Duplicate found, remove next node
-      current.next = nextNode.next; // bypass duplicate
-      list.length--; // update length
-      if (!current.next) {
-        // If we removed the last node, update tail
-        list.tail = current;
-      }
-    } else {
-      current = current.next;
-    }
-  }
+	while (current && current.next) {
+		const nextNode = current.next; // store next node separately
+		if (current.value === nextNode.value) {
+			// Duplicate found, remove next node
+			current.next = nextNode.next; // bypass duplicate
+			list.length--; // update length
+			if (!current.next) {
+				// If we removed the last node, update tail
+				list.tail = current;
+			}
+		} else {
+			current = current.next;
+		}
+	}
 
-  return list;
+	return list;
 }
