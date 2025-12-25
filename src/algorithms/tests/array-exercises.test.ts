@@ -20,6 +20,8 @@ import {
   classPhoto,
   tandemBicycle,
   optimalFreelancing,
+  binarySearch,
+  threeLargestNumbers,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1233,5 +1235,168 @@ describe("optimalFreelancing", () => {
 
     // Only the valid job can be scheduled
     expect(result).toBe(30);
+  });
+});
+
+describe("binarySearch", () => {
+  test("should find target in the middle of the array", () => {
+    const arr = [1, 3, 5, 7, 9];
+    const index = binarySearch(arr, 5);
+
+    expect(index).toBe(2);
+  });
+
+  test("should find target at the beginning of the array", () => {
+    const arr = [2, 4, 6, 8, 10];
+    const index = binarySearch(arr, 2);
+
+    expect(index).toBe(0);
+  });
+
+  test("should find target at the end of the array", () => {
+    const arr = [2, 4, 6, 8, 10];
+    const index = binarySearch(arr, 10);
+
+    expect(index).toBe(4);
+  });
+
+  test("should return null when target is not present", () => {
+    const arr = [1, 2, 3, 4, 5];
+    const index = binarySearch(arr, 6);
+
+    expect(index).toBeNull();
+  });
+
+  test("should handle empty array", () => {
+    const arr: number[] = [];
+    const index = binarySearch(arr, 3);
+
+    expect(index).toBeNull();
+  });
+
+  test("should handle single-element array when target exists", () => {
+    const arr = [7];
+    const index = binarySearch(arr, 7);
+
+    expect(index).toBe(0);
+  });
+
+  test("should handle single-element array when target does not exist", () => {
+    const arr = [7];
+    const index = binarySearch(arr, 3);
+
+    expect(index).toBeNull();
+  });
+
+  test("should work with negative numbers", () => {
+    const arr = [-10, -5, -2, 0, 3, 8];
+    const index = binarySearch(arr, -5);
+
+    expect(index).toBe(1);
+  });
+
+  test("should work with duplicate values (returns any valid index)", () => {
+    const arr = [1, 2, 2, 2, 3];
+    const index = binarySearch(arr, 2);
+
+    expect(index).not.toBeNull();
+    expect(arr[index!]).toBe(2);
+  });
+
+  test("should not modify the input array", () => {
+    const arr = [1, 3, 5, 7, 9];
+    const copy = [...arr];
+
+    binarySearch(arr, 5);
+
+    expect(arr).toEqual(copy);
+  });
+
+  test("should handle target smaller than all elements", () => {
+    const arr = [5, 10, 15];
+    const index = binarySearch(arr, 1);
+
+    expect(index).toBeNull();
+  });
+
+  test("should handle target larger than all elements", () => {
+    const arr = [5, 10, 15];
+    const index = binarySearch(arr, 20);
+
+    expect(index).toBeNull();
+  });
+});
+
+describe("threeLargestNumbers", () => {
+  test("returns the three largest numbers in correct order", () => {
+    const nums = [10, 5, 9, 10, 12];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([10, 10, 12]);
+  });
+
+  test("handles array with exactly three elements", () => {
+    const nums = [1, 2, 3];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([1, 2, 3]);
+  });
+
+  test("handles negative numbers", () => {
+    const nums = [-10, -5, -2, -1];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([-5, -2, -1]);
+  });
+
+  test("handles duplicate values", () => {
+    const nums = [4, 4, 4, 4];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([4, 4, 4]);
+  });
+
+  test("handles mixed positive and negative values", () => {
+    const nums = [-1, 3, 0, 2, 5];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([2, 3, 5]);
+  });
+
+  test("handles numbers in descending order", () => {
+    const nums = [9, 8, 7, 6, 5];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([7, 8, 9]);
+  });
+
+  test("handles numbers in ascending order", () => {
+    const nums = [1, 2, 3, 4, 5];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([3, 4, 5]);
+  });
+
+  test("does not mutate the input array", () => {
+    const nums = [3, 1, 2, 4];
+    const copy = [...nums];
+
+    threeLargestNumbers(nums);
+
+    expect(nums).toEqual(copy);
+  });
+
+  test("handles large numbers", () => {
+    const nums = [Number.MIN_SAFE_INTEGER, 0, Number.MAX_SAFE_INTEGER, 42];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([0, 42, Number.MAX_SAFE_INTEGER]);
+  });
+
+  test("handles repeated insertion of same value", () => {
+    const nums = [5, 5, 1, 5, 2];
+    const result = threeLargestNumbers(nums);
+
+    expect(result).toEqual([5, 5, 5]);
   });
 });

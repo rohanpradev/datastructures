@@ -34,16 +34,16 @@
  * removeElement(arr, 2); // Returns 5, arr is now [0, 1, 3, 0, 4, _, _, _]
  */
 export function removeElement(nums: number[], val: number): number {
-	let k = 0; // Position for next valid element
+  let k = 0; // Position for next valid element
 
-	for (let i = 0; i < nums.length; i++) {
-		if (nums[i] !== val) {
-			nums[k] = nums[i]!;
-			k++;
-		}
-	}
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] !== val) {
+      nums[k] = nums[i]!;
+      k++;
+    }
+  }
 
-	return k;
+  return k;
 }
 
 /**
@@ -70,20 +70,20 @@ export function removeElement(nums: number[], val: number): number {
  * findMaxMin([-5, -1, -10, -3]); // [-1, -10]
  */
 export function findMaxMin(arr: number[]): [number, number] {
-	if (arr.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (arr.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let max = arr[0]!;
-	let min = arr[0]!;
+  let max = arr[0]!;
+  let min = arr[0]!;
 
-	for (let i = 1; i < arr.length; i++) {
-		const current = arr[i]!;
-		if (current > max) max = current;
-		if (current < min) min = current;
-	}
+  for (let i = 1; i < arr.length; i++) {
+    const current = arr[i]!;
+    if (current > max) max = current;
+    if (current < min) min = current;
+  }
 
-	return [max, min];
+  return [max, min];
 }
 
 /**
@@ -111,20 +111,20 @@ export function findMaxMin(arr: number[]): [number, number] {
  * findLongestString(["hello"]); // "hello"
  */
 export function findLongestString(strings: string[]): string {
-	if (strings.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (strings.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let longest = strings[0]!;
+  let longest = strings[0]!;
 
-	for (let i = 1; i < strings.length; i++) {
-		const current = strings[i]!;
-		if (current.length > longest.length) {
-			longest = current;
-		}
-	}
+  for (let i = 1; i < strings.length; i++) {
+    const current = strings[i]!;
+    if (current.length > longest.length) {
+      longest = current;
+    }
+  }
 
-	return longest;
+  return longest;
 }
 
 /**
@@ -154,18 +154,18 @@ export function findLongestString(strings: string[]): string {
  * removeDuplicates(arr); // Returns 5, arr is now [0, 1, 2, 3, 4, _, _, _, _, _]
  */
 export function removeDuplicates(nums: number[]): number {
-	if (nums.length === 0) return 0;
+  if (nums.length === 0) return 0;
 
-	let k = 0; // Position of last unique element
+  let k = 0; // Position of last unique element
 
-	for (let i = 1; i < nums.length; i++) {
-		if (nums[i] !== nums[k]) {
-			k++;
-			nums[k] = nums[i]!;
-		}
-	}
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] !== nums[k]) {
+      k++;
+      nums[k] = nums[i]!;
+    }
+  }
 
-	return k + 1;
+  return k + 1;
 }
 
 /**
@@ -194,29 +194,29 @@ export function removeDuplicates(nums: number[]): number {
  * maxProfit([2, 4, 1]); // 2 (buy at 2, sell at 4)
  */
 export function maxProfit(prices: number[]): number {
-	if (prices.length === 0) return 0;
+  if (prices.length === 0) return 0;
 
-	let minPrice = prices[0]!;
-	let maxProfit = 0;
+  let minPrice = prices[0]!;
+  let maxProfit = 0;
 
-	for (let i = 1; i < prices.length; i++) {
-		const currentPrice = prices[i]!;
+  for (let i = 1; i < prices.length; i++) {
+    const currentPrice = prices[i]!;
 
-		// Update minimum price if we found a lower one
-		if (currentPrice < minPrice) {
-			minPrice = currentPrice;
-		}
+    // Update minimum price if we found a lower one
+    if (currentPrice < minPrice) {
+      minPrice = currentPrice;
+    }
 
-		// Calculate profit if we sell at current price
-		const profit = currentPrice - minPrice;
+    // Calculate profit if we sell at current price
+    const profit = currentPrice - minPrice;
 
-		// Update maximum profit if current is better
-		if (profit > maxProfit) {
-			maxProfit = profit;
-		}
-	}
+    // Update maximum profit if current is better
+    if (profit > maxProfit) {
+      maxProfit = profit;
+    }
+  }
 
-	return maxProfit;
+  return maxProfit;
 }
 
 /**
@@ -251,30 +251,30 @@ export function maxProfit(prices: number[]): number {
  * rotate(arr, 2); // arr is now [3, 99, -1, -100]
  */
 export function rotate(nums: number[], k: number): void {
-	const n = nums.length;
-	if (n === 0) return;
+  const n = nums.length;
+  if (n === 0) return;
 
-	// Normalize k to be within array bounds
-	k = k % n;
-	if (k === 0) return;
+  // Normalize k to be within array bounds
+  k = k % n;
+  if (k === 0) return;
 
-	// Helper function to reverse array segment
-	const reverse = (start: number, end: number) => {
-		while (start < end) {
-			[nums[start], nums[end]] = [nums[end]!, nums[start]!];
-			start++;
-			end--;
-		}
-	};
+  // Helper function to reverse array segment
+  const reverse = (start: number, end: number) => {
+    while (start < end) {
+      [nums[start], nums[end]] = [nums[end]!, nums[start]!];
+      start++;
+      end--;
+    }
+  };
 
-	// Step 1: Reverse entire array
-	reverse(0, n - 1);
+  // Step 1: Reverse entire array
+  reverse(0, n - 1);
 
-	// Step 2: Reverse first k elements
-	reverse(0, k - 1);
+  // Step 2: Reverse first k elements
+  reverse(0, k - 1);
 
-	// Step 3: Reverse remaining n-k elements
-	reverse(k, n - 1);
+  // Step 3: Reverse remaining n-k elements
+  reverse(k, n - 1);
 }
 
 /**
@@ -307,24 +307,24 @@ export function rotate(nums: number[], k: number): void {
  * maxSubArray([-1, -2, -3]); // -1 (best single element)
  */
 export function maxSubArray(nums: number[]): number {
-	if (nums.length === 0) {
-		throw new Error("Array must not be empty");
-	}
+  if (nums.length === 0) {
+    throw new Error("Array must not be empty");
+  }
 
-	let currentSum = nums[0]!;
-	let maxSum = nums[0]!;
+  let currentSum = nums[0]!;
+  let maxSum = nums[0]!;
 
-	for (let i = 1; i < nums.length; i++) {
-		const current = nums[i]!;
+  for (let i = 1; i < nums.length; i++) {
+    const current = nums[i]!;
 
-		// Either extend current subarray or start new one
-		currentSum = Math.max(current, currentSum + current);
+    // Either extend current subarray or start new one
+    currentSum = Math.max(current, currentSum + current);
 
-		// Update maximum sum if current is better
-		maxSum = Math.max(maxSum, currentSum);
-	}
+    // Update maximum sum if current is better
+    maxSum = Math.max(maxSum, currentSum);
+  }
 
-	return maxSum;
+  return maxSum;
 }
 
 /**
@@ -370,39 +370,39 @@ export function maxSubArray(nums: number[]): number {
  * canFinishPrinting([], 1, 10);       // true (nothing to print)
  */
 export function canFinishPrinting(
-	batches: number[],
-	maxDays: number,
-	maxPagesPerDay: number,
+  batches: number[],
+  maxDays: number,
+  maxPagesPerDay: number,
 ): boolean {
-	let day = 1;
-	let dayLoad = 0;
-	let batchIndex = 0;
+  let day = 1;
+  let dayLoad = 0;
+  let batchIndex = 0;
 
-	while (batchIndex < batches.length) {
-		const nextBatch = batches[batchIndex]!;
+  while (batchIndex < batches.length) {
+    const nextBatch = batches[batchIndex]!;
 
-		// If a single batch exceeds daily capacity, impossible
-		if (nextBatch > maxPagesPerDay) {
-			return false;
-		}
+    // If a single batch exceeds daily capacity, impossible
+    if (nextBatch > maxPagesPerDay) {
+      return false;
+    }
 
-		// If adding this batch exceeds the limit, move to next day
-		if (dayLoad + nextBatch > maxPagesPerDay) {
-			day++;
-			if (day > maxDays) {
-				return false;
-			}
-			dayLoad = 0;
-			continue;
-		}
+    // If adding this batch exceeds the limit, move to next day
+    if (dayLoad + nextBatch > maxPagesPerDay) {
+      day++;
+      if (day > maxDays) {
+        return false;
+      }
+      dayLoad = 0;
+      continue;
+    }
 
-		// Otherwise, print this batch
-		dayLoad += nextBatch;
-		batchIndex++;
-	}
+    // Otherwise, print this batch
+    dayLoad += nextBatch;
+    batchIndex++;
+  }
 
-	// All batches printed within maxDays
-	return true;
+  // All batches printed within maxDays
+  return true;
 }
 
 /**
@@ -447,27 +447,27 @@ export function canFinishPrinting(
  * twoSum([1, 2, 3], 7);      // undefined
  */
 export function twoSum(
-	arr: number[],
-	target: number,
+  arr: number[],
+  target: number,
 ): [number, number] | undefined {
-	// Map from value → index where it was first seen
-	const seen: Record<number, number> = {};
+  // Map from value → index where it was first seen
+  const seen: Record<number, number> = {};
 
-	for (let i = 0; i < arr.length; i++) {
-		const current = arr[i]!;
-		const complement = target - current;
+  for (let i = 0; i < arr.length; i++) {
+    const current = arr[i]!;
+    const complement = target - current;
 
-		// If we've already seen the complement, we have a solution
-		if (seen[complement] !== undefined) {
-			return [seen[complement], i];
-		}
+    // If we've already seen the complement, we have a solution
+    if (seen[complement] !== undefined) {
+      return [seen[complement], i];
+    }
 
-		// Store the current value with its index
-		seen[current] = i;
-	}
+    // Store the current value with its index
+    seen[current] = i;
+  }
 
-	// No valid pair found
-	return undefined;
+  // No valid pair found
+  return undefined;
 }
 
 /**
@@ -514,25 +514,25 @@ export function twoSum(
  * validateSubsequence([1, 2, 3], [3, 2]);                          // false
  */
 export function validateSubsequence(
-	array: number[],
-	sequence: number[],
+  array: number[],
+  sequence: number[],
 ): boolean {
-	let arrayIndex = 0; // Pointer for the main array
-	let sequenceIndex = 0; // Pointer for the sequence we are matching
+  let arrayIndex = 0; // Pointer for the main array
+  let sequenceIndex = 0; // Pointer for the sequence we are matching
 
-	// Traverse the main array while there are still sequence elements to match
-	while (arrayIndex < array.length && sequenceIndex < sequence.length) {
-		// If elements match, move forward in the sequence
-		if (array[arrayIndex] === sequence[sequenceIndex]) {
-			sequenceIndex++;
-		}
+  // Traverse the main array while there are still sequence elements to match
+  while (arrayIndex < array.length && sequenceIndex < sequence.length) {
+    // If elements match, move forward in the sequence
+    if (array[arrayIndex] === sequence[sequenceIndex]) {
+      sequenceIndex++;
+    }
 
-		// Always move forward in the main array
-		arrayIndex++;
-	}
+    // Always move forward in the main array
+    arrayIndex++;
+  }
 
-	// If all sequence elements were matched, it is a valid subsequence
-	return sequenceIndex === sequence.length;
+  // If all sequence elements were matched, it is a valid subsequence
+  return sequenceIndex === sequence.length;
 }
 
 /**
@@ -549,37 +549,37 @@ export function validateSubsequence(
  * @returns A new array of sorted squared values
  */
 export function sortedSquaredArray(nums: number[]): number[] {
-	// Pointer starting at the beginning of the array
-	let startPointer = 0;
+  // Pointer starting at the beginning of the array
+  let startPointer = 0;
 
-	// Pointer starting at the end of the array
-	let endPointer = nums.length - 1;
+  // Pointer starting at the end of the array
+  let endPointer = nums.length - 1;
 
-	// Index to fill the result array from right to left
-	let i = nums.length - 1;
+  // Index to fill the result array from right to left
+  let i = nums.length - 1;
 
-	// Result array initialized with zeros
-	const sortedSquare: number[] = new Array(nums.length).fill(0);
+  // Result array initialized with zeros
+  const sortedSquare: number[] = new Array(nums.length).fill(0);
 
-	// Continue until both pointers have been processed
-	while (startPointer <= endPointer) {
-		const startVal = nums[startPointer];
-		const endVal = nums[endPointer];
+  // Continue until both pointers have been processed
+  while (startPointer <= endPointer) {
+    const startVal = nums[startPointer];
+    const endVal = nums[endPointer];
 
-		// Compare absolute values to decide which square is larger
-		if (Math.abs(startVal) > Math.abs(endVal)) {
-			sortedSquare[i] = startVal * startVal;
-			startPointer++;
-		} else {
-			sortedSquare[i] = endVal * endVal;
-			endPointer--;
-		}
+    // Compare absolute values to decide which square is larger
+    if (Math.abs(startVal) > Math.abs(endVal)) {
+      sortedSquare[i] = startVal * startVal;
+      startPointer++;
+    } else {
+      sortedSquare[i] = endVal * endVal;
+      endPointer--;
+    }
 
-		// Move to the next position from the right
-		i--;
-	}
+    // Move to the next position from the right
+    i--;
+  }
 
-	return sortedSquare;
+  return sortedSquare;
 }
 
 /**
@@ -620,34 +620,34 @@ export function sortedSquaredArray(nums: number[]): number[] {
  * ); // "Python"
  */
 export function tournamentWinner(
-	competitions: Array<[string, string]>,
-	results: number[],
+  competitions: Array<[string, string]>,
+  results: number[],
 ): string {
-	// Map to store win counts for each team
-	const winCounts: Record<string, number> = {};
+  // Map to store win counts for each team
+  const winCounts: Record<string, number> = {};
 
-	// Track the current tournament leader
-	let currentLeader = "";
-	let maxWins = 0;
+  // Track the current tournament leader
+  let currentLeader = "";
+  let maxWins = 0;
 
-	// Iterate through each competition
-	for (let i = 0; i < competitions.length; i++) {
-		const [homeTeam, awayTeam] = competitions[i];
+  // Iterate through each competition
+  for (let i = 0; i < competitions.length; i++) {
+    const [homeTeam, awayTeam] = competitions[i];
 
-		// Determine winner based on result
-		const winner = results[i] === 1 ? homeTeam : awayTeam;
+    // Determine winner based on result
+    const winner = results[i] === 1 ? homeTeam : awayTeam;
 
-		// Increment the winner's win count
-		winCounts[winner] = (winCounts[winner] ?? 0) + 1;
+    // Increment the winner's win count
+    winCounts[winner] = (winCounts[winner] ?? 0) + 1;
 
-		// Update leader if this team now has the most wins
-		if (winCounts[winner] > maxWins) {
-			maxWins = winCounts[winner];
-			currentLeader = winner;
-		}
-	}
+    // Update leader if this team now has the most wins
+    if (winCounts[winner] > maxWins) {
+      maxWins = winCounts[winner];
+      currentLeader = winner;
+    }
+  }
 
-	return currentLeader;
+  return currentLeader;
 }
 
 /**
@@ -666,23 +666,23 @@ export function tournamentWinner(
  * Space Complexity: O(1) (ignoring sort space)
  */
 export function nonConstructableChange(nums: number[]): number {
-	// Sort numerically (IMPORTANT)
-	nums.sort((a, b) => a - b);
+  // Sort numerically (IMPORTANT)
+  nums.sort((a, b) => a - b);
 
-	let change = 0;
+  let change = 0;
 
-	for (const val of nums) {
-		// If we cannot create change + 1, return it
-		if (val > change + 1) {
-			return change + 1;
-		}
+  for (const val of nums) {
+    // If we cannot create change + 1, return it
+    if (val > change + 1) {
+      return change + 1;
+    }
 
-		// Extend constructible range
-		change += val;
-	}
+    // Extend constructible range
+    change += val;
+  }
 
-	// All values are constructible up to `change`
-	return change + 1;
+  // All values are constructible up to `change`
+  return change + 1;
 }
 
 /**
@@ -715,20 +715,20 @@ export function nonConstructableChange(nums: number[]): number {
  *   so a new matrix must be created.
  */
 export function transpose(matrix: number[][]): number[][] {
-	const rows = matrix.length;
-	const cols = matrix[0].length;
+  const rows = matrix.length;
+  const cols = matrix[0].length;
 
-	// Create a new matrix with swapped dimensions (cols × rows)
-	const result: number[][] = Array.from({ length: cols }, () => Array(rows));
+  // Create a new matrix with swapped dimensions (cols × rows)
+  const result: number[][] = Array.from({ length: cols }, () => Array(rows));
 
-	// Copy values to their transposed positions
-	for (let i = 0; i < rows; i++) {
-		for (let j = 0; j < cols; j++) {
-			result[j][i] = matrix[i][j];
-		}
-	}
+  // Copy values to their transposed positions
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      result[j][i] = matrix[i][j];
+    }
+  }
 
-	return result;
+  return result;
 }
 
 /**
@@ -745,56 +745,56 @@ export function transpose(matrix: number[][]): number[][] {
  * @returns {boolean} True if both strings are equal after applying backspaces
  */
 export function backspaceStringCompare(str1: string, str2: string): boolean {
-	// Pointers starting from the end of each string
-	let i = str1.length - 1;
-	let j = str2.length - 1;
+  // Pointers starting from the end of each string
+  let i = str1.length - 1;
+  let j = str2.length - 1;
 
-	// Counters for how many characters to skip due to '#'
-	let skip1 = 0;
-	let skip2 = 0;
+  // Counters for how many characters to skip due to '#'
+  let skip1 = 0;
+  let skip2 = 0;
 
-	// Continue while there are characters left in either string
-	while (i >= 0 || j >= 0) {
-		// Move i to the next valid character in str1
-		while (i >= 0) {
-			if (str1[i] === "#") {
-				skip1++; // Found a backspace
-				i--;
-			} else if (skip1 > 0) {
-				skip1--; // Skip a character due to backspace
-				i--;
-			} else {
-				break; // Valid character found
-			}
-		}
+  // Continue while there are characters left in either string
+  while (i >= 0 || j >= 0) {
+    // Move i to the next valid character in str1
+    while (i >= 0) {
+      if (str1[i] === "#") {
+        skip1++; // Found a backspace
+        i--;
+      } else if (skip1 > 0) {
+        skip1--; // Skip a character due to backspace
+        i--;
+      } else {
+        break; // Valid character found
+      }
+    }
 
-		// Move j to the next valid character in str2
-		while (j >= 0) {
-			if (str2[j] === "#") {
-				skip2++;
-				j--;
-			} else if (skip2 > 0) {
-				skip2--;
-				j--;
-			} else {
-				break;
-			}
-		}
+    // Move j to the next valid character in str2
+    while (j >= 0) {
+      if (str2[j] === "#") {
+        skip2++;
+        j--;
+      } else if (skip2 > 0) {
+        skip2--;
+        j--;
+      } else {
+        break;
+      }
+    }
 
-		// Compare the current valid characters
-		const char1 = i >= 0 ? str1[i] : null;
-		const char2 = j >= 0 ? str2[j] : null;
+    // Compare the current valid characters
+    const char1 = i >= 0 ? str1[i] : null;
+    const char2 = j >= 0 ? str2[j] : null;
 
-		// If characters differ, strings are not equal
-		if (char1 !== char2) return false;
+    // If characters differ, strings are not equal
+    if (char1 !== char2) return false;
 
-		// Move both pointers left
-		i--;
-		j--;
-	}
+    // Move both pointers left
+    i--;
+    j--;
+  }
 
-	// All characters matched
-	return true;
+  // All characters matched
+  return true;
 }
 
 /**
@@ -816,34 +816,34 @@ export function backspaceStringCompare(str1: string, str2: string): boolean {
  * maxPlanesStopped(initialDistance, landingSpeed); // 4
  */
 export function maxPlanesStopped(
-	initialDistance: number[],
-	landingSpeed: number[],
+  initialDistance: number[],
+  landingSpeed: number[],
 ): number {
-	const numberOfPlanes = initialDistance.length;
+  const numberOfPlanes = initialDistance.length;
 
-	// 1. Compute landing times for each plane
-	const landingTimes: number[] = [];
-	for (let i = 0; i < numberOfPlanes; i++) {
-		// Use Math.ceil because a plane lands at the moment distance <= 0
-		landingTimes.push(Math.ceil(initialDistance[i] / landingSpeed[i]));
-	}
+  // 1. Compute landing times for each plane
+  const landingTimes: number[] = [];
+  for (let i = 0; i < numberOfPlanes; i++) {
+    // Use Math.ceil because a plane lands at the moment distance <= 0
+    landingTimes.push(Math.ceil(initialDistance[i] / landingSpeed[i]));
+  }
 
-	// 2. Sort landing times in ascending order
-	landingTimes.sort((a, b) => a - b);
+  // 2. Sort landing times in ascending order
+  landingTimes.sort((a, b) => a - b);
 
-	// 3. Greedily shoot planes one per second
-	let currentSecond = 0;
-	let planesStopped = 0;
+  // 3. Greedily shoot planes one per second
+  let currentSecond = 0;
+  let planesStopped = 0;
 
-	for (const landingTime of landingTimes) {
-		// Can we stop this plane before it lands?
-		if (currentSecond < landingTime) {
-			planesStopped++;
-			currentSecond++; // Move to next second for next plane
-		}
-	}
+  for (const landingTime of landingTimes) {
+    // Can we stop this plane before it lands?
+    if (currentSecond < landingTime) {
+      planesStopped++;
+      currentSecond++; // Move to next second for next plane
+    }
+  }
 
-	return planesStopped;
+  return planesStopped;
 }
 
 /**
@@ -863,18 +863,18 @@ export function maxPlanesStopped(
  * minimumWaitingTime([3, 2, 1, 2, 6]); // 17
  */
 export function minimumWaitingTime(nums: number[]): number {
-	// Sort tasks in ascending order to minimize waiting time
-	nums.sort((a, b) => a - b);
+  // Sort tasks in ascending order to minimize waiting time
+  nums.sort((a, b) => a - b);
 
-	let total = 0;
+  let total = 0;
 
-	// Each task contributes its duration to the waiting time
-	// of all tasks that come after it
-	for (let i = 0; i < nums.length; i++) {
-		total += nums[i] * (nums.length - i - 1);
-	}
+  // Each task contributes its duration to the waiting time
+  // of all tasks that come after it
+  for (let i = 0; i < nums.length; i++) {
+    total += nums[i] * (nums.length - i - 1);
+  }
 
-	return total;
+  return total;
 }
 
 /**
@@ -887,32 +887,32 @@ export function minimumWaitingTime(nums: number[]): number {
  * @returns True if a valid class photo arrangement exists, otherwise false
  */
 export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
-	// If the groups are not the same size, a valid photo is impossible
-	if (redShirts.length !== blueShirts.length) return false;
+  // If the groups are not the same size, a valid photo is impossible
+  if (redShirts.length !== blueShirts.length) return false;
 
-	// Sort both arrays from tallest to shortest
-	redShirts.sort((a, b) => b - a);
-	blueShirts.sort((a, b) => b - a);
+  // Sort both arrays from tallest to shortest
+  redShirts.sort((a, b) => b - a);
+  blueShirts.sort((a, b) => b - a);
 
-	// If the tallest students are the same height, no valid back row exists
-	if (redShirts[0] === blueShirts[0]) return false;
+  // If the tallest students are the same height, no valid back row exists
+  if (redShirts[0] === blueShirts[0]) return false;
 
-	// Determine which color must be in the back row
-	const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
+  // Determine which color must be in the back row
+  const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
 
-	// Compare each pair of students by height
-	for (let i = 0; i < redShirts.length; i++) {
-		if (backRow === "red") {
-			// Red shirts must be strictly taller than blue shirts
-			if (redShirts[i] <= blueShirts[i]) return false;
-		} else {
-			// Blue shirts must be strictly taller than red shirts
-			if (blueShirts[i] <= redShirts[i]) return false;
-		}
-	}
+  // Compare each pair of students by height
+  for (let i = 0; i < redShirts.length; i++) {
+    if (backRow === "red") {
+      // Red shirts must be strictly taller than blue shirts
+      if (redShirts[i] <= blueShirts[i]) return false;
+    } else {
+      // Blue shirts must be strictly taller than red shirts
+      if (blueShirts[i] <= redShirts[i]) return false;
+    }
+  }
 
-	// All students satisfy the height requirement
-	return true;
+  // All students satisfy the height requirement
+  return true;
 }
 
 /**
@@ -927,37 +927,37 @@ export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
  * @returns The total speed of all tandem bicycles
  */
 export function tandemBicycle(
-	redShirtSpeeds: number[],
-	blueShirtSpeeds: number[],
-	fastest: boolean,
+  redShirtSpeeds: number[],
+  blueShirtSpeeds: number[],
+  fastest: boolean,
 ): number {
-	// Sort both arrays in ascending order
-	redShirtSpeeds.sort((a, b) => a - b);
-	blueShirtSpeeds.sort((a, b) => a - b);
+  // Sort both arrays in ascending order
+  redShirtSpeeds.sort((a, b) => a - b);
+  blueShirtSpeeds.sort((a, b) => a - b);
 
-	let totalSpeed = 0;
-	const n = redShirtSpeeds.length;
+  let totalSpeed = 0;
+  const n = redShirtSpeeds.length;
 
-	// Pointer for blue-shirt riders
-	let blueIndex = fastest ? n - 1 : 0;
+  // Pointer for blue-shirt riders
+  let blueIndex = fastest ? n - 1 : 0;
 
-	// Always iterate from slowest red to fastest red
-	for (let i = 0; i < n; i++) {
-		const redSpeed = redShirtSpeeds[i];
-		const blueSpeed = blueShirtSpeeds[blueIndex];
+  // Always iterate from slowest red to fastest red
+  for (let i = 0; i < n; i++) {
+    const redSpeed = redShirtSpeeds[i];
+    const blueSpeed = blueShirtSpeeds[blueIndex];
 
-		// Tandem speed is determined by the faster rider
-		totalSpeed += Math.max(redSpeed, blueSpeed);
+    // Tandem speed is determined by the faster rider
+    totalSpeed += Math.max(redSpeed, blueSpeed);
 
-		// Adjust blue pointer based on goal
-		if (fastest) {
-			blueIndex--; // pair slow red with fast blue
-		} else {
-			blueIndex++; // pair slow red with slow blue
-		}
-	}
+    // Adjust blue pointer based on goal
+    if (fastest) {
+      blueIndex--; // pair slow red with fast blue
+    } else {
+      blueIndex++; // pair slow red with slow blue
+    }
+  }
 
-	return totalSpeed;
+  return totalSpeed;
 }
 
 /**
@@ -987,30 +987,135 @@ export function tandemBicycle(
  * - O(7) → constant extra space
  */
 export function optimalFreelancing(
-	jobs: Array<{ deadline: number; payment: number }>,
+  jobs: Array<{ deadline: number; payment: number }>,
 ) {
-	const slots = new Array(7).fill(null); // days 1–7 → indices 0–6
-	// Sort jobs by highest payment first.  This is the key greedy choice.
-	jobs.sort((a, b) => b.payment - a.payment);
+  const slots = new Array(7).fill(null); // days 1–7 → indices 0–6
+  // Sort jobs by highest payment first.  This is the key greedy choice.
+  jobs.sort((a, b) => b.payment - a.payment);
 
-	let totalMoney = 0;
+  let totalMoney = 0;
 
-	for (const job of jobs) {
-		// try latest available day
-		let idx = Math.min(job.deadline - 1, 6);
+  for (const job of jobs) {
+    // try latest available day
+    let idx = Math.min(job.deadline - 1, 6);
 
-		while (idx >= 0) {
-			// If this day is free, schedule the job here
-			if (slots[idx] === null) {
-				slots[idx] = job.payment;
-				totalMoney += job.payment;
-				break;
-			}
-			// Otherwise, try the previous day
-			idx--;
-		}
-		// If no day was available, this job is skipped
-	}
+    while (idx >= 0) {
+      // If this day is free, schedule the job here
+      if (slots[idx] === null) {
+        slots[idx] = job.payment;
+        totalMoney += job.payment;
+        break;
+      }
+      // Otherwise, try the previous day
+      idx--;
+    }
+    // If no day was available, this job is skipped
+  }
 
-	return totalMoney;
+  return totalMoney;
+}
+
+/**
+ * Performs a binary search on a sorted array to find the index of the target element.
+ * The function assumes that the input array is sorted in ascending order.
+ *
+ * @param {number[]} nums - The sorted array of numbers to search through.
+ * @param {number} target - The value to search for within the array.
+ *
+ * @returns {number | null} The index of the target element if found, or `null` if the target is not in the array.
+ */
+export function binarySearch(nums: number[], target: number): number | null {
+  // Initialize the left and right pointers
+  let left = 0; // Left boundary of the search range
+  let right = nums.length - 1; // Right boundary of the search range
+
+  // Continue searching while there is a valid range to check
+  while (left <= right) {
+    // Calculate the middle index to avoid overflow issues
+    const mid = Math.floor((left + right) / 2);
+
+    // The value at the middle index
+    const value = nums[mid];
+
+    // Check if the target is smaller than the middle value
+    if (target < value) {
+      // If target is smaller, discard the right half of the array
+      right = mid - 1;
+    }
+    // Check if the target is larger than the middle value
+    else if (target > value) {
+      // If target is larger, discard the left half of the array
+      left = mid + 1;
+    }
+    // The target is equal to the value at the middle
+    else {
+      // Return the index of the found target
+      return mid;
+    }
+  }
+
+  // Return null if the target was not found
+  return null;
+}
+
+/**
+ * Finds the three largest numbers in an array.
+ *
+ * The function iterates through the array once and keeps track of the
+ * three largest values seen so far using a fixed-size array.
+ *
+ * The returned array is ordered as:
+ * [thirdLargest, secondLargest, largest]
+ *
+ * @param {number[]} nums - The input array of numbers (length >= 3).
+ * @returns {number[]} An array containing the three largest numbers.
+ *
+ * @example
+ * threeLargestNumbers([10, 5, 9, 10, 12]);
+ * // → [10, 10, 12]
+ *
+ * @complexity
+ * Time: O(n) — single pass through the array
+ * Space: O(1) — constant extra space
+ */
+export function threeLargestNumbers(nums: number[]): number[] {
+  // Stores the three largest numbers found so far:
+  // result[0] → third largest
+  // result[1] → second largest
+  // result[2] → largest
+  const result = [-Infinity, -Infinity, -Infinity];
+
+  // Iterate through each number in the input array
+  for (const num of nums) {
+    // If the current number is larger than the largest value
+    if (num > result[2]) {
+      // Shift values down and insert the new largest
+      result[0] = result[1];
+      result[1] = result[2];
+      result[2] = num;
+    }
+    // If the number is between the largest and second largest
+    else if (num > result[1]) {
+      // Shift the second largest down and insert
+      result[0] = result[1];
+      result[1] = num;
+    }
+    // If the number is between the second and third largest
+    else if (num > result[0]) {
+      result[0] = num;
+    }
+  }
+
+  // Return the three largest numbers
+  return result;
+}
+
+function shiftAndUpdate(arr: number[], value: number, idx: number) {
+  // Shift elements left starting from index 0 up to idx-1
+  for (let i = 0; i < idx; i++) {
+    arr[i] = arr[i + 1];
+  }
+
+  // Insert the new value at the target index
+  arr[idx] = value;
 }

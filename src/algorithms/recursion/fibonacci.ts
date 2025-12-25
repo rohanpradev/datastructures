@@ -45,11 +45,11 @@
  * fibonacci(10) // 55
  */
 export function fibonacci(n: number): number {
-	// Base cases
-	if (n <= 1) return n;
+  // Base cases
+  if (n <= 1) return n;
 
-	// Recursive case: F(n) = F(n-1) + F(n-2)
-	return fibonacci(n - 1) + fibonacci(n - 2);
+  // Recursive case: F(n) = F(n-1) + F(n-2)
+  return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 /**
@@ -94,24 +94,24 @@ export function fibonacci(n: number): number {
  * fibonacciMemo(100) // 354224848179262000000
  */
 export function fibonacciMemo(
-	n: number,
-	memo: Map<number, number> = new Map(),
+  n: number,
+  memo: Map<number, number> = new Map(),
 ): number {
-	// Check memo first
-	if (memo.has(n)) {
-		return memo.get(n)!;
-	}
+  // Check memo first
+  if (memo.has(n)) {
+    return memo.get(n)!;
+  }
 
-	// Base cases
-	if (n <= 1) {
-		return n;
-	}
+  // Base cases
+  if (n <= 1) {
+    return n;
+  }
 
-	// Compute and cache result
-	const result = fibonacciMemo(n - 1, memo) + fibonacciMemo(n - 2, memo);
-	memo.set(n, result);
+  // Compute and cache result
+  const result = fibonacciMemo(n - 1, memo) + fibonacciMemo(n - 2, memo);
+  memo.set(n, result);
 
-	return result;
+  return result;
 }
 
 /**
@@ -156,21 +156,21 @@ export function fibonacciMemo(
  * fibonacciBottomUp(100) // 354224848179262000000
  */
 export function fibonacciBottomUp(n: number): number {
-	// Base cases
-	if (n <= 1) return n;
+  // Base cases
+  if (n <= 1) return n;
 
-	// Initialize with base cases
-	let prev = 0; // F(0)
-	let current = 1; // F(1)
+  // Initialize with base cases
+  let prev = 0; // F(0)
+  let current = 1; // F(1)
 
-	// Build up from F(2) to F(n)
-	for (let i = 2; i <= n; i++) {
-		const next = prev + current; // F(i) = F(i-1) + F(i-2)
-		prev = current; // Shift window
-		current = next;
-	}
+  // Build up from F(2) to F(n)
+  for (let i = 2; i <= n; i++) {
+    const next = prev + current; // F(i) = F(i-1) + F(i-2)
+    prev = current; // Shift window
+    current = next;
+  }
 
-	return current;
+  return current;
 }
 
 /**
@@ -189,16 +189,16 @@ export function fibonacciBottomUp(n: number): number {
  * fibonacciArray(6) // [0, 1, 1, 2, 3, 5, 8]
  */
 export function fibonacciArray(n: number): number[] {
-	if (n === 0) return [0];
-	if (n === 1) return [0, 1];
+  if (n === 0) return [0];
+  if (n === 1) return [0, 1];
 
-	const fib: number[] = [0, 1];
+  const fib: number[] = [0, 1];
 
-	for (let i = 2; i <= n; i++) {
-		fib[i] = fib[i - 1]! + fib[i - 2]!;
-	}
+  for (let i = 2; i <= n; i++) {
+    fib[i] = fib[i - 1]! + fib[i - 2]!;
+  }
 
-	return fib;
+  return fib;
 }
 
 /**
@@ -216,24 +216,24 @@ export function fibonacciArray(n: number): number[] {
  * // Bottom-up: 832040 (1ms)
  */
 export function compareFibonacci(n: number): void {
-	console.log(`\nComputing Fibonacci(${n}):\n`);
+  console.log(`\nComputing Fibonacci(${n}):\n`);
 
-	if (n <= 40) {
-		const start1 = performance.now();
-		const result1 = fibonacci(n);
-		const time1 = performance.now() - start1;
-		console.log(`Naive recursive: ${result1} (${time1.toFixed(2)}ms)`);
-	} else {
-		console.log(`Naive recursive: Skipped (too slow for n > 40)`);
-	}
+  if (n <= 40) {
+    const start1 = performance.now();
+    const result1 = fibonacci(n);
+    const time1 = performance.now() - start1;
+    console.log(`Naive recursive: ${result1} (${time1.toFixed(2)}ms)`);
+  } else {
+    console.log(`Naive recursive: Skipped (too slow for n > 40)`);
+  }
 
-	const start2 = performance.now();
-	const result2 = fibonacciMemo(n);
-	const time2 = performance.now() - start2;
-	console.log(`Memoized: ${result2} (${time2.toFixed(2)}ms)`);
+  const start2 = performance.now();
+  const result2 = fibonacciMemo(n);
+  const time2 = performance.now() - start2;
+  console.log(`Memoized: ${result2} (${time2.toFixed(2)}ms)`);
 
-	const start3 = performance.now();
-	const result3 = fibonacciBottomUp(n);
-	const time3 = performance.now() - start3;
-	console.log(`Bottom-up: ${result3} (${time3.toFixed(2)}ms)\n`);
+  const start3 = performance.now();
+  const result3 = fibonacciBottomUp(n);
+  const time3 = performance.now() - start3;
+  console.log(`Bottom-up: ${result3} (${time3.toFixed(2)}ms)\n`);
 }

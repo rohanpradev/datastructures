@@ -2235,6 +2235,276 @@ The key insight is that **once the tallest students determine the back row**, th
 
 ---
 
+## Problem : Binary Search (LeetCode 704)
+
+### Problem Statement
+
+Given a **sorted** array of integers `nums` and an integer `target`, return the **index** of `target` if it exists in the array.
+If `target` does not exist, return `null`.
+
+> ⚠️ The array is sorted in **ascending order**, which makes binary search possible.
+
+---
+
+### Example
+
+```
+Input: nums = [-1, 0, 3, 5, 9, 12], target = 9
+Output: 4
+Explanation: 9 exists at index 4
+
+Input: nums = [-1, 0, 3, 5, 9, 12], target = 2
+Output: null
+Explanation: 2 does not exist in the array
+```
+
+---
+
+### Visual Explanation
+
+```
+nums = [-1, 0, 3, 5, 9, 12]
+target = 9
+
+left = 0, right = 5
+
+Step 1:
+mid = floor((0 + 5) / 2) = 2
+nums[mid] = 3
+
+3 < 9 → Search right half
+left = mid + 1 = 3
+
+Step 2:
+mid = floor((3 + 5) / 2) = 4
+nums[mid] = 9
+
+Found target at index 4 ✅
+```
+
+---
+
+### Algorithm (Binary Search)
+
+```
+1. Initialize left = 0 and right = nums.length - 1
+2. While left ≤ right:
+   - Compute mid = floor((left + right) / 2)
+   - If nums[mid] == target → return mid
+   - If nums[mid] < target → search right half (left = mid + 1)
+   - If nums[mid] > target → search left half (right = mid - 1)
+3. If loop ends, target is not present → return null
+```
+
+---
+
+### Implementation Steps
+
+```typescript
+export function binarySearch(nums: number[], target: number): number | null {
+  // TODO: Initialize left and right pointers
+  // TODO: Loop while left <= right
+  // TODO: Calculate mid index
+  // TODO: Compare nums[mid] with target
+  // TODO: Adjust search range accordingly
+  // TODO: Return index if found, otherwise null
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** O(log n) — search space is halved each iteration
+- **Space:** O(1) — no extra memory used
+
+---
+
+### Notes
+
+- Binary search **only works on sorted arrays**
+- If duplicates exist, **any valid index** of the target may be returned
+- The function does **not modify** the input array
+
+---
+
+## Problem : Three Largest Numbers
+
+### Problem Statement
+
+Given an array of integers `nums`, return the **three largest numbers** in the array.
+
+The function should:
+
+- Run in **O(n)** time
+- Use **O(1)** extra space
+- **Not sort** the array
+- **Not modify** the input array
+
+The returned array should be ordered as:
+
+```
+[thirdLargest, secondLargest, largest]
+```
+
+---
+
+### Example
+
+```
+Input: nums = [10, 5, 9, 10, 12]
+Output: [10, 10, 12]
+
+Input: nums = [-1, 3, 0, 2, 5]
+Output: [2, 3, 5]
+```
+
+---
+
+### Visual Explanation
+
+```
+nums = [10, 5, 9, 10, 12]
+
+Start:
+result = [-∞, -∞, -∞]
+           ^    ^    ^
+          3rd  2nd  1st
+
+Read 10:
+result = [-∞, -∞, 10]
+
+Read 5:
+result = [-∞, 5, 10]
+
+Read 9:
+result = [5, 9, 10]
+
+Read 10:
+result = [9, 10, 10]
+
+Read 12:
+result = [10, 10, 12]
+```
+
+---
+
+Got it! Here’s the **updated README** for **Three Largest Numbers**, keeping the structure and explanations but replacing the implementation with **TODO comments** so the user can implement it themselves:
+
+---
+
+## Problem : Three Largest Numbers
+
+### Problem Statement
+
+Given an array of integers `nums`, return the **three largest numbers** in the array.
+
+The function should:
+
+- Run in **O(n)** time
+- Use **O(1)** extra space
+- **Not sort** the array
+- **Not modify** the input array
+
+The returned array is ordered as:
+
+```
+[thirdLargest, secondLargest, largest]
+```
+
+---
+
+### Example
+
+```
+Input: nums = [10, 5, 9, 10, 12]
+Output: [10, 10, 12]
+
+Input: nums = [-1, 3, 0, 2, 5]
+Output: [2, 3, 5]
+```
+
+---
+
+### Visual Explanation
+
+```
+nums = [10, 5, 9, 10, 12]
+
+Start:
+result = [-∞, -∞, -∞]   // [thirdLargest, secondLargest, largest]
+
+Read 10:
+result = [-∞, -∞, 10]
+
+Read 5:
+result = [-∞, 5, 10]
+
+Read 9:
+result = [5, 9, 10]
+
+Read 10:
+result = [9, 10, 10]
+
+Read 12:
+result = [10, 10, 12]
+```
+
+---
+
+### Algorithm (Single-Pass Tracking with Helper)
+
+1. Initialize `result = [-∞, -∞, -∞]`
+   - `result[0]` → third largest
+   - `result[1]` → second largest
+   - `result[2]` → largest
+
+2. For each number in `nums`:
+   - If number > `result[2]`: insert as largest
+   - Else if number > `result[1]`: insert as second largest
+   - Else if number > `result[0]`: insert as third largest
+
+3. Use a helper function `shiftAndUpdate` to shift smaller elements left and insert the new value at the correct index.
+
+4. Return `result`.
+
+---
+
+### Implementation
+
+```typescript
+export function threeLargestNumbers(nums: number[]): number[] {
+  // TODO: Initialize result array to [-Infinity, -Infinity, -Infinity]
+  // TODO: Iterate through each number in nums
+  // TODO: Use conditional logic to determine if num should go in result
+  // TODO: Call shiftAndUpdate to insert at correct index
+  // TODO: Return result
+}
+
+function shiftAndUpdate(arr: number[], value: number, index: number) {
+  // TODO: Shift smaller elements left to make room for new value
+  // TODO: Insert value at the specified index
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n)` — one pass through the array
+- **Space:** `O(1)` — constant extra space
+
+---
+
+### Notes
+
+- Handles **negative numbers**
+- Supports **duplicate values**
+- Does **not mutate** the input array
+- Assumes `nums.length >= 3`
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
