@@ -22,23 +22,23 @@
  * @returns The calculated product sum
  */
 export function productSum(
-  nums: (number | number[])[],
-  multiplier: number = 1,
+	nums: (number | number[])[],
+	multiplier: number = 1,
 ): number {
-  let sum = 0;
+	let sum = 0;
 
-  // Iterate through each value in the current array level
-  for (const value of nums) {
-    if (Array.isArray(value)) {
-      // Recursively compute the product sum of nested arrays,
-      // increasing the multiplier to reflect deeper nesting
-      sum += productSum(value, multiplier + 1);
-    } else {
-      // Add plain numbers directly to the current level's sum
-      sum += value;
-    }
-  }
+	// Iterate through each value in the current array level
+	for (const value of nums) {
+		if (Array.isArray(value)) {
+			// Recursively compute the product sum of nested arrays,
+			// increasing the multiplier to reflect deeper nesting
+			sum += productSum(value, multiplier + 1);
+		} else {
+			// Add plain numbers directly to the current level's sum
+			sum += value;
+		}
+	}
 
-  // Apply the multiplier for this depth level once
-  return sum * multiplier;
+	// Apply the multiplier for this depth level once
+	return sum * multiplier;
 }
