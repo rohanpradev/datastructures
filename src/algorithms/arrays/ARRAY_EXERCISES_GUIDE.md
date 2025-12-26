@@ -2505,6 +2505,272 @@ function shiftAndUpdate(arr: number[], value: number, index: number) {
 
 ---
 
+## Caesar Cipher Encryptor
+
+### Problem Statement
+
+Given a string and a numeric `shift`, encrypt the string using a **Caesar Cipher**.
+
+A Caesar Cipher shifts each **alphabetic character** forward in the alphabet by a fixed number of positions.
+
+---
+
+### Rules
+
+- Lowercase letters (`a–z`) remain lowercase
+- Uppercase letters (`A–Z`) remain uppercase
+- Alphabet wrapping is supported (`z → a`, `Z → A`)
+- Special characters (spaces, numbers, symbols) are **not changed**
+- Shift values can be positive, negative, or greater than 26
+
+---
+
+### Example
+
+```
+Input:  "abc", shift = 1
+Output: "bcd"
+
+Input:  "xyz", shift = 2
+Output: "zab"
+
+Input:  "Hello, World!", shift = 3
+Output: "Khoor, Zruog!"
+```
+
+---
+
+### Visual Explanation
+
+```
+Alphabet Index Mapping:
+a b c d e ... x y z
+0 1 2 3 4     23 24 25
+
+Example: "xyz", shift = 2
+
+x (23) + 2 → z (25)
+y (24) + 2 → a (wrap)
+z (25) + 2 → b (wrap)
+
+Result: "zab"
+```
+
+---
+
+### Uppercase & Lowercase Handling
+
+```
+Input:  "AbCz", shift = 1
+Output: "BcDa"
+```
+
+- Uppercase and lowercase characters are processed separately
+- Case is preserved after shifting
+
+---
+
+### Special Characters
+
+Non-alphabet characters are not encrypted.
+
+```
+Input:  "Hello, World! 123"
+Output: "Mjqqt, Btwqi! 123"
+```
+
+---
+
+### Algorithm Overview
+
+```
+1. Normalize the shift to stay within 0–25
+2. Create an empty result string
+3. Loop through each character in the input string
+4. If character is lowercase:
+   - Convert to alphabet index (0–25)
+   - Apply shift and wrap using modulo
+   - Convert back to lowercase letter
+5. Else if character is uppercase:
+   - Convert to alphabet index (0–25)
+   - Apply shift and wrap using modulo
+   - Convert back to uppercase letter
+6. Else:
+   - Append character as-is
+7. Return the encrypted string
+```
+
+---
+
+### Implementation Steps (with TODOs)
+
+```ts
+export function caesarCipherEncryptor(str: string, shift: number): string {
+  // TODO: Define the alphabet size (26)
+  // TODO: Normalize the shift to handle negative and large values
+  // TODO: Initialize an empty string to store the encrypted result
+  // TODO: Loop through each character in the input string
+  // TODO: Get the character code of the current character
+  // TODO: Check if the character is a lowercase letter (a–z)
+  // TODO: Convert character code to a 0–25 range
+  // TODO: Apply the shift and wrap using modulo
+  // TODO: Convert back to a lowercase character and append to result
+  // TODO: Else if the character is an uppercase letter (A–Z)
+  // TODO: Convert character code to a 0–25 range
+  // TODO: Apply the shift and wrap using modulo
+  // TODO: Convert back to an uppercase character and append to result
+  // TODO: Else (non-alphabet character)
+  // TODO: Append the character without modifying it
+  // TODO: Return the final encrypted string
+}
+```
+
+---
+
+### Why Modulo (%) Is Important
+
+Modulo ensures the shift wraps around the alphabet:
+
+```
+'z' + 1 → 'a'
+'Z' + 1 → 'A'
+```
+
+It also allows:
+
+- Large shifts (`shift = 28`)
+- Negative shifts (`shift = -1`)
+
+---
+
+### Complexity
+
+- **Time:** O(n) — processes each character once
+- **Space:** O(n) — creates a new encrypted string
+
+---
+
+# Run-Length Encoding (RLE)
+
+### Problem Statement
+
+Run-Length Encoding (RLE) is a **simple form of data compression** where consecutive repeated characters are replaced by a **count followed by the character**.
+
+The goal is to **compress repeated characters** in a string while keeping counts ≤ 9.
+
+---
+
+### Rules
+
+- Only consecutive **alphabetic characters** are counted.
+- **Counts are capped at 9** — longer runs are split.
+- Non-repeated characters are encoded as `1<character>`.
+- The function should handle:
+  - Empty strings
+  - Single-character strings
+  - Long runs
+
+---
+
+### Examples
+
+```
+Input:  "aaabbc"
+Output: "3a2b1c"
+
+Input:  "AAAAAAAAAAAAABBCCCCDD"
+Output: "9A4A2B4C2D"
+
+Input:  "ABABAB"
+Output: "1A1B1A1B1A1B"
+
+Input:  "A"
+Output: "1A"
+
+Input:  ""
+Output: ""
+```
+
+---
+
+### Visual Explanation
+
+Input: `"AAAAAAAAAAAAABBCCCCDD"`
+
+```
+AAAAAAAAAAAAA → 13 A's
+Split into 9A + 4A
+
+BB            → 2 B's → 2B
+CCCC          → 4 C's → 4C
+DD            → 2 D's → 2D
+
+Final Encoded: 9A4A2B4C2D
+```
+
+---
+
+### Algorithm (Step-by-Step)
+
+1. Initialize:
+   - `count = 1`
+   - `currentChar = first character of string`
+
+2. Loop through the string starting at index 1:
+   - If the current character is the same as `currentChar` and `count < 9`, increment `count`.
+   - Else:
+     - Append `count` + `currentChar` to the result.
+     - Reset `currentChar = current character` and `count = 1`.
+
+3. After the loop, append the **final run** (`count + currentChar`) to the result.
+4. Return the encoded string.
+
+---
+
+### Implementation Steps (with TODOs)
+
+```ts
+export function runLengthEncoding(str: string): string {
+  // TODO: Handle empty string case
+  // TODO: Initialize array to store encoded result
+  // TODO: Initialize count = 1 and currentChar = str[0]
+  // TODO: Loop through string from index 1
+  // TODO: If same character and count < 9, increment count
+  // TODO: Else, push count + currentChar to array, reset currentChar and count
+  // TODO: After loop, push final count + currentChar
+  // TODO: Join array into a single string and return
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** O(n) — each character is processed once
+- **Space:** O(n) — new array for encoded string
+
+---
+
+### Edge Cases
+
+| Input          | Output       |
+| -------------- | ------------ |
+| `""`           | `""`         |
+| `"A"`          | `"1A"`       |
+| `"AAAAAAAAAA"` | `"9A1A"`     |
+| `"ABCD"`       | `"1A1B1C1D"` |
+
+---
+
+### Summary
+
+✅ Encodes repeated characters efficiently
+✅ Handles counts > 9 by splitting runs
+✅ Works for empty and single-character strings
+✅ Clear, step-by-step logic for interviews
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

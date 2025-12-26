@@ -22,6 +22,8 @@ import {
   optimalFreelancing,
   binarySearch,
   threeLargestNumbers,
+  caesarCipherEncryptor,
+  runLengthEncoding,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1398,5 +1400,127 @@ describe("threeLargestNumbers", () => {
     const result = threeLargestNumbers(nums);
 
     expect(result).toEqual([5, 5, 5]);
+  });
+});
+
+describe("caesarCipherEncryptor", () => {
+  test("shifts lowercase letters correctly", () => {
+    const result = caesarCipherEncryptor("abc", 1);
+    expect(result).toBe("bcd");
+  });
+
+  test("wraps around the alphabet", () => {
+    const result = caesarCipherEncryptor("xyz", 2);
+    expect(result).toBe("zab");
+  });
+
+  test("handles shift values greater than 26", () => {
+    const result = caesarCipherEncryptor("abc", 28);
+    expect(result).toBe("cde");
+  });
+
+  test("handles negative shifts", () => {
+    const result = caesarCipherEncryptor("bcd", -1);
+    expect(result).toBe("abc");
+  });
+
+  test("handles full lowercase alphabet input", () => {
+    const result = caesarCipherEncryptor("abcdefghijklmnopqrstuvwxyz", 1);
+    expect(result).toBe("bcdefghijklmnopqrstuvwxyza");
+  });
+
+  test("handles uppercase letters correctly", () => {
+    const result = caesarCipherEncryptor("ABC", 2);
+    expect(result).toBe("CDE");
+  });
+
+  test("wraps around uppercase letters", () => {
+    const result = caesarCipherEncryptor("XYZ", 3);
+    expect(result).toBe("ABC");
+  });
+
+  test("handles mixed uppercase and lowercase letters", () => {
+    const result = caesarCipherEncryptor("AbCz", 1);
+    expect(result).toBe("BcDa");
+  });
+
+  test("preserves spaces and special characters", () => {
+    const result = caesarCipherEncryptor("Hello, World!", 3);
+    expect(result).toBe("Khoor, Zruog!");
+  });
+
+  test("preserves numbers and symbols", () => {
+    const result = caesarCipherEncryptor("123!@#", 5);
+    expect(result).toBe("123!@#");
+  });
+
+  test("handles zero shift (returns same string)", () => {
+    const result = caesarCipherEncryptor("NoChange", 0);
+    expect(result).toBe("NoChange");
+  });
+
+  test("handles very large negative shifts", () => {
+    const result = caesarCipherEncryptor("abc", -27);
+    expect(result).toBe("zab");
+  });
+
+  test("handles empty string", () => {
+    const result = caesarCipherEncryptor("", 5);
+    expect(result).toBe("");
+  });
+
+  test("does not mutate the input string", () => {
+    const input = "abc";
+    caesarCipherEncryptor(input, 1);
+    expect(input).toBe("abc");
+  });
+
+  test("handles repeated characters", () => {
+    const result = caesarCipherEncryptor("aaa", 3);
+    expect(result).toBe("ddd");
+  });
+});
+
+describe("runLengthEncoding", () => {
+  test("encodes simple repeated characters", () => {
+    expect(runLengthEncoding("aaabbc")).toBe("3a2b1c");
+  });
+
+  test("handles long runs with count > 9", () => {
+    expect(runLengthEncoding("AAAAAAAAAAAAA")).toBe("9A4A"); // 13 As
+  });
+
+  test("handles single characters", () => {
+    expect(runLengthEncoding("A")).toBe("1A");
+  });
+
+  test("handles multiple single characters", () => {
+    expect(runLengthEncoding("ABCD")).toBe("1A1B1C1D");
+  });
+
+  test("handles empty string", () => {
+    expect(runLengthEncoding("")).toBe("");
+  });
+
+  test("handles mixed long and short runs", () => {
+    expect(runLengthEncoding("AAAAAAAAAAAAABBCCCCDD")).toBe("9A4A2B4C2D");
+  });
+
+  test("handles alternating characters", () => {
+    expect(runLengthEncoding("ABABAB")).toBe("1A1B1A1B1A1B");
+  });
+
+  test("handles exactly 9 consecutive characters", () => {
+    expect(runLengthEncoding("AAAAAAAAA")).toBe("9A");
+  });
+
+  test("handles 10 consecutive characters", () => {
+    expect(runLengthEncoding("AAAAAAAAAA")).toBe("9A1A");
+  });
+
+  test("handles all letters unique", () => {
+    expect(runLengthEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZ")).toBe(
+      "1A1B1C1D1E1F1G1H1I1J1K1L1M1N1O1P1Q1R1S1T1U1V1W1X1Y1Z",
+    );
   });
 });

@@ -1119,3 +1119,126 @@ function shiftAndUpdate(arr: number[], value: number, idx: number) {
   // Insert the new value at the target index
   arr[idx] = value;
 }
+
+/**
+ * Encrypts a string using a Caesar cipher.
+ *
+ * Each lowercase letter (`a`–`z`) is shifted forward in the alphabet
+ * by the given shift value, wrapping around from `z` back to `a`.
+ *
+ * @param {string} str - The input string to encrypt.
+ *   Assumes all characters are lowercase letters (`a`–`z`).
+ * @param {number} shift - Number of positions to shift each letter.
+ *   Can be any integer; values larger than 26 are normalized.
+ *
+ * @returns {string} The encrypted string.
+ *
+ * @example
+ * caesarCipherEncryptor("abc", 2); // "cde"
+ * caesarCipherEncryptor("xyz", 2); // "zab"
+ * caesarCipherEncryptor("abc", 52); // "abc"
+ */
+export function caesarCipherEncryptor(str: string, shift: number): string {
+  // Total number of letters in the English alphabet
+  const alphabetSize = 26;
+
+  // Normalize the shift so it always stays between 0–25
+  // This also correctly handles large and negative shifts
+  const normalizedShift =
+    ((shift % alphabetSize) + alphabetSize) % alphabetSize;
+
+  // This will store the final encrypted string
+  let cipherText = "";
+
+  // Loop through every character in the input string
+  for (let i = 0; i < str.length; i++) {
+    // Get the ASCII (Unicode) value of the current character
+    const charCode = str.charCodeAt(i);
+
+    // ----------------------------------------------------
+    // Handle lowercase letters: 'a' (97) to 'z' (122)
+    // ----------------------------------------------------
+    if (charCode >= 97 && charCode <= 122) {
+      // Convert character to a 0–25 range (a = 0, b = 1, ...)
+      const normalized = charCode - 97;
+
+      // Apply the shift and wrap around using modulo
+      const shifted = (normalized + normalizedShift) % alphabetSize;
+
+      // Convert back to a lowercase letter and append to result
+      cipherText += String.fromCharCode(shifted + 97);
+
+      // ----------------------------------------------------
+      // Handle uppercase letters: 'A' (65) to 'Z' (90)
+      // ----------------------------------------------------
+    } else if (charCode >= 65 && charCode <= 90) {
+      // Convert character to a 0–25 range (A = 0, B = 1, ...)
+      const normalized = charCode - 65;
+
+      // Apply the shift and wrap around using modulo
+      const shifted = (normalized + normalizedShift) % alphabetSize;
+
+      // Convert back to an uppercase letter and append to result
+      cipherText += String.fromCharCode(shifted + 65);
+
+      // ----------------------------------------------------
+      // Handle non-alphabet characters (spaces, numbers, symbols)
+      // These are left unchanged
+      // ----------------------------------------------------
+    } else {
+      cipherText += str[i];
+    }
+  }
+
+  // Return the fully encrypted string
+  return cipherText;
+}
+
+/**
+ * Encodes a string using Run-Length Encoding (RLE).
+ *
+ * Consecutive repeated characters are represented as a count followed by the character.
+ * Counts are capped at 9, so long runs are split into multiple groups.
+ *
+ * Examples:
+ *   runLengthEncoding("AAAAAAAAAAAAABBCCCCDD") => "9A4A2B4C2D"
+ *   runLengthEncoding("A")                     => "1A"
+ *   runLengthEncoding("AB")                    => "1A1B"
+ *
+ * @param {string} str - The input string to encode.
+ * @returns {string} - The run-length encoded string.
+ */
+export function runLengthEncoding(str: string): string {
+  // Array to store encoded parts (count + character)
+  const encoded: string[] = [];
+
+  // Edge case: empty string
+  if (str.length === 0) return "";
+
+  // Initialize count and current character
+  let count = 1;
+  let currentChar = str[0];
+
+  // Iterate over the string starting from the second character
+  for (let i = 1; i < str.length; i++) {
+    const char = str[i];
+
+    // If the character is the same and count < 9, increment the count
+    if (char === currentChar && count < 9) {
+      count++;
+    } else {
+      // Otherwise, push the current run (count + character) to the encoded array
+      encoded.push(count.toString(), currentChar);
+
+      // Reset for the next character
+      currentChar = char;
+      count = 1;
+    }
+  }
+
+  // Push the final run after the loop ends
+  encoded.push(count.toString(), currentChar);
+
+  // Join all parts into a single string and return
+  return encoded.join("");
+}
