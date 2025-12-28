@@ -24,6 +24,8 @@ import {
   threeLargestNumbers,
   caesarCipherEncryptor,
   runLengthEncoding,
+  threeNumberSum,
+  smallestDifference,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1522,5 +1524,120 @@ describe("runLengthEncoding", () => {
     expect(runLengthEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZ")).toBe(
       "1A1B1C1D1E1F1G1H1I1J1K1L1M1N1O1P1Q1R1S1T1U1V1W1X1Y1Z",
     );
+  });
+});
+
+describe("threeNumberSum", () => {
+  test("should find all triplets that sum to target", () => {
+    const nums = [1, 2, 3, 4, 5, 6];
+    const target = 10;
+    const result = threeNumberSum(nums, target);
+
+    expect(result).toEqual([
+      [1, 3, 6],
+      [1, 4, 5],
+      [2, 3, 5],
+    ]);
+  });
+
+  test("should handle negative numbers", () => {
+    const nums = [0, -1, 2, -3, 1];
+    const target = 0;
+    const result = threeNumberSum(nums, target);
+
+    expect(result).toEqual([
+      [-3, 1, 2],
+      [-1, 0, 1],
+    ]);
+  });
+
+  test("should handle empty array", () => {
+    const result = threeNumberSum([], 5);
+    expect(result).toEqual([]);
+  });
+
+  test("should handle array with less than 3 numbers", () => {
+    expect(threeNumberSum([1, 2], 3)).toEqual([]);
+    expect(threeNumberSum([5], 5)).toEqual([]);
+  });
+
+  test("should handle duplicates in array", () => {
+    const nums = [1, 2, 2, 3, 3, 4];
+    const target = 7;
+    const result = threeNumberSum(nums, target);
+
+    expect(result).toEqual([
+      [1, 2, 4],
+      [1, 3, 3],
+      [2, 2, 3],
+    ]);
+  });
+
+  test("should return empty array when no triplets sum to target", () => {
+    const nums = [1, 2, 3, 4, 5];
+    const target = 50;
+    const result = threeNumberSum(nums, target);
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe("smallestDifference", () => {
+  test("should find the smallest difference for normal arrays", () => {
+    const arr1 = [1, 3, 15, 11, 2];
+    const arr2 = [23, 127, 235, 19, 8];
+    const result = smallestDifference(arr1, arr2);
+
+    expect(result).toEqual([11, 8]);
+  });
+
+  test("should handle arrays with negative numbers", () => {
+    const arr1 = [-1, -5, 4, 10];
+    const arr2 = [3, -2, 8, -7];
+    const result = smallestDifference(arr1, arr2);
+
+    expect(result).toEqual([-1, -2]);
+  });
+
+  test("should handle arrays with single element each", () => {
+    const arr1 = [5];
+    const arr2 = [10];
+    const result = smallestDifference(arr1, arr2);
+
+    expect(result).toEqual([5, 10]);
+  });
+
+  test("should handle arrays with multiple equal differences", () => {
+    const arr1 = [1, 3, 5];
+    const arr2 = [2, 4, 6];
+    const result = smallestDifference(arr1, arr2);
+
+    // Multiple pairs have difference 1, but first one found is [1,2]
+    expect(result).toEqual([1, 2]);
+  });
+
+  test("should handle arrays with zero", () => {
+    const arr1 = [0, 10, 20];
+    const arr2 = [5, 15, 25];
+    const result = smallestDifference(arr1, arr2);
+
+    expect(result).toEqual([0, 5]);
+  });
+
+  test("should throw error if one array is empty", () => {
+    expect(() => smallestDifference([], [1, 2, 3])).toThrow(
+      "Both arrays must have at least one element",
+    );
+    expect(() => smallestDifference([1, 2, 3], [])).toThrow(
+      "Both arrays must have at least one element",
+    );
+  });
+
+  test("should handle arrays with same elements", () => {
+    const arr1 = [7, 7, 7];
+    const arr2 = [7, 7, 7];
+    const result = smallestDifference(arr1, arr2);
+
+    expect(result).toEqual([7, 7]);
   });
 });

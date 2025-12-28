@@ -30,25 +30,25 @@
  * // [11, 12, 22, 25, 34, 64, 90]
  */
 export function bubbleSort(arr: number[]): number[] {
-	const n = arr.length;
+  const n = arr.length;
 
-	for (let i = 0; i < n - 1; i++) {
-		let swapped = false;
+  for (let i = 0; i < n - 1; i++) {
+    let swapped = false;
 
-		// Last i elements are already in place
-		for (let j = 0; j < n - i - 1; j++) {
-			if (arr[j]! > arr[j + 1]!) {
-				// Swap adjacent elements
-				[arr[j], arr[j + 1]] = [arr[j + 1]!, arr[j]!];
-				swapped = true;
-			}
-		}
+    // Last i elements are already in place
+    for (let j = 0; j < n - i - 1; j++) {
+      if (arr[j]! > arr[j + 1]!) {
+        // Swap adjacent elements
+        [arr[j], arr[j + 1]] = [arr[j + 1]!, arr[j]!];
+        swapped = true;
+      }
+    }
 
-		// If no swaps, array is sorted
-		if (!swapped) break;
-	}
+    // If no swaps, array is sorted
+    if (!swapped) break;
+  }
 
-	return arr;
+  return arr;
 }
 
 /**
@@ -76,24 +76,24 @@ export function bubbleSort(arr: number[]): number[] {
  * // [11, 12, 22, 25, 64]
  */
 export function selectionSort(arr: number[]): number[] {
-	const n = arr.length;
+  const n = arr.length;
 
-	for (let i = 0; i < n - 1; i++) {
-		// Find minimum in unsorted portion
-		let minIndex = i;
-		for (let j = i + 1; j < n; j++) {
-			if (arr[j]! < arr[minIndex]!) {
-				minIndex = j;
-			}
-		}
+  for (let i = 0; i < n - 1; i++) {
+    // Find minimum in unsorted portion
+    let minIndex = i;
+    for (let j = i + 1; j < n; j++) {
+      if (arr[j] < arr[minIndex]) {
+        minIndex = j;
+      }
+    }
 
-		// Swap minimum with first unsorted element
-		if (minIndex !== i) {
-			[arr[i], arr[minIndex]] = [arr[minIndex]!, arr[i]!];
-		}
-	}
+    // Swap minimum with first unsorted element
+    if (minIndex !== i) {
+      [arr[i], arr[minIndex]] = [arr[minIndex]!, arr[i]!];
+    }
+  }
 
-	return arr;
+  return arr;
 }
 
 /**
@@ -128,23 +128,23 @@ export function selectionSort(arr: number[]): number[] {
  * // [5, 6, 11, 12, 13]
  */
 export function insertionSort(arr: number[]): number[] {
-	const n = arr.length;
+  const n = arr.length;
 
-	for (let i = 1; i < n; i++) {
-		const key = arr[i]!;
-		let j = i - 1;
+  for (let i = 1; i < n; i++) {
+    const key = arr[i]!;
+    let j = i - 1;
 
-		// Shift elements greater than key to the right
-		while (j >= 0 && arr[j]! > key) {
-			arr[j + 1] = arr[j]!;
-			j--;
-		}
+    // Shift elements greater than key to the right
+    while (j >= 0 && arr[j]! > key) {
+      arr[j + 1] = arr[j]!;
+      j--;
+    }
 
-		// Insert key in correct position
-		arr[j + 1] = key;
-	}
+    // Insert key in correct position
+    arr[j + 1] = key;
+  }
 
-	return arr;
+  return arr;
 }
 
 /**
@@ -164,34 +164,34 @@ export function insertionSort(arr: number[]): number[] {
  * // [1, 2, 3, 4, 5, 6]
  */
 export function merge(arr1: number[], arr2: number[]): number[] {
-	const result: number[] = [];
-	let i = 0;
-	let j = 0;
+  const result: number[] = [];
+  let i = 0;
+  let j = 0;
 
-	// Merge while both arrays have elements
-	while (i < arr1.length && j < arr2.length) {
-		if (arr1[i]! < arr2[j]!) {
-			result.push(arr1[i]!);
-			i++;
-		} else {
-			result.push(arr2[j]!);
-			j++;
-		}
-	}
+  // Merge while both arrays have elements
+  while (i < arr1.length && j < arr2.length) {
+    if (arr1[i]! < arr2[j]!) {
+      result.push(arr1[i]!);
+      i++;
+    } else {
+      result.push(arr2[j]!);
+      j++;
+    }
+  }
 
-	// Add remaining elements from arr1
-	while (i < arr1.length) {
-		result.push(arr1[i]!);
-		i++;
-	}
+  // Add remaining elements from arr1
+  while (i < arr1.length) {
+    result.push(arr1[i]!);
+    i++;
+  }
 
-	// Add remaining elements from arr2
-	while (j < arr2.length) {
-		result.push(arr2[j]!);
-		j++;
-	}
+  // Add remaining elements from arr2
+  while (j < arr2.length) {
+    result.push(arr2[j]!);
+    j++;
+  }
 
-	return result;
+  return result;
 }
 
 /**
@@ -228,20 +228,20 @@ export function merge(arr1: number[], arr2: number[]): number[] {
  * // [3, 9, 10, 27, 38, 43, 82]
  */
 export function mergeSort(arr: number[]): number[] {
-	// Base case: array with 0 or 1 element is already sorted
-	if (arr.length <= 1) return arr;
+  // Base case: array with 0 or 1 element is already sorted
+  if (arr.length <= 1) return arr;
 
-	// Divide: split array in half
-	const mid = Math.floor(arr.length / 2);
-	const left = arr.slice(0, mid);
-	const right = arr.slice(mid);
+  // Divide: split array in half
+  const mid = Math.floor(arr.length / 2);
+  const left = arr.slice(0, mid);
+  const right = arr.slice(mid);
 
-	// Conquer: recursively sort both halves
-	const sortedLeft = mergeSort(left);
-	const sortedRight = mergeSort(right);
+  // Conquer: recursively sort both halves
+  const sortedLeft = mergeSort(left);
+  const sortedRight = mergeSort(right);
 
-	// Combine: merge sorted halves
-	return merge(sortedLeft, sortedRight);
+  // Combine: merge sorted halves
+  return merge(sortedLeft, sortedRight);
 }
 
 /**
@@ -264,14 +264,14 @@ export function mergeSort(arr: number[]): number[] {
  * // [1, 5, 7, 8, 9, 10]
  */
 export function quickSort(arr: number[]): number[] {
-	if (arr.length <= 1) return arr;
+  if (arr.length <= 1) return arr;
 
-	const pivot = arr[Math.floor(arr.length / 2)]!;
-	const left = arr.filter((x) => x < pivot);
-	const middle = arr.filter((x) => x === pivot);
-	const right = arr.filter((x) => x > pivot);
+  const pivot = arr[Math.floor(arr.length / 2)]!;
+  const left = arr.filter((x) => x < pivot);
+  const middle = arr.filter((x) => x === pivot);
+  const right = arr.filter((x) => x > pivot);
 
-	return [...quickSort(left), ...middle, ...quickSort(right)];
+  return [...quickSort(left), ...middle, ...quickSort(right)];
 }
 
 /**
@@ -304,32 +304,32 @@ export function quickSort(arr: number[]): number[] {
  * //           <pivot  pivot >pivot
  */
 export function pivot(
-	arr: number[],
-	pivotIndex: number = 0,
-	endIndex: number = arr.length - 1,
+  arr: number[],
+  pivotIndex: number = 0,
+  endIndex: number = arr.length - 1,
 ): number {
-	// Store pivot value
-	const pivotValue = arr[pivotIndex]!;
+  // Store pivot value
+  const pivotValue = arr[pivotIndex]!;
 
-	// Move pivot to the end
-	[arr[pivotIndex], arr[endIndex]] = [arr[endIndex]!, arr[pivotIndex]!];
+  // Move pivot to the end
+  [arr[pivotIndex], arr[endIndex]] = [arr[endIndex]!, arr[pivotIndex]!];
 
-	// Track where to place next smaller element
-	let swapIndex = pivotIndex;
+  // Track where to place next smaller element
+  let swapIndex = pivotIndex;
 
-	// Iterate through partition (excluding pivot at end)
-	for (let i = pivotIndex; i < endIndex; i++) {
-		if (arr[i]! < pivotValue) {
-			// Swap smaller element to left section
-			[arr[swapIndex], arr[i]] = [arr[i]!, arr[swapIndex]!];
-			swapIndex++;
-		}
-	}
+  // Iterate through partition (excluding pivot at end)
+  for (let i = pivotIndex; i < endIndex; i++) {
+    if (arr[i]! < pivotValue) {
+      // Swap smaller element to left section
+      [arr[swapIndex], arr[i]] = [arr[i]!, arr[swapIndex]!];
+      swapIndex++;
+    }
+  }
 
-	// Place pivot in its final position
-	[arr[swapIndex], arr[endIndex]] = [arr[endIndex]!, arr[swapIndex]!];
+  // Place pivot in its final position
+  [arr[swapIndex], arr[endIndex]] = [arr[endIndex]!, arr[swapIndex]!];
 
-	return swapIndex;
+  return swapIndex;
 }
 
 /**
@@ -364,21 +364,21 @@ export function pivot(
  * // arr is now [1, 2, 3, 4, 5, 6, 7]
  */
 export function quickSortInPlace(
-	arr: number[],
-	left: number = 0,
-	right: number = arr.length - 1,
+  arr: number[],
+  left: number = 0,
+  right: number = arr.length - 1,
 ): number[] {
-	// Base case: partition size 0 or 1
-	if (left >= right) return arr;
+  // Base case: partition size 0 or 1
+  if (left >= right) return arr;
 
-	// Partition array and get pivot's final position
-	const pivotIndex = pivot(arr, left, right);
+  // Partition array and get pivot's final position
+  const pivotIndex = pivot(arr, left, right);
 
-	// Recursively sort left partition (elements < pivot)
-	quickSortInPlace(arr, left, pivotIndex - 1);
+  // Recursively sort left partition (elements < pivot)
+  quickSortInPlace(arr, left, pivotIndex - 1);
 
-	// Recursively sort right partition (elements > pivot)
-	quickSortInPlace(arr, pivotIndex + 1, right);
+  // Recursively sort right partition (elements > pivot)
+  quickSortInPlace(arr, pivotIndex + 1, right);
 
-	return arr;
+  return arr;
 }

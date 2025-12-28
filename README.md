@@ -17,7 +17,8 @@ This workspace includes **9 detailed guides** with visual explanations:
 -  [Heap/Priority Queue](src/data-structures/heap/HEAP_GUIDE.md)
 
 ### Algorithms
--  [Array Manipulation (7 problems)](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
+-  [Array Manipulation](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
+-  [String Manipulation](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
 -  [Recursion & Dynamic Programming](src/algorithms/recursion/FIBONACCI_GUIDE.md)
 -  [Sorting Algorithms (5 types)](src/algorithms/sorting/SORTING_GUIDE.md)
 

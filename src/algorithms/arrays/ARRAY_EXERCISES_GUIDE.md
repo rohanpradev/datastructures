@@ -2771,6 +2771,219 @@ export function runLengthEncoding(str: string): string {
 
 ---
 
+# String / Array Exercises – Practice Guide
+
+## Overview
+
+This guide contains essential coding exercises for arrays and strings, focusing on algorithms like two-pointer technique, sorting, and hash map usage.
+
+---
+
+## Exercise 4: Three Number Sum
+
+### Problem Statement
+
+Given an array of numbers and a target sum, find **all unique triplets** in the array whose sum equals the target.
+
+---
+
+### Examples
+
+```text
+Input: nums = [1, 2, 3, 4, 5, 6], target = 10
+Output: [[1, 3, 6], [1, 4, 5], [2, 3, 5]]
+
+Input: nums = [0, -1, 2, -3, 1], target = 0
+Output: [[-3, 1, 2], [-1, 0, 1]]
+```
+
+---
+
+### Visual Explanation
+
+Input array: `[1, 2, 3, 4, 5, 6]`, target = 10
+
+1. Sort the array → `[1, 2, 3, 4, 5, 6]`
+2. Pick the first element (`i`) as 1:
+   - Use two pointers `left` and `right` to find pairs summing to `10 - 1 = 9`
+   - Found pairs: `[3,6]` and `[4,5]`
+
+3. Pick the first element as 2:
+   - Pairs summing to `10 - 2 = 8` → `[3,5]`
+
+4. Continue until all triplets are found.
+
+---
+
+### Algorithm (Two-Pointer Technique)
+
+1. **Sort** the array in ascending order.
+2. Iterate through the array with index `i` for the first element.
+3. For each `i`, initialize:
+   - `left = i + 1`
+   - `right = nums.length - 1`
+
+4. While `left < right`:
+   - Calculate `currentSum = nums[i] + nums[left] + nums[right]`
+   - If `currentSum === target`, store triplet `[nums[i], nums[left], nums[right]]` and move both pointers.
+   - If `currentSum < target`, increment `left`.
+   - If `currentSum > target`, decrement `right`.
+
+5. Return the list of all triplets found.
+
+---
+
+### Function Implementation (with TODO comments)
+
+```ts
+/**
+ * Finds all unique triplets in an array that sum to a target value.
+ *
+ * @param nums - Array of numbers to search
+ * @param target - Target sum for the triplets
+ * @returns Array of triplets where each triplet sums to target
+ */
+export function threeNumberSum(nums: number[], target: number): number[][] {
+  // TODO: Sort the array in ascending order
+
+  // TODO: Initialize result array
+
+  // TODO: Iterate over array (i) for the first element
+  //   - Set left = i + 1, right = nums.length - 1
+  //   - While left < right:
+  //       - Compute sum of three elements
+  //       - If sum === target, store triplet and move both pointers
+  //       - Else if sum < target, move left forward
+  //       - Else move right backward
+
+  // TODO: Return result array
+  return []; // placeholder
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n²) — outer loop O(n), inner two-pointer O(n)
+- **Space Complexity:** O(n) — for storing result array
+
+---
+
+### Notes for Practice
+
+- Useful for mastering **two-pointer technique**.
+- Sorting the array allows **efficient pair searching**.
+- Can be extended to k-sum problems with recursion.
+
+---
+
+# Array / Algorithm Exercises – Practice Guide
+
+## Overview
+
+This guide contains essential coding exercises for arrays and strings, focusing on algorithmic techniques like two-pointers, sorting, and hash map usage. Each problem is designed to improve problem-solving skills for coding interviews.
+
+---
+
+## Exercise 5: Smallest Difference
+
+### Problem Statement
+
+Given two arrays of numbers, find a pair of numbers (one from each array) whose **absolute difference** is the smallest among all possible pairs.
+
+---
+
+### Examples
+
+```text
+Input: arr1 = [1, 3, 15, 11, 2], arr2 = [23, 127, 235, 19, 8]
+Output: [11, 8]
+Explanation: The pair (11, 8) has the smallest absolute difference: |11 - 8| = 3
+
+Input: arr1 = [10, 20, 14], arr2 = [8, 13, 17]
+Output: [14, 13]
+```
+
+---
+
+### Visual Explanation
+
+1. Sort both arrays:
+   `arr1 = [1, 2, 3, 11, 15]`
+   `arr2 = [8, 19, 23, 127, 235]`
+
+2. Initialize two pointers at the start of each array.
+
+3. Compare current elements:
+   - Track the pair with the **smallest difference**.
+   - Move the pointer of the smaller number forward to reduce the difference.
+
+4. Continue until one pointer reaches the end of its array.
+
+5. Return the pair with the smallest absolute difference.
+
+---
+
+### Algorithm (Two-Pointer Technique)
+
+1. **Sort both arrays** in ascending order.
+2. Initialize pointers `left` at start of `arr1`, `right` at start of `arr2`.
+3. Initialize `smallestDiff` and `diff = Infinity`.
+4. While both pointers are in bounds:
+   - Compute `currentDiff = |arr1[left] - arr2[right]|`.
+   - If `currentDiff < diff`, update `smallestDiff`.
+   - Move the pointer of the smaller value forward.
+
+5. Return `smallestDiff`.
+
+---
+
+### Function Implementation (with TODO comments)
+
+```ts
+/**
+ * Finds the pair of numbers (one from each array) with the smallest absolute difference.
+ *
+ * @param arr1 - The first array of numbers
+ * @param arr2 - The second array of numbers
+ * @returns A pair of numbers, one from each array, with the smallest absolute difference
+ */
+export function smallestDifference(
+  arr1: number[],
+  arr2: number[],
+): [number, number] {
+  // TODO: Sort both arrays in ascending order
+
+  // TODO: Initialize pointers and variables to track smallest difference
+
+  // TODO: While pointers are in bounds:
+  //   - Calculate absolute difference of current pair
+  //   - Update smallest pair if difference is smaller
+  //   - Move the pointer of the smaller value
+
+  // TODO: Return the pair with the smallest absolute difference
+  return [arr1[0], arr2[0]]; // placeholder
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n log n + m log m) — sorting + linear scan
+- **Space Complexity:** O(1) — only pointers and variables
+
+---
+
+### Notes for Practice
+
+- Useful for mastering **two-pointer technique on sorted arrays**.
+- Avoids brute force O(n\*m) comparisons.
+- Can be extended to k-array closest difference problems.
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
