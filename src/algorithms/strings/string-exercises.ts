@@ -11,32 +11,32 @@
  * @returns {boolean} - Returns `true` if the document can be generated, otherwise `false`.
  */
 export function generateDocument(
-  characters: string,
-  document: string,
+	characters: string,
+	document: string,
 ): boolean {
-  // If the number of characters is less than the length of the document, it's impossible to generate it.
-  if (characters.length < document.length) return false;
+	// If the number of characters is less than the length of the document, it's impossible to generate it.
+	if (characters.length < document.length) return false;
 
-  // Create a map to store the frequency of each character in the 'characters' string.
-  const charMap: Record<string, number> = {};
+	// Create a map to store the frequency of each character in the 'characters' string.
+	const charMap: Record<string, number> = {};
 
-  // Populate the charMap with frequencies of each character in 'characters'.
-  for (let char of characters) {
-    charMap[char] = (charMap[char] ?? 0) + 1;
-  }
+	// Populate the charMap with frequencies of each character in 'characters'.
+	for (const char of characters) {
+		charMap[char] = (charMap[char] ?? 0) + 1;
+	}
 
-  // Iterate over each character in the 'document' to check if it can be formed.
-  for (let char of document) {
-    // If the character isn't available in 'charMap' or its count is 0, return false.
-    if (!charMap[char]) return false;
-    // Decrement the count of the character in 'charMap'.
-    else {
-      charMap[char] = charMap[char] - 1;
-    }
-  }
+	// Iterate over each character in the 'document' to check if it can be formed.
+	for (const char of document) {
+		// If the character isn't available in 'charMap' or its count is 0, return false.
+		if (!charMap[char]) return false;
+		// Decrement the count of the character in 'charMap'.
+		else {
+			charMap[char] = charMap[char] - 1;
+		}
+	}
 
-  // If all characters in the document have been accounted for, return true.
-  return true;
+	// If all characters in the document have been accounted for, return true.
+	return true;
 }
 
 /**
@@ -53,26 +53,26 @@ export function generateDocument(
  * @returns {string | null} - The first non-repeating character, or null if none exists.
  */
 export function firstNonRepeatingCharacter(str: string): string | null {
-  // Edge case: empty or falsy string
-  if (!str) return null;
+	// Edge case: empty or falsy string
+	if (!str) return null;
 
-  // Map to store the frequency of each character
-  const charCount: Record<string, number> = {};
+	// Map to store the frequency of each character
+	const charCount: Record<string, number> = {};
 
-  // First pass: count occurrences of each character
-  for (const char of str) {
-    charCount[char] = (charCount[char] ?? 0) + 1;
-  }
+	// First pass: count occurrences of each character
+	for (const char of str) {
+		charCount[char] = (charCount[char] ?? 0) + 1;
+	}
 
-  // Second pass: find the first character that appears exactly once
-  for (const char of str) {
-    if (charCount[char] === 1) {
-      return char;
-    }
-  }
+	// Second pass: find the first character that appears exactly once
+	for (const char of str) {
+		if (charCount[char] === 1) {
+			return char;
+		}
+	}
 
-  // No non-repeating character found
-  return null;
+	// No non-repeating character found
+	return null;
 }
 
 /**
@@ -89,22 +89,22 @@ export function firstNonRepeatingCharacter(str: string): string | null {
  * @returns {[string, string][]} An array of semordnilap pairs
  */
 export function semordNilap(words: string[]): [string, string][] {
-  const wordMap = new Map<string, boolean>(); // track which words are used
-  const pairs: [string, string][] = [];
+	const wordMap = new Map<string, boolean>(); // track which words are used
+	const pairs: [string, string][] = [];
 
-  const reverseString = (word: string) => word.split("").reverse().join("");
+	const reverseString = (word: string) => word.split("").reverse().join("");
 
-  for (const word of words) {
-    const reversed = reverseString(word);
+	for (const word of words) {
+		const reversed = reverseString(word);
 
-    // If the reversed word exists and hasn't been used yet
-    if (wordMap.has(reversed)) {
-      pairs.push([reversed, word]);
-      wordMap.delete(reversed); // remove it to avoid duplicates
-    } else {
-      wordMap.set(word, true);
-    }
-  }
+		// If the reversed word exists and hasn't been used yet
+		if (wordMap.has(reversed)) {
+			pairs.push([reversed, word]);
+			wordMap.delete(reversed); // remove it to avoid duplicates
+		} else {
+			wordMap.set(word, true);
+		}
+	}
 
-  return pairs;
+	return pairs;
 }
