@@ -1,4 +1,5 @@
 # Data Structures & Algorithms - Complete Learning Workspace 
+[![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
 
 A comprehensive DSA workspace with **1475+ passing tests**, detailed practice guides, and automated template generation for hands-on learning.
 
@@ -103,8 +104,8 @@ All tagged with LeetCode numbers for easy reference.
 
 ### Test Coverage
 ```
- 1475 tests passing
- 18 test files
+ 1500+ tests passing
+ 18+ test files
  Zero TypeScript errors
  100% type safety
 ```
@@ -123,9 +124,11 @@ DSA/
  src/                               Reference implementations
     algorithms/
        arrays/
-          arrayExercises.ts
-          arrayExercises.test.ts
+          array-exercises.ts
           ARRAY_EXERCISES_GUIDE.md 
+       strings/
+          string-exercises.ts
+          STRING_EXERCISES_GUIDE.md 
        recursion/
           FIBONACCI_GUIDE.md 
        sorting/
