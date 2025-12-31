@@ -3514,6 +3514,241 @@ export function arrayOfProducts(nums: number[]): number[] {
 
 ---
 
+## Number of Islands
+
+### Problem Statement
+
+Given a 2D grid (matrix) of integers where:
+
+- `1` represents **land**
+- `0` represents **water**
+
+An **island** is formed by connecting adjacent land cells (`1`s) **horizontally or vertically** (not diagonally).
+
+Your task is to **count the total number of islands** in the grid.
+
+The grid may be modified during processing.
+
+---
+
+### Example 1
+
+```
+Input:
+matrix = [
+  [1, 1, 0, 0],
+  [1, 0, 0, 1],
+  [0, 0, 1, 1]
+]
+
+Output: 3
+```
+
+**Explanation:**
+
+- Island 1: top-left cluster
+- Island 2: single land cell at (1,3)
+- Island 3: bottom-right cluster
+
+---
+
+### Example 2
+
+```
+Input:
+matrix = [
+  [1, 1, 1],
+  [0, 1, 0],
+  [1, 1, 1]
+]
+
+Output: 1
+```
+
+**Explanation:**
+All land cells are connected vertically or horizontally, forming one island.
+
+---
+
+### Example 3 (Edge Case)
+
+```
+Input:
+matrix = [
+  [0, 0],
+  [0, 0]
+]
+
+Output: 0
+```
+
+**Explanation:**
+No land cells exist.
+
+---
+
+## Key Observations
+
+- Every time we encounter a `1` that hasn’t been visited, we’ve found **a new island**
+- Once we find a land cell, we must **visit all connected land cells** so we don’t count the same island twice
+- We can mark visited land cells by changing them from `1` → `0`
+
+---
+
+## Visual Explanation (BFS Traversal)
+
+```
+Grid:
+[1, 1, 0]
+[0, 1, 0]
+[1, 0, 1]
+
+Step 1:
+Start at (0,0) → found land → islandCount = 1
+
+Queue: [(0,0)]
+Mark (0,0) as water
+
+Step 2:
+Visit neighbors → (0,1) and (1,1)
+Mark them as water
+
+Grid now:
+[0, 0, 0]
+[0, 0, 0]
+[1, 0, 1]
+
+Step 3:
+Continue scanning grid
+Found land at (2,0) → islandCount = 2
+
+Step 4:
+Found land at (2,2) → islandCount = 3
+```
+
+---
+
+## Approach
+
+We use **Breadth-First Search (BFS)** to explore each island fully.
+
+### High-Level Steps
+
+1. Loop through every cell in the grid
+2. When a `1` is found:
+   - Increment island count
+   - Start BFS from that cell
+   - Mark all connected `1`s as `0`
+
+3. Continue until the grid is fully scanned
+
+---
+
+### Directions Used
+
+We only move in **4 directions**:
+
+```
+Up    → (-1, 0)
+Right → (0, 1)
+Down  → (1, 0)
+Left  → (0, -1)
+```
+
+Diagonal movement is not allowed.
+
+---
+
+## Algorithm (BFS)
+
+```
+1. Initialize islandCount = 0
+2. Loop through each cell in the matrix
+3. If cell == 1:
+   - islandCount++
+   - Push cell into queue
+   - Mark cell as 0
+4. While queue is not empty:
+   - Pop a cell
+   - Check its 4 neighbors
+   - If neighbor is land (1):
+     • Push into queue
+     • Mark as 0
+5. Return islandCount
+```
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function numberOfIslands(matrix: number[][]): number {
+  if (matrix.length === 0 || matrix[0].length === 0) return 0;
+
+  let islandCount = 0;
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  const directions: Array<[number, number]> = [
+    [-1, 0], // up
+    [0, 1], // right
+    [1, 0], // down
+    [0, -1], // left
+  ];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (matrix[row][col] === 0) continue;
+
+      islandCount++;
+      matrix[row][col] = 0;
+
+      const queue: Array<[number, number]> = [[row, col]];
+
+      while (queue.length > 0) {
+        const [r, c] = queue.shift()!;
+
+        for (const [dr, dc] of directions) {
+          const nr = r + dr;
+          const nc = c + dc;
+
+          if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+
+          if (matrix[nr][nc] === 1) {
+            matrix[nr][nc] = 0;
+            queue.push([nr, nc]);
+          }
+        }
+      }
+    }
+  }
+
+  return islandCount;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(rows × cols)`
+  - Each cell is visited at most once
+
+- **Space Complexity:** `O(rows × cols)` in the worst case (queue for BFS)
+
+---
+
+## Notes & Variations
+
+- This solution **mutates the input grid**
+- You can also solve this using:
+  - **DFS (recursive or iterative)**
+  - A separate `visited` matrix if mutation is not allowed
+
+- Diagonal connectivity would require **8 directions instead of 4**
+
+---
+
 ### Edge Cases
 
 | Input        | Output        | Explanation                           |

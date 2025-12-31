@@ -31,6 +31,7 @@ import {
   spiralTraverse,
   longestPeak,
   arrayOfProducts,
+  numberOfIslands,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1918,5 +1919,102 @@ describe("arrayOfProducts", () => {
     const result = arrayOfProducts(arr);
 
     expect(result).toEqual([6000000, 3000000, 2000000]);
+  });
+});
+
+describe("numberOfIslands", () => {
+  test("should count a single island", () => {
+    const grid = [
+      [1, 1],
+      [1, 1],
+    ];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(1);
+  });
+
+  test("should count multiple separate islands", () => {
+    const grid = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1],
+    ];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(4);
+  });
+
+  test("should return 0 when grid has no land", () => {
+    const grid = [
+      [0, 0],
+      [0, 0],
+    ];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(0);
+  });
+
+  test("should handle empty grid", () => {
+    const grid: number[][] = [];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(0);
+  });
+
+  test("should handle grid with one cell land", () => {
+    const grid = [[1]];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(1);
+  });
+
+  test("should handle grid with one cell water", () => {
+    const grid = [[0]];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(0);
+  });
+
+  test("should not count diagonal connections as islands", () => {
+    const grid = [
+      [1, 0],
+      [0, 1],
+    ];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(2);
+  });
+
+  test("should mutate grid by marking visited land as water", () => {
+    const grid = [
+      [1, 1],
+      [0, 1],
+    ];
+
+    numberOfIslands(grid);
+
+    expect(grid).toEqual([
+      [0, 0],
+      [0, 0],
+    ]);
+  });
+
+  test("should handle large connected island", () => {
+    const grid = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
+
+    const result = numberOfIslands(grid);
+
+    expect(result).toBe(1);
   });
 });
