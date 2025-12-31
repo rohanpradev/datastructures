@@ -26,6 +26,11 @@ import {
   runLengthEncoding,
   threeNumberSum,
   smallestDifference,
+  moveElementToTheEnd,
+  monotonicArray,
+  spiralTraverse,
+  longestPeak,
+  arrayOfProducts,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -1639,5 +1644,279 @@ describe("smallestDifference", () => {
     const result = smallestDifference(arr1, arr2);
 
     expect(result).toEqual([7, 7]);
+  });
+});
+
+describe("moveElementToTheEnd", () => {
+  test("should move middle element to the end", () => {
+    const arr = [1, 2, 3, 4, 5];
+    const result = moveElementToTheEnd(arr, 2); // move 3
+    expect(result).toEqual([1, 2, 4, 5, 3]);
+  });
+
+  test("should move first element to the end", () => {
+    const arr = [10, 20, 30];
+    const result = moveElementToTheEnd(arr, 0); // move 10
+    expect(result).toEqual([20, 30, 10]);
+  });
+
+  test("should do nothing if last element is chosen", () => {
+    const arr = ["a", "b", "c"];
+    const result = moveElementToTheEnd(arr, 2); // move "c"
+    expect(result).toEqual(["a", "b", "c"]);
+  });
+
+  test("should handle single-element array", () => {
+    const arr = [42];
+    const result = moveElementToTheEnd(arr, 0);
+    expect(result).toEqual([42]);
+  });
+
+  test("should handle moving second-to-last element", () => {
+    const arr = [1, 2, 3, 4];
+    const result = moveElementToTheEnd(arr, 2); // move 3
+    expect(result).toEqual([1, 2, 4, 3]);
+  });
+
+  test("should throw error for negative index", () => {
+    const arr = [1, 2, 3];
+    expect(() => moveElementToTheEnd(arr, -1)).toThrow("Index out of bounds");
+  });
+
+  test("should throw error for index out of bounds", () => {
+    const arr = [1, 2, 3];
+    expect(() => moveElementToTheEnd(arr, 3)).toThrow("Index out of bounds");
+  });
+
+  test("should handle array with objects", () => {
+    const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const result = moveElementToTheEnd(arr, 1);
+    expect(result).toEqual([{ id: 1 }, { id: 3 }, { id: 2 }]);
+  });
+});
+
+describe("monotonicArray", () => {
+  test("should return true for increasing array", () => {
+    const nums = [1, 2, 3, 4, 5];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return true for decreasing array", () => {
+    const nums = [5, 4, 3, 2, 1];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return true for constant array", () => {
+    const nums = [2, 2, 2, 2];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return true for non-decreasing array with duplicates", () => {
+    const nums = [1, 2, 2, 3];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return true for non-increasing array with duplicates", () => {
+    const nums = [4, 3, 3, 1];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return false for array that changes direction", () => {
+    const nums = [1, 3, 2];
+    expect(monotonicArray(nums)).toBe(false);
+  });
+
+  test("should handle empty array", () => {
+    const nums: number[] = [];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should handle single element array", () => {
+    const nums = [10];
+    expect(monotonicArray(nums)).toBe(true);
+  });
+
+  test("should return false for multiple direction changes", () => {
+    const nums = [1, 3, 2, 4];
+    expect(monotonicArray(nums)).toBe(false);
+  });
+});
+
+describe("spiralTraverse", () => {
+  test("should traverse a square matrix", () => {
+    const matrix = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
+
+    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 6, 9, 8, 7, 4, 5]);
+  });
+
+  test("should traverse a rectangular matrix (more columns)", () => {
+    const matrix = [
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+    ];
+
+    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4, 8, 7, 6, 5]);
+  });
+
+  test("should traverse a rectangular matrix (more rows)", () => {
+    const matrix = [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ];
+
+    expect(spiralTraverse(matrix)).toEqual([1, 2, 4, 6, 5, 3]);
+  });
+
+  test("should handle single row matrix", () => {
+    const matrix = [[1, 2, 3, 4]];
+    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
+  });
+
+  test("should handle single column matrix", () => {
+    const matrix = [[1], [2], [3], [4]];
+    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
+  });
+
+  test("should handle single element matrix", () => {
+    const matrix = [[42]];
+    expect(spiralTraverse(matrix)).toEqual([42]);
+  });
+
+  test("should handle matrix with non-number values", () => {
+    const matrix = [
+      ["a", "b", "c"],
+      ["d", "e", "f"],
+    ];
+
+    expect(spiralTraverse(matrix)).toEqual(["a", "b", "c", "f", "e", "d"]);
+  });
+});
+
+describe("longestPeak", () => {
+  test("should return length of a simple peak", () => {
+    const arr = [1, 3, 2];
+    const result = longestPeak(arr);
+
+    expect(result).toBe(3);
+  });
+
+  test("should return 0 when no peak exists", () => {
+    const arr = [1, 2, 3, 4, 5];
+    const result = longestPeak(arr);
+
+    expect(result).toBe(0);
+  });
+
+  test("should handle a large peak", () => {
+    const arr = [1, 2, 3, 5, 4, 3, 2];
+    const result = longestPeak(arr);
+
+    expect(result).toBe(7);
+  });
+
+  test("should handle multiple small peaks", () => {
+    const arr = [1, 3, 2, 1, 2, 3, 2];
+    const result = longestPeak(arr);
+
+    // Peaks: [1,3,2] and [1,2,3,2]
+    expect(result).toBe(4);
+  });
+
+  test("should handle array with negative numbers", () => {
+    const arr = [-5, -3, -1, -2, -4];
+    const result = longestPeak(arr);
+
+    expect(result).toBe(5);
+  });
+
+  test("should return 0 for arrays shorter than 3", () => {
+    expect(longestPeak([])).toBe(0);
+    expect(longestPeak([1])).toBe(0);
+    expect(longestPeak([1, 2])).toBe(0);
+  });
+
+  test("should handle peak in the middle only", () => {
+    const arr = [5, 4, 3, 2, 3, 4, 1];
+    const result = longestPeak(arr);
+
+    // Peak is [2, 3, 4, 1]
+    expect(result).toBe(4);
+  });
+
+  test("should handle repeated values breaking peaks", () => {
+    const arr = [1, 2, 3, 3, 2, 1];
+    const result = longestPeak(arr);
+
+    expect(result).toBe(0);
+  });
+});
+
+describe("arrayOfProducts", () => {
+  test("should return correct products for a normal array", () => {
+    const arr = [1, 2, 3, 4];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([24, 12, 8, 6]);
+  });
+
+  test("should handle an array with a zero", () => {
+    const arr = [0, 1, 2, 3];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([6, 0, 0, 0]);
+  });
+
+  test("should handle multiple zeros", () => {
+    const arr = [0, 0, 2, 3];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([0, 0, 0, 0]);
+  });
+
+  test("should handle negative numbers", () => {
+    const arr = [1, -2, 3, -4];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([24, -12, 8, -6]);
+  });
+
+  test("should handle single element", () => {
+    const arr = [5];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([1]); // product of empty array = 1
+  });
+
+  test("should handle empty array", () => {
+    const arr: number[] = [];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([]);
+  });
+
+  test("should handle all ones", () => {
+    const arr = [1, 1, 1, 1];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([1, 1, 1, 1]);
+  });
+
+  test("should handle array with repeated numbers", () => {
+    const arr = [2, 2, 2];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([4, 4, 4]);
+  });
+
+  test("should handle large numbers", () => {
+    const arr = [1000, 2000, 3000];
+    const result = arrayOfProducts(arr);
+
+    expect(result).toEqual([6000000, 3000000, 2000000]);
   });
 });

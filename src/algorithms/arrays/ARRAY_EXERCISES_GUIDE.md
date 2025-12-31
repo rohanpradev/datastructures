@@ -2389,10 +2389,6 @@ result = [10, 10, 12]
 
 ---
 
-Got it! Here’s the **updated README** for **Three Largest Numbers**, keeping the structure and explanations but replacing the implementation with **TODO comments** so the user can implement it themselves:
-
----
-
 ## Problem : Three Largest Numbers
 
 ### Problem Statement
@@ -2984,7 +2980,572 @@ export function smallestDifference(
 
 ---
 
-## Practice Tips
+# Array / Algorithm Exercises – Practice Guide
+
+## Overview
+
+This guide contains essential coding exercises for arrays and strings, focusing on algorithmic techniques like two-pointers, sorting, and in-place modifications. Each problem is designed to improve problem-solving skills for coding interviews.
+
+---
+
+## Exercise 6: Move Element to the End
+
+### Problem Statement
+
+Given an array, move the element at a given index to the **end of the array in-place**, shifting all other elements as necessary.
+
+- Do **not** create a new array.
+- Return the modified array.
+
+---
+
+### Examples
+
+```ts
+moveElementToTheEnd([1, 2, 3, 4, 5], 2);
+// Returns: [1, 2, 4, 5, 3]
+
+moveElementToTheEnd([10, 20, 30], 0);
+// Returns: [20, 30, 10]
+
+moveElementToTheEnd(["a", "b", "c"], 2);
+// Returns: ["a", "b", "c"] (element already at the end)
+```
+
+---
+
+### Visual Explanation
+
+```
+Array: [1, 2, 3, 4, 5]
+Index to move: 2 (value 3)
+
+Step 1: Shift elements to the left to fill the gap:
+[1, 2, 4, 5, 5]
+
+Step 2: Place value at the end:
+[1, 2, 4, 5, 3]
+```
+
+---
+
+### Algorithm
+
+1. **Validate index**: Ensure the index is within array bounds.
+2. **Early return**: If the element is already at the end, return array.
+3. **Store value**: Save the element to move.
+4. **Shift elements**: Move all elements after the index one position to the left.
+5. **Place value**: Set the saved element at the last position.
+6. **Return array**.
+
+---
+
+### Function Implementation (with TODO comments)
+
+```ts
+/**
+ * Moves the element at the given index to the end of the array in-place.
+ *
+ * @template T
+ * @param {T[]} arr - The array to modify
+ * @param {number} idx - The index of the element to move
+ * @returns {T[]} The modified array with the element moved to the end
+ *
+ * @throws {Error} If the index is out of bounds
+ */
+export function moveElementToTheEnd<T>(arr: T[], idx: number): T[] {
+  // TODO: Validate index
+  // TODO: Return array if index is already at the end
+  // TODO: Save element at idx
+  // TODO: Shift elements left to fill the gap
+  // TODO: Place saved element at the end
+  // TODO: Return modified array
+  return arr;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n) – each element after the index is shifted once
+- **Space Complexity:** O(1) – in-place modification
+
+---
+
+### Notes
+
+- Generic `<T>` allows arrays of numbers, strings, objects, or any type.
+- Handles **first, middle, last, and single-element arrays**.
+- Throws an error if the index is invalid.
+
+---
+
+## Problem: Monotonic Array
+
+### Problem Statement
+
+Given an array of numbers `nums`, determine whether the array is **monotonic**.
+
+An array is monotonic if it is either:
+
+- entirely **non-decreasing**, or
+- entirely **non-increasing**
+
+Return `true` if the array is monotonic, otherwise return `false`.
+
+### Example
+
+```
+Input: nums = [1, 2, 2, 3]
+Output: true
+Explanation: The array never decreases.
+
+Input: nums = [6, 5, 4, 4]
+Output: true
+Explanation: The array never increases.
+
+Input: nums = [1, 3, 2]
+Output: false
+Explanation: The array increases, then decreases.
+```
+
+### Visual Explanation
+
+```
+Example: [1, 3, 2]
+
+Compare 1 → 3  (increasing)
+Direction = up
+
+Compare 3 → 2  (decreasing)
+Direction changes from up → down ❌
+
+Result: Not monotonic
+```
+
+```
+Example: [5, 4, 4, 2]
+
+Compare 5 → 4  (decreasing)
+Direction = down
+
+Compare 4 → 4  (equal, ignore)
+
+Compare 4 → 2  (still decreasing)
+
+Result: Monotonic ✅
+```
+
+### Algorithm (Single Pass with Direction Tracking)
+
+```
+1. Initialize direction = null
+2. Loop through the array starting from index 1
+3. Compare current element with previous:
+   - If decreasing:
+     • If direction was "up", return false
+     • Set direction to "down"
+   - If increasing:
+     • If direction was "down", return false
+     • Set direction to "up"
+   - If equal:
+     • Do nothing
+4. If loop finishes without conflict, return true
+```
+
+### Implementation Steps
+
+```typescript
+export function monotonicArray(nums: number[]): boolean {
+  // TODO: Initialize direction as null
+  // TODO: Loop through the array starting from index 1
+  // TODO: Detect increasing or decreasing direction
+  // TODO: If direction ever changes, return false
+  // TODO: Return true if no conflicts are found
+}
+```
+
+### Complexity
+
+- **Time:** O(n) — single pass through the array
+- **Space:** O(1) — constant extra space
+
+---
+
+## Problem: Spiral Traverse
+
+### Problem Statement
+
+Given a non-empty 2D array `arr`, return a new array containing all elements of the array in **spiral order (clockwise)**, starting from the top-left corner.
+
+The traversal proceeds layer by layer:
+
+1. Top row (left → right)
+2. Right column (top → bottom)
+3. Bottom row (right → left)
+4. Left column (bottom → top)
+
+### Example
+
+```
+Input:
+arr = [
+  [1,  2,  3,  4],
+  [5,  6,  7,  8],
+  [9, 10, 11, 12]
+]
+
+Output:
+[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
+```
+
+### Visual Explanation
+
+```
+Step 1: Top row
+[1,  2,  3,  4]
+ ↑   ↑   ↑   ↑
+
+Step 2: Right column
+                ↓
+[5,  6,  7,  8]
+                ↓
+[9, 10, 11, 12]
+
+Step 3: Bottom row (reverse)
+[9, 10, 11, 12]
+ ↑   ↑   ↑   ↑
+
+Step 4: Left column (up)
+ ↑
+[5,  6,  7,  8]
+```
+
+Final traversal order:
+
+```
+1 → 2 → 3 → 4 → 8 → 12 → 11 → 10 → 9 → 5 → 6 → 7
+```
+
+### Algorithm (Boundary Shrinking Technique)
+
+```
+1. Initialize four boundaries:
+   - startRow, endRow
+   - startColumn, endColumn
+2. While boundaries are valid:
+   a. Traverse top row (left → right)
+   b. Traverse right column (top → bottom)
+   c. Traverse bottom row (right → left), if rows remain
+   d. Traverse left column (bottom → top), if columns remain
+3. Shrink all boundaries inward
+4. Repeat until all elements are collected
+```
+
+### Implementation Steps
+
+```typescript
+export function spiralTraverse<T>(arr: T[][]): T[] {
+  // TODO: Initialize boundary pointers
+  // TODO: Loop while rows and columns remain
+  // TODO: Traverse top row
+  // TODO: Traverse right column
+  // TODO: Traverse bottom row (with boundary check)
+  // TODO: Traverse left column (with boundary check)
+  // TODO: Shrink boundaries
+  // TODO: Return result
+}
+```
+
+### Complexity
+
+- **Time:** O(n × m) — every element is visited once
+- **Space:** O(n × m) — output array storing all elements
+
+---
+
+## Problem: Longest Peak
+
+### Problem Statement
+
+Given an array of integers `nums`, return the length of the **longest peak**.
+
+A **peak** is defined as a contiguous sequence of integers that:
+
+1. Is **strictly increasing**
+2. Reaches a **single highest value**
+3. Is **strictly decreasing**
+4. Has a **minimum length of 3**
+
+If no peak exists, return `0`.
+
+---
+
+### Examples
+
+```
+Input: nums = [1, 2, 3, 4, 5, 1]
+Output: 6
+Explanation: Entire array forms a peak
+
+Input: nums = [1, 3, 2]
+Output: 3
+Explanation: [1, 3, 2] is a valid peak
+
+Input: nums = [1, 2, 3]
+Output: 0
+Explanation: No decreasing part → not a peak
+```
+
+---
+
+### Visual Explanation
+
+```
+Array: [1, 2, 3, 5, 4, 3, 2]
+
+              peak
+               ↓
+Index:   0  1  2  3  4  5  6
+Values: [1, 2, 3, 5, 4, 3, 2]
+
+Step 1: Identify peak at index 3 (value = 5)
+        5 > 3 and 5 > 4
+
+Step 2: Expand left
+        3 < 5
+        2 < 3
+        1 < 2
+        Stop at index 0
+
+Step 3: Expand right
+        5 > 4
+        4 > 3
+        3 > 2
+        Stop at index 6
+
+Peak length = 6 - 0 + 1 = 7
+```
+
+---
+
+### Key Observations
+
+- A peak **must** have both an uphill and downhill
+- Flat values (`=`) break a peak
+- Once a peak is processed, its elements don’t need to be revisited
+
+---
+
+### Algorithm (Optimized Pointer Technique)
+
+```
+1. Start from index 1 (peaks need neighbors)
+2. While index < length - 1:
+   - Check if current index is a peak
+   - If not, move forward
+3. If a peak is found:
+   - Expand left while values strictly increase
+   - Expand right while values strictly decrease
+   - Calculate peak length
+   - Update longest peak
+   - Skip to the end of this peak
+4. Return longest peak length
+```
+
+---
+
+### Implementation
+
+```typescript
+/**
+ * Returns the length of the longest peak in the array.
+ *
+ * A peak is a contiguous sequence that strictly increases,
+ * reaches a single maximum, then strictly decreases.
+ */
+export function longestPeak(nums: number[]): number {
+  let longest = 0;
+  let i = 1;
+
+  while (i < nums.length - 1) {
+    const isPeak = nums[i] > nums[i - 1] && nums[i] > nums[i + 1];
+
+    if (!isPeak) {
+      i++;
+      continue;
+    }
+
+    // Expand left
+    let left = i - 1;
+    while (left > 0 && nums[left - 1] < nums[left]) {
+      left--;
+    }
+
+    // Expand right
+    let right = i + 1;
+    while (right < nums.length - 1 && nums[right] > nums[right + 1]) {
+      right++;
+    }
+
+    const currentPeakLength = right - left + 1;
+    longest = Math.max(longest, currentPeakLength);
+
+    // Skip processed elements
+    i = right;
+  }
+
+  return longest;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Each element is visited at most once
+
+- **Space Complexity:** `O(1)`
+  - No extra data structures used
+
+---
+
+# Problem: Array of Products Except Self
+
+### Problem Statement
+
+Given an array of numbers `nums`, return a new array where each element at index `i` is the **product of all numbers in `nums` except `nums[i]`**.
+
+**Constraints:**
+
+- Do **not use division**.
+- Time complexity: O(n)
+- Space complexity: O(n) or O(1) extra (excluding output array)
+- The input array may contain zeros or negative numbers.
+
+---
+
+### Examples
+
+```ts
+Input:  [1, 2, 3, 4]
+Output: [24, 12, 8, 6]
+Explanation:
+  - Index 0: 2*3*4 = 24
+  - Index 1: 1*3*4 = 12
+  - Index 2: 1*2*4 = 8
+  - Index 3: 1*2*3 = 6
+
+Input:  [0, 1, 2, 3]
+Output: [6, 0, 0, 0]
+Explanation:
+  - Zero at index 0 means all products except index 0 are 0
+```
+
+---
+
+### Visual Explanation
+
+```
+nums = [1, 2, 3, 4]
+
+Step 1: Calculate prefix products (products to the left of each index)
+Index:   0  1  2  3
+Prefix:  1  1  2  6
+
+Step 2: Calculate suffix products (products to the right of each index)
+Index:   0  1  2  3
+Suffix:  24 12 4 1
+
+Step 3: Multiply prefix * suffix element-wise
+Result: [24, 12, 8, 6]
+```
+
+---
+
+### Algorithm (Prefix & Suffix Method)
+
+```
+1. Initialize result array with 1s.
+2. Compute prefix products for each index:
+   - result[i] = product of all numbers to the left of i
+3. Compute suffix products while updating result in reverse:
+   - Multiply result[i] by product of all numbers to the right of i
+4. Return result array
+```
+
+---
+
+### Implementation
+
+```ts
+/**
+ * Returns an array where each element is the product of all numbers
+ * except nums[i], without using division.
+ */
+export function arrayOfProducts(nums: number[]): number[] {
+  const n = nums.length;
+  const result: number[] = new Array(n).fill(1);
+
+  let prefix = 1;
+  for (let i = 0; i < n; i++) {
+    result[i] = prefix;
+    prefix *= nums[i];
+  }
+
+  let suffix = 1;
+  for (let i = n - 1; i >= 0; i--) {
+    result[i] *= suffix;
+    suffix *= nums[i];
+  }
+
+  return result;
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** O(n) — two passes through the array
+- **Space:** O(n) — result array, or O(1) extra if allowed to reuse output
+
+---
+
+### Edge Cases
+
+| Input        | Output        | Explanation                           |
+| ------------ | ------------- | ------------------------------------- |
+| `[]`         | `[]`          | Empty array                           |
+| `[5]`        | `[1]`         | Single element → product of empty = 1 |
+| `[0, 0, 1]`  | `[0, 0, 0]`   | Multiple zeros                        |
+| `[1, -2, 3]` | `[-6, 3, -2]` | Handles negative numbers              |
+
+---
+
+### Next Steps
+
+- Add **automated Bun/Jest tests** for coverage
+- Handle very large numbers with BigInt if needed
+- Compare with **naive O(n²) solution** for learning purposes
+
+---
+
+### Edge Cases
+
+| Input       | Output | Reason                   |
+| ----------- | ------ | ------------------------ |
+| `[]`        | `0`    | No elements              |
+| `[1, 2]`    | `0`    | Too short to form a peak |
+| `[1, 2, 3]` | `0`    | No decreasing part       |
+| `[3, 2, 1]` | `0`    | No increasing part       |
+| `[1, 3, 2]` | `3`    | Valid peak               |
+
+---
+
+Practice Tips
 
 ### Order to Practice
 
@@ -3027,18 +3588,32 @@ export function smallestDifference(
 
 ### Time Complexity Cheat Sheet
 
-| Problem                 | Time | Space | Technique / Pattern         |
-| ----------------------- | ---- | ----- | --------------------------- |
-| Remove Element          | O(n) | O(1)  | Two-Pointer                 |
-| Find Max Min            | O(n) | O(1)  | Single Pass                 |
-| Longest String          | O(n) | O(1)  | Single Pass                 |
-| Remove Duplicates       | O(n) | O(1)  | Two-Pointer                 |
-| Max Profit              | O(n) | O(1)  | Greedy                      |
-| Rotate Array            | O(n) | O(1)  | Triple Reverse              |
-| Max Subarray            | O(n) | O(1)  | Kadane’s Algorithm          |
-| Two Sum                 | O(n) | O(n)  | Hash Map                    |
-| Validate Subsequence    | O(n) | O(1)  | Two-Pointer                 |
-| Sorted Squared Array    | O(n) | O(n)  | Two-Pointer (Ends Inward)   |
-| Printing Press Capacity | O(n) | O(1)  | Greedy / Array Partitioning |
+| Problem                  | Time       | Space   | Technique / Pattern                |
+| ------------------------ | ---------- | ------- | ---------------------------------- |
+| Remove Element           | O(n)       | O(1)    | Two-Pointer                        |
+| Find Max Min             | O(n)       | O(1)    | Single Pass                        |
+| Longest String           | O(n)       | O(1)    | Single Pass                        |
+| Remove Duplicates        | O(n)       | O(1)    | Two-Pointer                        |
+| Max Profit               | O(n)       | O(1)    | Greedy                             |
+| Rotate Array             | O(n)       | O(1)    | Triple Reverse                     |
+| Max Subarray             | O(n)       | O(1)    | Kadane’s Algorithm                 |
+| Two Sum                  | O(n)       | O(n)    | Hash Map                           |
+| Validate Subsequence     | O(n)       | O(1)    | Two-Pointer                        |
+| Sorted Squared Array     | O(n)       | O(n)    | Two-Pointer (Ends Inward)          |
+| Printing Press Capacity  | O(n)       | O(1)    | Greedy / Array Partitioning        |
+| Tournament Winner        | O(n)       | O(n)    | Hash Map / Counting                |
+| Non-Constructable Change | O(n log n) | O(1)    | Sorting / Greedy                   |
+| Transpose Matrix         | O(n\*m)    | O(n\*m) | Nested Loops / Matrix Manipulation |
+| Backspace String Compare | O(n)       | O(1)    | Two-Pointer / Stack Simulation     |
+| Max Planes Stopped       | O(n log n) | O(n)    | Sweep Line / Sorting               |
+| Minimum Waiting Time     | O(n log n) | O(1)    | Greedy / Sorting                   |
+| Class Photo              | O(n log n) | O(1)    | Sorting / Greedy                   |
+| Tandem Bicycle           | O(n log n) | O(1)    | Sorting / Greedy                   |
+| Optimal Freelancing      | O(n log n) | O(1)    | Sorting / Greedy                   |
+| Binary Search            | O(log n)   | O(1)    | Divide & Conquer                   |
+| Find Longest String      | O(n)       | O(1)    | Single Pass                        |
+| Find Max Min             | O(n)       | O(1)    | Single Pass                        |
+
+---
 
 Happy Coding! 🚀
