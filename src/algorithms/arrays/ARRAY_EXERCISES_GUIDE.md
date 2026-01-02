@@ -3760,14 +3760,6 @@ export function numberOfIslands(matrix: number[][]): number {
 
 ---
 
-### Next Steps
-
-- Add **automated Bun/Jest tests** for coverage
-- Handle very large numbers with BigInt if needed
-- Compare with **naive O(n²) solution** for learning purposes
-
----
-
 ### Edge Cases
 
 | Input       | Output | Reason                   |
@@ -3777,6 +3769,301 @@ export function numberOfIslands(matrix: number[][]): number {
 | `[1, 2, 3]` | `0`    | No decreasing part       |
 | `[3, 2, 1]` | `0`    | No increasing part       |
 | `[1, 3, 2]` | `3`    | Valid peak               |
+
+---
+
+## Problem: Rotten Oranges (LeetCode 994)
+
+### Problem Statement
+
+You are given a 2D grid representing a box of oranges:
+
+- `0` → **Empty cell**
+- `1` → **Fresh orange**
+- `2` → **Rotten orange**
+
+Every minute, any **fresh orange adjacent** (up, down, left, right) to a rotten orange becomes rotten.
+
+Return the **minimum number of minutes** needed until **no fresh oranges remain**.
+
+If:
+
+- It is impossible to rot all oranges → return `-1`
+- There are no fresh oranges initially → return `0`
+
+---
+
+### Example
+
+```
+Input:
+grid = [
+  [2, 1, 1],
+  [1, 1, 0],
+  [0, 1, 1]
+]
+
+Output:
+4
+```
+
+**Explanation:**
+The rot spreads outward from the initial rotten orange. It takes `4` minutes to rot all fresh oranges.
+
+---
+
+### Visual Explanation
+
+```
+Minute 0:
+[ R ][ F ][ F ]
+[ F ][ F ][ E ]
+[ E ][ F ][ F ]
+
+Minute 1:
+[ R ][ R ][ F ]
+[ R ][ F ][ E ]
+[ E ][ F ][ F ]
+
+Minute 2:
+[ R ][ R ][ R ]
+[ R ][ R ][ E ]
+[ E ][ F ][ F ]
+
+Minute 3:
+[ R ][ R ][ R ]
+[ R ][ R ][ E ]
+[ E ][ R ][ F ]
+
+Minute 4:
+[ R ][ R ][ R ]
+[ R ][ R ][ E ]
+[ E ][ R ][ R ]
+```
+
+Legend:
+
+- `R` = Rotten (2)
+- `F` = Fresh (1)
+- `E` = Empty (0)
+
+---
+
+### Key Idea: Multi-Source Breadth-First Search (BFS)
+
+- All initially rotten oranges act as **starting points**
+- Rot spreads **simultaneously** in all directions
+- BFS naturally models the passage of time (levels = minutes)
+
+---
+
+### Algorithm (High-Level)
+
+```
+1. Add all rotten oranges to the BFS queue
+2. Count the number of fresh oranges
+3. For each BFS level (minute):
+   - Rot all adjacent fresh oranges
+   - Decrease fresh count
+4. Stop when no fresh oranges remain
+5. Return elapsed minutes
+```
+
+---
+
+### BFS Rules
+
+- Movement allowed: up, down, left, right
+- Skip cells that are:
+  - Out of bounds
+  - Empty (0)
+  - Already rotten (2)
+
+- Each BFS level represents **one minute**
+
+---
+
+### Implementation Skeleton
+
+```ts
+export function orangesRotting(grid: number[][]): number {
+  // TODO: Initialize queue with all rotten oranges
+  // TODO: Count fresh oranges
+  // TODO: Perform BFS level by level
+  // TODO: Return minutes or -1 if impossible
+}
+```
+
+---
+
+### Edge Cases Covered
+
+- ✅ No fresh oranges → return `0`
+- ✅ Fresh oranges unreachable → return `-1`
+- ✅ Multiple starting rotten oranges
+- ✅ Non-square grids
+- ✅ Single-cell grids
+
+---
+
+### Complexity
+
+- **Time:** `O(m × n)`
+  Each cell is processed at most once
+
+- **Space:** `O(m × n)`
+  Queue can contain all oranges in the worst case
+
+---
+
+### Notes
+
+- The grid is **mutated in-place** by marking fresh oranges as rotten
+- BFS ensures the **minimum time** is calculated
+- This is a classic **multi-source BFS** problem
+
+---
+
+## Problem: Walls and Gates (Shortest Distance to a Room)
+
+### Problem Statement
+
+You are given a 2D grid (`matrix`) representing a layout of:
+
+- `0` → **Gate**
+- `1` → **Empty room**
+- `-1` → **Wall**
+
+From each gate, you can move **up, down, left, or right** (no diagonals).
+
+Your task is to find the **shortest distance from any gate to the nearest reachable room**.
+
+If:
+
+- No rooms are reachable from any gate → return `-1`
+- There are **no gates at all** → return `Infinity`
+
+---
+
+### Example
+
+```
+Input:
+matrix = [
+  [0,  1,  1],
+  [1, -1,  1],
+  [1,  1,  1]
+]
+
+Output:
+1
+```
+
+**Explanation:**
+The gate at `(0,0)` is directly next to an empty room, so the shortest distance is `1`.
+
+---
+
+### Visual Explanation
+
+```
+Grid:
+[ G ][ R ][ R ]
+[ R ][ W ][ R ]
+[ R ][ R ][ R ]
+
+Legend:
+G = Gate (0)
+R = Room (1)
+W = Wall (-1)
+```
+
+#### BFS Traversal from Gate `(0,0)`
+
+```
+Distance = 0
+Start at gate (0,0)
+
+Distance = 1
+→ (1,0), (0,1)  ← first reachable rooms found
+```
+
+✅ Shortest distance = **1**
+
+---
+
+### Key Idea: Breadth-First Search (BFS)
+
+- BFS explores the grid **level by level**
+- The first time a room is reached, it is guaranteed to be the **shortest path**
+- We run BFS **from each gate** and track the minimum distance found
+
+---
+
+### Algorithm (High-Level)
+
+```
+1. Initialize shortest distance as Infinity
+2. Loop through every cell in the matrix
+3. When a gate (0) is found:
+   - Run BFS starting from that gate
+   - Track distance to nearest reachable room
+   - Update shortest distance
+4. Return the shortest distance found
+```
+
+---
+
+### BFS Rules
+
+- Movement allowed: up, down, left, right
+- Skip cells that are:
+  - Out of bounds
+  - Walls (-1)
+  - Not empty rooms (must be exactly 1)
+
+- Mark visited rooms as `2` to avoid revisiting
+
+---
+
+### Implementation Skeleton
+
+```ts
+export function wallsAndGates(matrix: number[][]): number {
+  // TODO: Track shortest distance
+  // TODO: Loop through matrix to find gates
+  // TODO: Run BFS from each gate
+  // TODO: Return shortest distance found
+}
+```
+
+---
+
+### Edge Cases Covered
+
+- ✅ Multiple gates → choose the minimum distance
+- ✅ Rooms blocked by walls → return `-1`
+- ✅ No gates in grid → return `Infinity`
+- ✅ Non-square grids
+- ✅ Single-cell grids
+
+---
+
+### Complexity
+
+- **Time:** `O(m × n)`
+  Each cell is visited at most once per BFS run
+
+- **Space:** `O(m × n)`
+  BFS queue in the worst case
+
+---
+
+### Notes
+
+- The function **mutates the matrix** by marking visited rooms
+- Each BFS run requires a fresh matrix state
+- This implementation focuses on **distance discovery**, not filling distances into the grid
 
 ---
 

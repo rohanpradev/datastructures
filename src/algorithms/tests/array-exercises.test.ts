@@ -32,6 +32,8 @@ import {
   longestPeak,
   arrayOfProducts,
   numberOfIslands,
+  rottenOranges,
+  wallsAndGates,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
@@ -2016,5 +2018,175 @@ describe("numberOfIslands", () => {
     const result = numberOfIslands(grid);
 
     expect(result).toBe(1);
+  });
+});
+
+describe("rottenOranges", () => {
+  test("rots all oranges in 4 minutes (example case)", () => {
+    const grid = [
+      [2, 1, 1],
+      [1, 1, 0],
+      [0, 1, 1],
+    ];
+
+    expect(rottenOranges(grid)).toBe(4);
+  });
+
+  test("returns 0 when there are no fresh oranges", () => {
+    const grid = [
+      [0, 2],
+      [2, 0],
+    ];
+
+    expect(rottenOranges(grid)).toBe(0);
+  });
+
+  test("returns -1 when fresh oranges cannot be reached", () => {
+    const grid = [
+      [2, 1, 1],
+      [0, 1, 1],
+      [1, 0, 1],
+    ];
+
+    expect(rottenOranges(grid)).toBe(-1);
+  });
+
+  test("returns -1 when there are fresh oranges but no rotten ones", () => {
+    const grid = [
+      [1, 1],
+      [1, 1],
+    ];
+
+    expect(rottenOranges(grid)).toBe(-1);
+  });
+
+  test("handles single cell with fresh orange", () => {
+    const grid = [[1]];
+    expect(rottenOranges(grid)).toBe(-1);
+  });
+
+  test("handles single cell with rotten orange", () => {
+    const grid = [[2]];
+    expect(rottenOranges(grid)).toBe(0);
+  });
+
+  test("handles empty grid with only empty cells", () => {
+    const grid = [
+      [0, 0],
+      [0, 0],
+    ];
+
+    expect(rottenOranges(grid)).toBe(0);
+  });
+
+  test("rots oranges layer by layer correctly", () => {
+    const grid = [[2, 1, 1, 1]];
+
+    expect(rottenOranges(grid)).toBe(3);
+  });
+
+  test("works with multiple starting rotten oranges", () => {
+    const grid = [
+      [2, 1, 2],
+      [1, 1, 1],
+      [0, 1, 2],
+    ];
+
+    expect(rottenOranges(grid)).toBe(2);
+  });
+});
+
+describe("wallsAndGates", () => {
+  test("finds shortest path in a straight line", () => {
+    const matrix = [[0, 1, 1, 1, 1]];
+
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("finds shortest path in a vertical line", () => {
+    const matrix = [[0], [1], [1], [1]];
+
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("navigates around walls to reach a room", () => {
+    const matrix = [
+      [0, -1, 1, 1],
+      [1, -1, 1, -1],
+      [1, 1, 1, -1],
+    ];
+
+    // Shortest reachable room is directly below the gate
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("chooses the closest room among long and short paths", () => {
+    const matrix = [
+      [0, 1, 1, 1, 1],
+      [-1, -1, -1, -1, 1],
+      [1, 1, 1, 1, 1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("handles complex maze with multiple gates", () => {
+    const matrix = [
+      [1, -1, 0, 1, 1],
+      [1, -1, -1, -1, 1],
+      [1, 1, 1, 1, 1],
+      [0, -1, 1, -1, 1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("returns -1 when rooms are completely enclosed by walls", () => {
+    const matrix = [
+      [0, -1, -1, -1],
+      [-1, 1, 1, -1],
+      [-1, 1, 1, -1],
+      [-1, -1, -1, -1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(-1);
+  });
+
+  test("handles non-square matrix", () => {
+    const matrix = [
+      [0, 1, 1],
+      [1, 1, 1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(1);
+  });
+
+  test("returns Infinity for empty rooms with no gates (larger grid)", () => {
+    const matrix = [
+      [1, 1, 1, 1],
+      [1, -1, 1, 1],
+      [1, 1, 1, 1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(Infinity);
+  });
+
+  test("handles grid with only walls", () => {
+    const matrix = [
+      [-1, -1],
+      [-1, -1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(Infinity);
+  });
+
+  test("handles grid with gates surrounded by walls", () => {
+    const matrix = [
+      [-1, -1, -1],
+      [-1, 0, -1],
+      [-1, -1, -1],
+    ];
+
+    expect(wallsAndGates(matrix)).toBe(-1);
   });
 });
