@@ -1,5 +1,7 @@
 # Data Structures & Algorithms - Complete Learning Workspace 
 [![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/06b59555-ad3f-49c5-95b3-919f81170e14" />
+
 
 A comprehensive DSA workspace with **1475+ passing tests**, detailed practice guides, and automated template generation for hands-on learning.
 
