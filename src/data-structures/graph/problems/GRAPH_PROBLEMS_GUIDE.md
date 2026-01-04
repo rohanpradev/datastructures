@@ -9,9 +9,11 @@ This guide covers common graph problems demonstrating BFS, DFS, and graph traver
 ## Problem 1: Number of Islands (LeetCode 200)
 
 ### Problem Statement
+
 Given a 2D grid of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and formed by connecting adjacent lands horizontally or vertically.
 
 ### Example
+
 ```
 Input:
 1 1 0 0 0
@@ -23,6 +25,7 @@ Output: 3
 ```
 
 ### Visual Explanation
+
 ```
 Grid with islands marked:
 
@@ -41,23 +44,24 @@ Total: 3 islands
 ```
 
 ### Algorithm (DFS)
+
 ```
 function numIslands(grid):
 	count = 0
-	
+
 	for each cell (i, j) in grid:
 		if cell is '1':
 			count++
 			dfs(i, j)  // mark entire island
-	
+
 	return count
 
 function dfs(i, j):
 	if out of bounds or cell is '0':
 		return
-	
+
 	mark cell as '0' (visited)
-	
+
 	// Visit all 4 neighbors
 	dfs(i+1, j)  // down
 	dfs(i-1, j)  // up
@@ -66,6 +70,7 @@ function dfs(i, j):
 ```
 
 ### Step-by-Step Example
+
 ```
 Grid:
 1 1 0
@@ -78,7 +83,7 @@ Step 1: Visit (0,0) = '1'
     Mark (0,0) → '0'
     Visit (0,1) → '1', mark → '0'
     Visit (1,0) → '1', mark → '0'
-  
+
 Grid after:
 0 0 0
 0 0 0
@@ -94,25 +99,27 @@ Final count: 2
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function numIslands(grid: string[][]): number {
-	// TODO: Initialize count
-	
-	// TODO: Helper function for DFS
-	function dfs(i: number, j: number) {
-		// TODO: Base cases (bounds, water)
-		// TODO: Mark as visited
-		// TODO: Visit 4 neighbors
-	}
-	
-	// TODO: Iterate through grid
-	// TODO: If land found, increment count and DFS
-	
-	// TODO: Return count
+  // TODO: Initialize count
+
+  // TODO: Helper function for DFS
+  function dfs(i: number, j: number) {
+    // TODO: Base cases (bounds, water)
+    // TODO: Mark as visited
+    // TODO: Visit 4 neighbors
+  }
+
+  // TODO: Iterate through grid
+  // TODO: If land found, increment count and DFS
+
+  // TODO: Return count
 }
 ```
 
 ### Complexity
+
 - **Time:** O(m × n) - visit each cell once
 - **Space:** O(m × n) - recursion stack in worst case
 
@@ -121,11 +128,13 @@ export function numIslands(grid: string[][]): number {
 ## Problem 2: Course Schedule (LeetCode 207)
 
 ### Problem Statement
+
 Determine if you can finish all courses given prerequisites. Return true if possible.
 
 **Prerequisites:** [course, prerequisite] means you must take prerequisite before course.
 
 ### Example
+
 ```
 Input: numCourses = 2, prerequisites = [[1,0]]
 Output: true
@@ -137,6 +146,7 @@ Explanation: Circular dependency! Can't complete both
 ```
 
 ### Visual Explanation
+
 ```
 Case 1: Valid (No cycle)
 0 → 1 → 2
@@ -158,66 +168,69 @@ If we encounter gray node → Cycle!
 ```
 
 ### Algorithm (Cycle Detection)
+
 ```
 function canFinish(numCourses, prerequisites):
 	// Build adjacency list
 	graph = empty map
 	for [course, prereq] in prerequisites:
 		graph[prereq].add(course)
-	
+
 	// Track states: 0=white, 1=gray, 2=black
 	state = array of 0s
-	
+
 	function hasCycle(course):
 		if state[course] == 1:  // gray
 			return true  // cycle found!
-		
+
 		if state[course] == 2:  // black
 			return false  // already checked
-		
+
 		state[course] = 1  // mark gray
-		
+
 		for neighbor in graph[course]:
 			if hasCycle(neighbor):
 				return true
-		
+
 		state[course] = 2  // mark black
 		return false
-	
+
 	for course in 0 to numCourses-1:
 		if hasCycle(course):
 			return false
-	
+
 	return true
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function canFinish(
-	numCourses: number,
-	prerequisites: number[][]
+  numCourses: number,
+  prerequisites: number[][],
 ): boolean {
-	// TODO: Build adjacency list
-	
-	// TODO: Create state array (0=unvisited, 1=visiting, 2=visited)
-	
-	// TODO: DFS helper to detect cycle
-	function hasCycle(course: number): boolean {
-		// TODO: Check if visiting (cycle!)
-		// TODO: Check if already visited
-		// TODO: Mark as visiting
-		// TODO: Check neighbors
-		// TODO: Mark as visited
-		return false;
-	}
-	
-	// TODO: Check each course for cycles
-	
-	// TODO: Return true if no cycles
+  // TODO: Build adjacency list
+
+  // TODO: Create state array (0=unvisited, 1=visiting, 2=visited)
+
+  // TODO: DFS helper to detect cycle
+  function hasCycle(course: number): boolean {
+    // TODO: Check if visiting (cycle!)
+    // TODO: Check if already visited
+    // TODO: Mark as visiting
+    // TODO: Check neighbors
+    // TODO: Mark as visited
+    return false;
+  }
+
+  // TODO: Check each course for cycles
+
+  // TODO: Return true if no cycles
 }
 ```
 
 ### Complexity
+
 - **Time:** O(V + E) - visit vertices and edges
 - **Space:** O(V + E) - graph storage and recursion
 
@@ -226,9 +239,11 @@ export function canFinish(
 ## Problem 3: Clone Graph (LeetCode 133)
 
 ### Problem Statement
+
 Deep clone an undirected graph. Each node contains a value and a list of neighbors.
 
 ### Example
+
 ```
 Input:
 1 --- 2
@@ -239,6 +254,7 @@ Output: (deep copy of graph)
 ```
 
 ### Visual Explanation
+
 ```
 Original:          Clone:
   1 --- 2            1' --- 2'
@@ -260,51 +276,54 @@ Process node 1:
 ```
 
 ### Algorithm
+
 ```
 function cloneGraph(node):
 	if node is null:
 		return null
-	
+
 	map = empty map  // original → clone
-	
+
 	function dfs(node):
 		if node in map:
 			return map[node]
-		
+
 		// Create clone
 		clone = new Node(node.val)
 		map[node] = clone
-		
+
 		// Clone neighbors
 		for neighbor in node.neighbors:
 			clone.neighbors.add(dfs(neighbor))
-		
+
 		return clone
-	
+
 	return dfs(node)
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function cloneGraph(node: Node | null): Node | null {
-	// TODO: Handle null case
-	
-	// TODO: Create map for original → clone
-	
-	// TODO: DFS helper function
-	function dfs(node: Node): Node {
-		// TODO: If already cloned, return clone
-		// TODO: Create new node
-		// TODO: Add to map
-		// TODO: Clone all neighbors recursively
-		// TODO: Return clone
-	}
-	
-	// TODO: Return cloned graph
+  // TODO: Handle null case
+
+  // TODO: Create map for original → clone
+
+  // TODO: DFS helper function
+  function dfs(node: Node): Node {
+    // TODO: If already cloned, return clone
+    // TODO: Create new node
+    // TODO: Add to map
+    // TODO: Clone all neighbors recursively
+    // TODO: Return clone
+  }
+
+  // TODO: Return cloned graph
 }
 ```
 
 ### Complexity
+
 - **Time:** O(V + E) - visit all vertices and edges
 - **Space:** O(V) - map and recursion stack
 
@@ -313,9 +332,11 @@ export function cloneGraph(node: Node | null): Node | null {
 ## Problem 4: Shortest Path in Binary Matrix (LeetCode 1091)
 
 ### Problem Statement
+
 Find shortest path from top-left to bottom-right in binary matrix (0 = clear, 1 = blocked). Can move in 8 directions.
 
 ### Example
+
 ```
 Input:
 0 0 0
@@ -327,6 +348,7 @@ Path: (0,0) → (0,1) → (0,2) → (1,2) → (2,2)
 ```
 
 ### Visual Explanation
+
 ```
 BFS level-by-level:
 
@@ -359,54 +381,50 @@ Shortest path length: 4
 ```
 
 ### Algorithm (BFS)
+
 ```
 function shortestPath(grid):
 	if grid[0][0] == 1:
 		return -1
-	
+
 	n = grid.length
 	queue = [(0, 0, 1)]  // (row, col, distance)
 	visited = set()
-	
+
 	while queue not empty:
 		row, col, dist = queue.dequeue()
-		
+
 		if (row, col) == (n-1, n-1):
 			return dist
-		
+
 		for each of 8 directions:
 			newRow = row + dx
 			newCol = col + dy
-			
+
 			if valid and not visited:
 				queue.enqueue((newRow, newCol, dist+1))
 				mark visited
-	
+
 	return -1  // no path
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function shortestPathBinaryMatrix(grid: number[][]): number {
-	// TODO: Check if start or end blocked
-	
-	// TODO: Initialize queue with start position
-	
-	// TODO: Create visited set
-	
-	// TODO: 8 directions: up, down, left, right, 4 diagonals
-	
-	// TODO: BFS loop
-	
-	// TODO: Check if reached destination
-	
-	// TODO: Explore 8 neighbors
-	
-	// TODO: Return -1 if no path
+  // TODO: Check if start or end blocked
+  // TODO: Initialize queue with start position
+  // TODO: Create visited set
+  // TODO: 8 directions: up, down, left, right, 4 diagonals
+  // TODO: BFS loop
+  // TODO: Check if reached destination
+  // TODO: Explore 8 neighbors
+  // TODO: Return -1 if no path
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n²) - visit each cell once
 - **Space:** O(n²) - queue and visited set
 
@@ -415,11 +433,13 @@ export function shortestPathBinaryMatrix(grid: number[][]): number {
 ## Problem 5: Pacific Atlantic Water Flow (LeetCode 417)
 
 ### Problem Statement
+
 Find all cells where water can flow to both Pacific and Atlantic oceans.
 
 **Rule:** Water flows from higher or equal height to lower or equal height.
 
 ### Example
+
 ```
 Input:
 1 2 2 3 5
@@ -439,6 +459,7 @@ Output: [[0,4], [1,3], [1,4], [2,2], [3,0], [3,1], [4,0]]
 ```
 
 ### Visual Explanation
+
 ```
 Strategy: Start from oceans and flow UPWARD!
 
@@ -455,68 +476,334 @@ Answer: Cells reachable from BOTH
 ```
 
 ### Algorithm
+
 ```
 function pacificAtlantic(heights):
 	rows = heights.length
 	cols = heights[0].length
-	
+
 	pacific = set()
 	atlantic = set()
-	
+
 	function dfs(row, col, visited):
 		if (row, col) in visited:
 			return
 		visited.add((row, col))
-		
+
 		for each neighbor:
 			if neighbor height >= current height:
 				dfs(neighbor, visited)
-	
+
 	// DFS from Pacific borders
 	for col in 0 to cols-1:
 		dfs(0, col, pacific)
 	for row in 0 to rows-1:
 		dfs(row, 0, pacific)
-	
+
 	// DFS from Atlantic borders
 	for col in 0 to cols-1:
 		dfs(rows-1, col, atlantic)
 	for row in 0 to rows-1:
 		dfs(row, cols-1, atlantic)
-	
+
 	// Find intersection
 	return pacific ∩ atlantic
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function pacificAtlantic(heights: number[][]): number[][] {
-	// TODO: Initialize sets for pacific and atlantic
-	
-	// TODO: DFS helper function
-	function dfs(row: number, col: number, visited: Set<string>) {
-		// TODO: Base cases
-		// TODO: Mark visited
-		// TODO: Visit neighbors with >= height
-	}
-	
-	// TODO: DFS from Pacific borders
-	
-	// TODO: DFS from Atlantic borders
-	
-	// TODO: Find and return intersection
+  // TODO: Initialize sets for pacific and atlantic
+
+  // TODO: DFS helper function
+  function dfs(row: number, col: number, visited: Set<string>) {
+    // TODO: Base cases
+    // TODO: Mark visited
+    // TODO: Visit neighbors with >= height
+  }
+
+  // TODO: DFS from Pacific borders
+
+  // TODO: DFS from Atlantic borders
+
+  // TODO: Find and return intersection
 }
 ```
 
 ### Complexity
+
 - **Time:** O(m × n) - visit each cell at most twice
 - **Space:** O(m × n) - visited sets
+
+---
+
+## Problem 6: Time Needed to Inform All Employees (LeetCode 1376)
+
+### Problem Statement
+
+A company has `n` employees labeled from `0` to `n - 1`.
+
+Each employee has **exactly one direct manager**, except the head of the company.
+
+You are given:
+
+- `headId`: ID of the company head
+- `manager[i]`: direct manager of employee `i`
+- `informTime[i]`: time employee `i` takes to inform all direct subordinates
+
+### Objective
+
+Return the **total time required** for the head to inform **every employee**.
+
+---
+
+## Core Rules
+
+- `manager[headId] === -1`
+- Information flows **top → down**
+- Managers inform **all subordinates simultaneously**
+- Total time depends on the **slowest communication chain**
+
+---
+
+## Mental Model
+
+Think of this as:
+
+> **The longest path from the head to any leaf in a tree**
+
+Not:
+
+- ❌ Sum of all inform times
+- ❌ Number of employees
+
+---
+
+## Example 1: Single Level Organization
+
+```
+Input:
+n = 4
+headId = 0
+manager = [-1, 0, 0, 0]
+informTime = [3, 0, 0, 0]
+
+Tree:
+        0 (3)
+      /  |  \
+     1   2   3
+
+Output:
+3
+```
+
+### Explanation
+
+- Employee `0` takes 3 minutes to inform everyone
+- All subordinates are informed **at the same time**
+- No further delays
+
+---
+
+## Example 2: Linear Chain (Worst Case)
+
+```
+Input:
+n = 4
+headId = 0
+manager = [-1, 0, 1, 2]
+informTime = [1, 2, 3, 0]
+
+Tree:
+0 (1)
+ ↓
+1 (2)
+ ↓
+2 (3)
+ ↓
+3
+
+Output:
+6
+```
+
+### Timeline Visualization
+
+```
+Minute 0 → 1: 0 informs 1
+Minute 1 → 3: 1 informs 2
+Minute 3 → 6: 2 informs 3
+```
+
+### Calculation
+
+```
+1 + 2 + 3 = 6
+```
+
+---
+
+## Example 3: Uneven Tree (Choose Longest Path)
+
+```
+Input:
+n = 7
+headId = 0
+manager = [-1, 0, 0, 1, 1, 2, 2]
+informTime = [2, 3, 1, 0, 0, 4, 0]
+
+Tree:
+              0 (2)
+           /           \
+        1 (3)          2 (1)
+       /     \        /     \
+      3       4     5 (4)    6
+```
+
+### Path Analysis
+
+```
+0 → 1 → 3 = 2 + 3 + 0 = 5
+0 → 2 → 5 = 2 + 1 + 4 = 7  ← longest
+```
+
+### Output
+
+```
+7
+```
+
+---
+
+## Example 4: Wide Organization (Parallelism Matters)
+
+```
+Input:
+n = 6
+headId = 2
+manager = [2, 2, -1, 2, 2, 2]
+informTime = [0, 0, 1, 0, 0, 0]
+
+Tree:
+        2 (1)
+     /  /  |  \  \
+    0  1   3   4  5
+```
+
+### Explanation
+
+- All employees receive the message at minute `1`
+- Parallel communication keeps time minimal
+
+### Output
+
+```
+1
+```
+
+---
+
+## Visual DFS Explanation
+
+```
+DFS(head):
+  ├── DFS(subordinate)
+  │     ├── DFS(sub-subordinate)
+  │     └── ...
+  └── Take MAX subtree time
+```
+
+---
+
+## Why DFS Works Perfectly
+
+- Each employee forms a **node**
+- Manager relationships form a **tree**
+- DFS computes the **maximum depth**
+- Inform times are added **after** subtrees finish
+
+---
+
+## Algorithm Overview
+
+```
+1. Convert manager[] into adjacency list (tree)
+2. Start DFS from head
+3. For each employee:
+     - Compute time for each subordinate
+     - Keep the maximum
+     - Add informTime[current]
+4. Return result
+```
+
+---
+
+## Detailed Pseudocode
+
+```
+function getTotalInformTime:
+    create empty list for each employee
+
+    for each employee i:
+        if manager[i] != -1:
+            add i as subordinate of manager[i]
+
+    function dfs(employee):
+        if no subordinates:
+            return 0
+
+        maxTime = 0
+        for each subordinate:
+            maxTime = max(maxTime, dfs(subordinate))
+
+        return maxTime + informTime[employee]
+
+    return dfs(head)
+```
+
+---
+
+## Common Mistakes
+
+❌ Summing all inform times
+❌ Traversing bottom-up
+❌ Forgetting parallel communication
+❌ Treating this like BFS levels only
+
+---
+
+## Edge Cases
+
+| Scenario        | Result               |
+| --------------- | -------------------- |
+| Single employee | `0`                  |
+| Deep hierarchy  | Sum of chain         |
+| Wide hierarchy  | Max branch only      |
+| Mixed tree      | Longest root-to-leaf |
+
+---
+
+## Complexity Analysis
+
+- **Time:** `O(n)`
+- **Space:** `O(n)` (tree + recursion stack)
+
+---
+
+## Key Takeaways
+
+- This is a **tree longest-path problem**
+- Parallel communication → **use max**
+- DFS naturally models hierarchy
+- Once visualized as a tree, the solution is straightforward
 
 ---
 
 ## Graph Traversal Patterns
 
 ### BFS (Breadth-First Search)
+
 ```
 Uses: Shortest path, level-order
 
@@ -526,7 +813,7 @@ visited = {start}
 while queue not empty:
 	node = queue.dequeue()
 	process(node)
-	
+
 	for neighbor in node.neighbors:
 		if neighbor not visited:
 			queue.enqueue(neighbor)
@@ -534,6 +821,7 @@ while queue not empty:
 ```
 
 ### DFS (Depth-First Search)
+
 ```
 Uses: Cycle detection, pathfinding
 
@@ -543,7 +831,7 @@ function dfs(node, visited):
 		return
 	visited.add(node)
 	process(node)
-	
+
 	for neighbor in node.neighbors:
 		dfs(neighbor, visited)
 
@@ -554,7 +842,7 @@ visited = {start}
 while stack not empty:
 	node = stack.pop()
 	process(node)
-	
+
 	for neighbor in node.neighbors:
 		if neighbor not visited:
 			stack.push(neighbor)
@@ -566,6 +854,7 @@ while stack not empty:
 ## Graph Representations
 
 ### Adjacency List
+
 ```
 Graph: 0 → 1, 0 → 2, 1 → 2
 
@@ -581,6 +870,7 @@ Array representation:
 ```
 
 ### Adjacency Matrix
+
 ```
 Same graph:
   0 1 2
@@ -596,11 +886,13 @@ matrix[i][j] = 1 if edge exists
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** numIslands (basic DFS)
 2. **Then:** canFinish, cloneGraph (graph algorithms)
 3. **Finally:** shortestPath, pacificAtlantic (BFS/advanced DFS)
 
 ### Common Mistakes
+
 1. ❌ Not marking cells as visited
 2. ❌ Forgetting boundary checks
 3. ❌ Using wrong data structure (BFS needs queue, not stack)
@@ -608,6 +900,7 @@ matrix[i][j] = 1 if edge exists
 5. ❌ Mutating graph during traversal
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty graph
 ✓ Single node
@@ -622,12 +915,12 @@ matrix[i][j] = 1 if edge exists
 
 ## Complexity Cheat Sheet
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Num Islands | O(m×n) | O(m×n) | DFS marking |
-| Course Schedule | O(V+E) | O(V+E) | Cycle detection |
-| Clone Graph | O(V+E) | O(V) | DFS + HashMap |
-| Shortest Path | O(m×n) | O(m×n) | BFS |
+| Problem          | Time   | Space  | Key Technique    |
+| ---------------- | ------ | ------ | ---------------- |
+| Num Islands      | O(m×n) | O(m×n) | DFS marking      |
+| Course Schedule  | O(V+E) | O(V+E) | Cycle detection  |
+| Clone Graph      | O(V+E) | O(V)   | DFS + HashMap    |
+| Shortest Path    | O(m×n) | O(m×n) | BFS              |
 | Pacific Atlantic | O(m×n) | O(m×n) | Multi-source DFS |
 
 Happy Coding! 🚀

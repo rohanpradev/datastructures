@@ -1,13 +1,13 @@
 # Data Structures & Algorithms - Complete Learning Workspace 
 [![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
 
-A comprehensive DSA workspace with **1475+ passing tests**, detailed practice guides, and automated template generation for hands-on learning.
+A comprehensive DSA workspace with **2000+ passing tests**, detailed practice guides, and automated template generation for hands-on learning.
 
 ---
 
 ##  Comprehensive Learning Guides
 
-This workspace includes **9 detailed guides** with visual explanations:
+This workspace includes **11 detailed guides** with visual explanations:
 
 ### Data Structures
 -  [Binary Search Tree Problems](src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md)
@@ -19,6 +19,7 @@ This workspace includes **9 detailed guides** with visual explanations:
 
 ### Algorithms
 -  [Array Manipulation](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
+-  [Array Problems](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
 -  [String Manipulation](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
 -  [Recursion & Dynamic Programming](src/algorithms/recursion/FIBONACCI_GUIDE.md)
 -  [Sorting Algorithms (5 types)](src/algorithms/sorting/SORTING_GUIDE.md)
@@ -104,8 +105,8 @@ All tagged with LeetCode numbers for easy reference.
 
 ### Test Coverage
 ```
- 1500+ tests passing
- 18+ test files
+ 2000+ tests passing
+ 20+ test files
  Zero TypeScript errors
  100% type safety
 ```
@@ -126,6 +127,8 @@ DSA/
        arrays/
           array-exercises.ts
           ARRAY_EXERCISES_GUIDE.md 
+          array-problems.ts
+          ARRAY_PROBLEMS_GUIDE.md 
        strings/
           string-exercises.ts
           STRING_EXERCISES_GUIDE.md 
@@ -276,10 +279,10 @@ Heap         | N/A     | O(n)    | O(log n)| O(log n)
 
 ##  Stats
 
-- **Problems:** 50+
-- **Tests:** 1475
-- **Test Files:** 18
-- **Guides:** 9
+- **Problems:** 200+
+- **Tests:** 2000+
+- **Test Files:** 20+
+- **Guides:** 11
 - **Documentation:** 5000+ lines
 
 ---
@@ -297,4 +300,4 @@ Heap         | N/A     | O(n)    | O(log n)| O(log n)
 
 ---
 
-*Last Updated: December 2024 | Powered by [Bun](https://bun.com)*
+*Last Updated: January 2026*
