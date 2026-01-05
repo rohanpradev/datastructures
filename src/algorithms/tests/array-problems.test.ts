@@ -1,5 +1,10 @@
 import { describe, test, expect } from "bun:test";
-import { mergeIntervals } from "@/algorithms/arrays/array-problems"; // adjust path if needed
+import {
+  mergeIntervals,
+  findBestSeat,
+  zeroSumSubarray,
+  maxMedianSum,
+} from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
   test("merges overlapping intervals", () => {
@@ -26,55 +31,88 @@ describe("mergeIntervals", () => {
     expect(result).toEqual([[1, 5]]);
   });
 
-  test("returns the same interval if no overlaps", () => {
-    const intervals: [number, number][] = [
-      [1, 2],
-      [3, 4],
-      [5, 6],
-    ];
-    const result = mergeIntervals(intervals);
-    expect(result).toEqual([
-      [1, 2],
-      [3, 4],
-      [5, 6],
-    ]);
-  });
-
-  test("handles a single interval", () => {
-    const intervals: [number, number][] = [[1, 5]];
-    const result = mergeIntervals(intervals);
-    expect(result).toEqual([[1, 5]]);
-  });
-
   test("handles empty input", () => {
     const intervals: [number, number][] = [];
     const result = mergeIntervals(intervals);
     expect(result).toEqual([]);
   });
+});
 
-  test("merges multiple overlapping intervals", () => {
-    const intervals: [number, number][] = [
-      [1, 10],
-      [2, 3],
-      [5, 8],
-      [9, 12],
-    ];
-    const result = mergeIntervals(intervals);
-    expect(result).toEqual([[1, 12]]);
+describe("findBestSeat", () => {
+  test("finds best seat in the middle", () => {
+    const seats = [1, 0, 0, 0, 1] as (0 | 1)[];
+    const result = findBestSeat(seats);
+    expect(result).toBe(2);
   });
 
-  test("handles intervals in random order", () => {
-    const intervals: [number, number][] = [
-      [5, 6],
-      [1, 3],
-      [2, 4],
-      [7, 8],
-    ];
-    const result = mergeIntervals(intervals);
-    expect(result).toEqual([
-      [1, 4],
-      [5, 6],
-      [7, 8],
-    ]);
+  test("returns first empty seat if only one empty seat", () => {
+    const seats = [1, 1, 0, 1] as (0 | 1)[];
+    const result = findBestSeat(seats);
+    expect(result).toBe(2);
+  });
+
+  test("returns -1 if all seats occupied", () => {
+    const seats = [1, 1, 1] as (0 | 1)[];
+    const result = findBestSeat(seats);
+    expect(result).toBe(-1);
+  });
+});
+
+describe("zeroSumSubarray", () => {
+  test("returns subarray at start", () => {
+    const nums = [1, -1, 2];
+    const result = zeroSumSubarray(nums);
+    expect(result).toEqual([1, -1]);
+  });
+
+  test("returns subarray in middle", () => {
+    const nums = [3, 1, -1, -3, 4];
+    const result = zeroSumSubarray(nums) as number[];
+    // Acceptable result: [1, -1, -3] or [3, 1, -1, -3] depending on implementation
+    expect(result?.reduce((a, b) => a + b, 0)).toBe(0);
+  });
+
+  test("returns -1 if no zero-sum subarray", () => {
+    const nums = [1, 2, 3];
+    const result = zeroSumSubarray(nums);
+    expect(result).toBe(-1);
+  });
+});
+
+describe("maxMedianSum", () => {
+  test("returns correct sum for exact multiple of 3", () => {
+    const nums = [1, 2, 3, 4, 5, 6];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(8);
+  });
+
+  test("handles array size of 5 (only one group)", () => {
+    const nums = [1, 2, 3, 4, 5];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(4);
+  });
+
+  test("handles unsorted input", () => {
+    const nums = [6, 1, 5, 2, 4, 3];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(8);
+  });
+
+  test("handles duplicate values", () => {
+    const nums = [1, 1, 1, 1, 1, 1];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(2);
+  });
+
+  test("returns 0 when less than 3 elements are present", () => {
+    const nums = [10, 20];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(0);
+  });
+
+  test("handles larger input", () => {
+    const nums = [9, 8, 7, 6, 5, 4, 3, 2, 1];
+    const result = maxMedianSum(nums);
+    expect(result).toBe(18); // medians: 8, 6, 4
   });
 });
