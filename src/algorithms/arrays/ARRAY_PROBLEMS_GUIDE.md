@@ -522,3 +522,241 @@ export function maxMedianSum(nums: number[]): number {
 - A common pattern in optimization problems involving medians.
 
 ---
+
+# Missing Numbers (Find Two Missing Numbers)
+
+## Problem Statement
+
+Given an array `nums` containing **unique numbers** from the range `1` to `n` (inclusive), where **exactly two numbers are missing**, write a function to find the missing numbers.
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input: nums = [1, 2, 4, 6]
+Output: [3, 5]
+```
+
+### Example 2
+
+```
+Input: nums = [1, 3]
+Output: [2, 4]
+```
+
+---
+
+## Visual Explanation
+
+```
+Original array: [1, 2, 4, 6]
+Full range:     1 2 3 4 5 6
+
+Step 1: Sum all numbers in the range 1..6
+        1+2+3+4+5+6 = 21
+
+Step 2: Sum numbers in the array
+        1+2+4+6 = 13
+
+Step 3: Sum of missing numbers
+        21 - 13 = 8
+        => missing1 + missing2 = 8
+
+Step 4: Split range around midpoint (8 / 2 = 4)
+        Left half: 1..4
+        Right half: 5..6
+
+Step 5: Sum actual numbers in each half
+        Left sum: 1+2+4 = 7
+        Right sum: 6
+
+Step 6: Subtract actual from expected sums
+        Left missing: 10-7 = 3
+        Right missing: 14-6 = 8? Wait check
+
+Actually step 6:
+Expected left sum (1..4) = 1+2+3+4=10 → left missing = 10-7=3
+Expected right sum (5..6) = 5+6=11 → right missing = 11-6=5
+
+Result: [3, 5]
+```
+
+---
+
+## Algorithm (Math + Partition)
+
+1. **Calculate the expected sum** of numbers from 1 to n using the formula:
+
+   ```
+   sum = n * (n + 1) / 2
+   ```
+
+2. **Calculate the actual sum** of numbers in the array.
+
+3. **Sum of missing numbers** = expected sum − actual sum.
+
+4. **Split the range** around `missingSum / 2` into:
+   - Left half → one missing number
+   - Right half → the other missing number
+
+5. **Compare sums** of actual numbers in each half with the expected sums
+   to find the two missing numbers.
+
+6. Return the two missing numbers.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function missingNumbers(nums: number[]): [number, number] {
+  const n = nums.length + 2;
+  const expectedSum = (n * (n + 1)) / 2;
+  const actualSum = nums.reduce((a, b) => a + b, 0);
+  const missingSum = expectedSum - actualSum;
+
+  const mid = Math.floor(missingSum / 2);
+  const expectedLeftSum = (mid * (mid + 1)) / 2;
+  const expectedRightSum = expectedSum - expectedLeftSum;
+
+  let actualLeftSum = 0;
+  let actualRightSum = 0;
+
+  for (const num of nums) {
+    if (num <= mid) actualLeftSum += num;
+    else actualRightSum += num;
+  }
+
+  const firstMissing = expectedLeftSum - actualLeftSum;
+  const secondMissing = expectedRightSum - actualRightSum;
+
+  return [firstMissing, secondMissing];
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                                      |
+| ---------------- | ------------------------------------------ |
+| Time Complexity  | **O(n)** (single pass through array)       |
+| Space Complexity | **O(1)** (only variables, no extra arrays) |
+
+---
+
+## Key Takeaways
+
+- The problem can be solved using **math and sum formulas**, not brute force.
+- Splitting the range into two halves allows finding each missing number **in one pass**.
+- Works efficiently even for large ranges without extra space.
+- Useful in **data validation, sequence recovery, and missing element detection**.
+
+---
+
+# Majority Element (LeetCode 169)
+
+## Problem Statement
+
+Given an array `nums` of size `n`, **find the majority element**, i.e., the element that appears **more than n/2 times**.
+
+- You can assume that the majority element **always exists** in the array.
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input: [3, 2, 3]
+Output: 3
+```
+
+### Example 2
+
+```
+Input: [2,2,1,1,1,2,2]
+Output: 2
+```
+
+---
+
+## Visual Explanation
+
+```
+Input: [2, 2, 1, 1, 1, 2, 2]
+
+Step 1: Initialize candidate = null, count = 0
+
+Step 2: Iterate through array
+Iteration 1: num = 2, count = 0 → candidate = 2, count = 1
+Iteration 2: num = 2, matches candidate → count = 2
+Iteration 3: num = 1, != candidate → count = 1
+Iteration 4: num = 1, != candidate → count = 0
+Iteration 5: num = 1, count = 0 → candidate = 1, count = 1
+Iteration 6: num = 2, != candidate → count = 0
+Iteration 7: num = 2, count = 0 → candidate = 2, count = 1
+
+Step 3: End of array → candidate = 2
+Output: 2
+```
+
+---
+
+## Algorithm (Boyer–Moore Voting)
+
+1. Initialize `count = 0` and `candidate = null`.
+2. Iterate through the array:
+   - If `count` is 0 → choose the current number as the new candidate.
+   - If the current number equals the candidate → increment `count`.
+   - Otherwise → decrement `count`.
+
+3. After the loop, the candidate is guaranteed to be the majority element.
+
+> ✅ The algorithm works because the majority element appears **more than half the time**, so it cannot be completely canceled out.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function majorityElement(nums: number[]): number {
+  let candidate: number | null = null;
+  let count = 0;
+
+  for (const num of nums) {
+    if (count === 0) {
+      candidate = num; // pick a new candidate
+    }
+
+    if (num === candidate) count++;
+    else count--;
+  }
+
+  return candidate!;
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                            |
+| ---------------- | -------------------------------- |
+| Time Complexity  | O(n) — single pass through array |
+| Space Complexity | O(1) — constant space            |
+
+---
+
+## Key Takeaways
+
+- **Boyer–Moore Voting** is optimal for majority-element problems.
+- Only the **current candidate and a count** need to be tracked.
+- The algorithm is **linear time** and **constant space**.
+- Very useful in **interview and competitive programming problems**.
+
+---

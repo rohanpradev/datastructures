@@ -174,3 +174,159 @@ export function maxMedianSum(nums: number[]): number {
 
   return sum;
 }
+
+/**
+ * Finds the two missing numbers in an array containing numbers
+ * from the range 1 to n, where exactly two numbers are missing.
+ *
+ * Example:
+ *   Input:  [1, 2, 4, 6]
+ *   Output: [3, 5]
+ *
+ * Assumptions:
+ * - The array contains unique integers
+ * - All numbers are in the range 1..n
+ * - Exactly two numbers are missing
+ *
+ * Time Complexity: O(n)
+ * Space Complexity: O(1)
+ *
+ * @param nums - Array of integers from 1..n with exactly two missing values
+ * @returns A tuple containing the two missing numbers
+ */
+export function missingNumbers(nums: number[]): [number, number] {
+  /**
+   * Since two numbers are missing, the total range size (n)
+   * must be the length of the array + 2.
+   */
+  const n = nums.length + 2;
+
+  /**
+   * Calculate the expected sum of numbers from 1 to n
+   * using the arithmetic series formula:
+   *
+   *   sum = n * (n + 1) / 2
+   */
+  const expectedSum = (n * (n + 1)) / 2;
+
+  /**
+   * Calculate the sum of all numbers that actually exist
+   * in the given array.
+   */
+  const actualSum = nums.reduce((sum, num) => sum + num, 0);
+
+  /**
+   * The difference between the expected sum and the actual sum
+   * equals the sum of the two missing numbers.
+   *
+   *   missing1 + missing2 = missingSum
+   */
+  const missingSum = expectedSum - actualSum;
+
+  /**
+   * We split the number range into two halves.
+   * One missing number must be in each half.
+   *
+   * Example:
+   *   missingSum = 8 → mid = 4
+   *   Left range:  1..4
+   *   Right range: 5..n
+   */
+  const mid = Math.floor(missingSum / 2);
+
+  /**
+   * Expected sum of numbers from 1 to mid
+   */
+  const expectedLeftSum = (mid * (mid + 1)) / 2;
+
+  /**
+   * Expected sum of numbers from mid + 1 to n
+   * This is the total expected sum minus the left half sum.
+   */
+  const expectedRightSum = expectedSum - expectedLeftSum;
+
+  /**
+   * These will hold the sums of the numbers that actually exist
+   * in the left and right halves of the array.
+   */
+  let actualLeftSum = 0;
+  let actualRightSum = 0;
+
+  /**
+   * Loop through the array and accumulate sums based on
+   * which half each number belongs to.
+   */
+  for (const num of nums) {
+    if (num <= mid) {
+      actualLeftSum += num;
+    } else {
+      actualRightSum += num;
+    }
+  }
+
+  /**
+   * The missing number in each half is found by subtracting
+   * the actual sum from the expected sum.
+   */
+  const firstMissing = expectedLeftSum - actualLeftSum;
+  const secondMissing = expectedRightSum - actualRightSum;
+
+  /**
+   * Return both missing numbers as a tuple.
+   */
+  return [firstMissing, secondMissing];
+}
+/**
+ * Finds the majority element in an array of numbers.
+ *
+ * The majority element is the element that appears **more than n/2 times**.
+ * This implementation uses the **Boyer–Moore Voting Algorithm**, which
+ * guarantees O(n) time and O(1) space.
+ *
+ * Algorithm:
+ * 1. Initialize `count = 0` and `candidate = null`.
+ * 2. Iterate through the array:
+ *    - If count is 0, set the current number as the new candidate.
+ *    - If the current number equals the candidate, increment count.
+ *    - Otherwise, decrement count.
+ * 3. After the loop, the candidate is guaranteed to be the majority element.
+ *
+ * Assumes that a majority element **always exists**.
+ *
+ * @param {number[]} nums - The input array of integers.
+ * @returns {number} The majority element.
+ *
+ * @example
+ * majorityElement([3, 2, 3])
+ * // → 3
+ *
+ * @example
+ * majorityElement([2,2,1,1,1,2,2])
+ * // → 2
+ *
+ * @complexity
+ * Time Complexity: O(n) — single pass through the array
+ * Space Complexity: O(1) — constant space
+ */
+export function majorityElement(nums: number[]): number {
+  let candidate: number | null = null; // Current majority candidate
+  let count = 0; // Count of the current candidate
+
+  for (const num of nums) {
+    if (count === 0) {
+      // When count drops to 0, pick a new candidate
+      candidate = num;
+    }
+
+    if (num === candidate) {
+      // Same as candidate → increment count
+      count++;
+    } else {
+      // Different from candidate → decrement count
+      count--;
+    }
+  }
+
+  // candidate now holds the majority element
+  return candidate!;
+}

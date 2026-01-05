@@ -4,6 +4,8 @@ import {
   findBestSeat,
   zeroSumSubarray,
   maxMedianSum,
+  majorityElement,
+  missingNumbers,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -114,5 +116,36 @@ describe("maxMedianSum", () => {
     const nums = [9, 8, 7, 6, 5, 4, 3, 2, 1];
     const result = maxMedianSum(nums);
     expect(result).toBe(18); // medians: 8, 6, 4
+  });
+});
+describe("missingNumbers", () => {
+  test("finds two missing numbers in a small array", () => {
+    const nums = [1, 2, 4, 6];
+    const result = missingNumbers(nums);
+    expect(result).toEqual([3, 5]);
+  });
+
+  test("finds missing numbers when array starts at 1 but has gaps", () => {
+    const nums = [1, 3];
+    const result = missingNumbers(nums);
+    expect(result).toEqual([2, 4]);
+  });
+
+  test("finds missing numbers when array has consecutive numbers missing at the end", () => {
+    const nums = [1, 2, 3, 4, 5];
+    const result = missingNumbers(nums);
+    expect(result).toEqual([6, 7]);
+  });
+
+  test("handles minimum input size", () => {
+    const nums = [2];
+    const result = missingNumbers(nums);
+    expect(result).toEqual([1, 3]);
+  });
+
+  test("works with unordered input", () => {
+    const nums = [4, 2, 1];
+    const result = missingNumbers(nums);
+    expect(result).toEqual([3, 5]);
   });
 });
