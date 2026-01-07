@@ -6,6 +6,7 @@ import {
   maxMedianSum,
   majorityElement,
   missingNumbers,
+  sweetAndSavoury,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -147,5 +148,92 @@ describe("missingNumbers", () => {
     const nums = [4, 2, 1];
     const result = missingNumbers(nums);
     expect(result).toEqual([3, 5]);
+  });
+});
+describe("majorityElement", () => {
+  test("returns the majority element in a small array", () => {
+    const result = majorityElement([3, 2, 3]);
+    expect(result).toBe(3);
+  });
+
+  test("returns the majority element when it appears many times", () => {
+    const result = majorityElement([2, 2, 1, 1, 1, 2, 2]);
+    expect(result).toBe(2);
+  });
+
+  test("works when all elements are the same", () => {
+    const result = majorityElement([5, 5, 5, 5]);
+    expect(result).toBe(5);
+  });
+
+  test("works when majority element is at the beginning", () => {
+    const result = majorityElement([7, 7, 7, 2, 3]);
+    expect(result).toBe(7);
+  });
+
+  test("works when majority element is at the end", () => {
+    const result = majorityElement([1, 2, 3, 9, 9, 9, 9]);
+    expect(result).toBe(9);
+  });
+
+  test("works with negative numbers", () => {
+    const result = majorityElement([-1, -1, -1, 2, 3]);
+    expect(result).toBe(-1);
+  });
+
+  test("works with large array", () => {
+    const nums = Array(1000).fill(4);
+    nums.push(1, 2, 3);
+    const result = majorityElement(nums);
+    expect(result).toBe(4);
+  });
+});
+
+describe("sweetAndSavoury", () => {
+  test("returns exact match when sum equals target", () => {
+    const result = sweetAndSavoury([-3, -5, 1, 7], 4);
+    expect(result).toEqual([-3, 7]);
+  });
+
+  test("returns closest sum less than target when no exact match exists", () => {
+    const result = sweetAndSavoury([5, 2, 4, 6, 3], 7);
+    expect(result).not.toBeNull();
+    expect(result![0] + result![1]).toBe(7);
+  });
+
+  test("returns null when no valid pair exists", () => {
+    const result = sweetAndSavoury([8, 10, 3], 7);
+    expect(result).toBeNull();
+  });
+
+  test("handles negative numbers correctly", () => {
+    const result = sweetAndSavoury([-10, -5, -2, -1], -6);
+    expect(result).toEqual([-5, -1]);
+  });
+
+  test("handles mixed positive and negative numbers", () => {
+    const result = sweetAndSavoury([-4, -2, 3, 9], 5);
+    expect(result).toEqual([-4, 9]);
+  });
+
+  test("returns closest smaller sum when multiple valid pairs exist", () => {
+    const result = sweetAndSavoury([1, 2, 3, 4, 5], 8);
+    expect(result).toEqual([3, 5]);
+  });
+
+  test("does not mutate the original array", () => {
+    const nums = [4, 1, 6, 2];
+    sweetAndSavoury(nums, 7);
+    expect(nums).toEqual([4, 1, 6, 2]);
+  });
+
+  test("works with duplicate numbers", () => {
+    const result = sweetAndSavoury([2, 2, 2, 2], 4);
+    expect(result).toEqual([2, 2]);
+  });
+
+  test("returns null when array has fewer than two elements", () => {
+    const result = sweetAndSavoury([5], 10);
+    expect(result).toBeNull();
   });
 });

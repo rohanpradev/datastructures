@@ -330,3 +330,62 @@ export function majorityElement(nums: number[]): number {
   // candidate now holds the majority element
   return candidate!;
 }
+
+/**
+ * Finds two numbers whose sum is less than or equal to the target
+ * and as close to the target as possible.
+ *
+ * If an exact match is found, it is returned immediately.
+ * Otherwise, the closest smaller sum is returned.
+ * If no valid pair exists, null is returned.
+ *
+ * @param numbers - Array of integers
+ * @param targetSum - Target sum
+ * @returns A tuple containing the selected pair or null
+ */
+export function sweetAndSavoury(
+  numbers: number[],
+  targetSum: number,
+): [number, number] | null {
+  // Create a sorted copy to avoid mutating the input array
+  const sortedNumbers = [...numbers].sort((a, b) => a - b);
+
+  // Two pointers for scanning from both ends
+  let leftIndex = 0;
+  let rightIndex = sortedNumbers.length - 1;
+
+  // Track the closest sum that does not exceed the target
+  let closestValidSum = -Infinity;
+
+  // Track the pair that produces the closest valid sum
+  let closestPair: [number, number] | null = null;
+
+  // Move pointers until they meet
+  while (leftIndex < rightIndex) {
+    const leftValue = sortedNumbers[leftIndex];
+    const rightValue = sortedNumbers[rightIndex];
+    const currentSum = leftValue + rightValue;
+
+    // Best possible case: exact match
+    if (currentSum === targetSum) {
+      return [leftValue, rightValue];
+    }
+
+    // Valid sum smaller than target
+    if (currentSum < targetSum) {
+      // Update if this sum is closer to the target
+      if (currentSum > closestValidSum) {
+        closestValidSum = currentSum;
+        closestPair = [leftValue, rightValue];
+      }
+
+      // Move left pointer to increase sum
+      leftIndex++;
+    } else {
+      // Sum is too large, decrease it
+      rightIndex--;
+    }
+  }
+
+  return closestPair;
+}

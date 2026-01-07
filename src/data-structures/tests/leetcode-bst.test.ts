@@ -15,6 +15,8 @@ import {
   branchSum,
   nodeDepth,
   evaluateExpressionTree,
+  kthLargest,
+  reconstructBST,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -921,5 +923,172 @@ describe("evaluateExpressionTree", () => {
     expect(() => evaluateExpressionTree(tree)).toThrow(
       "Operator node must have both left and right children",
     );
+  });
+});
+
+describe("kthLargest", () => {
+  test("should return null for empty tree", () => {
+    expect(kthLargest(null, 1)).toBeNull();
+  });
+
+  test("should return root for single node and k=1", () => {
+    const bst = new BinarySearchTree<number>(5);
+    expect(kthLargest(bst.root, 1)).toBe(5);
+  });
+
+  test("should find 1st largest (maximum)", () => {
+    const bst = new BinarySearchTree<number>(5);
+    bst.insert(3).insert(7).insert(1).insert(4).insert(6).insert(9);
+    expect(kthLargest(bst.root, 1)).toBe(9);
+  });
+
+  test("should find 2nd largest", () => {
+    const bst = new BinarySearchTree<number>(5);
+    bst.insert(3).insert(7).insert(1).insert(4).insert(6).insert(9);
+    expect(kthLargest(bst.root, 2)).toBe(7);
+  });
+
+  test("should find middle element", () => {
+    const bst = new BinarySearchTree<number>(5);
+    bst.insert(3).insert(7).insert(1).insert(4).insert(6).insert(9);
+    // Sorted (descending): [9, 7, 6, 5, 4, 3, 1]
+    expect(kthLargest(bst.root, 4)).toBe(5);
+  });
+
+  test("should find last element (minimum)", () => {
+    const bst = new BinarySearchTree<number>(5);
+    bst.insert(3).insert(7).insert(1).insert(4).insert(6).insert(9);
+    // Sorted (descending): [9, 7, 6, 5, 4, 3, 1]
+    expect(kthLargest(bst.root, 7)).toBe(1);
+  });
+
+  test("should work with left-skewed tree", () => {
+    const bst = new BinarySearchTree<number>(5);
+    bst.insert(4).insert(3).insert(2).insert(1);
+    // Sorted (descending): [5, 4, 3, 2, 1]
+    expect(kthLargest(bst.root, 3)).toBe(3);
+  });
+
+  test("should work with right-skewed tree", () => {
+    const bst = new BinarySearchTree<number>(1);
+    bst.insert(2).insert(3).insert(4).insert(5);
+    // Sorted (descending): [5, 4, 3, 2, 1]
+    expect(kthLargest(bst.root, 3)).toBe(3);
+  });
+
+  test("should handle tree with negative numbers", () => {
+    const bst = new BinarySearchTree<number>(0);
+    bst.insert(-5).insert(5).insert(-3).insert(3);
+    // Sorted (descending): [5, 3, 0, -3, -5]
+    expect(kthLargest(bst.root, 2)).toBe(3);
+    expect(kthLargest(bst.root, 4)).toBe(-3);
+  });
+
+  test("should work with complex tree", () => {
+    const bst = new BinarySearchTree<number>(20);
+    [10, 30, 5, 15, 25, 35, 3, 7, 12, 18].forEach((v) => bst.insert(v));
+    // Sorted (descending): [35, 30, 25, 20, 18, 15, 12, 10, 7, 5, 3]
+    expect(kthLargest(bst.root, 1)).toBe(35);
+    expect(kthLargest(bst.root, 5)).toBe(18);
+    expect(kthLargest(bst.root, 11)).toBe(3);
+  });
+
+  test("should handle k at boundaries", () => {
+    const bst = new BinarySearchTree<number>(50);
+    [30, 70].forEach((v) => bst.insert(v));
+    // Sorted (descending): [70, 50, 30]
+    expect(kthLargest(bst.root, 1)).toBe(70);
+    expect(kthLargest(bst.root, 3)).toBe(30);
+  });
+});
+
+describe("reconstructBST", () => {
+  test("should return null for empty preorder array", () => {
+    expect(reconstructBST([])).toBeNull();
+  });
+
+  test("should return single node for one-element preorder", () => {
+    const bst = reconstructBST([10]);
+    expect(bst).toEqual({ value: 10, left: null, right: null });
+  });
+
+  test("should reconstruct simple BST", () => {
+    const preorder = [10, 5, 15];
+    const bst = reconstructBST(preorder);
+
+    expect(bst?.value).toBe(10);
+    expect(bst?.left?.value).toBe(5);
+    expect(bst?.right?.value).toBe(15);
+    expect(bst?.left?.left).toBeNull();
+    expect(bst?.left?.right).toBeNull();
+    expect(bst?.right?.left).toBeNull();
+    expect(bst?.right?.right).toBeNull();
+  });
+
+  test("should reconstruct complex BST", () => {
+    const preorder = [10, 5, 1, 7, 15, 12, 20];
+    const bst = reconstructBST(preorder);
+
+    // Root
+    expect(bst?.value).toBe(10);
+
+    // Left subtree
+    expect(bst?.left?.value).toBe(5);
+    expect(bst?.left?.left?.value).toBe(1);
+    expect(bst?.left?.right?.value).toBe(7);
+
+    // Right subtree
+    expect(bst?.right?.value).toBe(15);
+    expect(bst?.right?.left?.value).toBe(12);
+    expect(bst?.right?.right?.value).toBe(20);
+  });
+
+  test("should reconstruct left-skewed BST", () => {
+    const preorder = [5, 4, 3, 2, 1];
+    const bst = reconstructBST(preorder);
+
+    let current = bst;
+    for (let val of [5, 4, 3, 2, 1]) {
+      expect(current?.value).toBe(val);
+      expect(current?.right).toBeNull();
+      current = current?.left;
+    }
+  });
+
+  test("should reconstruct right-skewed BST", () => {
+    const preorder = [1, 2, 3, 4, 5];
+    const bst = reconstructBST(preorder);
+
+    let current = bst;
+    for (let val of [1, 2, 3, 4, 5]) {
+      expect(current?.value).toBe(val);
+      expect(current?.left).toBeNull();
+      current = current?.right;
+    }
+  });
+
+  test("should handle BST with negative and positive numbers", () => {
+    const preorder = [0, -10, -20, -5, 5, 10];
+    const bst = reconstructBST(preorder);
+
+    expect(bst?.value).toBe(0);
+    expect(bst?.left?.value).toBe(-10);
+    expect(bst?.left?.left?.value).toBe(-20);
+    expect(bst?.left?.right?.value).toBe(-5);
+    expect(bst?.right?.value).toBe(5);
+    expect(bst?.right?.right?.value).toBe(10);
+  });
+
+  test("should handle complex arbitrary BST", () => {
+    const preorder = [50, 30, 20, 40, 70, 60, 80];
+    const bst = reconstructBST(preorder);
+
+    expect(bst?.value).toBe(50);
+    expect(bst?.left?.value).toBe(30);
+    expect(bst?.left?.left?.value).toBe(20);
+    expect(bst?.left?.right?.value).toBe(40);
+    expect(bst?.right?.value).toBe(70);
+    expect(bst?.right?.left?.value).toBe(60);
+    expect(bst?.right?.right?.value).toBe(80);
   });
 });

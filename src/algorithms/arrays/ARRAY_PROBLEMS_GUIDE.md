@@ -760,3 +760,164 @@ export function majorityElement(nums: number[]): number {
 - Very useful in **interview and competitive programming problems**.
 
 ---
+
+# Sweet and Savoury (Two Sum Closest ≤ Target)
+
+## Problem Statement
+
+Given an array of integers `numbers` and an integer `targetSum`, **find two distinct numbers whose sum is less than or equal to the target and as close to the target as possible**.
+
+- If an **exact match** exists, return it immediately.
+- Otherwise, return the pair with the **largest sum smaller than the target**.
+- If no valid pair exists, return `null`.
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input: numbers = [-3, -5, 1, 7], targetSum = 4
+Output: [-3, 7]
+Explanation: -3 + 7 = 4 (exact match)
+```
+
+### Example 2
+
+```
+Input: numbers = [5, 2, 4, 6, 3], targetSum = 7
+Output: [3, 4]
+Explanation: 3 + 4 = 7 (exact match)
+```
+
+### Example 3
+
+```
+Input: numbers = [8, 10, 3], targetSum = 7
+Output: null
+Explanation: No pair has sum ≤ 7
+```
+
+---
+
+## Visual Explanation
+
+```
+Input: [-5, -3, 1, 7], targetSum = 4
+(sorted)
+
+left → -5           right → 7
+sum = 2  (valid, best so far)
+
+left → -3           right → 7
+sum = 4  (exact match)
+
+Return [-3, 7]
+```
+
+Another case (no exact match):
+
+```
+Input: [1, 2, 4, 8], targetSum = 6
+(sorted)
+
+left → 1            right → 8
+sum = 9  (> target) → move right
+
+left → 1            right → 4
+sum = 5  (valid, best so far) → move left
+
+left → 2            right → 4
+sum = 6  (exact match)
+
+Return [2, 4]
+```
+
+---
+
+## Algorithm (Two Pointers)
+
+1. **Sort the array** in ascending order.
+2. Initialize two pointers:
+   - `leftIndex` at the start
+   - `rightIndex` at the end
+
+3. Track:
+   - `closestValidSum` → largest sum ≤ target
+   - `closestPair` → corresponding pair
+
+4. While `leftIndex < rightIndex`:
+   - Compute the current sum.
+   - If sum equals target → return immediately.
+   - If sum < target:
+     - Update best solution if closer.
+     - Move `leftIndex` right.
+
+   - If sum > target:
+     - Move `rightIndex` left.
+
+5. Return the best pair found (or `null`).
+
+> ✅ Sorting enables efficient elimination of impossible pairs using pointer movement.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function sweetAndSavoury(
+  numbers: number[],
+  targetSum: number,
+): [number, number] | null {
+  const sortedNumbers = [...numbers].sort((a, b) => a - b);
+
+  let leftIndex = 0;
+  let rightIndex = sortedNumbers.length - 1;
+
+  let closestValidSum = -Infinity;
+  let closestPair: [number, number] | null = null;
+
+  while (leftIndex < rightIndex) {
+    const leftValue = sortedNumbers[leftIndex];
+    const rightValue = sortedNumbers[rightIndex];
+    const currentSum = leftValue + rightValue;
+
+    if (currentSum === targetSum) {
+      return [leftValue, rightValue];
+    }
+
+    if (currentSum < targetSum) {
+      if (currentSum > closestValidSum) {
+        closestValidSum = currentSum;
+        closestPair = [leftValue, rightValue];
+      }
+      leftIndex++;
+    } else {
+      rightIndex--;
+    }
+  }
+
+  return closestPair;
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                                 |
+| ---------------- | ------------------------------------- |
+| Time Complexity  | O(n log n) — sorting dominates        |
+| Space Complexity | O(n) — sorted copy of the input array |
+
+---
+
+## Key Takeaways
+
+- **Two-pointer technique** is ideal when working with sorted arrays.
+- Always track the **best valid solution**, not just exact matches.
+- Defensive copying avoids **unexpected input mutation**.
+- Commonly tested in **interviews and coding assessments**.
+
+---

@@ -791,7 +791,6 @@ export function closestValue(
 
 ---
 
-
 # Problem 10: Branch Sum (Binary Tree)
 
 This module is intended to compute the **sum of values along every root-to-leaf branch** in a binary tree.
@@ -1073,6 +1072,332 @@ export function evaluateExpressionTree(tree: TreeNode<number>): number {
 - Exact match → return immediately
 - Skewed BST → degrades to linear traversal
 - Multiple equally close values → return either
+
+---
+
+## Problem: Kth Largest Element in a Binary Search Tree
+
+### Problem Statement
+
+Given the root of a **Binary Search Tree (BST)** and an integer `k`, return the **k-th largest value** in the tree.
+
+If the k-th largest element does not exist, return `null`.
+
+---
+
+### Binary Search Tree Rules
+
+- Values in the **left subtree** are **smaller** than the node
+- Values in the **right subtree** are **larger** than the node
+- Reverse in-order traversal (Right → Node → Left) visits nodes in **descending order**
+
+---
+
+### Example
+
+```
+BST:
+
+        5
+       / \
+      3   8
+     / \   \
+    2   4   10
+```
+
+**k = 3**
+
+Sorted values (descending):
+
+```
+10, 8, 5, 4, 3, 2
+```
+
+**Result:** `5`
+
+---
+
+### Visual Explanation
+
+```
+Reverse In-order Traversal (Right → Node → Left):
+
+        5
+       / \
+      3   8
+     / \   \
+    2   4   10
+
+Traversal order:
+10 → 8 → 5 → 4 → 3 → 2
+
+k = 3 → 5
+```
+
+---
+
+### Algorithm
+
+```
+function kthLargest(root, k):
+    count = 0
+    result = null
+
+    function reverseInorder(node):
+        if node is null or result is not null:
+            return
+
+        reverseInorder(node.right)
+
+        count += 1
+        if count == k:
+            result = node.value
+            return
+
+        reverseInorder(node.left)
+
+    traverse(root)
+    return result
+```
+
+---
+
+### Step-by-Step Example
+
+```
+k = 2
+
+Visit right subtree:
+- Visit 10 → count = 1
+- Visit 8  → count = 2 → FOUND
+
+Traversal stops early.
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+function kthLargest<T>(root: TreeNode<T> | null, k: number): T | null {
+  if (!root || k <= 0) return null;
+
+  let visitedCount = 0;
+  let result: T | null = null;
+
+  const reverseInorder = (node: TreeNode<T> | null): void => {
+    if (!node || result !== null) return;
+
+    reverseInorder(node.right);
+
+    visitedCount++;
+    if (visitedCount === k) {
+      result = node.val;
+      return;
+    }
+
+    reverseInorder(node.left);
+  };
+
+  reverseInorder(root);
+  return result;
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n)` in the worst case
+- **Space:** `O(h)` where `h` is the height of the tree
+
+---
+
+### Key Takeaways
+
+- This is a **reverse in-order traversal** problem
+- BST properties guarantee sorted order
+- Early termination improves performance
+- Common interview pattern for ordered tree queries
+
+---
+
+### Edge Cases
+
+- Empty tree → return `null`
+- Single-node tree → return that value
+- `k` larger than number of nodes → return `null`
+- Skewed BST → behaves like a linked list
+
+---
+
+## Problem: Reconstruct Binary Search Tree from Preorder Traversal
+
+### Problem Statement
+
+Given an array representing the **preorder traversal** of a **Binary Search Tree (BST)**, reconstruct the original BST and return its root.
+
+---
+
+### Binary Search Tree Rules
+
+- For every node:
+  - All values in the **left subtree** are **less than** the node value
+  - All values in the **right subtree** are **greater than** the node value
+
+- **Preorder traversal order:**
+  **Root → Left → Right**
+
+---
+
+### Example
+
+```
+Preorder Traversal:
+[10, 5, 1, 7, 15, 12, 20]
+```
+
+**Reconstructed BST:**
+
+```
+        10
+       /  \
+      5    15
+     / \   / \
+    1   7 12  20
+```
+
+---
+
+### Visual Explanation
+
+```
+Preorder traversal order:
+
+10 → 5 → 1 → 7 → 15 → 12 → 20
+
+Step-by-step construction:
+
+1. 10 becomes the root
+2. 5 < 10 → goes to left subtree
+3. 1 < 5 → goes to left of 5
+4. 7 > 5 and < 10 → goes to right of 5
+5. 15 > 10 → goes to right subtree
+6. 12 < 15 → goes to left of 15
+7. 20 > 15 → goes to right of 15
+```
+
+---
+
+### Algorithm
+
+```
+Initialize index = 0
+
+function build(min, max):
+    if index is out of bounds:
+        return null
+
+    value = preorder[index]
+
+    if value <= min or value >= max:
+        return null
+
+    index++
+
+    node = new TreeNode(value)
+    node.left = build(min, value)
+    node.right = build(value, max)
+
+    return node
+
+Call build(-∞, +∞)
+```
+
+---
+
+### Step-by-Step Example
+
+```
+Current value: 10
+Range: (-∞, +∞)
+→ Valid root
+
+Left subtree range: (-∞, 10)
+Current value: 5
+→ Valid left child
+
+Left subtree range: (-∞, 5)
+Current value: 1
+→ Valid left child
+
+Right subtree range: (5, 10)
+Current value: 7
+→ Valid right child
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+export function reconstructBST(preorder: number[]): TreeNode<number> | null {
+  if (preorder.length === 0) return null;
+
+  let index = 0;
+
+  const build = (min: number, max: number): TreeNode<number> | null => {
+    if (index >= preorder.length) return null;
+
+    const value = preorder[index];
+    if (value <= min || value >= max) return null;
+
+    index++;
+
+    return {
+      value,
+      left: build(min, value),
+      right: build(value, max),
+    };
+  };
+
+  return build(-Infinity, Infinity);
+}
+```
+
+---
+
+### Complexity
+
+- **Time:** `O(n)` — each value is processed once
+- **Space:** `O(h)` — recursion stack, where `h` is the height of the BST
+
+---
+
+### Key Takeaways
+
+- Preorder traversal always visits the root first
+- Value bounds enforce BST validity
+- Each node is constructed exactly once
+- This is the **optimal** solution for preorder-to-BST reconstruction
+
+---
+
+### Edge Cases
+
+- Empty array → return `null`
+- Single-element array → single-node BST
+- Strictly increasing preorder → right-skewed BST
+- Strictly decreasing preorder → left-skewed BST
+
+---
+
+### Use Cases
+
+- Tree reconstruction problems
+- Understanding traversal properties
+- Coding interview preparation
+- Efficient BST construction
 
 ---
 
@@ -1366,14 +1691,15 @@ In such cases, consider an **iterative solution using a stack**.
 
 ## Complexity Cheat Sheet
 
-| Problem                | Time   | Space    | Key Technique           |
-| ---------------------- | ------ | -------- | ----------------------- |
-| Validate BST           | O(n)   | O(h)     | Range validation        |
-| Lowest Common Ancestor | O(h)   | O(h)     | BST property navigation |
-| Invert Tree            | O(n)   | O(h)     | Post-order recursion    |
-| Kth Smallest           | O(h+k) | O(h)     | In-order traversal      |
-| Sorted Array to BST    | O(n)   | O(log n) | Middle element          |
-| Range Sum BST          | O(n)   | O(h)     | Pruned traversal        |
-| Delete Node            | O(h)   | O(h)     | 3-case handling         |
+| Problem                | Time   | Space    | Key Technique              |
+| ---------------------- | ------ | -------- | -------------------------- |
+| Validate BST           | O(n)   | O(h)     | Range validation           |
+| Lowest Common Ancestor | O(h)   | O(h)     | BST property navigation    |
+| Invert Tree            | O(n)   | O(h)     | Post-order recursion       |
+| Kth Smallest           | O(h+k) | O(h)     | In-order traversal         |
+| Sorted Array to BST    | O(n)   | O(log n) | Middle element             |
+| Range Sum BST          | O(n)   | O(h)     | Pruned traversal           |
+| Delete Node            | O(h)   | O(h)     | 3-case handling            |
+| Kth Largest            | O(h+k) | O(h)     | Reverse in-order traversal |
 
 Happy Coding! 🚀

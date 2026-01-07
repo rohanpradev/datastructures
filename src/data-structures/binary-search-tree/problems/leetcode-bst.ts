@@ -1,7 +1,4 @@
-import {
-	BinarySearchTree,
-	type TreeNode,
-} from "@/data-structures/binary-search-tree/binary-search-tree";
+import type { TreeNode } from "@/data-structures/binary-search-tree/binary-search-tree";
 
 /**
  * LeetCode Problem: Validate Binary Search Tree
@@ -81,28 +78,69 @@ import {
  * validateBST(bst.root); // true
  */
 export function validateBST<T = number>(root: TreeNode<T> | null): boolean {
-	// Empty tree is valid
-	if (!root) return true;
+  // Empty tree is valid
+  if (!root) return true;
 
-	// Inorder traversal - should give sorted array
-	const values: T[] = [];
-	const inorder = (node: TreeNode<T> | null): void => {
-		if (!node) return;
-		inorder(node.left);
-		values.push(node.value);
-		inorder(node.right);
-	};
+  // Inorder traversal - should give sorted array
+  const values: T[] = [];
+  const inorder = (node: TreeNode<T> | null): void => {
+    if (!node) return;
+    inorder(node.left);
+    values.push(node.value);
+    inorder(node.right);
+  };
 
-	inorder(root);
+  inorder(root);
 
-	// Check if values are in strictly increasing order
-	for (let i = 1; i < values.length; i++) {
-		if (values[i]! <= values[i - 1]!) {
-			return false;
-		}
-	}
+  // Check if values are in strictly increasing order
+  for (let i = 1; i < values.length; i++) {
+    if (values[i]! <= values[i - 1]!) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
+}
+
+/**
+ * Recursion Solution
+ * Validates if a binary tree is a valid Binary Search Tree (BST) using recursion.
+ * A BST is valid if for every node:
+ * - All values in the left subtree are less than the node's value.
+ * - All values in the right subtree are greater than the node's value.
+ *
+ * @param tree - The root of the binary tree to validate
+ * @returns `true` if the tree is a valid BST, `false` otherwise
+ */
+export function validateBSTRecursively(tree: TreeNode<number> | null): boolean {
+  return validateBSTHelper(tree, -Infinity, Infinity);
+}
+
+/**
+ * Helper function to recursively validate a BST.
+ *
+ * @param tree - Current node being checked
+ * @param minValue - Minimum allowed value for this node
+ * @param maxValue - Maximum allowed value for this node
+ * @returns `true` if the subtree rooted at this node is a valid BST, `false` otherwise
+ */
+function validateBSTHelper(
+  tree: TreeNode<number> | null,
+  minValue: number,
+  maxValue: number,
+): boolean {
+  // An empty tree is always valid
+  if (!tree) return true;
+
+  // The current node must be within the valid range
+  if (tree.value <= minValue || tree.value >= maxValue) return false;
+
+  // Recursively validate left and right subtrees
+  const leftIsValid = validateBSTHelper(tree.left, minValue, tree.value);
+  const rightIsValid = validateBSTHelper(tree.right, tree.value, maxValue);
+
+  // Tree is valid only if both subtrees are valid
+  return leftIsValid && rightIsValid;
 }
 
 /**
@@ -176,15 +214,15 @@ export function validateBST<T = number>(root: TreeNode<T> | null): boolean {
  * maxDepth(bst.root); // 3
  */
 export function maxDepth<T>(root: TreeNode<T> | null): number {
-	// Base case: null node has depth 0
-	if (!root) return 0;
+  // Base case: null node has depth 0
+  if (!root) return 0;
 
-	// Recursively find depth of left and right subtrees
-	const leftDepth = maxDepth(root.left);
-	const rightDepth = maxDepth(root.right);
+  // Recursively find depth of left and right subtrees
+  const leftDepth = maxDepth(root.left);
+  const rightDepth = maxDepth(root.right);
 
-	// Return 1 (current node) + max of subtree depths
-	return 1 + Math.max(leftDepth, rightDepth);
+  // Return 1 (current node) + max of subtree depths
+  return 1 + Math.max(leftDepth, rightDepth);
 }
 
 /**
@@ -263,30 +301,30 @@ export function maxDepth<T>(root: TreeNode<T> | null): number {
  * lowestCommonAncestor(bst.root, 2, 4); // 2
  */
 export function lowestCommonAncestor<T>(
-	root: TreeNode<T> | null,
-	p: T,
-	q: T,
+  root: TreeNode<T> | null,
+  p: T,
+  q: T,
 ): T | null {
-	if (!root) return null;
+  if (!root) return null;
 
-	let current: TreeNode<T> | null = root;
+  let current: TreeNode<T> | null = root;
 
-	while (current) {
-		// Both nodes in left subtree
-		if (p < current.value && q < current.value) {
-			current = current.left;
-		}
-		// Both nodes in right subtree
-		else if (p > current.value && q > current.value) {
-			current = current.right;
-		}
-		// Found split point - this is the LCA
-		else {
-			return current.value;
-		}
-	}
+  while (current) {
+    // Both nodes in left subtree
+    if (p < current.value && q < current.value) {
+      current = current.left;
+    }
+    // Both nodes in right subtree
+    else if (p > current.value && q > current.value) {
+      current = current.right;
+    }
+    // Found split point - this is the LCA
+    else {
+      return current.value;
+    }
+  }
 
-	return null;
+  return null;
 }
 
 /**
@@ -364,19 +402,19 @@ export function lowestCommonAncestor<T>(
  * // Tree is now mirrored
  */
 export function invertTree<T>(root: TreeNode<T> | null): TreeNode<T> | null {
-	// Base case
-	if (!root) return null;
+  // Base case
+  if (!root) return null;
 
-	// Swap left and right children
-	const temp = root.left;
-	root.left = root.right;
-	root.right = temp;
+  // Swap left and right children
+  const temp = root.left;
+  root.left = root.right;
+  root.right = temp;
 
-	// Recursively invert subtrees
-	invertTree(root.left);
-	invertTree(root.right);
+  // Recursively invert subtrees
+  invertTree(root.left);
+  invertTree(root.right);
 
-	return root;
+  return root;
 }
 
 /**
@@ -460,28 +498,28 @@ export function invertTree<T>(root: TreeNode<T> | null): TreeNode<T> | null {
  * isSymmetric(tree.root); // true
  */
 export function isSymmetric<T>(root: TreeNode<T> | null): boolean {
-	if (!root) return true;
+  if (!root) return true;
 
-	// Helper function to check if two trees are mirrors
-	const isMirror = (
-		left: TreeNode<T> | null,
-		right: TreeNode<T> | null,
-	): boolean => {
-		// Both null - symmetric
-		if (!left && !right) return true;
+  // Helper function to check if two trees are mirrors
+  const isMirror = (
+    left: TreeNode<T> | null,
+    right: TreeNode<T> | null,
+  ): boolean => {
+    // Both null - symmetric
+    if (!left && !right) return true;
 
-		// One null - not symmetric
-		if (!left || !right) return false;
+    // One null - not symmetric
+    if (!left || !right) return false;
 
-		// Check value equality and recursive mirror property
-		return (
-			left.value === right.value &&
-			isMirror(left.left, right.right) &&
-			isMirror(left.right, right.left)
-		);
-	};
+    // Check value equality and recursive mirror property
+    return (
+      left.value === right.value &&
+      isMirror(left.left, right.right) &&
+      isMirror(left.right, right.left)
+    );
+  };
 
-	return isMirror(root.left, root.right);
+  return isMirror(root.left, root.right);
 }
 
 /**
@@ -552,22 +590,22 @@ export function isSymmetric<T>(root: TreeNode<T> | null): boolean {
  * hasPathSum(bst.root, 20); // true (5 -> 4 -> 11)
  */
 export function hasPathSum<T extends number>(
-	root: TreeNode<T> | null,
-	targetSum: number,
+  root: TreeNode<T> | null,
+  targetSum: number,
 ): boolean {
-	// Empty tree
-	if (!root) return false;
+  // Empty tree
+  if (!root) return false;
 
-	// Leaf node - check if value equals remaining sum
-	if (!root.left && !root.right) {
-		return root.value === targetSum;
-	}
+  // Leaf node - check if value equals remaining sum
+  if (!root.left && !root.right) {
+    return root.value === targetSum;
+  }
 
-	// Recursively check left and right subtrees with reduced sum
-	const remainingSum = targetSum - root.value;
-	return (
-		hasPathSum(root.left, remainingSum) || hasPathSum(root.right, remainingSum)
-	);
+  // Recursively check left and right subtrees with reduced sum
+  const remainingSum = targetSum - root.value;
+  return (
+    hasPathSum(root.left, remainingSum) || hasPathSum(root.right, remainingSum)
+  );
 }
 
 /**
@@ -643,30 +681,30 @@ export function hasPathSum<T extends number>(
  * kthSmallest(bst.root, 3); // 3
  */
 export function kthSmallest<T>(root: TreeNode<T> | null, k: number): T | null {
-	if (!root) return null;
+  if (!root) return null;
 
-	let count = 0;
-	let result: T | null = null;
+  let count = 0;
+  let result: T | null = null;
 
-	const inorder = (node: TreeNode<T> | null): void => {
-		if (!node || result !== null) return;
+  const inorder = (node: TreeNode<T> | null): void => {
+    if (!node || result !== null) return;
 
-		// Traverse left
-		inorder(node.left);
+    // Traverse left
+    inorder(node.left);
 
-		// Visit node
-		count++;
-		if (count === k) {
-			result = node.value;
-			return;
-		}
+    // Visit node
+    count++;
+    if (count === k) {
+      result = node.value;
+      return;
+    }
 
-		// Traverse right
-		inorder(node.right);
-	};
+    // Traverse right
+    inorder(node.right);
+  };
 
-	inorder(root);
-	return result;
+  inorder(root);
+  return result;
 }
 
 /**
@@ -738,32 +776,32 @@ export function kthSmallest<T>(root: TreeNode<T> | null, k: number): T | null {
  * closestValue(root, 12); // returns the value closest to 12 in the tree
  */
 export function closestValue(
-	root: TreeNode<number> | null,
-	k: number,
+  root: TreeNode<number> | null,
+  k: number,
 ): number | null {
-	if (!root) return null;
+  if (!root) return null;
 
-	let closest = root.value;
-	let current: TreeNode<number> | null = root;
+  let closest = root.value;
+  let current: TreeNode<number> | null = root;
 
-	while (current) {
-		// Update closest if current node is nearer to k
-		if (Math.abs(current.value - k) < Math.abs(closest - k)) {
-			closest = current.value;
-		}
+  while (current) {
+    // Update closest if current node is nearer to k
+    if (Math.abs(current.value - k) < Math.abs(closest - k)) {
+      closest = current.value;
+    }
 
-		// Move left or right using BST property
-		if (k < current.value) {
-			current = current.left;
-		} else if (k > current.value) {
-			current = current.right;
-		} else {
-			// Exact match
-			return current.value;
-		}
-	}
+    // Move left or right using BST property
+    if (k < current.value) {
+      current = current.left;
+    } else if (k > current.value) {
+      current = current.right;
+    } else {
+      // Exact match
+      return current.value;
+    }
+  }
 
-	return closest;
+  return closest;
 }
 
 /**
@@ -783,9 +821,9 @@ export function closestValue(
  * @returns An array containing the sum of each branch
  */
 export function branchSum(root: TreeNode<number> | null): number[] {
-	const sums: number[] = [];
-	calculateBranchSums(root, 0, sums);
-	return sums;
+  const sums: number[] = [];
+  calculateBranchSums(root, 0, sums);
+  return sums;
 }
 
 /**
@@ -796,25 +834,25 @@ export function branchSum(root: TreeNode<number> | null): number[] {
  * @param sums - Array collecting all completed branch sums
  */
 function calculateBranchSums(
-	node: TreeNode<number> | null,
-	runningSum: number,
-	sums: number[],
+  node: TreeNode<number> | null,
+  runningSum: number,
+  sums: number[],
 ): void {
-	// Base case: reached past a leaf
-	if (node === null) return;
+  // Base case: reached past a leaf
+  if (node === null) return;
 
-	// Add current node's value to the running sum
-	const newRunningSum = runningSum + node.value;
+  // Add current node's value to the running sum
+  const newRunningSum = runningSum + node.value;
 
-	// If this is a leaf node, store the branch sum
-	if (node.left === null && node.right === null) {
-		sums.push(newRunningSum);
-		return;
-	}
+  // If this is a leaf node, store the branch sum
+  if (node.left === null && node.right === null) {
+    sums.push(newRunningSum);
+    return;
+  }
 
-	// Recurse on left and right subtrees
-	calculateBranchSums(node.left, newRunningSum, sums);
-	calculateBranchSums(node.right, newRunningSum, sums);
+  // Recurse on left and right subtrees
+  calculateBranchSums(node.left, newRunningSum, sums);
+  calculateBranchSums(node.right, newRunningSum, sums);
 }
 
 /**
@@ -837,18 +875,18 @@ function calculateBranchSums(
  * @returns The sum of depths for all nodes in the subtree
  */
 export function nodeDepth(root: TreeNode<number> | null, depth = 0): number {
-	// Base case: empty node contributes 0 to depth sum
-	if (root === null) {
-		return 0;
-	}
+  // Base case: empty node contributes 0 to depth sum
+  if (root === null) {
+    return 0;
+  }
 
-	// Sum of:
-	// 1. Current node's depth
-	// 2. Depths from left subtree
-	// 3. Depths from right subtree
-	return (
-		depth + nodeDepth(root.left, depth + 1) + nodeDepth(root.right, depth + 1)
-	);
+  // Sum of:
+  // 1. Current node's depth
+  // 2. Depths from left subtree
+  // 3. Depths from right subtree
+  return (
+    depth + nodeDepth(root.left, depth + 1) + nodeDepth(root.right, depth + 1)
+  );
 }
 
 /**
@@ -866,35 +904,117 @@ export function nodeDepth(root: TreeNode<number> | null, depth = 0): number {
  * @throws Error if an operator node is missing children
  */
 export function evaluateExpressionTree(tree: TreeNode<number>): number {
-	// Base case: leaf node (operand)
-	if (tree.value >= 0) {
-		return tree.value;
-	}
+  // Base case: leaf node (operand)
+  if (tree.value >= 0) {
+    return tree.value;
+  }
 
-	// Validate children exist for operator nodes
-	if (tree.left === null || tree.right === null) {
-		throw new Error("Operator node must have both left and right children");
-	}
+  // Validate children exist for operator nodes
+  if (tree.left === null || tree.right === null) {
+    throw new Error("Operator node must have both left and right children");
+  }
 
-	// Recursively evaluate subtrees
-	const leftValue = evaluateExpressionTree(tree.left);
-	const rightValue = evaluateExpressionTree(tree.right);
+  // Recursively evaluate subtrees
+  const leftValue = evaluateExpressionTree(tree.left);
+  const rightValue = evaluateExpressionTree(tree.right);
 
-	// Apply operator based on node value
-	switch (tree.value) {
-		case -1: // addition
-			return leftValue + rightValue;
+  // Apply operator based on node value
+  switch (tree.value) {
+    case -1: // addition
+      return leftValue + rightValue;
 
-		case -2: // subtraction
-			return leftValue - rightValue;
+    case -2: // subtraction
+      return leftValue - rightValue;
 
-		case -3: // integer division
-			return Math.floor(leftValue / rightValue);
+    case -3: // integer division
+      return Math.floor(leftValue / rightValue);
 
-		case -4: // multiplication
-			return leftValue * rightValue;
+    case -4: // multiplication
+      return leftValue * rightValue;
 
-		default:
-			throw new Error(`Unknown operator: ${tree.value}`);
-	}
+    default:
+      throw new Error(`Unknown operator: ${tree.value}`);
+  }
+}
+
+/**
+ * Returns the k-th largest element in a Binary Search Tree (BST).
+ *
+ * The algorithm performs a reverse in-order traversal
+ * (right → node → left), which visits nodes in descending order.
+ *
+ * Once the k-th node is visited, traversal stops early.
+ *
+ * @param root - Root node of the Binary Search Tree
+ * @param k - The 1-based index of the largest element to find
+ * @returns The k-th largest value, or null if it does not exist
+ *
+ * Time Complexity: O(h + k) on average, O(n) in the worst case
+ * Space Complexity: O(h) due to recursion stack
+ */
+export function kthLargest<T>(root: TreeNode<T> | null, k: number): T | null {
+  if (!root || k <= 0) return null;
+
+  let visitedCount = 0;
+  let result: T | null = null;
+
+  /**
+   * Reverse in-order traversal helper.
+   * Stops early once the k-th largest element is found.
+   */
+  const reverseInorder = (node: TreeNode<T> | null): void => {
+    // Stop if node is null or result already found
+    if (!node || result !== null) return;
+
+    // Visit right subtree first (larger values)
+    reverseInorder(node.right);
+
+    // Process current node
+    visitedCount++;
+    if (visitedCount === k) {
+      result = node.value;
+      return;
+    }
+
+    // Visit left subtree (smaller values)
+    reverseInorder(node.left);
+  };
+
+  reverseInorder(root);
+  return result;
+}
+
+/**
+ * Reconstructs a Binary Search Tree (BST) from its preorder traversal.
+ *
+ * @param preorder - Preorder traversal of a BST
+ * @returns Root of the reconstructed BST, or null if input is empty
+ */
+export function reconstructBST(preorder: number[]): TreeNode<number> | null {
+  if (preorder.length === 0) return null;
+
+  let index = 0;
+
+  /**
+   * Builds a BST subtree where all values must be within (min, max).
+   */
+  const build = (min: number, max: number): TreeNode<number> | null => {
+    if (index >= preorder.length) return null;
+
+    const value = preorder[index];
+
+    // Value does not belong in this subtree
+    if (value <= min || value >= max) return null;
+
+    // Consume value and build subtree
+    index++;
+
+    return {
+      value,
+      left: build(min, value),
+      right: build(value, max),
+    };
+  };
+
+  return build(-Infinity, Infinity);
 }
