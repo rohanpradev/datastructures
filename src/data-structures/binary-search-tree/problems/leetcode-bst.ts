@@ -1130,3 +1130,61 @@ export function findSuccessor(
 
   return successor;
 }
+
+/**
+ * Returns true if the binary tree is height-balanced.
+ */
+export function heightBalancedBinaryTree(
+  tree: TreeNode<number> | null,
+): boolean {
+  return getHeight(tree) !== -1;
+}
+
+/**
+ * Returns the height of the tree.
+ * Returns -1 if the tree is not balanced.
+ */
+function getHeight(node: TreeNode<number> | null): number {
+  // Empty tree has height 0 and is balanced
+  if (node === null) return 0;
+
+  // Get left subtree height
+  const leftHeight = getHeight(node.left);
+  if (leftHeight === -1) return -1;
+
+  // Get right subtree height
+  const rightHeight = getHeight(node.right);
+  if (rightHeight === -1) return -1;
+
+  // Check balance condition
+  if (Math.abs(leftHeight - rightHeight) > 1) {
+    return -1;
+  }
+
+  // Height of current node
+  return Math.max(leftHeight, rightHeight) + 1;
+}
+
+/**
+ * Merges two binary trees.
+ * If both nodes exist, their values are summed.
+ * If only one exists, that node is used.
+ */
+export function mergeBinaryTrees(
+  tree1: TreeNode<number> | null,
+  tree2: TreeNode<number> | null,
+): TreeNode<number> | null {
+  // If one of the trees is empty, return the other
+  if (tree1 === null) return tree2;
+  if (tree2 === null) return tree1;
+
+  // Merge current node values
+  const mergedNode = {
+    value: tree1.value + tree2.value,
+    // Recursively merge left and right subtrees
+    left: mergeBinaryTrees(tree1.left, tree2.left),
+    right: mergeBinaryTrees(tree1.right, tree2.right),
+  };
+
+  return mergedNode;
+}

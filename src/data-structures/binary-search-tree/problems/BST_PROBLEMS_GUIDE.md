@@ -2057,6 +2057,371 @@ Steps:
 
 ---
 
+# Height Balanced Binary Tree
+
+## Problem Statement
+
+Given the root of a **binary tree**, determine whether it is **height-balanced**.
+
+A binary tree is **height-balanced** if:
+
+> For **every node**, the difference between the heights of its left and right subtrees is **at most 1**.
+
+Return `true` if the tree is balanced, otherwise return `false`.
+
+---
+
+## Example
+
+### Balanced Tree ✅
+
+```
+        1
+       / \
+      2   3
+     /
+    4
+```
+
+- Left subtree height = 2
+- Right subtree height = 1
+- Difference = 1 → **Balanced**
+
+---
+
+### Unbalanced Tree ❌
+
+```
+        1
+       /
+      2
+     /
+    3
+```
+
+- Left subtree height = 2
+- Right subtree height = -1
+- Difference = 3 → **Not Balanced**
+
+---
+
+## Key Insight 🧠
+
+Checking balance requires **two things** at every node:
+
+1. The **left subtree** is balanced
+2. The **right subtree** is balanced
+3. The **height difference** between them is ≤ 1
+
+To do this efficiently:
+
+- Use **post-order traversal** (bottom-up)
+- Return the **height** of the subtree
+- Return **-1 immediately** if an imbalance is detected
+
+This allows us to stop early instead of traversing the entire tree.
+
+---
+
+## Algorithm
+
+```
+function getHeight(node):
+    if node is null:
+        return 0
+
+    leftHeight = getHeight(node.left)
+    if leftHeight == -1:
+        return -1
+
+    rightHeight = getHeight(node.right)
+    if rightHeight == -1:
+        return -1
+
+    if abs(leftHeight - rightHeight) > 1:
+        return -1
+
+    return max(leftHeight, rightHeight) + 1
+```
+
+The tree is balanced if the final result is **not -1**.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Determines if a binary tree is height-balanced.
+ */
+export function heightBalancedBinaryTree(tree: TreeNode<number>): boolean {
+  return getHeight(tree) !== -1;
+}
+
+/**
+ * Returns the height of the tree if balanced.
+ * Returns -1 if the tree is not balanced.
+ */
+function getHeight(node: TreeNode<number> | null): number {
+  // Base case: empty tree
+  if (node === null) return 0;
+
+  // Get left subtree height
+  const leftHeight = getHeight(node.left);
+  if (leftHeight === -1) return -1;
+
+  // Get right subtree height
+  const rightHeight = getHeight(node.right);
+  if (rightHeight === -1) return -1;
+
+  // Check balance condition
+  if (Math.abs(leftHeight - rightHeight) > 1) {
+    return -1;
+  }
+
+  // Return height of current node
+  return Math.max(leftHeight, rightHeight) + 1;
+}
+```
+
+---
+
+## Example Walkthrough
+
+For the tree:
+
+```
+        1
+       / \
+      2   3
+     /
+    4
+```
+
+Steps:
+
+1. Node `4` → height = `0`
+2. Node `2` → height = `1`
+3. Node `3` → height = `0`
+4. Node `1` → height difference = `1`
+
+✅ Tree is balanced → returns `true`
+
+---
+
+## Edge Cases
+
+✔ Empty tree → `true`
+✔ Single node → `true`
+✔ Deep skewed tree → `false`
+✔ Early imbalance → stops traversal immediately
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Each node is visited once
+
+- **Space Complexity:** `O(h)`
+  - `h` = height of the tree (recursion stack)
+
+---
+
+## Why This Approach Is Optimal
+
+✅ Early exit when imbalance is found
+✅ No extra data structures
+✅ Clean recursive logic
+✅ LeetCode and interview standard solution
+
+---
+
+## Common Mistakes ❌
+
+- Calculating height separately (`O(n²)`)
+- Not stopping early after imbalance
+- Forgetting that empty trees are balanced
+- Using extra objects when unnecessary
+
+---
+
+# Merge Two Binary Trees
+
+## Problem Statement
+
+Given two binary trees, merge them into a **single binary tree**.
+
+Rules for merging:
+
+- If **both nodes exist**, sum their values
+- If **only one node exists**, use that node
+- If **both nodes are null**, the merged node is null
+
+The merged tree should represent the combined structure of both trees.
+
+---
+
+## Example
+
+### Tree 1
+
+```
+      1
+     / \
+    3   2
+   /
+  5
+```
+
+### Tree 2
+
+```
+      2
+     / \
+    1   3
+     \   \
+      4   7
+```
+
+---
+
+### Merged Tree
+
+```
+      3
+     / \
+    4   5
+   / \   \
+  5   4   7
+```
+
+---
+
+## Key Insight 🧠
+
+At every node:
+
+- If **both trees have a node**, add their values
+- If **only one tree has a node**, reuse it
+- Recursively apply the same logic to left and right children
+
+This is a natural fit for **Depth-First Search (DFS)**.
+
+---
+
+## Algorithm
+
+```
+function mergeTrees(node1, node2):
+    if node1 is null:
+        return node2
+    if node2 is null:
+        return node1
+
+    mergedNode.value = node1.value + node2.value
+    mergedNode.left = mergeTrees(node1.left, node2.left)
+    mergedNode.right = mergeTrees(node1.right, node2.right)
+
+    return mergedNode
+```
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Merges two binary trees.
+ * If both nodes exist, their values are summed.
+ * If only one exists, that node is used.
+ */
+export function mergeBinaryTrees(
+  tree1: TreeNode<number> | null,
+  tree2: TreeNode<number> | null,
+): TreeNode<number> | null {
+  if (tree1 === null) return tree2;
+  if (tree2 === null) return tree1;
+
+  return {
+    value: tree1.value + tree2.value,
+    left: mergeBinaryTrees(tree1.left, tree2.left),
+    right: mergeBinaryTrees(tree1.right, tree2.right),
+  };
+}
+```
+
+---
+
+## Example Walkthrough
+
+At the root:
+
+```
+1 + 2 = 3
+```
+
+Left subtree:
+
+```
+3 + 1 = 4
+```
+
+Right subtree:
+
+```
+2 + 3 = 5
+```
+
+Missing nodes are reused as-is.
+
+---
+
+## Edge Cases
+
+✔ Both trees empty → return `null`
+✔ One tree empty → return the other tree
+✔ Trees of different shapes → merge where possible
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - `n` = total number of nodes across both trees
+
+- **Space Complexity:** `O(h)`
+  - `h` = height of the merged tree (recursion stack)
+
+---
+
+## Why This Approach Is Optimal
+
+✅ Visits each node once
+✅ Simple recursive logic
+✅ Preserves tree structure
+✅ Matches LeetCode #617 expected behavior
+
+---
+
+## Common Mistakes ❌
+
+- Returning numbers instead of nodes
+- Ignoring one-sided subtrees
+- Mutating input trees unintentionally
+- Using unnecessary traversals
+
+---
+
+## Related Problems
+
+- Invert Binary Tree
+- Maximum Depth of Binary Tree
+- Height Balanced Binary Tree
+- Binary Tree Level Order Traversal
+
+---
+
 ## Related Concepts
 
 - Binary Search Trees

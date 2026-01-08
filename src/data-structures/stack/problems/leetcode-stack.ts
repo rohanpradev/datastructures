@@ -658,11 +658,15 @@ export function evaluate(expr: string): number {
 		 * 1. If digit → build the full number
 		 * Supports multi-digit values (e.g., 42)
 		 */
-		if (!isNaN(Number(c))) {
+		if (!Number.isNaN(Number(c))) {
 			let num = 0;
 
 			// Build number character-by-character
-			while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
+			while (
+				i < expr.length &&
+				!Number.isNaN(Number(expr[i])) &&
+				expr[i] !== " "
+			) {
 				num = num * 10 + Number(expr[i]);
 				i++;
 			}

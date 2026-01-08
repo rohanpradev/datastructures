@@ -31,60 +31,60 @@
  *   .catch(err => console.error(err.message)); // "Operation Cancelled" if cancelled
  */
 export function createAsyncCancellable<
-  Args extends unknown[],
-  YieldType,
-  ReturnType,
+	Args extends unknown[],
+	YieldType,
+	ReturnType,
 >(
-  generatorFn: (
-    ...args: Args
-  ) => AsyncGenerator<YieldType, ReturnType, YieldType>,
+	generatorFn: (
+		...args: Args
+	) => AsyncGenerator<YieldType, ReturnType, YieldType>,
 ) {
-  return function executeCancellable(...args: Args): {
-    promise: Promise<ReturnType>;
-    cancel: () => void;
-  } {
-    const generatorIterator = generatorFn(...args);
-    let isCancelled = false;
+	return function executeCancellable(...args: Args): {
+		promise: Promise<ReturnType>;
+		cancel: () => void;
+	} {
+		const generatorIterator = generatorFn(...args);
+		let isCancelled = false;
 
-    const cancel = (): void => {
-      isCancelled = true;
+		const cancel = (): void => {
+			isCancelled = true;
 
-      // Safely terminate the generator
-      if (typeof generatorIterator.return === "function") {
-        // TypeScript requires a value of ReturnType
-        void generatorIterator.return(null as unknown as ReturnType);
-      }
-    };
+			// Safely terminate the generator
+			if (typeof generatorIterator.return === "function") {
+				// TypeScript requires a value of ReturnType
+				void generatorIterator.return(null as unknown as ReturnType);
+			}
+		};
 
-    const promise = new Promise<ReturnType>((resolve, reject) => {
-      // Lint-safe async function inside Promise executor
-      const processGenerator = async (): Promise<void> => {
-        try {
-          let iteration = await generatorIterator.next();
+		const promise = new Promise<ReturnType>((resolve, reject) => {
+			// Lint-safe async function inside Promise executor
+			const processGenerator = async (): Promise<void> => {
+				try {
+					let iteration = await generatorIterator.next();
 
-          while (!iteration.done) {
-            if (isCancelled) {
-              throw new Error("Operation Cancelled");
-            }
+					while (!iteration.done) {
+						if (isCancelled) {
+							throw new Error("Operation Cancelled");
+						}
 
-            try {
-              // Await in case the yield value is a Promise
-              const resolvedValue = await iteration.value;
-              iteration = await generatorIterator.next(resolvedValue);
-            } catch (error) {
-              iteration = await generatorIterator.throw(error);
-            }
-          }
+						try {
+							// Await in case the yield value is a Promise
+							const resolvedValue = await iteration.value;
+							iteration = await generatorIterator.next(resolvedValue);
+						} catch (error) {
+							iteration = await generatorIterator.throw(error);
+						}
+					}
 
-          resolve(iteration.value);
-        } catch (error) {
-          reject(error);
-        }
-      };
+					resolve(iteration.value);
+				} catch (error) {
+					reject(error);
+				}
+			};
 
-      processGenerator();
-    });
+			processGenerator();
+		});
 
-    return { promise, cancel };
-  };
+		return { promise, cancel };
+	};
 }

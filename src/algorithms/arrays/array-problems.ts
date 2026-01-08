@@ -14,30 +14,30 @@
  * // → [[1,6],[8,10],[15,18]]
  */
 export function mergeIntervals(
-  intervals: Array<[number, number]>,
+	intervals: Array<[number, number]>,
 ): Array<[number, number]> {
-  if (intervals.length === 0) return [];
+	if (intervals.length === 0) return [];
 
-  // Step 1: Sort intervals by their start value
-  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+	// Step 1: Sort intervals by their start value
+	const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
 
-  const result: Array<[number, number]> = [];
+	const result: Array<[number, number]> = [];
 
-  // Step 2: Iterate through sorted intervals
-  for (const [start, end] of sorted) {
-    const last = result[result.length - 1];
+	// Step 2: Iterate through sorted intervals
+	for (const [start, end] of sorted) {
+		const last = result[result.length - 1];
 
-    // Case A: No overlap → add new interval
-    if (!last || last[1] < start) {
-      result.push([start, end]);
-    }
-    // Case B: Overlap → merge with the last interval
-    else {
-      last[1] = Math.max(last[1], end);
-    }
-  }
+		// Case A: No overlap → add new interval
+		if (!last || last[1] < start) {
+			result.push([start, end]);
+		}
+		// Case B: Overlap → merge with the last interval
+		else {
+			last[1] = Math.max(last[1], end);
+		}
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -67,36 +67,36 @@ export function mergeIntervals(
  * // → 2
  */
 export function findBestSeat(seats: Array<0 | 1>): number {
-  // Index of the best seat found so far
-  let bestSeat = -1;
+	// Index of the best seat found so far
+	let bestSeat = -1;
 
-  // Maximum number of empty seats between two occupied seats
-  let maxSpace = 0;
+	// Maximum number of empty seats between two occupied seats
+	let maxSpace = 0;
 
-  // Pointer to the last occupied seat encountered
-  let left = 0;
+	// Pointer to the last occupied seat encountered
+	let left = 0;
 
-  // Scan forward to find the next occupied seat
-  for (let right = 1; right < seats.length; right++) {
-    // When we find an occupied seat, we can measure the empty stretch
-    if (seats[right] === 1) {
-      // Number of empty seats between left and right
-      const currentSpace = right - left - 1;
+	// Scan forward to find the next occupied seat
+	for (let right = 1; right < seats.length; right++) {
+		// When we find an occupied seat, we can measure the empty stretch
+		if (seats[right] === 1) {
+			// Number of empty seats between left and right
+			const currentSpace = right - left - 1;
 
-      // If this stretch is the longest so far, update best seat
-      if (currentSpace > maxSpace) {
-        maxSpace = currentSpace;
+			// If this stretch is the longest so far, update best seat
+			if (currentSpace > maxSpace) {
+				maxSpace = currentSpace;
 
-        // Choose the middle seat of the empty stretch
-        bestSeat = Math.floor((left + right) / 2);
-      }
+				// Choose the middle seat of the empty stretch
+				bestSeat = Math.floor((left + right) / 2);
+			}
 
-      // Move left pointer to the current occupied seat
-      left = right;
-    }
-  }
+			// Move left pointer to the current occupied seat
+			left = right;
+		}
+	}
 
-  return bestSeat;
+	return bestSeat;
 }
 
 /**
@@ -114,32 +114,32 @@ export function findBestSeat(seats: Array<0 | 1>): number {
  * // → [1, -1]
  */
 export function zeroSumSubarray(nums: number[]): number[] | -1 {
-  // Running total of elements seen so far
-  let prefixSum = 0;
+	// Running total of elements seen so far
+	let prefixSum = 0;
 
-  // Maps prefixSum → index where it was first seen
-  const prefixSumIndex = new Map<number, number>();
+	// Maps prefixSum → index where it was first seen
+	const prefixSumIndex = new Map<number, number>();
 
-  for (let i = 0; i < nums.length; i++) {
-    prefixSum += nums[i];
+	for (let i = 0; i < nums.length; i++) {
+		prefixSum += nums[i];
 
-    // Case 1: subarray from index 0 sums to zero
-    if (prefixSum === 0) {
-      return nums.slice(0, i + 1);
-    }
+		// Case 1: subarray from index 0 sums to zero
+		if (prefixSum === 0) {
+			return nums.slice(0, i + 1);
+		}
 
-    // Case 2: prefix sum seen before → zero-sum subarray
-    if (prefixSumIndex.has(prefixSum)) {
-      const startIndex = prefixSumIndex.get(prefixSum)! + 1;
-      return nums.slice(startIndex, i + 1);
-    }
+		// Case 2: prefix sum seen before → zero-sum subarray
+		if (prefixSumIndex.has(prefixSum)) {
+			const startIndex = prefixSumIndex.get(prefixSum)! + 1;
+			return nums.slice(startIndex, i + 1);
+		}
 
-    // Store the first occurrence of this prefix sum
-    prefixSumIndex.set(prefixSum, i);
-  }
+		// Store the first occurrence of this prefix sum
+		prefixSumIndex.set(prefixSum, i);
+	}
 
-  // No zero-sum subarray found
-  return -1;
+	// No zero-sum subarray found
+	return -1;
 }
 
 /**
@@ -153,26 +153,26 @@ export function zeroSumSubarray(nums: number[]): number[] | -1 {
  * maxMedianSum([1,2,3,4,5,6]) // 8
  */
 export function maxMedianSum(nums: number[]): number {
-  // Sort numbers in ascending order
-  nums.sort((a, b) => a - b);
+	// Sort numbers in ascending order
+	nums.sort((a, b) => a - b);
 
-  const n = nums.length;
-  const groups = Math.floor(n / 3);
-  let sum = 0;
+	const n = nums.length;
+	const groups = Math.floor(n / 3);
+	let sum = 0;
 
-  /*
+	/*
      Start from the second-largest element.
      Each median is found by skipping the largest element
      and stepping back by 2 positions per group.
     */
-  let index = n - 2;
+	let index = n - 2;
 
-  for (let i = 0; i < groups; i++) {
-    sum += nums[index]; // Add median
-    index -= 2; // Move to next median candidate
-  }
+	for (let i = 0; i < groups; i++) {
+		sum += nums[index]; // Add median
+		index -= 2; // Move to next median candidate
+	}
 
-  return sum;
+	return sum;
 }
 
 /**
@@ -195,86 +195,86 @@ export function maxMedianSum(nums: number[]): number {
  * @returns A tuple containing the two missing numbers
  */
 export function missingNumbers(nums: number[]): [number, number] {
-  /**
-   * Since two numbers are missing, the total range size (n)
-   * must be the length of the array + 2.
-   */
-  const n = nums.length + 2;
+	/**
+	 * Since two numbers are missing, the total range size (n)
+	 * must be the length of the array + 2.
+	 */
+	const n = nums.length + 2;
 
-  /**
-   * Calculate the expected sum of numbers from 1 to n
-   * using the arithmetic series formula:
-   *
-   *   sum = n * (n + 1) / 2
-   */
-  const expectedSum = (n * (n + 1)) / 2;
+	/**
+	 * Calculate the expected sum of numbers from 1 to n
+	 * using the arithmetic series formula:
+	 *
+	 *   sum = n * (n + 1) / 2
+	 */
+	const expectedSum = (n * (n + 1)) / 2;
 
-  /**
-   * Calculate the sum of all numbers that actually exist
-   * in the given array.
-   */
-  const actualSum = nums.reduce((sum, num) => sum + num, 0);
+	/**
+	 * Calculate the sum of all numbers that actually exist
+	 * in the given array.
+	 */
+	const actualSum = nums.reduce((sum, num) => sum + num, 0);
 
-  /**
-   * The difference between the expected sum and the actual sum
-   * equals the sum of the two missing numbers.
-   *
-   *   missing1 + missing2 = missingSum
-   */
-  const missingSum = expectedSum - actualSum;
+	/**
+	 * The difference between the expected sum and the actual sum
+	 * equals the sum of the two missing numbers.
+	 *
+	 *   missing1 + missing2 = missingSum
+	 */
+	const missingSum = expectedSum - actualSum;
 
-  /**
-   * We split the number range into two halves.
-   * One missing number must be in each half.
-   *
-   * Example:
-   *   missingSum = 8 → mid = 4
-   *   Left range:  1..4
-   *   Right range: 5..n
-   */
-  const mid = Math.floor(missingSum / 2);
+	/**
+	 * We split the number range into two halves.
+	 * One missing number must be in each half.
+	 *
+	 * Example:
+	 *   missingSum = 8 → mid = 4
+	 *   Left range:  1..4
+	 *   Right range: 5..n
+	 */
+	const mid = Math.floor(missingSum / 2);
 
-  /**
-   * Expected sum of numbers from 1 to mid
-   */
-  const expectedLeftSum = (mid * (mid + 1)) / 2;
+	/**
+	 * Expected sum of numbers from 1 to mid
+	 */
+	const expectedLeftSum = (mid * (mid + 1)) / 2;
 
-  /**
-   * Expected sum of numbers from mid + 1 to n
-   * This is the total expected sum minus the left half sum.
-   */
-  const expectedRightSum = expectedSum - expectedLeftSum;
+	/**
+	 * Expected sum of numbers from mid + 1 to n
+	 * This is the total expected sum minus the left half sum.
+	 */
+	const expectedRightSum = expectedSum - expectedLeftSum;
 
-  /**
-   * These will hold the sums of the numbers that actually exist
-   * in the left and right halves of the array.
-   */
-  let actualLeftSum = 0;
-  let actualRightSum = 0;
+	/**
+	 * These will hold the sums of the numbers that actually exist
+	 * in the left and right halves of the array.
+	 */
+	let actualLeftSum = 0;
+	let actualRightSum = 0;
 
-  /**
-   * Loop through the array and accumulate sums based on
-   * which half each number belongs to.
-   */
-  for (const num of nums) {
-    if (num <= mid) {
-      actualLeftSum += num;
-    } else {
-      actualRightSum += num;
-    }
-  }
+	/**
+	 * Loop through the array and accumulate sums based on
+	 * which half each number belongs to.
+	 */
+	for (const num of nums) {
+		if (num <= mid) {
+			actualLeftSum += num;
+		} else {
+			actualRightSum += num;
+		}
+	}
 
-  /**
-   * The missing number in each half is found by subtracting
-   * the actual sum from the expected sum.
-   */
-  const firstMissing = expectedLeftSum - actualLeftSum;
-  const secondMissing = expectedRightSum - actualRightSum;
+	/**
+	 * The missing number in each half is found by subtracting
+	 * the actual sum from the expected sum.
+	 */
+	const firstMissing = expectedLeftSum - actualLeftSum;
+	const secondMissing = expectedRightSum - actualRightSum;
 
-  /**
-   * Return both missing numbers as a tuple.
-   */
-  return [firstMissing, secondMissing];
+	/**
+	 * Return both missing numbers as a tuple.
+	 */
+	return [firstMissing, secondMissing];
 }
 /**
  * Finds the majority element in an array of numbers.
@@ -309,26 +309,26 @@ export function missingNumbers(nums: number[]): [number, number] {
  * Space Complexity: O(1) — constant space
  */
 export function majorityElement(nums: number[]): number {
-  let candidate: number | null = null; // Current majority candidate
-  let count = 0; // Count of the current candidate
+	let candidate: number | null = null; // Current majority candidate
+	let count = 0; // Count of the current candidate
 
-  for (const num of nums) {
-    if (count === 0) {
-      // When count drops to 0, pick a new candidate
-      candidate = num;
-    }
+	for (const num of nums) {
+		if (count === 0) {
+			// When count drops to 0, pick a new candidate
+			candidate = num;
+		}
 
-    if (num === candidate) {
-      // Same as candidate → increment count
-      count++;
-    } else {
-      // Different from candidate → decrement count
-      count--;
-    }
-  }
+		if (num === candidate) {
+			// Same as candidate → increment count
+			count++;
+		} else {
+			// Different from candidate → decrement count
+			count--;
+		}
+	}
 
-  // candidate now holds the majority element
-  return candidate!;
+	// candidate now holds the majority element
+	return candidate!;
 }
 
 /**
@@ -344,48 +344,48 @@ export function majorityElement(nums: number[]): number {
  * @returns A tuple containing the selected pair or null
  */
 export function sweetAndSavoury(
-  numbers: number[],
-  targetSum: number,
+	numbers: number[],
+	targetSum: number,
 ): [number, number] | null {
-  // Create a sorted copy to avoid mutating the input array
-  const sortedNumbers = [...numbers].sort((a, b) => a - b);
+	// Create a sorted copy to avoid mutating the input array
+	const sortedNumbers = [...numbers].sort((a, b) => a - b);
 
-  // Two pointers for scanning from both ends
-  let leftIndex = 0;
-  let rightIndex = sortedNumbers.length - 1;
+	// Two pointers for scanning from both ends
+	let leftIndex = 0;
+	let rightIndex = sortedNumbers.length - 1;
 
-  // Track the closest sum that does not exceed the target
-  let closestValidSum = -Infinity;
+	// Track the closest sum that does not exceed the target
+	let closestValidSum = -Infinity;
 
-  // Track the pair that produces the closest valid sum
-  let closestPair: [number, number] | null = null;
+	// Track the pair that produces the closest valid sum
+	let closestPair: [number, number] | null = null;
 
-  // Move pointers until they meet
-  while (leftIndex < rightIndex) {
-    const leftValue = sortedNumbers[leftIndex];
-    const rightValue = sortedNumbers[rightIndex];
-    const currentSum = leftValue + rightValue;
+	// Move pointers until they meet
+	while (leftIndex < rightIndex) {
+		const leftValue = sortedNumbers[leftIndex];
+		const rightValue = sortedNumbers[rightIndex];
+		const currentSum = leftValue + rightValue;
 
-    // Best possible case: exact match
-    if (currentSum === targetSum) {
-      return [leftValue, rightValue];
-    }
+		// Best possible case: exact match
+		if (currentSum === targetSum) {
+			return [leftValue, rightValue];
+		}
 
-    // Valid sum smaller than target
-    if (currentSum < targetSum) {
-      // Update if this sum is closer to the target
-      if (currentSum > closestValidSum) {
-        closestValidSum = currentSum;
-        closestPair = [leftValue, rightValue];
-      }
+		// Valid sum smaller than target
+		if (currentSum < targetSum) {
+			// Update if this sum is closer to the target
+			if (currentSum > closestValidSum) {
+				closestValidSum = currentSum;
+				closestPair = [leftValue, rightValue];
+			}
 
-      // Move left pointer to increase sum
-      leftIndex++;
-    } else {
-      // Sum is too large, decrease it
-      rightIndex--;
-    }
-  }
+			// Move left pointer to increase sum
+			leftIndex++;
+		} else {
+			// Sum is too large, decrease it
+			rightIndex--;
+		}
+	}
 
-  return closestPair;
+	return closestPair;
 }

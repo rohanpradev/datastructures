@@ -19,6 +19,8 @@ import {
   reconstructBST,
   diameterBST,
   findSuccessor,
+  heightBalancedBinaryTree,
+  mergeBinaryTrees,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -1256,5 +1258,171 @@ describe("findSuccessor", () => {
     bst.insert(-10).insert(10).insert(-5).insert(5);
 
     expect(findSuccessor(bst.root, -5)).toBe(0);
+  });
+});
+
+describe("heightBalancedBinaryTree", () => {
+  test("should return true for empty tree", () => {
+    expect(heightBalancedBinaryTree(null as any)).toBe(true);
+  });
+
+  test("should return true for single node", () => {
+    const root = new TreeNode(1);
+    expect(heightBalancedBinaryTree(root)).toBe(true);
+  });
+
+  test("should return true for balanced tree with two levels", () => {
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.right = new TreeNode(3);
+
+    expect(heightBalancedBinaryTree(root)).toBe(true);
+  });
+
+  test("should return true for perfectly balanced tree", () => {
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.right = new TreeNode(3);
+    root.left.left = new TreeNode(4);
+    root.left.right = new TreeNode(5);
+    root.right.left = new TreeNode(6);
+    root.right.right = new TreeNode(7);
+
+    expect(heightBalancedBinaryTree(root)).toBe(true);
+  });
+
+  test("should return false for left-skewed tree", () => {
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.left.left = new TreeNode(3);
+    root.left.left.left = new TreeNode(4);
+
+    expect(heightBalancedBinaryTree(root)).toBe(false);
+  });
+
+  test("should return false for right-skewed tree", () => {
+    const root = new TreeNode(1);
+    root.right = new TreeNode(2);
+    root.right.right = new TreeNode(3);
+    root.right.right.right = new TreeNode(4);
+
+    expect(heightBalancedBinaryTree(root)).toBe(false);
+  });
+
+  test("should detect imbalance deep in the tree", () => {
+    const root = new TreeNode(1);
+    root.left = new TreeNode(2);
+    root.right = new TreeNode(3);
+    root.left.left = new TreeNode(4);
+    root.left.left.left = new TreeNode(5);
+
+    expect(heightBalancedBinaryTree(root)).toBe(false);
+  });
+
+  test("should work with manually created mixed tree", () => {
+    const root = new TreeNode(3);
+    root.left = new TreeNode(9);
+    root.right = new TreeNode(20);
+    root.right.left = new TreeNode(15);
+    root.right.right = new TreeNode(7);
+
+    expect(heightBalancedBinaryTree(root)).toBe(true);
+  });
+});
+
+/**
+ * Helper to compare two binary trees deeply
+ */
+function isSameTree(
+  a: TreeNode<number> | null,
+  b: TreeNode<number> | null,
+): boolean {
+  if (a === null && b === null) return true;
+  if (a === null || b === null) return false;
+
+  return (
+    a.value === b.value &&
+    isSameTree(a.left, b.left) &&
+    isSameTree(a.right, b.right)
+  );
+}
+
+describe("mergeBinaryTrees", () => {
+  test("should return null when both trees are null", () => {
+    expect(mergeBinaryTrees(null, null)).toBeNull();
+  });
+
+  test("should return the non-null tree when one tree is null", () => {
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+
+    const result = mergeBinaryTrees(tree, null);
+
+    expect(isSameTree(result, tree)).toBe(true);
+  });
+
+  test("should merge single-node trees", () => {
+    const t1 = new TreeNode(1);
+    const t2 = new TreeNode(2);
+
+    const result = mergeBinaryTrees(t1, t2);
+
+    expect(result?.value).toBe(3);
+    expect(result?.left).toBeNull();
+    expect(result?.right).toBeNull();
+  });
+
+  test("should merge trees with overlapping structure", () => {
+    const t1 = new TreeNode(1);
+    t1.left = new TreeNode(3);
+    t1.right = new TreeNode(2);
+    t1.left.left = new TreeNode(5);
+
+    const t2 = new TreeNode(2);
+    t2.left = new TreeNode(1);
+    t2.right = new TreeNode(3);
+    t2.left.right = new TreeNode(4);
+    t2.right.right = new TreeNode(7);
+
+    const result = mergeBinaryTrees(t1, t2);
+
+    const expected = new TreeNode(3);
+    expected.left = new TreeNode(4);
+    expected.right = new TreeNode(5);
+    expected.left.left = new TreeNode(5);
+    expected.left.right = new TreeNode(4);
+    expected.right.right = new TreeNode(7);
+
+    expect(isSameTree(result, expected)).toBe(true);
+  });
+
+  test("should handle trees with different shapes", () => {
+    const t1 = new TreeNode(1);
+    t1.left = new TreeNode(2);
+
+    const t2 = new TreeNode(3);
+    t2.right = new TreeNode(4);
+
+    const result = mergeBinaryTrees(t1, t2);
+
+    expect(result?.value).toBe(4);
+    expect(result?.left?.value).toBe(2);
+    expect(result?.right?.value).toBe(4);
+  });
+
+  test("should work with manually created trees", () => {
+    const t1 = new TreeNode(5);
+    t1.left = new TreeNode(3);
+    t1.right = new TreeNode(7);
+
+    const t2 = new TreeNode(1);
+    t2.left = new TreeNode(2);
+    t2.right = new TreeNode(4);
+
+    const result = mergeBinaryTrees(t1, t2);
+
+    expect(result?.value).toBe(6);
+    expect(result?.left?.value).toBe(5);
+    expect(result?.right?.value).toBe(11);
   });
 });

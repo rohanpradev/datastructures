@@ -1,39 +1,44 @@
 {
-	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git"
-	},
-	"files": {
-		"ignoreUnknown": true,
-		"includes": ["**", "!**/*.test.ts", "!scripts"]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"style": {
-				"useFilenamingConvention": {
-					"level": "error",
-					"options": {
-						"strictCase": true,
-						"filenameCases": ["kebab-case"]
-					}
-				},
-				"noNonNullAssertion": "off"
-			},
-			"complexity": {
-				"useOptionalChain": "off"
-			}
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	}
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["**", "!**/*.test.ts", "!scripts", "!practice"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": true,
+            "filenameCases": ["kebab-case"]
+          }
+        },
+        "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "useOptionalChain": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  }
 }
