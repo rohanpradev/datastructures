@@ -1018,3 +1018,115 @@ export function reconstructBST(preorder: number[]): TreeNode<number> | null {
 
   return build(-Infinity, Infinity);
 }
+
+/**
+ * Computes the diameter of a binary tree.
+ *
+ * The diameter is the number of edges in the longest path
+ * between any two nodes in the tree.
+ *
+ * @param tree - Root node of the binary tree
+ * @returns The diameter of the tree
+ */
+export function diameterBST(tree: TreeNode<number>): number {
+  const [diameter] = getDiameterAndHeight(tree);
+  return diameter;
+}
+
+/**
+ * Recursively computes both the diameter and height of a subtree.
+ *
+ * Returning both values together allows us to avoid recalculating heights,
+ * keeping the algorithm O(n).
+ *
+ * @param node - Current tree node
+ * @returns A tuple:
+ *  - index 0: diameter of the subtree rooted at this node
+ *  - index 1: height of the subtree rooted at this node
+ */
+function getDiameterAndHeight(node: TreeNode<number> | null): [number, number] {
+  /**
+   * Base case:
+   * An empty tree has:
+   * - diameter = 0
+   * - height = 0
+   */
+  if (node === null) {
+    return [0, 0];
+  }
+
+  // Get diameter and height from left subtree
+  const [leftDiameter, leftHeight] = getDiameterAndHeight(node.left);
+
+  // Get diameter and height from right subtree
+  const [rightDiameter, rightHeight] = getDiameterAndHeight(node.right);
+
+  /**
+   * Longest path that passes through the current node.
+   * This connects the deepest node on the left to the deepest on the right.
+   */
+  const pathThroughNode = leftHeight + rightHeight;
+
+  // Best diameter found in either subtree
+  const bestSubtreeDiameter = Math.max(leftDiameter, rightDiameter);
+
+  /**
+   * The diameter at this node is the maximum of:
+   * 1) the longest path passing through this node
+   * 2) the best diameter found in the left or right subtree
+   */
+  const currentDiameter = Math.max(pathThroughNode, bestSubtreeDiameter);
+
+  /**
+   * Height of the current node:
+   * 1 + maximum height of its children
+   */
+  const currentHeight = 1 + Math.max(leftHeight, rightHeight);
+
+  return [currentDiameter, currentHeight];
+}
+
+/**
+ * Finds the inorder successor of a given value in a Binary Search Tree.
+ *
+ * The inorder successor is the smallest value that is strictly greater
+ * than the target value.
+ *
+ * If no successor exists, returns null.
+ *
+ * @param root - Root of the BST
+ * @param target - Value whose successor is being searched
+ * @returns The inorder successor value or null if it does not exist
+ *
+ * Time Complexity: O(h)
+ * Space Complexity: O(1)
+ */
+export function findSuccessor(
+  root: TreeNode<number> | null,
+  target: number,
+): number | null {
+  let successor: number | null = null;
+  let current = root;
+
+  // Traverse the tree
+  while (current !== null) {
+    if (target < current.value) {
+      /**
+       * Current node is a valid successor candidate
+       * because it is greater than the target.
+       *
+       * We store it and move left to find a smaller one.
+       */
+      successor = current.value;
+      current = current.left;
+    } else {
+      /**
+       * Target is greater than or equal to current value,
+       * so successor must be in the right subtree.
+       */
+      current = current.right;
+    }
+  }
+
+  return successor;
+}

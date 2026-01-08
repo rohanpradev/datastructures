@@ -17,6 +17,8 @@ import {
   evaluateExpressionTree,
   kthLargest,
   reconstructBST,
+  diameterBST,
+  findSuccessor,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -1090,5 +1092,169 @@ describe("reconstructBST", () => {
     expect(bst?.right?.value).toBe(70);
     expect(bst?.right?.left?.value).toBe(60);
     expect(bst?.right?.right?.value).toBe(80);
+  });
+});
+
+describe("diameterBST", () => {
+  test("should return 0 for empty tree", () => {
+    expect(diameterBST(null as any)).toBe(0);
+  });
+
+  test("should return 0 for single node", () => {
+    const tree = new TreeNode(1);
+    expect(diameterBST(tree)).toBe(0);
+  });
+
+  test("should return correct diameter for simple tree", () => {
+    /*
+          1
+         / \
+        2   3
+     */
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+    tree.right = new TreeNode(3);
+
+    // Longest path: 2 → 1 → 3 (2 edges)
+    expect(diameterBST(tree)).toBe(2);
+  });
+
+  test("should return correct diameter for unbalanced tree", () => {
+    /*
+            1
+           /
+          2
+         /
+        3
+       /
+      4
+     */
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+    tree.left.left = new TreeNode(3);
+    tree.left.left.left = new TreeNode(4);
+
+    // Longest path: 4 → 3 → 2 → 1 (3 edges)
+    expect(diameterBST(tree)).toBe(3);
+  });
+
+  test("should handle diameter not passing through root", () => {
+    /*
+            1
+           /
+          2
+         / \
+        3   4
+       /
+      5
+     */
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+    tree.left.left = new TreeNode(3);
+    tree.left.right = new TreeNode(4);
+    tree.left.left.left = new TreeNode(5);
+
+    // Longest path: 5 → 3 → 2 → 4 (3 edges)
+    expect(diameterBST(tree)).toBe(3);
+  });
+
+  test("should handle balanced tree", () => {
+    /*
+            1
+           / \
+          2   3
+         / \   \
+        4   5   6
+     */
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+    tree.right = new TreeNode(3);
+    tree.left.left = new TreeNode(4);
+    tree.left.right = new TreeNode(5);
+    tree.right.right = new TreeNode(6);
+
+    // Longest path: 4 → 2 → 1 → 3 → 6 (4 edges)
+    expect(diameterBST(tree)).toBe(4);
+  });
+});
+
+describe("findSuccessor", () => {
+  test("should return null for empty tree", () => {
+    expect(findSuccessor(null, 10)).toBe(null);
+  });
+
+  test("should return null for single-node tree", () => {
+    const tree = new TreeNode(10);
+    expect(findSuccessor(tree, 10)).toBe(null);
+  });
+
+  test("should find successor in balanced BST", () => {
+    /*
+            20
+           /  \
+         10    30
+           \
+            15
+     */
+    const tree = new TreeNode(20);
+    tree.left = new TreeNode(10);
+    tree.right = new TreeNode(30);
+    tree.left.right = new TreeNode(15);
+
+    expect(findSuccessor(tree, 15)).toBe(20);
+  });
+
+  test("should return right child when it is the successor", () => {
+    /*
+            10
+              \
+               15
+     */
+    const tree = new TreeNode(10);
+    tree.right = new TreeNode(15);
+
+    expect(findSuccessor(tree, 10)).toBe(15);
+  });
+
+  test("should return null when target is largest value", () => {
+    const bst = new BinarySearchTree<number>(10);
+    bst.insert(5).insert(15).insert(20);
+
+    expect(findSuccessor(bst.root, 20)).toBe(null);
+  });
+
+  test("should return successor even if target does not exist", () => {
+    /*
+            20
+           /  \
+         10    30
+     */
+    const tree = new TreeNode(20);
+    tree.left = new TreeNode(10);
+    tree.right = new TreeNode(30);
+
+    // 15 does not exist, but successor should be 20
+    expect(findSuccessor(tree, 15)).toBe(20);
+  });
+
+  test("should handle left-skewed BST", () => {
+    const bst = new BinarySearchTree<number>(10);
+    bst.insert(8).insert(6).insert(4);
+
+    expect(findSuccessor(bst.root, 6)).toBe(8);
+  });
+
+  test("should handle right-skewed BST", () => {
+    const bst = new BinarySearchTree<number>(10);
+    bst.insert(12).insert(14).insert(16);
+
+    expect(findSuccessor(bst.root, 12)).toBe(14);
+  });
+
+  test("should handle negative values", () => {
+    const bst = new BinarySearchTree<number>(0);
+    bst.insert(-10).insert(10).insert(-5).insert(5);
+
+    expect(findSuccessor(bst.root, -5)).toBe(0);
   });
 });

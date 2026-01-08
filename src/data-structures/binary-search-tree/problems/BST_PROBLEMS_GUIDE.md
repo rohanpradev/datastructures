@@ -1659,6 +1659,413 @@ In such cases, consider an **iterative solution using a stack**.
 
 ---
 
+# Diameter of a Binary Tree (Recursive DFS)
+
+## Problem Statement
+
+Given the root of a binary tree, compute the **diameter** of the tree.
+
+The **diameter** is defined as the **number of edges** in the longest path between **any two nodes** in the tree.
+This path **may or may not pass through the root**.
+
+- If the tree is empty, return `0`
+- A single-node tree has a diameter of `0`
+
+---
+
+## Example
+
+```
+        1
+       / \
+      2   3
+     / \
+    4   5
+```
+
+### Longest Path
+
+One of the longest paths is:
+
+```
+4 → 2 → 1 → 3
+```
+
+### Diameter Calculation
+
+- Number of edges in the path: `3`
+
+**Diameter = 3**
+
+---
+
+## Key Insight
+
+At **every node**, there are two important values:
+
+1. **Height**
+   The number of edges from the current node to its deepest leaf
+
+2. **Diameter**
+   The longest path found anywhere in the subtree
+
+The longest path **through** a node is:
+
+```
+leftHeight + rightHeight
+```
+
+The diameter at a node is the maximum of:
+
+- Diameter of the left subtree
+- Diameter of the right subtree
+- Longest path passing through the current node
+
+---
+
+## Recursive Intuition
+
+At each node:
+
+1. Recursively compute diameter and height of the left subtree
+2. Recursively compute diameter and height of the right subtree
+3. Combine heights to form a path through the node
+4. Track the maximum diameter seen so far
+
+By returning **both diameter and height together**, we avoid repeated work.
+
+---
+
+## Algorithm
+
+```
+function dfs(node):
+    if node is null:
+        return [0, 0]  // [diameter, height]
+
+    leftDiameter, leftHeight = dfs(node.left)
+    rightDiameter, rightHeight = dfs(node.right)
+
+    pathThroughNode = leftHeight + rightHeight
+    currentDiameter = max(
+        pathThroughNode,
+        leftDiameter,
+        rightDiameter
+    )
+
+    currentHeight = 1 + max(leftHeight, rightHeight)
+
+    return [currentDiameter, currentHeight]
+```
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Computes the diameter of a binary tree.
+ */
+export function diameterBST(tree: TreeNode<number>): number {
+  const [diameter] = getDiameterAndHeight(tree);
+  return diameter;
+}
+
+/**
+ * Returns both the diameter and height of a subtree.
+ */
+function getDiameterAndHeight(node: TreeNode<number> | null): [number, number] {
+  if (node === null) {
+    return [0, 0];
+  }
+
+  const [leftDiameter, leftHeight] = getDiameterAndHeight(node.left);
+  const [rightDiameter, rightHeight] = getDiameterAndHeight(node.right);
+
+  const pathThroughNode = leftHeight + rightHeight;
+
+  const currentDiameter = Math.max(
+    pathThroughNode,
+    leftDiameter,
+    rightDiameter,
+  );
+
+  const currentHeight = 1 + Math.max(leftHeight, rightHeight);
+
+  return [currentDiameter, currentHeight];
+}
+```
+
+---
+
+## Example Walkthrough
+
+For this tree:
+
+```
+        1
+       / \
+      2   3
+     /
+    4
+```
+
+- Height at node `4` → `0`
+
+- Height at node `2` → `1`
+
+- Height at node `1` → `2`
+
+- Path through node `1` → `2`
+
+- Best diameter found → `2`
+
+**Final Answer:** `2`
+
+---
+
+## Test Cases
+
+```ts
+describe("diameterBST()", () => {
+  test("should return 0 for a null tree", () => {
+    expect(diameterBST(null as any)).toBe(0);
+  });
+
+  test("should return 0 for a single-node tree", () => {
+    const tree = new TreeNode(1);
+    expect(diameterBST(tree)).toBe(0);
+  });
+
+  test("should return correct diameter for a balanced tree", () => {
+    const tree = new TreeNode(1);
+    tree.left = new TreeNode(2);
+    tree.right = new TreeNode(3);
+    tree.left.left = new TreeNode(4);
+    tree.left.right = new TreeNode(5);
+
+    expect(diameterBST(tree)).toBe(3);
+  });
+});
+```
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n)`
+  - Each node is visited exactly once
+
+- **Space Complexity:** `O(h)`
+  - `h` is the height of the tree (recursion stack)
+
+---
+
+## Why This Approach Works Well
+
+✅ Single DFS traversal
+✅ No redundant height calculations
+✅ Clean separation of concerns
+✅ Matches common LeetCode editorial solutions
+
+---
+
+## Limitations
+
+⚠️ Deeply skewed trees may cause stack overflow due to recursion.
+
+For such cases, consider:
+
+- Iterative DFS
+- Tail-call optimization (if supported)
+
+---
+
+## Related Concepts
+
+- Binary Trees
+- Depth-First Search (DFS)
+- Tree Height
+- Divide and Conquer
+- Recursion
+
+---
+
+# Inorder Successor in a Binary Search Tree (BST)
+
+## Problem Statement
+
+Given the root of a **Binary Search Tree** and a target value, find the **inorder successor** of that value.
+
+The **inorder successor** is the node with the **smallest value strictly greater** than the target.
+
+- If the successor does not exist, return `null`
+- The target value **may or may not exist** in the tree
+
+---
+
+## Example
+
+```
+        20
+       /  \
+     10    30
+       \
+        15
+```
+
+### Target
+
+```
+target = 15
+```
+
+### Inorder Traversal
+
+```
+10 → 15 → 20 → 30
+```
+
+### Successor
+
+```
+20
+```
+
+---
+
+## Key BST Insight 🧠
+
+In a BST:
+
+- All values in the **left subtree** are smaller
+- All values in the **right subtree** are larger
+
+While traversing:
+
+- If `target < node.value` → this node is a **successor candidate**
+- If `target ≥ node.value` → successor must be in the **right subtree**
+
+We keep updating the closest larger value found so far.
+
+---
+
+## Algorithm
+
+```
+function findSuccessor(root, target):
+    successor = null
+    current = root
+
+    while current is not null:
+        if target < current.value:
+            successor = current.value
+            current = current.left
+        else:
+            current = current.right
+
+    return successor
+```
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Finds the inorder successor of a value in a Binary Search Tree.
+ */
+export function findSuccessor(
+  root: TreeNode<number> | null,
+  target: number,
+): number | null {
+  let successor: number | null = null;
+  let current = root;
+
+  while (current !== null) {
+    if (target < current.value) {
+      // Current node is a valid successor candidate
+      successor = current.value;
+      current = current.left;
+    } else {
+      // Successor must be in the right subtree
+      current = current.right;
+    }
+  }
+
+  return successor;
+}
+```
+
+---
+
+## Example Walkthrough
+
+For the tree:
+
+```
+        20
+       /  \
+     10    30
+       \
+        15
+```
+
+Steps:
+
+1. `15 < 20` → successor = `20`, move left
+2. `15 ≥ 10` → move right
+3. `15 ≥ 15` → move right (null)
+
+**Final Answer:** `20`
+
+---
+
+## Edge Cases
+
+✔ Tree is empty → return `null`
+✔ Target is the largest value → return `null`
+✔ Target does not exist → return next greater value if possible
+
+---
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(h)`
+  - `h` = height of the BST
+
+- **Space Complexity:** `O(1)`
+  - No recursion or extra data structures
+
+---
+
+## Why This Approach Is Optimal
+
+✅ Uses BST ordering directly
+✅ Single pass from root to leaf
+✅ No unnecessary traversal
+✅ Interview-ready and LeetCode-approved
+
+---
+
+## Common Mistakes ❌
+
+- Using full inorder traversal (`O(n)`)
+- Not handling the “no successor” case
+- Forgetting that target may not exist
+- Overwriting successor without checking bounds
+
+---
+
+## Related Concepts
+
+- Binary Search Trees
+- Inorder Traversal
+- Tree Navigation
+- Successor / Predecessor Problems
+
+---
+
 ## Practice Tips
 
 ### Order to Practice
@@ -1691,15 +2098,18 @@ In such cases, consider an **iterative solution using a stack**.
 
 ## Complexity Cheat Sheet
 
-| Problem                | Time   | Space    | Key Technique              |
-| ---------------------- | ------ | -------- | -------------------------- |
-| Validate BST           | O(n)   | O(h)     | Range validation           |
-| Lowest Common Ancestor | O(h)   | O(h)     | BST property navigation    |
-| Invert Tree            | O(n)   | O(h)     | Post-order recursion       |
-| Kth Smallest           | O(h+k) | O(h)     | In-order traversal         |
-| Sorted Array to BST    | O(n)   | O(log n) | Middle element             |
-| Range Sum BST          | O(n)   | O(h)     | Pruned traversal           |
-| Delete Node            | O(h)   | O(h)     | 3-case handling            |
-| Kth Largest            | O(h+k) | O(h)     | Reverse in-order traversal |
+| Problem                    | Time   | Space    | Key Technique                       |
+| -------------------------- | ------ | -------- | ----------------------------------- |
+| Validate BST               | O(n)   | O(h)     | Range validation                    |
+| Lowest Common Ancestor     | O(h)   | O(h)     | BST property navigation             |
+| Invert Tree                | O(n)   | O(h)     | Post-order recursion                |
+| Kth Smallest               | O(h+k) | O(h)     | In-order traversal                  |
+| Sorted Array to BST        | O(n)   | O(log n) | Middle element                      |
+| Range Sum BST              | O(n)   | O(h)     | Pruned traversal                    |
+| Delete Node                | O(h)   | O(h)     | 3-case handling                     |
+| Reconstruct BST (Preorder) | O(n)   | O(h)     | Bounds + preorder index             |
+| Inorder Successor (BST)    | O(h)   | O(1)     | BST navigation + candidate tracking |
+| Kth Largest                | O(h+k) | O(h)     | Reverse in-order traversal          |
+| Diameter of Binary Tree    | O(n)   | O(h)     | DFS with height + diameter tracking |
 
 Happy Coding! 🚀

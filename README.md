@@ -1,9 +1,9 @@
+datastructures/README.md#L1-999
 # Data Structures & Algorithms - Complete Learning Workspace 
 [![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/06b59555-ad3f-49c5-95b3-919f81170e14" />
 
-
-A comprehensive DSA workspace with **2000+ passing tests**, detailed practice guides, and automated template generation for hands-on learning.
+A comprehensive DSA workspace with **1,919 passing tests**, detailed practice guides, and automated template generation for hands-on learning. Also includes Node.js design patterns.
 
 ---
 
@@ -12,19 +12,19 @@ A comprehensive DSA workspace with **2000+ passing tests**, detailed practice gu
 This workspace includes **11 detailed guides** with visual explanations:
 
 ### Data Structures
--  [Binary Search Tree Problems](src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md)
--  [Hash Table/Map Patterns](src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md)
--  [Linked List Techniques](src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md)
--  [Stack & Queue Operations](src/data-structures/stack/problems/STACK_PROBLEMS_GUIDE.md)
--  [Graph Algorithms (DFS/BFS)](src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md)
--  [Heap/Priority Queue](src/data-structures/heap/HEAP_GUIDE.md)
+-  [`src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md`](src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md)
+-  [`src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md`](src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md)
+-  [`src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md`](src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md)
+-  [`src/data-structures/stack/problems/STACK_PROBLEMS_GUIDE.md`](src/data-structures/stack/problems/STACK_PROBLEMS_GUIDE.md)
+-  [`src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md`](src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md)
+-  [`src/data-structures/heap/HEAP_GUIDE.md`](src/data-structures/heap/HEAP_GUIDE.md)
 
 ### Algorithms
--  [Array Manipulation](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
--  [Array Problems](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
--  [String Manipulation](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
--  [Recursion & Dynamic Programming](src/algorithms/recursion/FIBONACCI_GUIDE.md)
--  [Sorting Algorithms (5 types)](src/algorithms/sorting/SORTING_GUIDE.md)
+-  [`src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md`](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
+-  [`src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md`](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
+-  [`src/algorithms/strings/STRING_EXERCISES_GUIDE.md`](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
+-  [`src/algorithms/recursion/FIBONACCI_GUIDE.md`](src/algorithms/recursion/FIBONACCI_GUIDE.md)
+-  [`src/algorithms/sorting/SORTING_GUIDE.md`](src/algorithms/sorting/SORTING_GUIDE.md)
 
 **Each guide includes:**
 -  Visual ASCII diagrams
@@ -40,17 +40,17 @@ This workspace includes **11 detailed guides** with visual explanations:
 
 ### Installation
 
-```bash
+```datastructures/README.md#L101-106
 bun install
 ```
 
 ### Available Commands
 
-```bash
+```datastructures/README.md#L110-120
 # Generate practice templates (empty implementations)
 bun practice
 
-# Run all tests (1475+ tests)
+# Run all tests (1,919 tests)
 bun test
 
 # Check code quality with Biome
@@ -66,7 +66,7 @@ bun dev
 
 ### 1. Read a Guide
 Choose any topic and read the comprehensive guide:
-```bash
+```datastructures/README.md#L130-136
 # Array problems with visual explanations
 cat src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md
 
@@ -76,17 +76,18 @@ cat src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md
 
 ### 2. Generate Practice Templates
 Create empty implementations to practice:
-```bash
+```datastructures/README.md#L142-146
 bun practice
-# Creates practice/ directory with empty function stubs
+# Creates `practice/` directory with empty function stubs
 ```
 
 ### 3. Implement Solutions
 Follow the guide to implement functions in `practice/` directory.
 
 ### 4. Validate with Tests
-```bash
-bun test practice/algorithms/arrays/arrayExercises.test.ts
+```datastructures/README.md#L154-156
+# Run tests for a specific module
+bun test src/algorithms/arrays/array-exercises.test.ts
 ```
 
 ### 5. Compare with Reference
@@ -97,27 +98,30 @@ Check `src/` for reference implementations.
 ##  What'\''s Included
 
 ### Data Structures (6)
- Binary Search Tree  Hash Table  Linked List  Stack & Queue  Graph  Heap
+`Binary Search Tree`  `Hash Table`  `Linked List`  `Stack & Queue`  `Graph`  `Heap`
 
 ### Algorithm Categories (3)
- Array Exercises (7 problems)  Sorting (5 algorithms)  Recursion & DP
+`Array Exercises` (many problems)  `Sorting` (multiple algorithms)  `Recursion & DP`
 
 ### LeetCode Problems (50+)
 All tagged with LeetCode numbers for easy reference.
 
+### Node js Concepts and Patterns
+Generator functions, Promises, Async
+
 ### Test Coverage
-```
- 2000+ tests passing
- 20+ test files
+```datastructures/README.md#L180-188
+ 1,919 tests passing
+ 23 test files
  Zero TypeScript errors
- 100% type safety
+ 100% type safety (where applicable)
 ```
 
 ---
 
 ##  Project Structure
 
-```
+```datastructures/README.md#L200-260
 DSA/
  README.md                          This file
  package.json
@@ -156,7 +160,7 @@ DSA/
  scripts/
     generate-practice.ts           Uses Bun native file I/O
 
- practice/                           Generated by '\''bun practice'\''
+ practice/                           Generated by `bun practice`
      (empty implementations + tests)
 ```
 
@@ -194,13 +198,13 @@ DSA/
 - Real-world use cases
 
 ### Practice System
-```bash
+```datastructures/README.md#L320-322
 bun practice
 ```
 - Extracts function signatures automatically
 - Generates empty implementations
 - Preserves test files
-- Uses Bun'\''s native file I/O (`Bun.file()`, `Bun.write()`)
+- Uses Bun's native file I/O (`Bun.file()`, `Bun.write()`)
 
 ### Code Quality
 - Biome linter/formatter v2.3.6
@@ -212,12 +216,12 @@ bun practice
 ##  Testing
 
 ### Run All Tests
-```bash
-bun test  # 1475 tests in ~600ms
+```datastructures/README.md#L340-342
+bun test  # 1,919 tests
 ```
 
 ### Run Specific Tests
-```bash
+```datastructures/README.md#L346-350
 bun test src/data-structures/binary-search-tree/binarySearchTree.test.ts
 bun test src/algorithms/sorting/sortingAlgorithms.test.ts
 ```
@@ -227,17 +231,17 @@ bun test src/algorithms/sorting/sortingAlgorithms.test.ts
 ##  Complexity Quick Reference
 
 ### Time Complexities
-```
+```datastructures/README.md#L360-368
 O(1)       - Hash table lookup
 O(log n)   - Binary search, BST
 O(n)       - Array traversal
 O(n log n) - Merge sort, Quick sort
-O(n)      - Bubble sort
+O(n^2)     - Bubble sort
 O(2^n)     - Naive Fibonacci
 ```
 
 ### Data Structure Operations
-```
+```datastructures/README.md#L376-396
 Structure    | Access  | Search  | Insert  | Delete
 -------------|---------|---------|---------|--------
 Array        | O(1)    | O(n)    | O(n)    | O(n)
@@ -254,7 +258,7 @@ Heap         | N/A     | O(n)    | O(log n)| O(log n)
 
 ##  Technologies
 
-- **Runtime:** [Bun](https://bun.com) v1.3.1+
+- **Runtime:** [Bun](https://bun.sh) v1.3.1+
 - **Language:** TypeScript (strict mode)
 - **Testing:** Bun test runner
 - **Linting:** Biome v2.3.6
@@ -281,24 +285,26 @@ Heap         | N/A     | O(n)    | O(log n)| O(log n)
 
 ##  Stats
 
-- **Problems:** 200+
-- **Tests:** 2000+
-- **Test Files:** 20+
+- **Problems:** 451 (each `describe()` block in tests maps to a problem / scenario)
+- **Tests:** 1,919 individual test cases (`test()` calls)
+- **Test Files:** 23
 - **Guides:** 11
-- **Documentation:** 5000+ lines
+- **Documentation:** 5,000+ lines
+
+Note: I keep the README's counts in sync with the repository's test-suite and guides. If you add or remove problems/tests, re-run a quick count of `describe()` / `test()` occurrences to update the numbers above.
 
 ---
 
 ##  Perfect For
 
- Technical interview prep  
- Algorithm mastery  
- Data structure understanding  
- Problem-solving practice  
+- Technical interview prep  
+- Algorithm mastery  
+- Data structure understanding  
+- Problem-solving practice  
 
 ---
 
-**Happy Coding! **
+**Happy Coding!**
 
 ---
 
