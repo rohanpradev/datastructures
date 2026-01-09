@@ -643,7 +643,7 @@ export function evaluate(expr: string): number {
 			case "/":
 				return a / b;
 			default:
-				throw new Error("Unknown operator: " + op);
+				throw new Error(`Unknown operator: ${op}`);
 		}
 	}
 

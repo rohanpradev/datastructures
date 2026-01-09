@@ -5,7 +5,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "bun run src/index.ts",
-		"check": "bunx biome check --write",
+		"check": "biome check --write",
 		"test": "bun test",
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},

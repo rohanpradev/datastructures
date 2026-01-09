@@ -121,7 +121,7 @@ class Graph<T = string> {
 		}
 
 		// Remove all edges pointing to this vertex
-		for (const [v, edges] of this.adjacencyList) {
+		for (const [_v, edges] of this.adjacencyList) {
 			const index = edges.indexOf(vertex);
 			if (index !== -1) {
 				edges.splice(index, 1);

@@ -21,6 +21,7 @@ import {
   findSuccessor,
   heightBalancedBinaryTree,
   mergeBinaryTrees,
+  splitBinaryTree,
 } from "@/data-structures/binary-search-tree/problems/leetcode-bst";
 
 describe("validateBST", () => {
@@ -1424,5 +1425,119 @@ describe("mergeBinaryTrees", () => {
     expect(result?.value).toBe(6);
     expect(result?.left?.value).toBe(5);
     expect(result?.right?.value).toBe(11);
+  });
+});
+
+describe("splitBinaryTree", () => {
+  test("should return 0 for empty tree", () => {
+    expect(splitBinaryTree(null)).toBe(0);
+  });
+
+  test("should return 0 for single node", () => {
+    const root: TreeNode<number> = { value: 5, left: null, right: null };
+    expect(splitBinaryTree(root)).toBe(5);
+  });
+
+  test("should return total sum for single node", () => {
+    const root: TreeNode<number> = { value: 5, left: null, right: null };
+    expect(splitBinaryTree(root)).toBe(5); // fix: root itself counts
+  });
+
+  test("should return total sum for tree that cannot be split", () => {
+    const root: TreeNode<number> = {
+      value: 1,
+      left: { value: 2, left: null, right: null },
+      right: { value: 4, left: null, right: null },
+    };
+    expect(splitBinaryTree(root)).toBe(7); // fix: root counts as subtree
+  });
+
+  test("should handle negative numbers and split", () => {
+    //        1
+    //       / \
+    //     -1   0
+    const root: TreeNode<number> = {
+      value: 1,
+      left: { value: -1, left: null, right: null },
+      right: { value: 0, left: null, right: null },
+    };
+    expect(splitBinaryTree(root)).toBe(0); // Total sum 0, subtree sum 0 exists
+  });
+
+  test("should handle tree with multiple splits possible", () => {
+    //        5
+    //       / \
+    //      3   2
+    //     / \
+    //    1   2
+    const root: TreeNode<number> = {
+      value: 5,
+      left: {
+        value: 3,
+        left: { value: 1, left: null, right: null },
+        right: { value: 2, left: null, right: null },
+      },
+      right: { value: 2, left: null, right: null },
+    };
+    expect(splitBinaryTree(root)).toBe(13); // Can split at left subtree (sum 6)
+  });
+
+  test("should return total sum when no subtree equals total sum", () => {
+    const root: TreeNode<number> = {
+      value: 10,
+      left: { value: 5, left: null, right: null },
+      right: { value: 3, left: null, right: null },
+    };
+    expect(splitBinaryTree(root)).toBe(18); // root itself counts
+  });
+
+  test("should handle deeper tree with split at leaf", () => {
+    //         1
+    //        / \
+    //       2   3
+    //      / \
+    //     1   1
+    const root: TreeNode<number> = {
+      value: 1,
+      left: {
+        value: 2,
+        left: { value: 1, left: null, right: null },
+        right: { value: 1, left: null, right: null },
+      },
+      right: { value: 3, left: null, right: null },
+    };
+    expect(splitBinaryTree(root)).toBe(8); // Split at right child
+  });
+
+  test("should handle tree with only left children and splittable", () => {
+    //        6
+    //       /
+    //      3
+    //     /
+    //    3
+    const root: TreeNode<number> = {
+      value: 6,
+      left: {
+        value: 3,
+        left: { value: 3, left: null, right: null },
+        right: null,
+      },
+      right: null,
+    };
+    expect(splitBinaryTree(root)).toBe(12); // Split at left subtree
+  });
+
+  test("should handle tree with only right children and splittable", () => {
+    // 2 -> 2 -> 2
+    const root: TreeNode<number> = {
+      value: 2,
+      left: null,
+      right: {
+        value: 2,
+        left: null,
+        right: { value: 2, left: null, right: null },
+      },
+    };
+    expect(splitBinaryTree(root)).toBe(6); // Split possible at last right node
   });
 });

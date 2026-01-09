@@ -1,5 +1,3 @@
-import { Graph } from "@/data-structures/graph/graph";
-
 /**
  * LeetCode Problem: Number of Islands
  *

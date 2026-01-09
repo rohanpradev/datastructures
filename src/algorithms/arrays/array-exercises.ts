@@ -1110,7 +1110,7 @@ export function threeLargestNumbers(nums: number[]): number[] {
 	return result;
 }
 
-function shiftAndUpdate(arr: number[], value: number, idx: number) {
+function _shiftAndUpdate(arr: number[], value: number, idx: number) {
 	// Shift elements left starting from index 0 up to idx-1
 	for (let i = 0; i < idx; i++) {
 		arr[i] = arr[i + 1];
