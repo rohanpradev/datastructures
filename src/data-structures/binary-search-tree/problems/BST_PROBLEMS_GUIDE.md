@@ -2435,15 +2435,36 @@ Missing nodes are reused as-is.
 
 ## Problem Statement
 
-Given the root of a **binary tree**, determine whether it is possible to **split the tree into two subtrees with equal sum** by removing exactly **one edge**.
+Given the root of a **binary tree**, determine whether it is possible to **split the tree into two non-empty subtrees with equal sum** by removing **exactly one edge**.
 
-Return the **total sum of the tree** if such a split exists, otherwise return `0`.
+If such a split exists, return the **sum of either subtree** (i.e. half of the total sum).
+Otherwise, return `0`.
 
-> Essentially, you want to find if there exists a **subtree** whose sum equals the sum of the remaining tree.
+> The **root itself does NOT count** as a valid split — at least one edge must be removed.
 
 ---
 
-## Example
+## Key Observation
+
+Removing one edge partitions the tree into:
+
+- a **subtree**
+- the **remaining tree**
+
+For the split to be valid:
+
+```
+subtreeSum === remainingSum
+⇒ subtreeSum === totalSum / 2
+```
+
+So the task reduces to:
+
+> **Does there exist a proper subtree whose sum equals half of the total tree sum?**
+
+---
+
+## Examples
 
 ### Tree Can Be Split ✅
 
@@ -2453,9 +2474,13 @@ Return the **total sum of the tree** if such a split exists, otherwise return `0
       2   3
 ```
 
-- Total sum = 1 + 2 + 3 = 6
-- Subtree with node `3` → sum = 3
-- Remaining tree → sum = 1 + 2 = 3 → **Equal** → Can split
+- Total sum = `6`
+- Target = `6 / 2 = 3`
+- Subtree rooted at `3` → sum = `3`
+- Remaining tree → sum = `3`
+
+✅ Valid split
+**Return:** `3`
 
 ---
 
@@ -2467,33 +2492,29 @@ Return the **total sum of the tree** if such a split exists, otherwise return `0
       2   4
 ```
 
-- Total sum = 1 + 2 + 4 = 7
-- No subtree sum equals 7/2 = 3.5 → **Cannot split**
+- Total sum = `7` (odd)
+- Cannot split evenly
+
+❌ No valid split
+**Return:** `0`
 
 ---
 
 ## Key Insight 🧠
 
-To check if a tree can be split by sum:
-
 1. Compute the **total sum** of the tree.
-2. For each node, compute the **sum of its subtree**.
-3. If a subtree's sum equals the **desired target sum**, a split is possible.
+2. If the total sum is **odd**, return `0` immediately.
+3. Traverse the tree in **post-order** to compute subtree sums.
+4. If any **proper subtree** has sum equal to `totalSum / 2`, a split is possible.
 
-**Why it works:**
+### Why post-order?
 
-- Removing an edge separates the tree into two parts.
-- If one part's sum equals the other part's sum, it satisfies the split condition.
-
-**Traversal strategy:**
-
-- Use **post-order traversal** (left → right → root)
-- Compute **subtree sums** from bottom to top
-- Return early if a valid split is found
+- Subtree sums depend on children
+- Post-order ensures children are processed before the parent
 
 ---
 
-## Algorithm
+## Algorithm (Corrected)
 
 ```
 function getTreeSum(node):
@@ -2501,32 +2522,37 @@ function getTreeSum(node):
         return 0
     return node.value + getTreeSum(node.left) + getTreeSum(node.right)
 
-function canSplit(node, target):
+function canSplit(node, target, root):
     if node is null:
         return [0, false]
 
-    [leftSum, leftSplit] = canSplit(node.left, target)
-    [rightSum, rightSplit] = canSplit(node.right, target)
+    [leftSum, leftFound] = canSplit(node.left, target, root)
+    [rightSum, rightFound] = canSplit(node.right, target, root)
 
     currentSum = node.value + leftSum + rightSum
 
-    canBeSplit = leftSplit or rightSplit or currentSum == target
-    return [currentSum, canBeSplit]
+    foundSplit =
+        leftFound OR
+        rightFound OR
+        (currentSum == target AND node != root)
+
+    return [currentSum, foundSplit]
 
 totalSum = getTreeSum(root)
-[_, canSplitFlag] = canSplit(root, totalSum)
+if totalSum is odd:
+    return 0
 
-return totalSum if canSplitFlag else 0
+target = totalSum / 2
+[_, found] = canSplit(root, target, root)
+
+return target if found else 0
 ```
 
 ---
 
-## Implementation (TypeScript)
+## Implementation (TypeScript — Corrected)
 
 ```ts
-/**
- * Definition for a binary tree node.
- */
 interface TreeNode<T> {
   value: T;
   left: TreeNode<T> | null;
@@ -2534,50 +2560,42 @@ interface TreeNode<T> {
 }
 
 /**
- * Determines if a binary tree can be split into two equal-sum parts.
+ * Determines whether a binary tree can be split into two equal-sum trees
+ * by removing exactly one edge.
  *
- * @param {TreeNode<number>} root - The root of the binary tree.
- * @returns {number} - Total sum if split is possible, otherwise 0.
+ * @param root - Root of the binary tree
+ * @returns Half of total sum if split is possible, otherwise 0
  */
-export function splitBinaryTree(root: TreeNode<number>): number {
-  // Step 1: Compute total sum of the tree
+export function splitBinaryTree(root: TreeNode<number> | null): number {
+  if (!root) return 0;
+
   const totalSum = getTreeSum(root);
+  if (totalSum % 2 !== 0) return 0;
 
-  // Step 2: Check recursively if a subtree equals total sum
-  const [_, canBeSplit] = canSplitWithSum(root, totalSum);
+  const target = totalSum / 2;
+  const [, canBeSplit] = canSplitWithSum(root, target, root);
 
-  return canBeSplit ? totalSum : 0;
+  return canBeSplit ? target : 0;
 }
 
-/**
- * Recursively computes subtree sum and checks for split possibility.
- *
- * @param {TreeNode<number> | null} node - Current node
- * @param {number} target - Desired sum to check for split
- * @returns {[number, boolean]} - Subtree sum and split possibility
- */
 function canSplitWithSum(
   node: TreeNode<number> | null,
   target: number,
+  root: TreeNode<number>,
 ): [number, boolean] {
-  if (!node) return [0, false]; // Empty node
+  if (!node) return [0, false];
 
-  const [leftSum, leftSplit] = canSplitWithSum(node.left, target);
-  const [rightSum, rightSplit] = canSplitWithSum(node.right, target);
+  const [leftSum, leftSplit] = canSplitWithSum(node.left, target, root);
+  const [rightSum, rightSplit] = canSplitWithSum(node.right, target, root);
 
   const currentSum = node.value + leftSum + rightSum;
 
-  const canBeSplit = leftSplit || rightSplit || currentSum === target;
+  const canBeSplit =
+    leftSplit || rightSplit || (currentSum === target && node !== root);
 
   return [currentSum, canBeSplit];
 }
 
-/**
- * Computes total sum of a binary tree.
- *
- * @param {TreeNode<number> | null} node
- * @returns {number} - Total sum
- */
 function getTreeSum(node: TreeNode<number> | null): number {
   if (!node) return 0;
   return node.value + getTreeSum(node.left) + getTreeSum(node.right);
@@ -2588,7 +2606,7 @@ function getTreeSum(node: TreeNode<number> | null): number {
 
 ## Example Walkthrough
 
-For the tree:
+For this tree:
 
 ```
         1
@@ -2596,51 +2614,40 @@ For the tree:
       2   3
 ```
 
-Steps:
+- Total sum = `6`
+- Target = `3`
+- Subtree at node `3` has sum `3`
+- Edge removal creates two trees of sum `3`
 
-1. Node `2` → sum = 2
-2. Node `3` → sum = 3
-3. Node `1` → sum = 6
-4. Subtree `3` sum = 3, remaining sum = 3 → ✅ Can split
-
-Returns `6`.
+✅ **Return `3`**
 
 ---
 
 ## Edge Cases
 
 ✔ Empty tree → `0`
-✔ Single node → `0` (cannot split one node)
-✔ Multiple subtrees with same sum → first match suffices
-✔ Negative values → handled correctly since sum calculation is generic
+✔ Single node → `0` (cannot remove an edge)
+✔ Negative values → handled correctly
+✔ Multiple valid splits → any one suffices
+✔ Total sum = `0` → valid split only if a **proper subtree** sums to `0`
 
 ---
 
 ## Complexity Analysis
 
 - **Time Complexity:** `O(n)`
-  - Each node is visited once
-
 - **Space Complexity:** `O(h)`
-  - `h` = height of the tree (recursion stack)
+  (`h` = height of tree due to recursion stack)
 
 ---
 
-## Why This Approach Is Optimal
+## Common Mistakes ❌ (Corrected)
 
-✅ Single traversal with recursion
-✅ Early detection of splittable subtree
-✅ No extra data structures needed
-✅ Clean, interview-ready solution
-
----
-
-## Common Mistakes ❌
-
-- Recomputing subtree sums repeatedly → `O(n²)`
-- Not using post-order traversal (may miss subtree sum)
-- Forgetting negative values or zero in tree
-- Returning wrong value instead of 0 when no split exists
+- ❌ Comparing subtree sum to **total sum**
+- ❌ Returning total sum instead of `totalSum / 2`
+- ❌ Allowing the root to count as a split
+- ❌ Forgetting odd-sum early exit
+- ❌ Using pre-order traversal
 
 ---
 
