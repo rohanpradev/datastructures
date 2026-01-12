@@ -6,7 +6,14 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**", "!**/*.test.ts", "!scripts", "!practice"]
+		"includes": [
+			"**",
+			"!**/*.test.ts",
+			"!scripts",
+			"!practice",
+			"!.vscode",
+			"!.zed"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -16,6 +23,9 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
 			"style": {
 				"useFilenamingConvention": {
 					"level": "error",
