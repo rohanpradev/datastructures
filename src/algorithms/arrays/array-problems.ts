@@ -389,3 +389,104 @@ export function sweetAndSavoury(
 
 	return closestPair;
 }
+
+/**
+ * Finds the maximum sum of non-adjacent numbers in an array.
+ *
+ * @param {number[]} nums - The input array of numbers.
+ * @returns {number | null} - Maximum sum of non-adjacent numbers, or null if array is empty.
+ *
+ * @example
+ * maxSumNonAdjacent([3,2,5,10,7]); // returns 15 (3 + 5 + 7)
+ * maxSumNonAdjacent([2,1,4,9]);    // returns 11 (2 + 9)
+ */
+export function maxSumNonAdjacent(nums: number[]): number | null {
+	// Edge case: empty array
+	if (nums.length === 0) return null;
+
+	// Edge case: only one element
+	if (nums.length === 1) return nums[0];
+
+	// prevTwo: max sum up to two indices before current
+	let prevTwo = nums[0];
+
+	// prevOne: max sum up to previous index
+	let prevOne = Math.max(nums[0], nums[1]);
+
+	// Iterate from the third element to the end
+	for (let i = 2; i < nums.length; i++) {
+		// Either take current element + prevTwo, or skip current (prevOne)
+		const currentMax = Math.max(prevOne, prevTwo + nums[i]);
+
+		// Update prevTwo and prevOne for next iteration
+		prevTwo = prevOne;
+		prevOne = currentMax;
+	}
+
+	// prevOne contains the max sum for the whole array
+	return prevOne;
+}
+
+/**
+ * Calculates the number of ways to make change for a target amount
+ * using the given denominations.
+ *
+ * @param {number} target - The target amount.
+ * @param {number[]} denoms - Array of coin denominations.
+ * @returns {number} - Number of ways to make change.
+ *
+ * @example
+ * waysOfChange(5, [1, 2, 5]); // returns 4
+ */
+export function waysOfChange(target: number, denoms: number[]): number {
+	// ways[i] = number of ways to make amount i
+	const ways = new Array(target + 1).fill(0);
+	ways[0] = 1; // base case: 1 way to make 0
+
+	for (const coin of denoms) {
+		for (let amount = coin; amount <= target; amount++) {
+			ways[amount] += ways[amount - coin];
+		}
+	}
+
+	return ways[target];
+}
+
+/**
+ * Returns the minimum number of coins required to make the target amount.
+ *
+ * Uses dynamic programming where each index represents the minimum
+ * number of coins needed to form that amount.
+ *
+ * If the target amount cannot be formed using the given denominations,
+ * the function returns -1.
+ *
+ * Time Complexity: O(target * denoms.length)
+ * Space Complexity: O(target)
+ *
+ * @param target - The amount of money we want to make
+ * @param denoms - Available coin denominations (can be reused unlimited times)
+ * @returns The minimum number of coins needed, or -1 if impossible
+ */
+export function minNumberOfCoinsForChange(
+	target: number,
+	denoms: number[],
+): number {
+	// nums[i] will store the minimum number of coins needed to make amount i
+	const nums = new Array(target + 1).fill(Infinity);
+
+	// Base case: 0 coins are needed to make amount 0
+	nums[0] = 0;
+
+	// Iterate through each denomination
+	for (const denom of denoms) {
+		// Try to build all amounts from denom up to target
+		for (let amount = denom; amount <= target; amount++) {
+			// If the previous amount is reachable, update the minimum
+			nums[amount] = Math.min(nums[amount], 1 + nums[amount - denom]);
+		}
+	}
+
+	// If the target is still Infinity, it cannot be formed
+	return nums[target] === Infinity ? -1 : nums[target];
+}
