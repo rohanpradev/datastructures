@@ -56,6 +56,7 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 
 * [Array Exercises](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
 * [Array Problems](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
+* [Dynamic Programming](src/algorithms/dynamic-programming/DYNAMIC_PROGRAMMING_GUIDE.md)
 * [String Exercises](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
 * [Recursion & Fibonacci](src/algorithms/recursion/FIBONACCI_GUIDE.md)
 * [Sorting Algorithms](src/algorithms/sorting/SORTING_GUIDE.md)
