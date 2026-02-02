@@ -921,3 +921,647 @@ export function sweetAndSavoury(
 - Commonly tested in **interviews and coding assessments**.
 
 ---
+
+# River Sizes (Connected Components in a Matrix)
+
+## Problem Statement
+
+Given a 2D matrix of integers where:
+
+- `1` represents **land that is part of a river**
+- `0` represents **land that is not part of a river**
+
+A **river** consists of **horizontally or vertically adjacent** `1`s (no diagonals).
+
+Your task is to **compute the size of every river** in the matrix and return them as an array of integers.
+The order of the sizes does **not** matter.
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input:
+matrix = [
+  [1, 0, 0, 1, 0],
+  [1, 0, 1, 0, 0],
+  [0, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1],
+  [1, 0, 1, 1, 0],
+]
+
+Output: [2, 1, 5, 2, 2]
+```
+
+### Example 2
+
+```
+Input:
+matrix = [
+  [1, 1, 0],
+  [0, 1, 0],
+  [1, 0, 1],
+]
+
+Output: [3, 1, 1]
+```
+
+### Example 3
+
+```
+Input:
+matrix = [
+  [0, 0, 0],
+  [0, 0, 0],
+]
+
+Output: []
+```
+
+---
+
+## Visual Explanation
+
+Consider the matrix:
+
+```
+[
+  [1, 0, 1],
+  [1, 1, 0],
+  [0, 0, 1],
+]
+```
+
+Traversal:
+
+```
+Start at (0,0)
+↓
+(1,0) → (1,1)
+River size = 3
+
+Next river:
+(0,2)
+River size = 1
+
+Next river:
+(2,2)
+River size = 1
+
+Output: [3, 1, 1]
+```
+
+Each river is discovered by **exploring all connected 1s** before moving on.
+
+---
+
+## Algorithm (Depth-First Search)
+
+1. Traverse every cell in the matrix.
+2. When a `1` is found:
+   - Start a **Depth-First Search (DFS)** to explore the entire river.
+
+3. During DFS:
+   - Mark the current cell as visited (set it to `0`)
+   - Recursively explore neighbors:
+     - Up
+     - Down
+     - Left
+     - Right
+
+4. Count all connected cells to determine the river’s size.
+5. Store each river size in an array.
+6. Return the array of river sizes.
+
+> ✅ Mutating the matrix avoids extra memory for a visited set.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function riverSizes(matrix: number[][]): number[] {
+  // Store the size of each discovered river
+  const riverSizes: number[] = [];
+
+  // Directions for moving up, down, left, and right
+  const directions = [
+    [1, 0], // down
+    [-1, 0], // up
+    [0, 1], // right
+    [0, -1], // left
+  ];
+
+  /**
+   * Depth-First Search to explore a river starting from (row, col).
+   */
+  function dfs(row: number, col: number): number {
+    // Stop if out of bounds or not part of a river
+    if (
+      row < 0 ||
+      row >= matrix.length ||
+      col < 0 ||
+      col >= matrix[0].length ||
+      matrix[row][col] === 0
+    ) {
+      return 0;
+    }
+
+    // Mark as visited
+    matrix[row][col] = 0;
+
+    let currentRiverSize = 1;
+
+    // Explore neighbors
+    for (const [rowOffset, colOffset] of directions) {
+      currentRiverSize += dfs(row + rowOffset, col + colOffset);
+    }
+
+    return currentRiverSize;
+  }
+
+  // Traverse the matrix
+  for (let row = 0; row < matrix.length; row++) {
+    for (let col = 0; col < matrix[0].length; col++) {
+      if (matrix[row][col] === 1) {
+        riverSizes.push(dfs(row, col));
+      }
+    }
+  }
+
+  return riverSizes;
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                                   |
+| ---------------- | --------------------------------------- |
+| Time Complexity  | O(n × m) — every cell visited once      |
+| Space Complexity | O(n × m) — recursion stack (worst case) |
+
+> `n` = number of rows, `m` = number of columns
+
+---
+
+## Key Takeaways
+
+- This is a classic **graph traversal** problem on a grid.
+- Each river is a **connected component**.
+- **DFS or BFS** both work well.
+- Mutating the matrix simplifies visited tracking.
+- Commonly asked in **technical interviews** to test recursion and grid traversal.
+
+---
+
+# Remove Islands (Matrix Traversal & Flood Fill)
+
+## Problem Statement
+
+Given a 2D matrix of integers where:
+
+- `1` represents **land**
+- `0` represents **water**
+
+An **island** is a group of horizontally or vertically adjacent `1`s.
+
+Your task is to **remove all islands that are _not connected to the border_** of the matrix.
+
+- A `1` is considered **safe** if it is connected (directly or indirectly) to any border cell.
+- All other `1`s (completely surrounded by `0`s) must be converted to `0`s.
+
+Return the modified matrix.
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input:
+matrix = [
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 1, 1, 1],
+  [0, 0, 1, 0, 1, 0],
+  [1, 1, 0, 0, 1, 0],
+  [1, 0, 1, 1, 0, 0],
+  [1, 0, 0, 0, 0, 1],
+]
+
+Output:
+[
+  [1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1],
+  [0, 0, 0, 0, 1, 0],
+  [1, 1, 0, 0, 1, 0],
+  [1, 0, 0, 0, 0, 0],
+  [1, 0, 0, 0, 0, 1],
+]
+```
+
+### Example 2
+
+```
+Input:
+matrix = [
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+]
+
+Output:
+[
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+]
+```
+
+### Example 3
+
+```
+Input:
+matrix = [
+  [0, 0, 0],
+  [0, 1, 0],
+  [0, 0, 0],
+]
+
+Output:
+[
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
+]
+```
+
+---
+
+## Visual Explanation
+
+### Step 1: Identify Border Land
+
+```
+Border cells containing 1s:
+↓        ↓
+[1, 0, 0]
+[0, 1, 0]
+[1, 0, 1]
+```
+
+### Step 2: Mark Safe Land (Connected to Border)
+
+```
+Safe (S) vs Island (I):
+
+[S, 0, 0]
+[0, I, 0]
+[S, 0, S]
+```
+
+### Step 3: Remove Islands
+
+```
+Final:
+[1, 0, 0]
+[0, 0, 0]
+[1, 0, 1]
+```
+
+---
+
+## Algorithm (Flood Fill from Borders)
+
+1. Traverse all **border cells** of the matrix.
+2. When a border cell contains `1`:
+   - Run **DFS (or BFS)** to mark all connected `1`s as **safe**.
+
+3. After marking:
+   - Traverse the entire matrix again.
+   - Convert all **unmarked `1`s** to `0`s (these are islands).
+   - Convert marked safe cells back to `1`.
+
+> ✅ Only islands completely surrounded by water are removed.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+export function removeIslands(matrix: number[][]): number[][] {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  const directions = [
+    [1, 0], // down
+    [-1, 0], // up
+    [0, 1], // right
+    [0, -1], // left
+  ];
+
+  function dfs(row: number, col: number): void {
+    if (
+      row < 0 ||
+      row >= rows ||
+      col < 0 ||
+      col >= cols ||
+      matrix[row][col] !== 1
+    ) {
+      return;
+    }
+
+    // Mark as safe using a temporary value
+    matrix[row][col] = 2;
+
+    for (const [dr, dc] of directions) {
+      dfs(row + dr, col + dc);
+    }
+  }
+
+  // Step 1: Mark all border-connected land as safe
+  for (let col = 0; col < cols; col++) {
+    if (matrix[0][col] === 1) dfs(0, col);
+    if (matrix[rows - 1][col] === 1) dfs(rows - 1, col);
+  }
+
+  for (let row = 0; row < rows; row++) {
+    if (matrix[row][0] === 1) dfs(row, 0);
+    if (matrix[row][cols - 1] === 1) dfs(row, cols - 1);
+  }
+
+  // Step 2: Remove islands and restore safe land
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (matrix[row][col] === 1) {
+        matrix[row][col] = 0; // remove island
+      } else if (matrix[row][col] === 2) {
+        matrix[row][col] = 1; // restore safe land
+      }
+    }
+  }
+
+  return matrix;
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                                     |
+| ---------------- | ----------------------------------------- |
+| Time Complexity  | O(n × m) — each cell visited at most once |
+| Space Complexity | O(n × m) — recursion stack (worst case)   |
+
+---
+
+## Key Takeaways
+
+- Border-connected components should **never be removed**.
+- Flood fill from borders cleanly separates **safe land vs islands**.
+- Using a temporary marker avoids extra memory.
+- A classic variation of **DFS/BFS on matrices**, frequently asked in interviews.
+
+---
+
+# Minimum Passes of Matrix (Multi-Source BFS)
+
+## Problem Statement
+
+Given a 2D matrix of integers where:
+
+- **Positive numbers** can convert adjacent negative numbers
+- **Negative numbers** can only be converted if they are adjacent to a positive number
+- **0** values are neutral and do nothing
+
+A **pass** consists of converting all negative numbers that are adjacent
+(**up, down, left, or right**) to at least one positive number.
+
+Your task is to determine the **minimum number of passes** required to convert **all negative numbers** into positive numbers.
+
+If it is **impossible**, return `-1`.
+
+---
+
+## Rules
+
+- Adjacency is **horizontal or vertical only** (no diagonals)
+- All conversions in a pass happen **simultaneously**
+- A negative number flips **at most once**
+
+---
+
+## Examples
+
+### Example 1
+
+```
+Input:
+matrix = [
+  [0, -1, -3,  2,  0],
+  [1, -2, -5, -1, -3],
+  [3,  0,  0, -4, -1],
+]
+
+Output: 3
+```
+
+---
+
+### Example 2
+
+```
+Input:
+matrix = [
+  [-1, -1],
+  [-1, -1],
+]
+
+Output: -1
+```
+
+_No positive numbers exist to start the conversion._
+
+---
+
+### Example 3
+
+```
+Input:
+matrix = [
+  [1, 2, 3],
+]
+
+Output: 0
+```
+
+_No negative numbers to convert._
+
+---
+
+## Visual Explanation
+
+Consider the matrix:
+
+```
+[
+  [1, -1, -1],
+  [-1, -1, -1],
+]
+```
+
+### Pass 1
+
+```
+[1,  1, -1]
+[1, -1, -1]
+```
+
+### Pass 2
+
+```
+[1, 1, 1]
+[1, 1, -1]
+```
+
+### Pass 3
+
+```
+[1, 1, 1]
+[1, 1, 1]
+```
+
+**Output: 3**
+
+Each pass spreads positivity outward like a ripple 🌊.
+
+---
+
+## Algorithm (Multi-Source Breadth-First Search)
+
+1. Traverse the matrix:
+   - Add **all positive cells** to a queue
+   - Count the number of negative cells
+
+2. Perform **BFS level by level**:
+   - Each BFS level represents **one pass**
+   - Convert adjacent negative numbers to positive
+   - Push newly converted cells into the queue
+
+3. Stop when:
+   - All negatives are converted → return passes
+   - Queue is empty but negatives remain → return `-1`
+
+> ✅ Using BFS ensures the **minimum number of passes**.
+
+---
+
+## Why Multi-Source BFS?
+
+- All positive numbers spread **simultaneously**
+- Prevents unnecessary rescans of the matrix
+- Guarantees optimal solution
+
+This is similar to:
+
+- Fire spreading
+- Infection propagation
+- Rotten oranges problems
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Returns the minimum number of passes required to convert all negative
+ * numbers in the matrix to positive numbers.
+ *
+ * A negative number becomes positive if it is adjacent (up, down, left, right)
+ * to a positive number during a pass.
+ *
+ * If conversion is impossible, returns -1.
+ */
+export function minimumPassMatrix(matrix: number[][]): number {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  const queue: Array<[number, number]> = [];
+  let negativeCount = 0;
+
+  // Initialize queue with all positive numbers
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (matrix[r][c] > 0) queue.push([r, c]);
+      else if (matrix[r][c] < 0) negativeCount++;
+    }
+  }
+
+  const directions: Array<[number, number]> = [
+    [1, 0], // down
+    [-1, 0], // up
+    [0, 1], // right
+    [0, -1], // left
+  ];
+
+  let passes = 0;
+
+  // BFS by levels (each level = one pass)
+  while (queue.length > 0 && negativeCount > 0) {
+    const levelSize = queue.length;
+
+    for (let i = 0; i < levelSize; i++) {
+      const [row, col] = queue.shift()!;
+
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+
+        if (
+          newRow >= 0 &&
+          newRow < rows &&
+          newCol >= 0 &&
+          newCol < cols &&
+          matrix[newRow][newCol] < 0
+        ) {
+          matrix[newRow][newCol] *= -1;
+          negativeCount--;
+          queue.push([newRow, newCol]);
+        }
+      }
+    }
+
+    passes++;
+  }
+
+  return negativeCount === 0 ? passes : -1;
+}
+```
+
+---
+
+## Complexity Analysis
+
+| Metric           | Value                                   |
+| ---------------- | --------------------------------------- |
+| Time Complexity  | **O(n × m)** — each cell processed once |
+| Space Complexity | **O(n × m)** — queue in worst case      |
+
+> `n` = rows, `m` = columns
+
+---
+
+## Key Takeaways
+
+- This is a **graph traversal** problem on a grid
+- Each cell is a node, adjacency forms edges
+- **Each BFS level = one pass**
+- Multi-source BFS guarantees the **minimum passes**
+- Very common in **technical interviews**
+
+---

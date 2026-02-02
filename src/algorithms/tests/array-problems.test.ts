@@ -7,9 +7,9 @@ import {
   majorityElement,
   missingNumbers,
   sweetAndSavoury,
-  maxSumNonAdjacent,
-  waysOfChange,
-  minNumberOfCoinsForChange,
+  riverSizes,
+  removeIslands,
+  minimumPassMatrix,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -238,5 +238,286 @@ describe("sweetAndSavoury", () => {
   test("returns null when array has fewer than two elements", () => {
     const result = sweetAndSavoury([5], 10);
     expect(result).toBeNull();
+  });
+});
+
+describe("riverSizes", () => {
+  test("returns empty array when there are no rivers", () => {
+    const matrix = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+
+    expect(riverSizes(matrix)).toEqual([]);
+  });
+
+  test("handles a single-cell river", () => {
+    const matrix = [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+
+    expect(riverSizes(matrix)).toEqual([1]);
+  });
+
+  test("handles one large river", () => {
+    const matrix = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
+
+    expect(riverSizes(matrix)).toEqual([9]);
+  });
+
+  test("handles multiple small rivers", () => {
+    const matrix = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1],
+    ];
+
+    const result = riverSizes(matrix).sort((a, b) => a - b);
+    expect(result).toEqual([1, 1, 1, 1]);
+  });
+
+  test("handles rivers with complex shapes", () => {
+    const matrix = [
+      [1, 0, 0, 1, 0],
+      [1, 0, 1, 0, 0],
+      [0, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 1, 0],
+    ];
+
+    const result = riverSizes(matrix).sort((a, b) => a - b);
+    expect(result).toEqual([1, 2, 2, 2, 5]);
+  });
+
+  test("does not count diagonal connections as rivers", () => {
+    const matrix = [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ];
+
+    const result = riverSizes(matrix).sort((a, b) => a - b);
+    expect(result).toEqual([1, 1, 1]);
+  });
+
+  test("works with a single row", () => {
+    const matrix = [[1, 1, 0, 1, 1, 1]];
+
+    const result = riverSizes(matrix).sort((a, b) => a - b);
+    expect(result).toEqual([2, 3]);
+  });
+
+  test("works with a single column", () => {
+    const matrix = [[1], [1], [0], [1], [1], [1]];
+
+    const result = riverSizes(matrix).sort((a, b) => a - b);
+    expect(result).toEqual([2, 3]);
+  });
+});
+
+describe("removeIslands", () => {
+  test("returns the same matrix when there is no land", () => {
+    const matrix = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]);
+  });
+
+  test("removes a single-cell island", () => {
+    const matrix = [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]);
+  });
+
+  test("does not remove land connected to the border", () => {
+    const matrix = [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [1, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]);
+  });
+
+  test("keeps all land when everything is connected to the border", () => {
+    const matrix = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ]);
+  });
+
+  test("removes multiple internal islands", () => {
+    const matrix = [
+      [1, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 1],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1],
+    ]);
+  });
+
+  test("handles complex shapes with both safe land and islands", () => {
+    const matrix = [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 1, 1],
+      [0, 0, 1, 0, 1, 0],
+      [1, 1, 0, 0, 1, 0],
+      [1, 0, 1, 1, 0, 0],
+      [1, 0, 0, 0, 0, 1],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 1],
+      [0, 0, 0, 0, 1, 0],
+      [1, 1, 0, 0, 1, 0],
+      [1, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 1],
+    ]);
+  });
+
+  test("does not treat diagonal connections as safe", () => {
+    const matrix = [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ];
+
+    expect(removeIslands(matrix)).toEqual([
+      [1, 0, 0],
+      [0, 0, 0],
+      [0, 0, 1],
+    ]);
+  });
+
+  test("works with a single row", () => {
+    const matrix = [[1, 0, 1, 1, 0, 1]];
+
+    expect(removeIslands(matrix)).toEqual([[1, 0, 1, 1, 0, 1]]);
+  });
+
+  test("works with a single column", () => {
+    const matrix = [[1], [0], [1], [1], [0], [1]];
+
+    expect(removeIslands(matrix)).toEqual([[1], [0], [1], [1], [0], [1]]);
+  });
+});
+
+describe("minimumPassMatrix", () => {
+  test("returns correct number of passes for a typical matrix", () => {
+    const matrix = [
+      [0, -1, -3, 2, 0],
+      [1, -2, -5, -1, -3],
+      [3, 0, 0, -4, -1],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(3);
+  });
+
+  test("returns 0 when there are no negative numbers", () => {
+    const matrix = [
+      [1, 2, 3],
+      [4, 5, 6],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(0);
+  });
+
+  test("returns -1 when conversion is impossible", () => {
+    const matrix = [
+      [-1, -1],
+      [-1, -1],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(-1);
+  });
+
+  test("handles a single cell matrix (positive)", () => {
+    const matrix = [[5]];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(0);
+  });
+
+  test("handles a single cell matrix (negative)", () => {
+    const matrix = [[-5]];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(-1);
+  });
+
+  test("converts negatives in multiple passes correctly", () => {
+    const matrix = [
+      [1, -1, -1],
+      [-1, -1, -1],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(3);
+  });
+
+  test("handles zeros correctly", () => {
+    const matrix = [
+      [0, -1, 0],
+      [1, 0, -1],
+      [0, -1, 0],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(-1);
+  });
+
+  test("handles empty negatives list correctly", () => {
+    const matrix = [
+      [0, 0],
+      [0, 0],
+    ];
+
+    const result = minimumPassMatrix(matrix);
+    expect(result).toBe(0);
   });
 });

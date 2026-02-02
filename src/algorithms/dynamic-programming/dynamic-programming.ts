@@ -9,30 +9,30 @@
  * maxSumNonAdjacent([2,1,4,9]);    // returns 11 (2 + 9)
  */
 export function maxSumNonAdjacent(nums: number[]): number | null {
-  // Edge case: empty array
-  if (nums.length === 0) return null;
+	// Edge case: empty array
+	if (nums.length === 0) return null;
 
-  // Edge case: only one element
-  if (nums.length === 1) return nums[0];
+	// Edge case: only one element
+	if (nums.length === 1) return nums[0];
 
-  // prevTwo: max sum up to two indices before current
-  let prevTwo = nums[0];
+	// prevTwo: max sum up to two indices before current
+	let prevTwo = nums[0];
 
-  // prevOne: max sum up to previous index
-  let prevOne = Math.max(nums[0], nums[1]);
+	// prevOne: max sum up to previous index
+	let prevOne = Math.max(nums[0], nums[1]);
 
-  // Iterate from the third element to the end
-  for (let i = 2; i < nums.length; i++) {
-    // Either take current element + prevTwo, or skip current (prevOne)
-    const currentMax = Math.max(prevOne, prevTwo + nums[i]);
+	// Iterate from the third element to the end
+	for (let i = 2; i < nums.length; i++) {
+		// Either take current element + prevTwo, or skip current (prevOne)
+		const currentMax = Math.max(prevOne, prevTwo + nums[i]);
 
-    // Update prevTwo and prevOne for next iteration
-    prevTwo = prevOne;
-    prevOne = currentMax;
-  }
+		// Update prevTwo and prevOne for next iteration
+		prevTwo = prevOne;
+		prevOne = currentMax;
+	}
 
-  // prevOne contains the max sum for the whole array
-  return prevOne;
+	// prevOne contains the max sum for the whole array
+	return prevOne;
 }
 
 /**
@@ -47,17 +47,17 @@ export function maxSumNonAdjacent(nums: number[]): number | null {
  * waysOfChange(5, [1, 2, 5]); // returns 4
  */
 export function waysOfChange(target: number, denoms: number[]): number {
-  // ways[i] = number of ways to make amount i
-  const ways = new Array(target + 1).fill(0);
-  ways[0] = 1; // base case: 1 way to make 0
+	// ways[i] = number of ways to make amount i
+	const ways = new Array(target + 1).fill(0);
+	ways[0] = 1; // base case: 1 way to make 0
 
-  for (const coin of denoms) {
-    for (let amount = coin; amount <= target; amount++) {
-      ways[amount] += ways[amount - coin];
-    }
-  }
+	for (const coin of denoms) {
+		for (let amount = coin; amount <= target; amount++) {
+			ways[amount] += ways[amount - coin];
+		}
+	}
 
-  return ways[target];
+	return ways[target];
 }
 
 /**
@@ -77,26 +77,26 @@ export function waysOfChange(target: number, denoms: number[]): number {
  * @returns The minimum number of coins needed, or -1 if impossible
  */
 export function minNumberOfCoinsForChange(
-  target: number,
-  denoms: number[],
+	target: number,
+	denoms: number[],
 ): number {
-  // nums[i] will store the minimum number of coins needed to make amount i
-  const nums = new Array(target + 1).fill(Infinity);
+	// nums[i] will store the minimum number of coins needed to make amount i
+	const nums = new Array(target + 1).fill(Infinity);
 
-  // Base case: 0 coins are needed to make amount 0
-  nums[0] = 0;
+	// Base case: 0 coins are needed to make amount 0
+	nums[0] = 0;
 
-  // Iterate through each denomination
-  for (const denom of denoms) {
-    // Try to build all amounts from denom up to target
-    for (let amount = denom; amount <= target; amount++) {
-      // If the previous amount is reachable, update the minimum
-      nums[amount] = Math.min(nums[amount], 1 + nums[amount - denom]);
-    }
-  }
+	// Iterate through each denomination
+	for (const denom of denoms) {
+		// Try to build all amounts from denom up to target
+		for (let amount = denom; amount <= target; amount++) {
+			// If the previous amount is reachable, update the minimum
+			nums[amount] = Math.min(nums[amount], 1 + nums[amount - denom]);
+		}
+	}
 
-  // If the target is still Infinity, it cannot be formed
-  return nums[target] === Infinity ? -1 : nums[target];
+	// If the target is still Infinity, it cannot be formed
+	return nums[target] === Infinity ? -1 : nums[target];
 }
 
 /**
@@ -128,50 +128,50 @@ export function minNumberOfCoinsForChange(
  * // → 3 (replace k→s, replace e→i, insert g)
  */
 export function levenshteinDistance(str1: string, str2: string): number {
-  const n = str1.length;
-  const m = str2.length;
+	const n = str1.length;
+	const m = str2.length;
 
-  // dp[i][j] represents the minimum number of edits required
-  // to convert str1[0..i-1] into str2[0..j-1]
-  const dp: number[][] = Array.from({ length: n + 1 }, () =>
-    new Array(m + 1).fill(0),
-  );
+	// dp[i][j] represents the minimum number of edits required
+	// to convert str1[0..i-1] into str2[0..j-1]
+	const dp: number[][] = Array.from({ length: n + 1 }, () =>
+		new Array(m + 1).fill(0),
+	);
 
-  // Base cases:
-  // Converting a string to an empty string requires deleting all characters
-  for (let i = 0; i <= n; i++) {
-    dp[i][0] = i;
-  }
+	// Base cases:
+	// Converting a string to an empty string requires deleting all characters
+	for (let i = 0; i <= n; i++) {
+		dp[i][0] = i;
+	}
 
-  // Converting an empty string to a string requires inserting all characters
-  for (let j = 0; j <= m; j++) {
-    dp[0][j] = j;
-  }
+	// Converting an empty string to a string requires inserting all characters
+	for (let j = 0; j <= m; j++) {
+		dp[0][j] = j;
+	}
 
-  // Fill the DP table
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      // If current characters are the same, no operation is needed
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        // Otherwise, consider the minimum of:
-        // 1. Insert (dp[i][j - 1])
-        // 2. Delete (dp[i - 1][j])
-        // 3. Replace (dp[i - 1][j - 1])
-        dp[i][j] =
-          1 +
-          Math.min(
-            dp[i][j - 1], // Insert
-            dp[i - 1][j], // Delete
-            dp[i - 1][j - 1], // Replace
-          );
-      }
-    }
-  }
+	// Fill the DP table
+	for (let i = 1; i <= n; i++) {
+		for (let j = 1; j <= m; j++) {
+			// If current characters are the same, no operation is needed
+			if (str1[i - 1] === str2[j - 1]) {
+				dp[i][j] = dp[i - 1][j - 1];
+			} else {
+				// Otherwise, consider the minimum of:
+				// 1. Insert (dp[i][j - 1])
+				// 2. Delete (dp[i - 1][j])
+				// 3. Replace (dp[i - 1][j - 1])
+				dp[i][j] =
+					1 +
+					Math.min(
+						dp[i][j - 1], // Insert
+						dp[i - 1][j], // Delete
+						dp[i - 1][j - 1], // Replace
+					);
+			}
+		}
+	}
 
-  // The bottom-right cell contains the final answer
-  return dp[n][m];
+	// The bottom-right cell contains the final answer
+	return dp[n][m];
 }
 
 /**
@@ -191,17 +191,17 @@ export function levenshteinDistance(str1: string, str2: string): number {
  * @spaceComplexity O(width + height) (call stack)
  */
 export function numOfWaysToTraverseGraphRecursive(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  // Base case: only one way if there's a single row or column
-  if (width === 1 || height === 1) return 1;
+	// Base case: only one way if there's a single row or column
+	if (width === 1 || height === 1) return 1;
 
-  // Ways = from left + from top
-  return (
-    numOfWaysToTraverseGraphRecursive(width - 1, height) +
-    numOfWaysToTraverseGraphRecursive(width, height - 1)
-  );
+	// Ways = from left + from top
+	return (
+		numOfWaysToTraverseGraphRecursive(width - 1, height) +
+		numOfWaysToTraverseGraphRecursive(width, height - 1)
+	);
 }
 
 /**
@@ -221,28 +221,28 @@ export function numOfWaysToTraverseGraphRecursive(
  * @spaceComplexity O(width × height)
  */
 export function numberOfWaysToTraverseGraph(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  // Create a 2D array initialized with 0s
-  const ways: number[][] = Array.from({ length: height }, () =>
-    new Array(width).fill(0),
-  );
+	// Create a 2D array initialized with 0s
+	const ways: number[][] = Array.from({ length: height }, () =>
+		new Array(width).fill(0),
+	);
 
-  // First row and first column have only one way to be reached
-  for (let row = 0; row < height; row++) {
-    for (let col = 0; col < width; col++) {
-      if (row === 0 || col === 0) {
-        ways[row][col] = 1;
-      } else {
-        // Current cell = ways from top + ways from left
-        ways[row][col] = ways[row - 1][col] + ways[row][col - 1];
-      }
-    }
-  }
+	// First row and first column have only one way to be reached
+	for (let row = 0; row < height; row++) {
+		for (let col = 0; col < width; col++) {
+			if (row === 0 || col === 0) {
+				ways[row][col] = 1;
+			} else {
+				// Current cell = ways from top + ways from left
+				ways[row][col] = ways[row - 1][col] + ways[row][col - 1];
+			}
+		}
+	}
 
-  // Bottom-right cell contains the result
-  return ways[height - 1][width - 1];
+	// Bottom-right cell contains the result
+	return ways[height - 1][width - 1];
 }
 
 /**
@@ -261,14 +261,14 @@ export function numberOfWaysToTraverseGraph(
  * @spaceComplexity O(1)
  */
 function factorial(n: number): number {
-  let result = 1;
+	let result = 1;
 
-  // Multiply all integers from 2 up to n
-  for (let i = 2; i <= n; i++) {
-    result *= i;
-  }
+	// Multiply all integers from 2 up to n
+	for (let i = 2; i <= n; i++) {
+		result *= i;
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -303,18 +303,18 @@ function factorial(n: number): number {
  * @spaceComplexity O(1)
  */
 export function numberOfWaysToTraverseGraphFactorial(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  // Number of horizontal moves required to reach the last column
-  const rightMoves = width - 1;
+	// Number of horizontal moves required to reach the last column
+	const rightMoves = width - 1;
 
-  // Number of vertical moves required to reach the last row
-  const downMoves = height - 1;
+	// Number of vertical moves required to reach the last row
+	const downMoves = height - 1;
 
-  // Total number of moves made during the traversal
-  const totalMoves = rightMoves + downMoves;
+	// Total number of moves made during the traversal
+	const totalMoves = rightMoves + downMoves;
 
-  // Number of unique ways to arrange RIGHT and DOWN moves
-  return factorial(totalMoves) / (factorial(rightMoves) * factorial(downMoves));
+	// Number of unique ways to arrange RIGHT and DOWN moves
+	return factorial(totalMoves) / (factorial(rightMoves) * factorial(downMoves));
 }
