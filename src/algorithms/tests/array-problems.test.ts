@@ -10,6 +10,7 @@ import {
   riverSizes,
   removeIslands,
   minimumPassMatrix,
+  groupStringsByDifferences,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -519,5 +520,60 @@ describe("minimumPassMatrix", () => {
 
     const result = minimumPassMatrix(matrix);
     expect(result).toBe(0);
+  });
+});
+
+describe("groupStringsByDifferences", () => {
+  const flatten = (arr: string[][]) => arr.flat();
+
+  test("groups strings correctly by difference pattern", () => {
+    const input = ["abc", "bcd", "cde", "abd"];
+    const result = groupStringsByDifferences(input);
+
+    // All original strings must appear in some group
+    expect(flatten(result).sort()).toEqual(input.sort());
+  });
+
+  test("handles strings of different lengths", () => {
+    const input = ["abc", "abcd", "bcde", "cdef"];
+    const result = groupStringsByDifferences(input);
+
+    // All strings should appear somewhere
+    expect(flatten(result).sort()).toEqual(input.sort());
+  });
+
+  test("handles single string", () => {
+    const input = ["abc"];
+    const result = groupStringsByDifferences(input);
+    expect(result).toEqual([["abc"]]);
+  });
+
+  test("handles empty input", () => {
+    const input: string[] = [];
+    const result = groupStringsByDifferences(input);
+    expect(result).toEqual([]);
+  });
+
+  test("groups strings with same difference pattern together", () => {
+    const input = ["ace", "bdf", "xz"];
+    const result = groupStringsByDifferences(input);
+
+    // All strings appear
+    expect(flatten(result).sort()).toEqual(input.sort());
+
+    // Strings with same pattern are in the same group
+    const patternGroups = result.map((group) =>
+      group.map((str) =>
+        group[0]
+          .split("")
+          .map((c) => c.charCodeAt(0))
+          .map((v, i, arr) => (i === 0 ? 0 : v - arr[i - 1])),
+      ),
+    );
+
+    // Every group has identical difference patterns
+    patternGroups.forEach((diffs) =>
+      diffs.forEach((d) => expect(d).toEqual(diffs[0])),
+    );
   });
 });

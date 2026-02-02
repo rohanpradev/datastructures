@@ -1565,3 +1565,122 @@ export function minimumPassMatrix(matrix: number[][]): number {
 - Very common in **technical interviews**
 
 ---
+
+## Problem: Group Strings by Adjacent Differences
+
+### Problem Statement
+
+Given an array of lowercase English strings, **group strings that have the same pattern of differences between adjacent characters**.
+
+Two strings belong to the same group if:
+
+1. They have the **same length**.
+2. The **difference between each pair of adjacent characters** is the same.
+
+> Important: Do **not** consider wrap-around (e.g., `z → a` is not allowed).
+
+Return all groups of strings. The order of groups does not matter.
+
+---
+
+### Examples
+
+```
+Input: ["abc", "bcd", "cde", "abd"]
+Output: [["abc", "bcd", "cde"], ["abd"]]
+
+Input: ["abc", "bcd", "cde", "abd", "abcd", "cdef"]
+Output: [["abc", "bcd", "cde"], ["abd"], ["abcd", "cdef"]]
+```
+
+---
+
+### Visual Explanation
+
+```
+Strings: ["abc", "bcd", "cde", "abd", "abcd", "cdef"]
+
+Step 1: Compute difference patterns for each string:
+        "abc"  → [1,1]
+        "bcd"  → [1,1]
+        "cde"  → [1,1]
+        "abd"  → [1,3]
+        "abcd" → [1,1,1]
+        "cdef" → [1,1,1]
+
+Step 2: Group by identical difference patterns:
+        [1,1]   → ["abc", "bcd", "cde"]
+        [1,3]   → ["abd"]
+        [1,1,1] → ["abcd", "cdef"]
+
+Result: [["abc", "bcd", "cde"], ["abd"], ["abcd", "cdef"]]
+```
+
+---
+
+## Algorithm (Hash Map + Difference Pattern)
+
+1. Initialize a **map** to store groups keyed by their difference pattern.
+2. For each string:
+
+   * Compute the **difference between each pair of adjacent characters**.
+   * Convert the difference array to a **string key** (e.g., `[1,1] → "1,1"`).
+   * Add the string to the group corresponding to this key in the map.
+3. Return the **values of the map** as the grouped strings.
+
+---
+
+## Implementation
+
+```ts
+/**
+ * Groups strings by their adjacent character differences.
+ *
+ * Two strings are in the same group if they have the same length
+ * and the same differences between adjacent characters.
+ *
+ * @param {string[]} strings - Array of lowercase strings
+ * @returns {string[][]} - Array of grouped strings
+ *
+ * @example
+ * groupStringsByDifferences(["abc", "bcd", "cde", "abd"])
+ * // → [["abc","bcd","cde"],["abd"]]
+ */
+export function groupStringsByDifferences(strings: string[]): string[][] {
+  const map: Map<string, string[]> = new Map();
+
+  for (const str of strings) {
+    // Compute difference pattern
+    const diffs: number[] = [];
+    for (let i = 1; i < str.length; i++) {
+      diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
+    }
+
+    const key = diffs.join(',');
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(str);
+  }
+
+  return Array.from(map.values());
+}
+```
+
+---
+
+## Complexity Analysis
+
+* **Time:** O(n * k) → n = number of strings, k = average string length
+
+  * Computing difference patterns requires iterating through each string.
+* **Space:** O(n * k) → storing difference patterns and grouped strings.
+
+---
+
+## Key Takeaways
+
+* **Use difference patterns** to uniquely identify groups of strings.
+* **Maps are perfect** for grouping by computed keys.
+* This method works for **any string length** and handles multiple groups efficiently.
+* Useful in string pattern matching, encryption checks, or analyzing sequences.
+
+---

@@ -658,3 +658,37 @@ export function minimumPassMatrix(matrix: number[][]): number {
   // If negatives remain, conversion is impossible
   return negativeCount === 0 ? passes : -1;
 }
+
+/**
+ * Groups strings by their adjacent character differences.
+ * Two strings belong to the same group if:
+ *  - They have the same length.
+ *  - The difference between each pair of adjacent characters is the same.
+ *
+ * @param {string[]} strings - Array of lowercase English strings
+ * @returns {string[][]} - Array of groups, each group is an array of strings
+ */
+export function groupStringsByDifferences(strings: string[]): string[][] {
+  // Map to store groups by their difference pattern
+  const map: Map<string, string[]> = new Map();
+
+  for (const str of strings) {
+    // Compute difference pattern for the string
+    const diffs: number[] = [];
+    for (let i = 1; i < str.length; i++) {
+      diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
+    }
+
+    // Join differences to form a key (e.g., [1,1] -> "1,1")
+    const key = diffs.join(",");
+
+    // Add the string to the corresponding group in the map
+    if (!map.has(key)) {
+      map.set(key, []);
+    }
+    map.get(key)!.push(str);
+  }
+
+  // Convert the map values to an array of groups
+  return Array.from(map.values());
+}
