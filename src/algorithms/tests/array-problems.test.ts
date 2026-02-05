@@ -11,6 +11,7 @@ import {
   removeIslands,
   minimumPassMatrix,
   groupStringsByDifferences,
+  restoreTravelPath,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -575,5 +576,82 @@ describe("groupStringsByDifferences", () => {
     patternGroups.forEach((diffs) =>
       diffs.forEach((d) => expect(d).toEqual(diffs[0])),
     );
+  });
+});
+
+describe("restoreTravelPath", () => {
+  test("restores path for string locations", () => {
+    const pairs: [string, string][] = [
+      ["Paris", "Berlin"],
+      ["London", "Paris"],
+      ["Berlin", "Rome"],
+    ];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual(["London", "Paris", "Berlin", "Rome"]);
+  });
+
+  test("restores path for numeric locations", () => {
+    const pairs: [number, number][] = [
+      [1, 3],
+      [0, 1],
+      [3, 7],
+    ];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual([0, 1, 3, 7]);
+  });
+
+  test("handles unordered input pairs", () => {
+    const pairs: [string, string][] = [
+      ["C", "D"],
+      ["A", "B"],
+      ["B", "C"],
+    ];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual(["A", "B", "C", "D"]);
+  });
+
+  test("handles single pair", () => {
+    const pairs: [string, string][] = [["A", "B"]];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual(["A", "B"]);
+  });
+
+  test("handles numeric path with negative values", () => {
+    const pairs: [number, number][] = [
+      [-2, -1],
+      [-3, -2],
+      [-1, 0],
+    ];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual([-3, -2, -1, 0]);
+  });
+
+  test("handles large numeric identifiers", () => {
+    const pairs: [number, number][] = [
+      [1000000, 2000000],
+      [1, 1000000],
+    ];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual([1, 1000000, 2000000]);
+  });
+
+  test("returns empty array for empty input", () => {
+    const pairs: Array<[string | number, string | number]> = [];
+
+    const result = restoreTravelPath(pairs);
+
+    expect(result).toEqual([]);
   });
 });

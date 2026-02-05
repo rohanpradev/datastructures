@@ -1622,10 +1622,10 @@ Result: [["abc", "bcd", "cde"], ["abd"], ["abcd", "cdef"]]
 
 1. Initialize a **map** to store groups keyed by their difference pattern.
 2. For each string:
+   - Compute the **difference between each pair of adjacent characters**.
+   - Convert the difference array to a **string key** (e.g., `[1,1] → "1,1"`).
+   - Add the string to the group corresponding to this key in the map.
 
-   * Compute the **difference between each pair of adjacent characters**.
-   * Convert the difference array to a **string key** (e.g., `[1,1] → "1,1"`).
-   * Add the string to the group corresponding to this key in the map.
 3. Return the **values of the map** as the grouped strings.
 
 ---
@@ -1656,7 +1656,7 @@ export function groupStringsByDifferences(strings: string[]): string[][] {
       diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
     }
 
-    const key = diffs.join(',');
+    const key = diffs.join(",");
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(str);
   }
@@ -1669,18 +1669,179 @@ export function groupStringsByDifferences(strings: string[]): string[][] {
 
 ## Complexity Analysis
 
-* **Time:** O(n * k) → n = number of strings, k = average string length
+- **Time:** O(n \* k) → n = number of strings, k = average string length
+  - Computing difference patterns requires iterating through each string.
 
-  * Computing difference patterns requires iterating through each string.
-* **Space:** O(n * k) → storing difference patterns and grouped strings.
+- **Space:** O(n \* k) → storing difference patterns and grouped strings.
 
 ---
 
 ## Key Takeaways
 
-* **Use difference patterns** to uniquely identify groups of strings.
-* **Maps are perfect** for grouping by computed keys.
-* This method works for **any string length** and handles multiple groups efficiently.
-* Useful in string pattern matching, encryption checks, or analyzing sequences.
+- **Use difference patterns** to uniquely identify groups of strings.
+- **Maps are perfect** for grouping by computed keys.
+- This method works for **any string length** and handles multiple groups efficiently.
+- Useful in string pattern matching, encryption checks, or analyzing sequences.
+
+---
+
+## Problem: Restore Travel Path from Consecutive Photos (CodeSignal)
+
+### Problem Statement
+
+A traveler has visited several places **consecutively**, but the original visiting order is lost.
+
+You are given an array of tuples `pairs`, where each tuple `[A, B]` means that **place A was visited immediately before place B**.
+
+Each place appears exactly once in the path (except the start and end), and the visits form **one continuous sequence with no branches**.
+
+Your task is to **reconstruct and return the places in the correct visiting order**.
+
+The place identifiers can be **strings or numbers**.
+
+---
+
+### Examples
+
+```
+Input: pairs = [["Paris","Berlin"],["London","Paris"],["Berlin","Rome"]]
+Output: ["London","Paris","Berlin","Rome"]
+
+Input: pairs = [[1,3],[0,1],[3,7]]
+Output: [0,1,3,7]
+```
+
+---
+
+### Visual Explanation
+
+```
+Given pairs:
+["Paris","Berlin"]
+["London","Paris"]
+["Berlin","Rome"]
+
+Interpretation (A → B means A before B):
+London → Paris → Berlin → Rome
+
+Step 1: Build directed edges:
+London → Paris
+Paris  → Berlin
+Berlin → Rome
+
+Step 2: Find starting place:
+- Appears as a start
+- Never appears as an end
+→ "London"
+
+Step 3: Follow the chain:
+London → Paris → Berlin → Rome
+
+Result:
+["London","Paris","Berlin","Rome"]
+```
+
+---
+
+## Algorithm (Graph + Hashing)
+
+1. Create a mapping `nextPlace` where:
+   - `nextPlace[A] = B` means A is followed by B.
+
+2. Track:
+   - All places that appear as **starts**
+   - All places that appear as **ends**
+
+3. The **starting place** is the one that:
+   - Appears in `starts`
+   - Does **not** appear in `ends`
+
+4. Starting from this place, follow the mapping until the end is reached.
+5. Collect each visited place in order.
+
+---
+
+## Implementation (TypeScript – Generic)
+
+```typescript
+/**
+ * Restores the correct visiting order from consecutive visit pairs.
+ *
+ * Each tuple [A, B] means A was visited immediately before B.
+ * All places form a single continuous path.
+ *
+ * Works for both string and number identifiers.
+ *
+ * @typeParam T - Place identifier type (string or number)
+ * @param pairs - Array of consecutive visit pairs
+ * @returns The places in the correct visiting order
+ *
+ * @example
+ * restoreTravelPath([
+ *   ["Paris", "Berlin"],
+ *   ["London", "Paris"],
+ *   ["Berlin", "Rome"]
+ * ])
+ * // → ["London", "Paris", "Berlin", "Rome"]
+ */
+export function restoreTravelPath<T extends string | number>(
+  pairs: Array<[T, T]>,
+): T[] {
+  // Map each place to the place visited immediately after it
+  const nextPlace = new Map<T, T>();
+
+  // Track start and end appearances
+  const starts = new Set<T>();
+  const ends = new Set<T>();
+
+  // Build the graph
+  for (const [from, to] of pairs) {
+    nextPlace.set(from, to);
+    starts.add(from);
+    ends.add(to);
+  }
+
+  // Find the starting place (no incoming edge)
+  let start: T | undefined;
+  for (const place of starts) {
+    if (!ends.has(place)) {
+      start = place;
+      break;
+    }
+  }
+
+  // Reconstruct the path
+  const path: T[] = [];
+  while (start !== undefined) {
+    path.push(start);
+    start = nextPlace.get(start);
+  }
+
+  return path;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** O(n)
+  - One pass to build mappings
+  - One pass to reconstruct the path
+
+- **Space:** O(n)
+  - Hash map and sets to store relationships
+
+---
+
+## Key Takeaways
+
+- This problem is a **path reconstruction from directed edges**.
+- The starting node is the **only node with no incoming edge**.
+- Using `Map` and `Set` avoids sorting and keeps the solution O(n).
+- Commonly appears in problems involving:
+  - Travel itineraries
+  - Event sequences
+  - Dependency chains
 
 ---
