@@ -669,28 +669,28 @@ export function minimumPassMatrix(matrix: number[][]): number {
  * @returns {string[][]} - Array of groups, each group is an array of strings
  */
 export function groupStringsByDifferences(strings: string[]): string[][] {
-  // Map to store groups by their difference pattern
-  const map: Map<string, string[]> = new Map();
+	// Map to store groups by their difference pattern
+	const map: Map<string, string[]> = new Map();
 
-  for (const str of strings) {
-    // Compute difference pattern for the string
-    const diffs: number[] = [];
-    for (let i = 1; i < str.length; i++) {
-      diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
-    }
+	for (const str of strings) {
+		// Compute difference pattern for the string
+		const diffs: number[] = [];
+		for (let i = 1; i < str.length; i++) {
+			diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
+		}
 
-    // Join differences to form a key (e.g., [1,1] -> "1,1")
-    const key = diffs.join(",");
+		// Join differences to form a key (e.g., [1,1] -> "1,1")
+		const key = diffs.join(",");
 
-    // Add the string to the corresponding group in the map
-    if (!map.has(key)) {
-      map.set(key, []);
-    }
-    map.get(key)!.push(str);
-  }
+		// Add the string to the corresponding group in the map
+		if (!map.has(key)) {
+			map.set(key, []);
+		}
+		map.get(key)!.push(str);
+	}
 
-  // Convert the map values to an array of groups
-  return Array.from(map.values());
+	// Convert the map values to an array of groups
+	return Array.from(map.values());
 }
 
 /**
@@ -778,74 +778,74 @@ export function restoreTravelPath<T extends string | number>(
  * @returns maximum evaluated value, or -Infinity if no valid expression
  */
 export function maxExpressionValue(matrix: (number | string)[][]): number {
-  if (!matrix || matrix.length === 0 || matrix[0].length === 0)
-    return -Infinity;
+	if (!matrix || matrix.length === 0 || matrix[0].length === 0)
+		return -Infinity;
 
-  const rows = matrix.length;
-  const cols = matrix[0].length;
-  let maxValue = -Infinity;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
+	let maxValue = -Infinity;
 
-  const evaluateTokens = (tokens: (number | string)[]): number => {
-    if (tokens.length < 3) return -Infinity; // invalid expression
-    let result = tokens[0] as number;
-    for (let i = 1; i < tokens.length; i += 2) {
-      const op = tokens[i] as string;
-      const num = tokens[i + 1] as number;
-      if (typeof num !== "number") return -Infinity;
-      switch (op) {
-        case "+":
-          result += num;
-          break;
-        case "-":
-          result -= num;
-          break;
-        case "*":
-          result *= num;
-          break;
-        case "/":
-          result /= num;
-          break;
-        default:
-          return -Infinity;
-      }
-    }
-    return result;
-  };
+	const evaluateTokens = (tokens: (number | string)[]): number => {
+		if (tokens.length < 3) return -Infinity; // invalid expression
+		let result = tokens[0] as number;
+		for (let i = 1; i < tokens.length; i += 2) {
+			const op = tokens[i] as string;
+			const num = tokens[i + 1] as number;
+			if (typeof num !== "number") return -Infinity;
+			switch (op) {
+				case "+":
+					result += num;
+					break;
+				case "-":
+					result -= num;
+					break;
+				case "*":
+					result *= num;
+					break;
+				case "/":
+					result /= num;
+					break;
+				default:
+					return -Infinity;
+			}
+		}
+		return result;
+	};
 
-  const processLine = (line: (number | string)[]) => {
-    let tokens: (number | string)[] = [];
-    for (const val of line) {
-      if (typeof val === "number") {
-        if (
-          tokens.length === 0 ||
-          typeof tokens[tokens.length - 1] === "string"
-        ) {
-          tokens.push(val);
-        } else {
-          // consecutive numbers without operator
-          maxValue = Math.max(maxValue, evaluateTokens(tokens));
-          tokens = [val];
-        }
-      } else {
-        // operator
-        if (tokens.length === 0) continue; // skip operator at start
-        tokens.push(val);
-      }
-    }
-    maxValue = Math.max(maxValue, evaluateTokens(tokens));
-  };
+	const processLine = (line: (number | string)[]) => {
+		let tokens: (number | string)[] = [];
+		for (const val of line) {
+			if (typeof val === "number") {
+				if (
+					tokens.length === 0 ||
+					typeof tokens[tokens.length - 1] === "string"
+				) {
+					tokens.push(val);
+				} else {
+					// consecutive numbers without operator
+					maxValue = Math.max(maxValue, evaluateTokens(tokens));
+					tokens = [val];
+				}
+			} else {
+				// operator
+				if (tokens.length === 0) continue; // skip operator at start
+				tokens.push(val);
+			}
+		}
+		maxValue = Math.max(maxValue, evaluateTokens(tokens));
+	};
 
-  // process rows
-  for (let r = 0; r < rows; r++) processLine(matrix[r]);
+	// process rows
+	for (let r = 0; r < rows; r++) processLine(matrix[r]);
 
-  // process columns
-  for (let c = 0; c < cols; c++) {
-    const column: (number | string)[] = [];
-    for (let r = 0; r < rows; r++) column.push(matrix[r][c]);
-    processLine(column);
-  }
+	// process columns
+	for (let c = 0; c < cols; c++) {
+		const column: (number | string)[] = [];
+		for (let r = 0; r < rows; r++) column.push(matrix[r][c]);
+		processLine(column);
+	}
 
-  return maxValue;
+	return maxValue;
 }
 
 /**
@@ -860,32 +860,32 @@ export function maxExpressionValue(matrix: (number | string)[][]): number {
  * nextDeparture(["08:30","09:45","14:00"], "09:00") → 45
  */
 export function nextDeparture(
-  departures: string[],
-  currentTime: string,
+	departures: string[],
+	currentTime: string,
 ): number {
-  /**
-   * Converts a "HH:MM" formatted string into total minutes since midnight.
-   * Example: "14:10" → 14*60 + 10 = 850
-   */
-  const toMinutes = (time: string): number => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-  };
+	/**
+	 * Converts a "HH:MM" formatted string into total minutes since midnight.
+	 * Example: "14:10" → 14*60 + 10 = 850
+	 */
+	const toMinutes = (time: string): number => {
+		const [hours, minutes] = time.split(":").map(Number);
+		return hours * 60 + minutes;
+	};
 
-  // Convert the current time to minutes for easy comparison
-  const current = toMinutes(currentTime);
+	// Convert the current time to minutes for easy comparison
+	const current = toMinutes(currentTime);
 
-  // Convert all departure times to minutes and sort them ascendingly
-  const departuresInMinutes = departures.map(toMinutes).sort((a, b) => a - b);
+	// Convert all departure times to minutes and sort them ascendingly
+	const departuresInMinutes = departures.map(toMinutes).sort((a, b) => a - b);
 
-  // Iterate through sorted departure times
-  // The first departure later than current time is the next one
-  for (const dep of departuresInMinutes) {
-    if (dep > current) {
-      return dep - current; // Difference in minutes
-    }
-  }
+	// Iterate through sorted departure times
+	// The first departure later than current time is the next one
+	for (const dep of departuresInMinutes) {
+		if (dep > current) {
+			return dep - current; // Difference in minutes
+		}
+	}
 
-  // No departure later than current time
-  return -1;
+	// No departure later than current time
+	return -1;
 }
