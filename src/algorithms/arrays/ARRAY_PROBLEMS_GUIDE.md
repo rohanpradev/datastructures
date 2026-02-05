@@ -1845,3 +1845,291 @@ export function restoreTravelPath<T extends string | number>(
   - Dependency chains
 
 ---
+
+## Problem: Maximum Expression Value in a Matrix
+
+### Problem Statement
+
+You are given a **matrix of numbers and operators** (`"+", "-", "*", "/"`).
+You can traverse the matrix **row by row (left → right)** or **column by column (top → bottom)** to form expressions.
+
+- **Rule:** Consecutive numbers **without an operator in between are invalid** (e.g., `[2, 2]` is ignored).
+- Your task: **find the maximum value** obtainable by evaluating all valid expressions along rows or columns.
+
+---
+
+### Examples
+
+```
+Input: matrix = [
+  [2, "+", 3],
+  ["*", 4, "-"],
+  [1, "+", 5]
+]
+Output: 6
+```
+
+Explanation:
+
+- Row 0: 2 + 3 = 5
+- Row 2: 1 + 5 = 6 → maximum
+- Columns either invalid or smaller
+- Maximum value = 6
+
+---
+
+```
+Input: matrix = [
+  [1, "+", 2, "*", 3],
+  [4, "-", 1, "+", 2]
+]
+Output: 9
+```
+
+Explanation:
+
+- Row 0: 1 + 2 \* 3 = 9
+- Row 1: 4 - 1 + 2 = 5
+- Maximum = 9
+
+---
+
+### Visual Explanation
+
+```
+Matrix:
+[2, "+", 3]
+["*", 4, "-"]
+[1, "+", 5]
+
+Step 1: Traverse each row and column
+Row 0: 2 + 3 = 5
+Row 2: 1 + 5 = 6
+
+Step 2: Ignore invalid consecutive numbers without operator
+Step 3: Take maximum value among all evaluated expressions
+
+Result: 6
+```
+
+---
+
+## Algorithm
+
+1. **Scan each row and column** separately.
+2. Maintain a temporary **tokens array** to store numbers and operators.
+3. **Skip consecutive numbers** without operators.
+4. Whenever a valid expression ends (or invalid consecutive numbers appear):
+   - Evaluate the expression left-to-right
+   - Update the maximum value
+
+5. Return the maximum value found.
+
+**Helper Functions:**
+
+- `evaluateTokens(tokens)` → evaluates a left-to-right expression array `[number, operator, number, ...]`
+- `processLine(line)` → processes a row or column, updating max value
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+function maxExpressionValue(matrix: (number | string)[][]): number {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  let maxValue = -Infinity;
+
+  const evaluateTokens = (tokens: (number | string)[]) => {
+    let result = tokens[0] as number;
+    for (let i = 1; i < tokens.length; i += 2) {
+      const op = tokens[i] as string;
+      const num = tokens[i + 1] as number;
+      switch (op) {
+        case "+":
+          result += num;
+          break;
+        case "-":
+          result -= num;
+          break;
+        case "*":
+          result *= num;
+          break;
+        case "/":
+          result /= num;
+          break;
+      }
+    }
+    return result;
+  };
+
+  const processLine = (line: (number | string)[]) => {
+    let tokens: (number | string)[] = [];
+    for (const val of line) {
+      if (typeof val === "number") {
+        if (
+          tokens.length === 0 ||
+          typeof tokens[tokens.length - 1] === "string"
+        ) {
+          tokens.push(val);
+        } else {
+          if (tokens.length >= 3)
+            maxValue = Math.max(maxValue, evaluateTokens(tokens));
+          tokens = [val];
+        }
+      } else {
+        tokens.push(val);
+      }
+    }
+    if (tokens.length >= 3)
+      maxValue = Math.max(maxValue, evaluateTokens(tokens));
+  };
+
+  // Process all rows
+  for (let r = 0; r < rows; r++) processLine(matrix[r]);
+
+  // Process all columns
+  for (let c = 0; c < cols; c++) {
+    const column: (number | string)[] = [];
+    for (let r = 0; r < rows; r++) column.push(matrix[r][c]);
+    processLine(column);
+  }
+
+  return maxValue;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** O(n \* m) → each row and column is scanned once
+- **Space:** O(max(n, m)) → temporary array for tokens
+
+---
+
+## Key Takeaways
+
+- Numbers must **always be separated by operators**.
+- Evaluate expressions **left-to-right**.
+- Traverse **both rows and columns** to maximize the value.
+- Useful for **matrix path expressions**, **operator parsing**, and **grid evaluation problems**.
+
+---
+
+## Problem: Next Departure Time (CodeSignal / Scheduling)
+
+### Problem Statement
+
+You are given:
+
+- An array of **departure times** in `"HH:MM"` format.
+- A **current time** in `"HH:MM"` format.
+
+All times are on the **same day**.
+
+**Task:** Return the **number of minutes until the next departure** after the current time.
+
+- If there is **no departure later in the day**, return `-1`.
+- **Times must be treated as hours and minutes**, not consecutive digits.
+
+---
+
+### Examples
+
+```
+Input:
+departures = ["08:30","09:45","14:00","15:20"]
+currentTime = "14:10"
+Output: 50
+```
+
+```
+Input:
+departures = ["09:00","10:00"]
+currentTime = "11:00"
+Output: -1
+```
+
+---
+
+### Visual Explanation
+
+```
+Current time: 14:10
+Departures: 08:30, 09:45, 14:00, 15:20
+
+Step 1: Convert to minutes since midnight:
+  14:10 → 850
+  08:30 → 510
+  09:45 → 585
+  14:00 → 840
+  15:20 → 920
+
+Step 2: Find first departure > current time:
+  920 - 850 = 70 minutes
+
+Result: 70
+```
+
+---
+
+## Algorithm
+
+1. Convert all departure times and current time to **minutes since midnight**.
+2. Sort the departure times in ascending order.
+3. Iterate through the departures:
+   - If a departure is later than current time → return `departure - currentTime`.
+
+4. If no departure is later → return `-1`.
+
+---
+
+## Implementation (TypeScript)
+
+```ts
+/**
+ * Returns the number of minutes until the next departure.
+ *
+ * @param departures - List of departures in "HH:MM" format
+ * @param currentTime - Current time in "HH:MM" format
+ * @returns Number of minutes until next departure, or -1 if none
+ */
+export function nextDeparture(
+  departures: string[],
+  currentTime: string,
+): number {
+  const toMinutes = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  const current = toMinutes(currentTime);
+
+  const departuresInMinutes = departures.map(toMinutes).sort((a, b) => a - b);
+
+  for (const dep of departuresInMinutes) {
+    if (dep > current) return dep - current;
+  }
+
+  return -1;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** O(n log n) → sorting the departures
+- **Space:** O(n) → storing converted minutes
+
+---
+
+## Key Takeaways
+
+- Convert **HH:MM to total minutes** for easy comparison.
+- Sorting simplifies the search for the next departure.
+- Always handle the **no-future-departure case** (`-1`).
+- Useful in scheduling, flight/train timetables, and similar problems.
+
+---

@@ -12,6 +12,8 @@ import {
   minimumPassMatrix,
   groupStringsByDifferences,
   restoreTravelPath,
+  maxExpressionValue,
+  nextDeparture,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -653,5 +655,156 @@ describe("restoreTravelPath", () => {
     const result = restoreTravelPath(pairs);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("maxExpressionValue", () => {
+  test("evaluates a simple row expression", () => {
+    const matrix = [[2, "+", 3]];
+    const result = maxExpressionValue(matrix);
+    expect(result).toBe(5);
+  });
+
+  test("evaluates a simple column expression", () => {
+    const matrix = [[2], ["+"], [3]];
+    const result = maxExpressionValue(matrix);
+    expect(result).toBe(5);
+  });
+
+  test("evaluates row and column expressions, takes max", () => {
+    const matrix = [
+      [2, "+", 3],
+      ["*", 4, "-"],
+      [1, "+", 5],
+    ];
+    const result = maxExpressionValue(matrix);
+    // Row 2: 1+5 = 6 is max
+    expect(result).toBe(6);
+  });
+
+  test("ignores consecutive numbers without operator", () => {
+    const matrix = [
+      [2, 2, "+", 3], // 2 2 invalid, start new expr at 2
+    ];
+    const result = maxExpressionValue(matrix);
+    // Only valid: 2 + 3 = 5
+    expect(result).toBe(5);
+  });
+
+  test("evaluates multiple operators", () => {
+    const matrix = [
+      [1, "+", 2, "*", 3],
+      [4, "-", 1, "+", 2],
+    ];
+    const result = maxExpressionValue(matrix);
+    // Row 0: 1+2*3 = 9
+    // Row 1: 4-1+2 = 5
+    expect(result).toBe(9);
+  });
+
+  test("handles negative numbers", () => {
+    const matrix = [
+      [-2, "+", 3],
+      [1, "*", -5],
+    ];
+    const result = maxExpressionValue(matrix);
+    // Row 0: -2+3=1, Row1: 1*-5=-5 → max = 1
+    expect(result).toBe(1);
+  });
+
+  test("handles empty matrix", () => {
+    const matrix: (number | string)[][] = [];
+    const result = maxExpressionValue(matrix);
+    expect(result).toBe(-Infinity);
+  });
+
+  test("handles single number only", () => {
+    const matrix = [[5]];
+    const result = maxExpressionValue(matrix);
+    // Not enough tokens for a valid expression → return -Infinity
+    expect(result).toBe(-Infinity);
+  });
+
+  test("evaluates columns correctly", () => {
+    const matrix = [
+      [1, 2, "+"],
+      ["+", "*", 3],
+    ];
+    const result = maxExpressionValue(matrix);
+    expect(result).toBe(-Infinity);
+  });
+});
+
+describe("nextDeparture", () => {
+  test("next departure later in the day", () => {
+    const departures = ["08:30", "09:45", "14:00", "15:20"];
+    const currentTime = "14:10";
+
+    // Next departure after 14:10 is 15:20 → 70 minutes difference
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(70);
+  });
+
+  test("no departures left in the day", () => {
+    const departures = ["09:00", "10:00"];
+    const currentTime = "11:00";
+
+    // All departures are before current time → should return -1
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(-1);
+  });
+
+  test("departure exactly one minute later", () => {
+    const departures = ["14:11"];
+    const currentTime = "14:10";
+
+    // Only one departure → 1 minute difference
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(1);
+  });
+
+  test("departure at the same time is ignored", () => {
+    const departures = ["14:10", "15:00"];
+    const currentTime = "14:10";
+
+    // 14:10 is not after current time → next is 15:00 → 50 minutes
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(50);
+  });
+
+  test("current time before first departure", () => {
+    const departures = ["06:00", "08:30", "12:15"];
+    const currentTime = "05:50";
+
+    // Next departure is 06:00 → 10 minutes
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(10);
+  });
+
+  test("single departure later in the day", () => {
+    const departures = ["23:50"];
+    const currentTime = "23:45";
+
+    // Only one departure → 5 minutes difference
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(5);
+  });
+
+  test("empty departures array returns -1", () => {
+    const departures: string[] = [];
+    const currentTime = "12:00";
+
+    // No departures → return -1
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(-1);
+  });
+
+  test("departures not sorted initially", () => {
+    const departures = ["15:00", "09:00", "12:30"];
+    const currentTime = "11:00";
+
+    // Sort internally: 09:00, 12:30, 15:00 → next after 11:00 is 12:30 → 90 minutes
+    const result = nextDeparture(departures, currentTime);
+    expect(result).toBe(90);
   });
 });
