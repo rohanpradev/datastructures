@@ -935,6 +935,214 @@ This problem teaches:
 
 ---
 
+## Problem: Sum of Two Numbers Represented by Linked Lists
+
+### Problem Statement
+
+You are given two **non-empty singly linked lists** representing two non-negative integers.
+
+The digits are stored in **reverse order**, meaning:
+
+- The **1's digit comes first**
+- Each node contains a **single digit (0–9)**
+
+Your task is to **add the two numbers** and return the result as a new linked list, also in reverse order.
+
+Constraints:
+
+- The lists may have different lengths
+- You must handle carry-over properly
+- You may create a new result list
+- Digits are in the range `0–9`
+- There are no leading zeros except for the number `0`
+
+---
+
+### Example
+
+```
+Input:
+l1: 2 → 4 → 3
+l2: 5 → 6 → 4
+
+Output:
+7 → 0 → 8
+```
+
+### Explanation
+
+```
+342
++465
+----
+807
+```
+
+Since digits are stored in reverse:
+
+```
+342 → 2 → 4 → 3
+465 → 5 → 6 → 4
+807 → 7 → 0 → 8
+```
+
+---
+
+### Key Insight
+
+> Because digits are stored in reverse order, we can simulate **grade-school addition** from left to right.
+
+At each step:
+
+1. Add digits from both lists
+2. Add the carry from the previous step
+3. Store `(sum % 10)` in a new node
+4. Carry forward `(Math.floor(sum / 10))`
+
+Continue until:
+
+- Both lists are exhausted
+- AND no carry remains
+
+---
+
+### Visual Explanation
+
+```
+   2 → 4 → 3
+ + 5 → 6 → 4
+-------------
+```
+
+**Step 1:**
+
+```
+2 + 5 = 7
+Result: 7
+Carry: 0
+```
+
+**Step 2:**
+
+```
+4 + 6 = 10
+Store 0
+Carry: 1
+```
+
+**Step 3:**
+
+```
+3 + 4 + 1 = 8
+Store 8
+Carry: 0
+```
+
+Final list:
+
+```
+7 → 0 → 8
+```
+
+---
+
+### Algorithm (Digit-by-Digit Addition)
+
+```
+1. Create a dummy node to build the result list
+2. Initialize carry = 0
+3. While l1 OR l2 OR carry exists:
+   a. Read values (0 if list ended)
+   b. total = value1 + value2 + carry
+   c. carry = floor(total / 10)
+   d. digit = total % 10
+   e. Append digit to result list
+   f. Move pointers forward
+4. Return dummy.next
+```
+
+---
+
+### Implementation (TypeScript)
+
+```ts
+export function sumOfLinkedList(
+  l1: Node<number> | null,
+  l2: Node<number> | null,
+): Node<number> | null {
+  const dummy = new Node(0);
+  let current = dummy;
+  let carry = 0;
+
+  while (l1 !== null || l2 !== null || carry !== 0) {
+    const value1 = l1?.value ?? 0;
+    const value2 = l2?.value ?? 0;
+
+    const total = value1 + value2 + carry;
+
+    carry = Math.floor(total / 10);
+    const digit = total % 10;
+
+    current.next = new Node(digit);
+    current = current.next;
+
+    l1 = l1?.next ?? null;
+    l2 = l2?.next ?? null;
+  }
+
+  return dummy.next;
+}
+```
+
+---
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(max(n, m))`
+  - We traverse both lists once
+
+- **Space Complexity:** `O(max(n, m))`
+  - A new list is created for the result
+
+---
+
+### Edge Cases to Consider
+
+- One list is empty
+- Lists have different lengths
+- Final carry creates a new digit
+
+  ```
+  5 → 5
+  5 → 5
+  Result: 0 → 1 → 1
+  ```
+
+- Both numbers are `0`
+
+---
+
+### Common Mistakes
+
+- ❌ Forgetting to handle the final carry
+- ❌ Stopping when one list ends (instead of continuing)
+- ❌ Not defaulting missing values to `0`
+- ❌ Misunderstanding that digits are stored in reverse order
+
+---
+
+### Learning Pattern
+
+This problem teaches:
+
+- Linked list traversal
+- Simulating arithmetic with carry
+- Dummy node technique
+- Handling unequal list lengths
+- Iterative pointer manipulation
+
+---
+
 ## Practice Tips
 
 ### Order to Practice

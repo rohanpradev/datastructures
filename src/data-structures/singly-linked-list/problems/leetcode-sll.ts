@@ -815,3 +815,67 @@ export function removeDuplicatesFromSortedLinkedList<T>(
 
 	return list;
 }
+
+/**
+ * Adds two numbers represented as linked lists.
+ *
+ * Each linked list stores digits in reverse order,
+ * meaning the 1's digit comes first.
+ *
+ * Example:
+ *   l1: 2 → 4 → 3  (represents 342)
+ *   l2: 5 → 6 → 4  (represents 465)
+ *   Result: 7 → 0 → 8 (represents 807)
+ *
+ * @param l1 - Head of the first linked list (may be null)
+ * @param l2 - Head of the second linked list (may be null)
+ * @returns Head of a new linked list representing the sum
+ *
+ * Time Complexity: O(max(n, m))
+ * Space Complexity: O(max(n, m))
+ */
+export function sumOfLinkedList(
+	l1: Node<number> | null,
+	l2: Node<number> | null,
+): Node<number> | null {
+	// Dummy node simplifies result list construction
+	// (avoids special handling for the head)
+	const dummy = new Node(0);
+
+	// Pointer used to build the new linked list
+	let current = dummy;
+
+	// Stores carry-over value when sum >= 10
+	let carry = 0;
+
+	// Continue looping while:
+	// - At least one list still has digits
+	// - OR there is a remaining carry
+	while (l1 !== null || l2 !== null || carry !== 0) {
+		// Get current values (0 if the list is exhausted)
+		const value1 = l1?.value ?? 0;
+		const value2 = l2?.value ?? 0;
+
+		// Calculate total sum of current digits and carry
+		const total = value1 + value2 + carry;
+
+		// Compute new carry (integer division)
+		carry = Math.floor(total / 10);
+
+		// The digit to store in the current node (remainder)
+		const digit = total % 10;
+
+		// Append new node with the computed digit
+		current.next = new Node(digit);
+
+		// Move current pointer forward
+		current = current.next;
+
+		// Advance input list pointers if possible
+		l1 = l1?.next ?? null;
+		l2 = l2?.next ?? null;
+	}
+
+	// The result list starts after the dummy node
+	return dummy.next;
+}

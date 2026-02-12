@@ -2509,3 +2509,65 @@ describe("removeDuplicatesFromSortedLinkedList()", () => {
     expect(list.getLength()).toBe(3);
   });
 });
+
+describe("addTwoNumbers (Sum of Linked Lists)", () => {
+  test("adds two lists of equal length without carry", () => {
+    const l1 = buildList([2, 4, 3]); // 342
+    const l2 = buildList([5, 6, 4]); // 465
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([7, 0, 8]); // 807
+  });
+
+  test("handles different length lists", () => {
+    const l1 = buildList([9, 9]); // 99
+    const l2 = buildList([1]); // 1
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([0, 0, 1]); // 100
+  });
+
+  test("handles final carry creating new node", () => {
+    const l1 = buildList([5]); // 5
+    const l2 = buildList([5]); // 5
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([0, 1]); // 10
+  });
+
+  test("handles one empty list", () => {
+    const l1 = null;
+    const l2 = buildList([1, 2, 3]);
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([1, 2, 3]);
+  });
+
+  test("handles both lists empty", () => {
+    const result = addTwoNumbers(null, null);
+
+    expect(result).toBeNull();
+  });
+
+  test("handles long carry chain", () => {
+    const l1 = buildList([9, 9, 9, 9]); // 9999
+    const l2 = buildList([1]); // 1
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([0, 0, 0, 0, 1]); // 10000
+  });
+
+  test("handles zero values", () => {
+    const l1 = buildList([0]);
+    const l2 = buildList([0]);
+
+    const result = addTwoNumbers(l1, l2);
+
+    expect(listToArray(result)).toEqual([0]);
+  });
+});
