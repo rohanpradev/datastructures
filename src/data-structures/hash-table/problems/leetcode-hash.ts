@@ -297,3 +297,50 @@ export function firstNonRepeatingChar(s: string): number {
 
 	return -1;
 }
+
+export class LRUCache<K, V> {
+	private capacity: number;
+	private cache: Map<K, V>;
+
+	constructor(capacity: number) {
+		if (capacity <= 0) {
+			throw new Error("Capacity must be greater than 0");
+		}
+
+		this.capacity = capacity;
+		this.cache = new Map();
+	}
+
+	// Get value
+	get(key: K): V | undefined {
+		if (!this.cache.has(key)) return undefined;
+
+		// Refresh key (make it most recently used)
+		const value = this.cache.get(key)!;
+		this.cache.delete(key);
+		this.cache.set(key, value);
+
+		return value;
+	}
+
+	// Add or update value
+	put(key: K, value: V): void {
+		// If key exists, delete it (so we can refresh position)
+		if (this.cache.has(key)) {
+			this.cache.delete(key);
+		}
+
+		// If full, remove least recently used (first item in Map)
+		if (this.cache.size >= this.capacity) {
+			const lruKey = this.cache.keys().next().value!;
+			this.cache.delete(lruKey);
+		}
+
+		// Insert as most recently used
+		this.cache.set(key, value);
+	}
+
+	size(): number {
+		return this.cache.size;
+	}
+}

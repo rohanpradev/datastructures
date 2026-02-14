@@ -9,11 +9,13 @@ This guide covers common hash table (hash map) problems demonstrating efficient 
 ## Problem 1: Two Sum (LeetCode 1)
 
 ### Problem Statement
+
 Given an array and a target sum, find two numbers that add up to the target. Return their indices.
 
 **Constraint:** Each input has exactly one solution, and you can't use the same element twice.
 
 ### Example
+
 ```
 Input: nums = [2, 7, 11, 15], target = 9
 Output: [0, 1]
@@ -25,6 +27,7 @@ Explanation: nums[1] + nums[2] = 2 + 4 = 6
 ```
 
 ### Visual Explanation
+
 ```
 Array: [2, 7, 11, 15], target = 9
 
@@ -50,6 +53,7 @@ Only 2 iterations!
 ```
 
 ### Algorithm (Hash Map)
+
 ```
 1. Create empty hash map
 2. For each number with index:
@@ -61,25 +65,21 @@ Only 2 iterations!
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function twoSum(nums: number[], target: number): number[] {
-	// TODO: Create hash map to store num → index
-	
-	// TODO: Loop through array with index
-	
-	// TODO: Calculate complement
-	
-	// TODO: Check if complement exists in map
-	
-	// TODO: If found, return indices
-	
-	// TODO: Add current number to map
-	
-	// TODO: Return empty array if no solution
+  // TODO: Create hash map to store num → index
+  // TODO: Loop through array with index
+  // TODO: Calculate complement
+  // TODO: Check if complement exists in map
+  // TODO: If found, return indices
+  // TODO: Add current number to map
+  // TODO: Return empty array if no solution
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single pass with O(1) lookups
 - **Space:** O(n) - hash map storage
 
@@ -88,11 +88,13 @@ export function twoSum(nums: number[], target: number): number[] {
 ## Problem 2: Group Anagrams (LeetCode 49)
 
 ### Problem Statement
+
 Group strings that are anagrams of each other.
 
 **Anagram:** Words with same letters but different order.
 
 ### Example
+
 ```
 Input: ["eat", "tea", "tan", "ate", "nat", "bat"]
 Output: [
@@ -103,6 +105,7 @@ Output: [
 ```
 
 ### Visual Explanation
+
 ```
 Key insight: Anagrams have same sorted characters!
 
@@ -124,6 +127,7 @@ Return values: [["eat","tea","ate"], ["tan","nat"], ["bat"]]
 ```
 
 ### Algorithm
+
 ```
 1. Create hash map: sorted_string → list of words
 2. For each word:
@@ -133,6 +137,7 @@ Return values: [["eat","tea","ate"], ["tan","nat"], ["bat"]]
 ```
 
 ### Step-by-Step Example
+
 ```
 Input: ["eat", "tea", "tan"]
 
@@ -155,21 +160,19 @@ Result: [["eat", "tea"], ["tan"]]
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function groupAnagrams(strs: string[]): string[][] {
-	// TODO: Create hash map: key → string[]
-	
-	// TODO: Loop through strings
-	
-	// TODO: Sort characters to create key
-	
-	// TODO: Add string to map[key] array
-	
-	// TODO: Return all values from map
+  // TODO: Create hash map: key → string[]
+  // TODO: Loop through strings
+  // TODO: Sort characters to create key
+  // TODO: Add string to map[key] array
+  // TODO: Return all values from map
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n × k log k) where k = average string length
   - n strings, each sorted in O(k log k)
 - **Space:** O(n × k) - storing all strings
@@ -179,9 +182,11 @@ export function groupAnagrams(strs: string[]): string[][] {
 ## Problem 3: Contains Duplicate (LeetCode 217)
 
 ### Problem Statement
+
 Determine if any value appears at least twice in the array.
 
 ### Example
+
 ```
 Input: [1, 2, 3, 1]
 Output: true
@@ -191,6 +196,7 @@ Output: false
 ```
 
 ### Visual Explanation
+
 ```
 Array: [1, 2, 3, 1]
 seen = new Set()
@@ -213,6 +219,7 @@ Step 4: num = 1
 ```
 
 ### Algorithm
+
 ```
 1. Create empty Set
 2. For each number:
@@ -223,21 +230,19 @@ Step 4: num = 1
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function containsDuplicate(nums: number[]): boolean {
-	// TODO: Create Set to track seen numbers
-	
-	// TODO: Loop through array
-	
-	// TODO: If number exists in set, return true
-	
-	// TODO: Add number to set
-	
-	// TODO: Return false if no duplicates found
+  // TODO: Create Set to track seen numbers
+  // TODO: Loop through array
+  // TODO: If number exists in set, return true
+  // TODO: Add number to set
+  // TODO: Return false if no duplicates found
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single pass
 - **Space:** O(n) - set storage
 
@@ -246,9 +251,11 @@ export function containsDuplicate(nums: number[]): boolean {
 ## Problem 4: Valid Anagram (LeetCode 242)
 
 ### Problem Statement
+
 Check if two strings are anagrams of each other.
 
 ### Example
+
 ```
 Input: s = "anagram", t = "nagaram"
 Output: true
@@ -258,6 +265,7 @@ Output: false
 ```
 
 ### Visual Explanation
+
 ```
 Method 1: Sort both strings
 "anagram" → "aaagmnr"
@@ -275,6 +283,7 @@ All match → Anagrams!
 ```
 
 ### Algorithm (Hash Map)
+
 ```
 1. If lengths differ, return false
 2. Create frequency map for s
@@ -286,21 +295,19 @@ All match → Anagrams!
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function isAnagram(s: string, t: string): boolean {
-	// TODO: Check if lengths are different
-	
-	// TODO: Create frequency map for first string
-	
-	// TODO: Loop through second string
-	
-	// TODO: Check char exists and decrement count
-	
-	// TODO: Return true if all chars matched
+  // TODO: Check if lengths are different
+  // TODO: Create frequency map for first string
+  // TODO: Loop through second string
+  // TODO: Check char exists and decrement count
+  // TODO: Return true if all chars matched
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - two passes through strings
 - **Space:** O(1) - at most 26 characters (lowercase English)
 
@@ -309,11 +316,13 @@ export function isAnagram(s: string, t: string): boolean {
 ## Problem 5: Longest Consecutive Sequence (LeetCode 128)
 
 ### Problem Statement
+
 Find the length of the longest consecutive elements sequence in an unsorted array.
 
 **Must run in O(n) time.**
 
 ### Example
+
 ```
 Input: [100, 4, 200, 1, 3, 2]
 Output: 4
@@ -325,6 +334,7 @@ Explanation: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 ```
 
 ### Visual Explanation
+
 ```
 Array: [100, 4, 200, 1, 3, 2]
 
@@ -353,6 +363,7 @@ Longest = 4
 ```
 
 ### Algorithm
+
 ```
 1. Add all numbers to hash set
 2. For each number:
@@ -364,6 +375,7 @@ Longest = 4
 ```
 
 ### Why This Works
+
 ```
 By only starting from sequence beginnings:
 - Each number checked at most twice
@@ -373,27 +385,22 @@ By only starting from sequence beginnings:
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function longestConsecutive(nums: number[]): number {
-	// TODO: Handle empty array
-	
-	// TODO: Create Set from array
-	
-	// TODO: Initialize max length
-	
-	// TODO: Loop through each number
-	
-	// TODO: Check if it's a sequence start (num-1 not in set)
-	
-	// TODO: Count consecutive numbers
-	
-	// TODO: Update max length
-	
-	// TODO: Return max
+  // TODO: Handle empty array
+  // TODO: Create Set from array
+  // TODO: Initialize max length
+  // TODO: Loop through each number
+  // TODO: Check if it's a sequence start (num-1 not in set)
+  // TODO: Count consecutive numbers
+  // TODO: Update max length
+  // TODO: Return max
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - each number visited at most twice
 - **Space:** O(n) - hash set storage
 
@@ -402,9 +409,11 @@ export function longestConsecutive(nums: number[]): number {
 ## Problem 6: Subarray Sum Equals K (LeetCode 560)
 
 ### Problem Statement
+
 Find the total number of continuous subarrays whose sum equals k.
 
 ### Example
+
 ```
 Input: nums = [1, 1, 1], k = 2
 Output: 2
@@ -416,6 +425,7 @@ Explanation: [1,2] and [3]
 ```
 
 ### Visual Explanation
+
 ```
 Key insight: Use prefix sums!
 
@@ -452,6 +462,7 @@ Total: 2
 ```
 
 ### Algorithm
+
 ```
 1. Create hash map: prefixSum → frequency
 2. Initialize map with {0: 1} (empty subarray)
@@ -465,27 +476,22 @@ Total: 2
 ```
 
 ### Implementation Steps
+
 ```typescript
 export function subarraySum(nums: number[], k: number): number {
-	// TODO: Create hash map for prefix sums
-	
-	// TODO: Initialize with {0: 1}
-	
-	// TODO: Initialize sum and count
-	
-	// TODO: Loop through array
-	
-	// TODO: Update running sum
-	
-	// TODO: Check if (sum - k) exists in map
-	
-	// TODO: Add current sum to map
-	
-	// TODO: Return count
+  // TODO: Create hash map for prefix sums
+  // TODO: Initialize with {0: 1}
+  // TODO: Initialize sum and count
+  // TODO: Loop through array
+  // TODO: Update running sum
+  // TODO: Check if (sum - k) exists in map
+  // TODO: Add current sum to map
+  // TODO: Return count
 }
 ```
 
 ### Complexity
+
 - **Time:** O(n) - single pass
 - **Space:** O(n) - hash map storage
 
@@ -494,45 +500,49 @@ export function subarraySum(nums: number[], k: number): number {
 ## Hash Table Techniques Summary
 
 ### Frequency Counting
+
 ```typescript
 // Count occurrences
 const freq = new Map<string, number>();
 for (const item of items) {
-	freq.set(item, (freq.get(item) || 0) + 1);
+  freq.set(item, (freq.get(item) || 0) + 1);
 }
 ```
 
 ### Set for Existence Check
+
 ```typescript
 // Check if value exists
 const seen = new Set<number>();
 for (const num of nums) {
-	if (seen.has(num)) return true;
-	seen.add(num);
+  if (seen.has(num)) return true;
+  seen.add(num);
 }
 ```
 
 ### Complement Pattern (Two Sum)
+
 ```typescript
 // Find pairs that sum to target
 const map = new Map<number, number>();
 for (let i = 0; i < nums.length; i++) {
-	const complement = target - nums[i];
-	if (map.has(complement)) {
-		return [map.get(complement)!, i];
-	}
-	map.set(nums[i], i);
+  const complement = target - nums[i];
+  if (map.has(complement)) {
+    return [map.get(complement)!, i];
+  }
+  map.set(nums[i], i);
 }
 ```
 
 ### Grouping Pattern (Anagrams)
+
 ```typescript
 // Group items by key
 const groups = new Map<string, string[]>();
 for (const item of items) {
-	const key = getKey(item);
-	if (!groups.has(key)) groups.set(key, []);
-	groups.get(key)!.push(item);
+  const key = getKey(item);
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key)!.push(item);
 }
 ```
 
@@ -541,6 +551,7 @@ for (const item of items) {
 ## Common Hash Table Operations
 
 ### Map Operations
+
 ```typescript
 // Create
 const map = new Map<string, number>();
@@ -549,22 +560,25 @@ const map = new Map<string, number>();
 map.set("key", 42);
 
 // Get value
-const val = map.get("key");  // 42 or undefined
+const val = map.get("key"); // 42 or undefined
 
 // Check existence
-if (map.has("key")) { }
+if (map.has("key")) {
+}
 
 // Delete
 map.delete("key");
 
 // Size
-map.size
+map.size;
 
 // Iterate
-for (const [key, value] of map) { }
+for (const [key, value] of map) {
+}
 ```
 
 ### Set Operations
+
 ```typescript
 // Create
 const set = new Set<number>();
@@ -573,28 +587,200 @@ const set = new Set<number>();
 set.add(1);
 
 // Check existence
-if (set.has(1)) { }
+if (set.has(1)) {
+}
 
 // Delete
 set.delete(1);
 
 // Size
-set.size
+set.size;
 
 // Iterate
-for (const item of set) { }
+for (const item of set) {
+}
 ```
+
+---
+
+# Problem 7: LRU Cache (LeetCode 146)
+
+## Problem Statement
+
+Design a data structure that follows the **Least Recently Used (LRU)** eviction policy.
+
+Implement the `LRUCache` class:
+
+- `get(key)` → Returns the value of the key if it exists, otherwise `-1` (or `undefined`).
+- `put(key, value)` → Inserts or updates the value.
+  If capacity is exceeded, remove the **least recently used** item.
+
+**Constraint:**
+Both `get` and `put` must run in **O(1)** time complexity.
+
+---
+
+## Example
+
+```
+Input:
+LRUCache cache = new LRUCache(2)
+
+cache.put(1, 1)
+cache.put(2, 2)
+cache.get(1)      → 1
+cache.put(3, 3)   → evicts key 2
+cache.get(2)      → -1
+cache.put(4, 4)   → evicts key 1
+cache.get(1)      → -1
+cache.get(3)      → 3
+cache.get(4)      → 4
+```
+
+---
+
+## Visual Explanation
+
+### Capacity = 2
+
+```
+Put(1,1)
+Cache: [1]
+
+Put(2,2)
+Cache: [1, 2]
+
+Get(1) → 1
+1 becomes most recently used
+Cache: [2, 1]
+
+Put(3,3)
+Capacity exceeded!
+Evict least recently used (2)
+Cache: [1, 3]
+
+Put(4,4)
+Evict least recently used (1)
+Cache: [3, 4]
+```
+
+**Rule:**
+
+- Recently accessed → move to front
+- When full → remove oldest (least used)
+
+---
+
+## Data Structure Design
+
+To achieve **O(1)** operations:
+
+### 1️⃣ Hash Map
+
+- Stores `key → node`
+- Allows O(1) lookup
+
+### 2️⃣ Doubly Linked List
+
+- Maintains usage order
+- Head → Most Recently Used (MRU)
+- Tail → Least Recently Used (LRU)
+- O(1) insert and remove
+
+---
+
+## Algorithm
+
+### get(key)
+
+```
+1. If key not in map → return -1
+2. Move node to front (most recently used)
+3. Return value
+```
+
+### put(key, value)
+
+```
+1. If key exists:
+     - Update value
+     - Move to front
+2. Else:
+     - If cache full:
+         • Remove least recently used (tail)
+     - Insert new node at front
+```
+
+---
+
+## Implementation Skeleton (TypeScript)
+
+```ts
+class LRUCache<K, V> {
+  constructor(capacity: number) {}
+
+  get(key: K): V | undefined {
+    // TODO:
+    // 1. Check if key exists
+    // 2. Move node to front
+    // 3. Return value
+  }
+
+  put(key: K, value: V): void {
+    // TODO:
+    // 1. If key exists → update + move to front
+    // 2. If capacity exceeded → remove LRU
+    // 3. Insert new node at front
+  }
+}
+```
+
+---
+
+## Complexity
+
+- **Time Complexity**
+  - `get()` → O(1)
+  - `put()` → O(1)
+
+- **Space Complexity**
+  - O(capacity)
+
+---
+
+## Why Not Just Use an Array?
+
+Using an array would require:
+
+- O(n) search
+- O(n) remove
+- O(n) shift operations
+
+That violates the O(1) requirement.
+
+---
+
+## Key Interview Insight
+
+The trick is:
+
+> Combine a **Hash Map** (fast lookup)
+> with a **Doubly Linked List** (fast ordering updates)
+
+If you only use one — you cannot achieve O(1).
 
 ---
 
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** containsDuplicate, isAnagram (basics)
 2. **Then:** twoSum, groupAnagrams (complement/grouping)
 3. **Finally:** longestConsecutive, subarraySum (advanced)
 
 ### When to Use Hash Table
+
 - ✅ Need O(1) lookups
 - ✅ Counting frequencies
 - ✅ Finding complements (two sum pattern)
@@ -603,11 +789,13 @@ for (const item of set) { }
 - ✅ Removing duplicates
 
 ### When NOT to Use
+
 - ❌ Need sorted order (use BST)
 - ❌ Memory constrained (hash tables use extra space)
 - ❌ Need range queries (use segment tree)
 
 ### Common Mistakes
+
 1. ❌ Forgetting to check if key exists before accessing
 2. ❌ Not handling empty inputs
 3. ❌ Using wrong data structure (Map vs Set)
@@ -615,6 +803,7 @@ for (const item of set) { }
 5. ❌ Mutating keys after adding to map/set
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty array
 ✓ Single element
@@ -629,20 +818,21 @@ for (const item of set) { }
 
 ## Complexity Cheat Sheet
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Two Sum | O(n) | O(n) | Complement lookup |
-| Group Anagrams | O(n·k log k) | O(n·k) | Sorted key grouping |
-| Contains Duplicate | O(n) | O(n) | Set existence check |
-| Valid Anagram | O(n) | O(1) | Frequency count |
-| Longest Consecutive | O(n) | O(n) | Sequence start check |
-| Subarray Sum | O(n) | O(n) | Prefix sum map |
+| Problem             | Time         | Space  | Key Technique        |
+| ------------------- | ------------ | ------ | -------------------- |
+| Two Sum             | O(n)         | O(n)   | Complement lookup    |
+| Group Anagrams      | O(n·k log k) | O(n·k) | Sorted key grouping  |
+| Contains Duplicate  | O(n)         | O(n)   | Set existence check  |
+| Valid Anagram       | O(n)         | O(1)   | Frequency count      |
+| Longest Consecutive | O(n)         | O(n)   | Sequence start check |
+| Subarray Sum        | O(n)         | O(n)   | Prefix sum map       |
 
 ---
 
 ## Hash Function Properties
 
 ### Good Hash Function
+
 ```
 1. Deterministic (same input → same output)
 2. Uniform distribution
@@ -651,6 +841,7 @@ for (const item of set) { }
 ```
 
 ### Collision Resolution
+
 ```
 1. Chaining (linked list at each bucket)
 2. Open addressing (probe for next slot)
@@ -658,6 +849,7 @@ for (const item of set) { }
 ```
 
 ### Load Factor
+
 ```
 load_factor = n / capacity
 
