@@ -14,6 +14,7 @@ import {
   restoreTravelPath,
   maxExpressionValue,
   nextDeparture,
+  longestPalindromeSubString,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -806,5 +807,51 @@ describe("nextDeparture", () => {
     // Sort internally: 09:00, 12:30, 15:00 → next after 11:00 is 12:30 → 90 minutes
     const result = nextDeparture(departures, currentTime);
     expect(result).toBe(90);
+  });
+});
+
+describe("longestPalindromeSubString", () => {
+  test("finds longest odd-length palindrome", () => {
+    const input = "babad";
+    const result = longestPalindromeSubString(input);
+
+    // Could be "bab" or "aba"
+    expect(["bab", "aba"]).toContain(result);
+  });
+
+  test("finds longest even-length palindrome", () => {
+    const input = "cbbd";
+    const result = longestPalindromeSubString(input);
+
+    expect(result).toBe("bb");
+  });
+
+  test("handles single character string", () => {
+    const input = "a";
+    const result = longestPalindromeSubString(input);
+
+    expect(result).toBe("a");
+  });
+
+  test("handles string with no repeating characters", () => {
+    const input = "abc";
+    const result = longestPalindromeSubString(input);
+
+    // Any single character is valid
+    expect(result.length).toBe(1);
+  });
+
+  test("handles empty string", () => {
+    const input = "";
+    const result = longestPalindromeSubString(input);
+
+    expect(result).toBe("");
+  });
+
+  test("returns entire string if already palindrome", () => {
+    const input = "racecar";
+    const result = longestPalindromeSubString(input);
+
+    expect(result).toBe("racecar");
   });
 });

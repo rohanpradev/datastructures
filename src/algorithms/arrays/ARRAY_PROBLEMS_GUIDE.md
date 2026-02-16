@@ -2133,3 +2133,161 @@ export function nextDeparture(
 - Useful in scheduling, flight/train timetables, and similar problems.
 
 ---
+
+## Problem: Longest Palindromic Substring (LeetCode 5)
+
+### Problem Statement
+
+Given a string `s`, return the **longest palindromic substring** in `s`.
+
+A **palindrome** is a string that reads the same forward and backward.
+
+---
+
+### Examples
+
+```
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+
+Input: s = "cbbd"
+Output: "bb"
+```
+
+---
+
+### Visual Explanation
+
+```
+Input: "babad"
+
+Index:   0 1 2 3 4
+         b a b a d
+
+Step 1: Treat each character as a center.
+
+Center at index 0 → "b"
+Center at index 1 → expand → "bab"
+Center at index 2 → expand → "aba"
+Center at index 3 → "a"
+Center at index 4 → "d"
+
+Longest found: "bab" (or "aba")
+```
+
+For even-length palindromes:
+
+```
+Input: "cbbd"
+
+Index:   0 1 2 3
+         c b b d
+
+Check between 1 and 2:
+Expand → "bb"
+
+Longest found: "bb"
+```
+
+---
+
+## Algorithm (Expand Around Center)
+
+1. Iterate through each character in the string.
+2. For each index `i`, expand around:
+   - `(i, i)` → odd-length palindromes
+   - `(i, i + 1)` → even-length palindromes
+
+3. While characters match, expand outward.
+4. Track the longest palindrome found.
+5. Return the substring using stored start index and length.
+
+---
+
+## Implementation
+
+```typescript
+/**
+ * Finds the longest palindromic substring within a given string.
+ *
+ * A palindrome reads the same forward and backward.
+ * This implementation uses the "expand around center" technique.
+ *
+ * Time Complexity: O(n^2)
+ * Space Complexity: O(1)
+ *
+ * @param input - The string to search within.
+ * @returns The longest palindromic substring.
+ *
+ * @example
+ * longestPalindromeSubString("babad")
+ * // → "bab"
+ */
+export function longestPalindromeSubString(input: string): string {
+  let longestStartIndex = 0;
+  let longestLength = 0;
+
+  function expandAroundCenter(
+    leftIndex: number,
+    rightIndex: number,
+  ): [number, number] {
+    while (
+      leftIndex >= 0 &&
+      rightIndex < input.length &&
+      input[leftIndex] === input[rightIndex]
+    ) {
+      leftIndex--;
+      rightIndex++;
+    }
+
+    return [leftIndex + 1, rightIndex - 1];
+  }
+
+  for (let currentIndex = 0; currentIndex < input.length; currentIndex++) {
+    // Odd-length palindrome
+    const [oddStart, oddEnd] = expandAroundCenter(currentIndex, currentIndex);
+    const oddLength = oddEnd - oddStart + 1;
+
+    if (oddLength > longestLength) {
+      longestStartIndex = oddStart;
+      longestLength = oddLength;
+    }
+
+    // Even-length palindrome
+    const [evenStart, evenEnd] = expandAroundCenter(
+      currentIndex,
+      currentIndex + 1,
+    );
+    const evenLength = evenEnd - evenStart + 1;
+
+    if (evenLength > longestLength) {
+      longestStartIndex = evenStart;
+      longestLength = evenLength;
+    }
+  }
+
+  return input.slice(longestStartIndex, longestStartIndex + longestLength);
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** O(n²)
+  - For each character, we may expand across the entire string.
+
+- **Space:** O(1)
+  - Only a few variables are used.
+
+---
+
+## Key Takeaways
+
+- Every palindrome expands from a **center**.
+- There are **2n − 1 possible centers** (n characters + n−1 gaps).
+- No extra data structures are required.
+- Classic string problem that tests two-pointer reasoning.
+
+---

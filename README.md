@@ -61,6 +61,9 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 * [Recursion & Fibonacci](src/algorithms/recursion/FIBONACCI_GUIDE.md)
 * [Sorting Algorithms](src/algorithms/sorting/SORTING_GUIDE.md)
 
+### Node/Bun concepts
+* [Node Concepts](src/node-concepts/README.md)
+
 > Each guide includes ASCII diagrams, complexity analysis, pitfalls, and test strategies.
 
 ---
@@ -121,6 +124,7 @@ DSA/
 ├─ src/                # Reference implementations
 │  ├─ algorithms/
 │  └─ data-structures/
+│  └─ node-concepts/
 ├─ practice/           # Generated practice workspace
 ├─ scripts/            # Bun automation scripts
 ├─ README.md

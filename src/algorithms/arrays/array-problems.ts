@@ -889,3 +889,84 @@ export function nextDeparture(
 	// No departure later than current time
 	return -1;
 }
+
+/**
+ * Finds the longest palindromic substring within a given string.
+ *
+ * A palindrome is a string that reads the same forward and backward.
+ * This function uses the "expand around center" technique:
+ *  - Every character can be the center of an odd-length palindrome (e.g., "aba").
+ *  - Every pair of adjacent characters can be the center of an even-length palindrome (e.g., "abba").
+ *
+ * Time Complexity: O(n^2)
+ * Space Complexity: O(1)
+ *
+ * @param input - The string to search within.
+ * @returns The longest palindromic substring found in the input string.
+ */
+export function longestPalindromeSubString(input: string): string {
+	// Track the starting index of the longest palindrome found
+	let longestStartIndex = 0;
+
+	// Track the length of the longest palindrome found
+	let longestLength = 0;
+
+	/**
+	 * Expands outward from the given left and right indices
+	 * as long as the characters are equal (palindromic).
+	 *
+	 * @param leftIndex - Left boundary of the expansion.
+	 * @param rightIndex - Right boundary of the expansion.
+	 * @returns A tuple containing the start and end indices
+	 *          of the palindrome found during expansion.
+	 */
+	function expandAroundCenter(
+		leftIndex: number,
+		rightIndex: number,
+	): [number, number] {
+		// Expand while:
+		// 1. We are within bounds
+		// 2. The characters at both ends are equal
+		while (
+			leftIndex >= 0 &&
+			rightIndex < input.length &&
+			input[leftIndex] === input[rightIndex]
+		) {
+			leftIndex--;
+			rightIndex++;
+		}
+
+		// When the loop exits, indices have moved one step too far.
+		// Adjust them back to the last valid palindrome positions.
+		return [leftIndex + 1, rightIndex - 1];
+	}
+
+	// Iterate through each character in the string
+	for (let currentIndex = 0; currentIndex < input.length; currentIndex++) {
+		// Case 1: Odd-length palindrome (single character center)
+		const [oddStart, oddEnd] = expandAroundCenter(currentIndex, currentIndex);
+
+		const oddLength = oddEnd - oddStart + 1;
+
+		if (oddLength > longestLength) {
+			longestStartIndex = oddStart;
+			longestLength = oddLength;
+		}
+
+		// Case 2: Even-length palindrome (two-character center)
+		const [evenStart, evenEnd] = expandAroundCenter(
+			currentIndex,
+			currentIndex + 1,
+		);
+
+		const evenLength = evenEnd - evenStart + 1;
+
+		if (evenLength > longestLength) {
+			longestStartIndex = evenStart;
+			longestLength = evenLength;
+		}
+	}
+
+	// Extract and return the longest palindromic substring
+	return input.slice(longestStartIndex, longestStartIndex + longestLength);
+}
