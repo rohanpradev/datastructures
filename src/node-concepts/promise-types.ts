@@ -13,7 +13,7 @@
  * Returns a resolved promise with the given value.
  */
 export function resolvedValue<T>(value: T): Promise<T> {
-  return Promise.resolve(value);
+	return Promise.resolve(value);
 }
 
 /* -------------------------------------------------- */
@@ -24,7 +24,7 @@ export function resolvedValue<T>(value: T): Promise<T> {
  * Returns a rejected promise with the given reason.
  */
 export function rejectedValue(reason: any): Promise<never> {
-  return Promise.reject(reason);
+	return Promise.reject(reason);
 }
 
 /* -------------------------------------------------- */
@@ -36,7 +36,7 @@ export function rejectedValue(reason: any): Promise<never> {
  * Rejects immediately if one fails.
  */
 export function allPromises<T>(promises: Promise<T>[]): Promise<T[]> {
-  return Promise.all(promises);
+	return Promise.all(promises);
 }
 
 /* -------------------------------------------------- */
@@ -47,9 +47,9 @@ export function allPromises<T>(promises: Promise<T>[]): Promise<T[]> {
  * Resolves when all promises settle (never rejects).
  */
 export function allSettledPromises<T>(
-  promises: Promise<T>[],
+	promises: Promise<T>[],
 ): Promise<PromiseSettledResult<T>[]> {
-  return Promise.allSettled(promises);
+	return Promise.allSettled(promises);
 }
 
 /* -------------------------------------------------- */
@@ -60,7 +60,7 @@ export function allSettledPromises<T>(
  * Resolves or rejects with the first settled promise.
  */
 export function racePromises<T>(promises: Promise<T>[]): Promise<T> {
-  return Promise.race(promises);
+	return Promise.race(promises);
 }
 
 /* -------------------------------------------------- */
@@ -72,7 +72,7 @@ export function racePromises<T>(promises: Promise<T>[]): Promise<T> {
  * Rejects only if all promises reject.
  */
 export function anyPromise<T>(promises: Promise<T>[]): Promise<T> {
-  return Promise.any(promises);
+	return Promise.any(promises);
 }
 
 /* -------------------------------------------------- */
@@ -83,9 +83,9 @@ export function anyPromise<T>(promises: Promise<T>[]): Promise<T> {
  * Demonstrates promise chaining with .then()
  */
 export function chainedThen(value: number): Promise<number> {
-  return Promise.resolve(value)
-    .then((v) => v * 2)
-    .then((v) => v + 5);
+	return Promise.resolve(value)
+		.then((v) => v * 2)
+		.then((v) => v + 5);
 }
 
 /* -------------------------------------------------- */
@@ -96,7 +96,7 @@ export function chainedThen(value: number): Promise<number> {
  * Demonstrates error recovery with .catch()
  */
 export function catchExample(): Promise<string> {
-  return Promise.reject("Error occurred").catch(() => "Recovered");
+	return Promise.reject("Error occurred").catch(() => "Recovered");
 }
 
 /* -------------------------------------------------- */
@@ -108,5 +108,5 @@ export function catchExample(): Promise<string> {
  * Returns resolved value but runs callback first.
  */
 export function finallyExample(callback: () => void): Promise<string> {
-  return Promise.resolve("Done").finally(callback);
+	return Promise.resolve("Done").finally(callback);
 }
