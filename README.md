@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
 [![Biome](https://img.shields.io/badge/Code_Quality-Biome-60a5fa?logo=biome)](https://biomejs.dev)
-![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)
-![Bun](https://img.shields.io/badge/Runtime-Bun-black)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
 
 <img width="1024" alt="DSA Workspace Banner" src="https://github.com/user-attachments/assets/06b59555-ad3f-49c5-95b3-919f81170e14" />
 
@@ -15,29 +15,29 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 
 ## 📌 Table of Contents
 
-* [Features](#features)
-* [Learning Guides](#learning-guides)
-* [Quick Start](#quick-start)
-* [Learning Workflow](#learning-workflow)
-* [Project Structure](#project-structure)
-* [Learning Paths](#learning-paths)
-* [Testing & Quality](#testing--quality)
-* [Complexity Reference](#complexity-reference)
-* [Technologies](#technologies)
-* [Stats](#stats)
+- [Features](#features)
+- [Learning Guides](#learning-guides)
+- [Quick Start](#quick-start)
+- [Learning Workflow](#learning-workflow)
+- [Project Structure](#project-structure)
+- [Learning Paths](#learning-paths)
+- [Testing & Quality](#testing--quality)
+- [Complexity Reference](#complexity-reference)
+- [Technologies](#technologies)
+- [Stats](#stats)
 
 ---
 
 ## 🚀 Features
 
-* ✅ **451+ DSA problems**
-* ✅ **1,919 passing test cases**
-* ✅ **11 visual learning guides**
-* ✅ **Bun-powered practice template generator**
-* ✅ **TypeScript (strict mode)**
-* ✅ **Biome linting & formatting**
-* ✅ **LeetCode-tagged problems**
-* ✅ **Beginner → Advanced learning paths**
+- ✅ **451+ DSA problems**
+- ✅ **1,919 passing test cases**
+- ✅ **11 visual learning guides**
+- ✅ **Bun-powered practice template generator**
+- ✅ **TypeScript (strict mode)**
+- ✅ **Biome linting & formatting**
+- ✅ **LeetCode-tagged problems**
+- ✅ **Beginner → Advanced learning paths**
 
 ---
 
@@ -45,24 +45,25 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 
 ### Data Structures
 
-* [Binary Search Tree Guide](src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md)
-* [Hash Table Guide](src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md)
-* [Linked List Guide](src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md)
-* [Stack Guide](src/data-structures/stack/problems/STACK_PROBLEMS_GUIDE.md)
-* [Graph Guide](src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md)
-* [Heap Guide](src/data-structures/heap/HEAP_GUIDE.md)
+- [Binary Search Tree Guide](src/data-structures/binary-search-tree/problems/BST_PROBLEMS_GUIDE.md)
+- [Hash Table Guide](src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md)
+- [Linked List Guide](src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md)
+- [Stack Guide](src/data-structures/stack/problems/STACK_PROBLEMS_GUIDE.md)
+- [Graph Guide](src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md)
+- [Heap Guide](src/data-structures/heap/HEAP_GUIDE.md)
 
 ### Algorithms
 
-* [Array Exercises](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
-* [Array Problems](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
-* [Dynamic Programming](src/algorithms/dynamic-programming/DYNAMIC_PROGRAMMING_GUIDE.md)
-* [String Exercises](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
-* [Recursion & Fibonacci](src/algorithms/recursion/FIBONACCI_GUIDE.md)
-* [Sorting Algorithms](src/algorithms/sorting/SORTING_GUIDE.md)
+- [Array Exercises](src/algorithms/arrays/ARRAY_EXERCISES_GUIDE.md)
+- [Array Problems](src/algorithms/arrays/ARRAY_PROBLEMS_GUIDE.md)
+- [Dynamic Programming](src/algorithms/dynamic-programming/DYNAMIC_PROGRAMMING_GUIDE.md)
+- [String Exercises](src/algorithms/strings/STRING_EXERCISES_GUIDE.md)
+- [Recursion & Fibonacci](src/algorithms/recursion/FIBONACCI_GUIDE.md)
+- [Sorting Algorithms](src/algorithms/sorting/SORTING_GUIDE.md)
 
 ### Node/Bun concepts
-* [Node Concepts](src/node-concepts/README.md)
+
+- [Node Concepts](src/node-concepts/README.md)
 
 > Each guide includes ASCII diagrams, complexity analysis, pitfalls, and test strategies.
 
@@ -102,8 +103,7 @@ bun dev        # Run development server
    ```
 
 3. **Implement Solutions**
-
-   * Work inside the `practice/` directory
+   - Work inside the `practice/` directory
 
 4. **Run Tests**
 
@@ -112,8 +112,7 @@ bun dev        # Run development server
    ```
 
 5. **Compare with Reference**
-
-   * Check implementations in `src/`
+   - Check implementations in `src/`
 
 ---
 
@@ -137,24 +136,24 @@ DSA/
 
 ### Beginner
 
-* Arrays
-* Linked Lists
-* Stack & Queue
-* Basic Sorting
+- Arrays
+- Linked Lists
+- Stack & Queue
+- Basic Sorting
 
 ### Intermediate
 
-* Binary Search Trees
-* Hash Tables
-* Recursion & DP
-* Merge & Quick Sort
+- Binary Search Trees
+- Hash Tables
+- Recursion & DP
+- Merge & Quick Sort
 
 ### Advanced
 
-* Graph Algorithms
-* Heap-based Problems
-* Advanced BST Operations
-* Optimized Hash Table Patterns
+- Graph Algorithms
+- Heap-based Problems
+- Advanced BST Operations
+- Optimized Hash Table Patterns
 
 ---
 
@@ -164,10 +163,10 @@ DSA/
 bun test
 ```
 
-* 1,919 passing tests
-* 23 test files
-* Zero TypeScript errors
-* Biome enforced formatting
+- 1,919 passing tests
+- 23 test files
+- Zero TypeScript errors
+- Biome enforced formatting
 
 ---
 
@@ -188,33 +187,33 @@ O(2ⁿ)      Naive recursion
 
 ## 🛠 Technologies
 
-* **Language:** TypeScript (Strict)
-* **Runtime:** Bun
-* **Testing:** Bun Test Runner
-* **Linting:** Biome
-* **File I/O:** Bun native APIs
+- **Language:** TypeScript (Strict)
+- **Runtime:** Bun
+- **Testing:** Bun Test Runner
+- **Linting:** Biome
+- **File I/O:** Bun native APIs
 
 ---
 
 ## 📊 Stats
 
-* **Problems:** 451
-* **Tests:** 1,919
-* **Guides:** 11
-* **Test Files:** 23
-* **Docs:** 5,000+ lines
+- **Problems:** 451
+- **Tests:** 1,919
+- **Guides:** 11
+- **Test Files:** 23
+- **Docs:** 5,000+ lines
 
 ---
 
 ## 🎯 Ideal For
 
-* Coding interview preparation
-* Data structures & algorithms mastery
-* TypeScript developers
-* Performance-focused learners
+- Coding interview preparation
+- Data structures & algorithms mastery
+- TypeScript developers
+- Performance-focused learners
 
 ---
 
 **Happy Coding 🚀**
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_
