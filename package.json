@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "bun run src/index.ts",
 		"check": "biome check --write",
-		"test": "bun test",
+		"test": "bun test --preload src/node-concepts/setup.ts",
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {

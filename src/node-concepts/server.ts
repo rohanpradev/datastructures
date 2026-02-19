@@ -8,7 +8,7 @@
  * - Test-safe startup
  */
 
-import { CircuitBreaker } from "@/node-concepts/circuit-breaker";
+import { CircuitBreaker } from "@/node-concepts/async/circuit-breaker";
 
 //
 // ──────────────────────────────────────────
@@ -79,7 +79,7 @@ export const apiBreaker = new CircuitBreaker<[], Todo>(
 // ──────────────────────────────────────────
 //
 
-const HEAVY_WORKER_URL = new URL("./worker.ts", import.meta.url);
+const HEAVY_WORKER_URL = new URL("./worker/worker.ts", import.meta.url);
 
 function runWorker(): Promise<number> {
 	return new Promise<number>((resolve, reject) => {

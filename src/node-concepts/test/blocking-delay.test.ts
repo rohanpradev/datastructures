@@ -8,7 +8,7 @@
  * - Metrics
  */
 
-import { afterAll, describe, test, expect } from "bun:test";
+import { describe, test, expect } from "bun:test";
 import { server } from "@/node-concepts/server";
 
 // Typed response helpers
@@ -39,13 +39,6 @@ async function fetchRoute<T = unknown>(
 }
 
 describe("Bun server endpoints", () => {
-  afterAll(async () => {
-    if (server) {
-      console.log("Shutting down server after tests...");
-      await server.stop(true); // force close all connections
-    }
-  });
-
   test("Fast route returns welcome message quickly", async () => {
     const start = performance.now();
     const { status, data } = await fetchRoute<string>("/");

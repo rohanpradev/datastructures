@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { PromiseTaskQueue } from "@/node-concepts/concurrent-operations";
+import { PromiseTaskQueue } from "@/node-concepts/async/concurrent-operations";
 
 /**
  * Creates a task that resolves after a delay.

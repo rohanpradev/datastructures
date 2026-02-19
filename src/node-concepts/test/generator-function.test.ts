@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { createAsyncCancellable } from "@/node-concepts/generator-function";
+import { createAsyncCancellable } from "@/node-concepts/basics/generator-function";
 
 describe("generatorFunction", () => {
   test("resolves final result correctly", async () => {
