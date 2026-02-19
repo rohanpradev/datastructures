@@ -1,50 +1,90 @@
 /**
- * @file server-timing.test.ts
+ * @file blocking-delay.test.ts
  * @description
- * Demonstrates main-thread blocking vs Worker offload.
- * Fully safe: bounded loops, Worker terminates.
+ * Test suite for Bun server endpoints:
+ * - Fast route
+ * - Blocking route
+ * - Worker route
+ * - Metrics
  */
 
-import { describe, test, expect } from "bun:test";
-import { handler } from "@/node-concepts/blocking-delay";
+import { afterAll, describe, test, expect } from "bun:test";
+import { server } from "@/node-concepts/server";
 
-describe("Worker route concurrency", () => {
-  test("Blocking route vs fast route", async () => {
-    // Fast route
-    const startFast = Date.now();
-    const fastResult = await handler("/"); // <-- await!
-    const fastDuration = Date.now() - startFast;
+// Typed response helpers
+interface WorkerResponse {
+  result: number;
+}
 
-    console.log(`Fast route duration: ${fastDuration} ms`);
-    expect(fastResult).toBe("Fast response");
+interface MetricsResponse {
+  activeRequests: number;
+  activeWebSockets: number;
+}
 
-    // Blocking route
-    const startBlock = Date.now();
-    const blockResult = await handler("/count"); // <-- await!
-    const blockDuration = Date.now() - startBlock;
+// Helper to fetch and parse JSON/text routes
+async function fetchRoute<T = unknown>(
+  path: string,
+): Promise<{ status: number; data: T }> {
+  const url = new URL(path, server.url).toString();
+  const res = await fetch(url);
+  const contentType = res.headers.get("content-type") || "";
 
-    console.log(`Blocking route duration: ${blockDuration} ms`);
-    expect(blockResult).toBe("Blocking done!");
-    expect(blockDuration).toBeGreaterThanOrEqual(5);
+  if (contentType.includes("application/json")) {
+    const json = await res.json();
+    return { status: res.status, data: json as T };
+  }
+
+  const text = await res.text();
+  return { status: res.status, data: text as unknown as T };
+}
+
+describe("Bun server endpoints", () => {
+  afterAll(async () => {
+    if (server) {
+      console.log("Shutting down server after tests...");
+      await server.stop(true); // force close all connections
+    }
   });
 
-  test("Worker completes and main thread remains responsive", async () => {
-    // Start worker task
-    const workerPromise = handler("/worker");
+  test("Fast route returns welcome message quickly", async () => {
+    const start = performance.now();
+    const { status, data } = await fetchRoute<string>("/");
+    const duration = performance.now() - start;
 
-    // Call fast route while worker is running
-    const startFast = Date.now();
-    const fastResult = await handler("/");
-    const fastDuration = Date.now() - startFast;
+    console.log(`Fast route duration: ${duration.toFixed(2)}ms`);
 
-    console.log(`Fast route during worker: ${fastDuration} ms`);
-    expect(fastResult).toBe("Fast response");
-    expect(fastDuration).toBeLessThan(5); // near-instant
+    expect(status).toBe(200);
+    expect(data).toBe("Welcome to Bun!");
+    expect(duration).toBeLessThan(15); // should be nearly instant
+  });
 
-    // Wait for worker result
-    const workerResult = await workerPromise;
-    console.log(`Worker result: ${workerResult}`);
-    expect(typeof workerResult).toBe("number");
-    expect(workerResult).toBeGreaterThan(0);
+  test("Blocking route executes correctly (dev only)", async () => {
+    const start = performance.now();
+    const { status, data } = await fetchRoute<string>("/block");
+    const duration = performance.now() - start;
+
+    console.log(`Blocking route duration: ${duration.toFixed(2)}ms`);
+
+    expect(status).toBe(200);
+    expect(data).toBe("Blocking done!");
+    expect(duration).toBeGreaterThanOrEqual(50);
+  });
+
+  test("Worker route completes and returns numeric result", async () => {
+    const { status, data } = await fetchRoute<WorkerResponse>("/heavy-task");
+
+    expect(status).toBe(200);
+    expect(typeof data.result).toBe("number");
+    expect(data.result).toBeGreaterThan(0);
+  });
+
+  test("Metrics endpoint returns active requests and web sockets", async () => {
+    const { status, data } = await fetchRoute<MetricsResponse>("/metrics");
+
+    expect(status).toBe(200);
+    expect(data).toHaveProperty("activeRequests");
+    expect(data).toHaveProperty("activeWebSockets");
+    expect(typeof data.activeRequests).toBe("number");
+    expect(typeof data.activeWebSockets).toBe("number");
   });
 });

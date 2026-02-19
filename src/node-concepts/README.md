@@ -465,4 +465,146 @@ You can extend this project by:
 - Writing stress tests with 1000+ promises
 
 ---
+
+Here’s a detailed **README** for your **Circuit Breaker** module, written in the same style as your `PromiseTaskQueue` documentation:
+
+---
+
+# CircuitBreaker Concepts
+
+This module implements a **robust circuit breaker pattern** for JavaScript/TypeScript.
+It is designed to **protect external services or internal APIs** from overload, failures, or latency spikes. Compatible with **Bun, Node.js, and browsers**.
+
+---
+
+## Key Concepts
+
+### 1️⃣ Circuit Breaker States
+
+The circuit breaker has **three main states**:
+
+1. **CLOSED** – requests flow normally; failures are counted.
+2. **OPEN** – requests are short-circuited; fallback is returned immediately.
+3. **HALF-OPEN** – limited requests are allowed to test if the service has recovered.
+
+**State Diagram:**
+
+```
+CLOSED → OPEN → HALF-OPEN → CLOSED
+```
+
+---
+
+### 2️⃣ Configurable Failure Threshold
+
+* The breaker trips (opens) when the **failure ratio exceeds a threshold**.
+* Threshold can be a percentage (e.g., 50%) of the **minimum number of requests** within a rolling window.
+* Prevents transient errors from opening the breaker too aggressively.
+
+**Example:**
+
+```ts
+const breaker = new CircuitBreaker(callApi, {
+  failureThreshold: 50,  // 50% of requests failing triggers OPEN
+  minimumRequests: 5,    // only consider after 5 requests
+  windowDuration: 10000, // 10s rolling window
+});
+```
+
+---
+
+### 3️⃣ Rolling Window of Requests
+
+* The breaker counts successes and failures in a **time-based window**.
+* Only requests in this window contribute to the failure ratio.
+* Helps avoid tripping the breaker due to old or irrelevant errors.
+
+---
+
+### 4️⃣ Timeout per Request
+
+* Each request can have a **timeout**.
+* Requests exceeding the timeout count as failures.
+* Ensures slow responses don’t block the system indefinitely.
+
+```ts
+timeout: 3000 // 3 seconds
+```
+
+---
+
+### 5️⃣ Reset Timeout & HALF-OPEN
+
+* After being OPEN, the breaker automatically transitions to **HALF-OPEN** after `resetTimeout`.
+* Allows **limited trial requests** to test if the API is healthy.
+* Successful trial → breaker closes; failed trial → breaker re-opens.
+
+```ts
+resetTimeout: 8000 // 8 seconds before trying HALF-OPEN
+halfOpenMaxCalls: 2 // allow 2 trial requests
+```
+
+---
+
+### 6️⃣ Fallback Function
+
+* You can provide a **fallback function** to execute when the breaker is OPEN.
+* Ensures your system continues functioning even if the API is down.
+
+```ts
+async () => ({
+  userId: -1,
+  id: -1,
+  title: "Fallback response",
+  completed: false,
+})
+```
+
+---
+
+### 7️⃣ Fire Method
+
+* `.fire()` is used to invoke the protected function.
+* Handles **state transitions, timeouts, and fallback** automatically.
+* Returns either the normal result or the fallback.
+
+```ts
+const result = await breaker.fire();
+```
+
+---
+
+### 8️⃣ State Introspection
+
+* Use `.getState()` to inspect the current breaker state:
+
+```ts
+breaker.getState(); // "CLOSED" | "OPEN" | "HALF-OPEN"
+```
+
+* Useful for **monitoring, metrics, or alerting**.
+
+---
+
+### 9️⃣ Practical Applications
+
+* Protecting **external APIs** from overload.
+* Preventing **cascading failures** in microservices.
+* Safeguarding **database queries** or **heavy internal computations**.
+* Implementing **resilient web services** in Bun, Node.js, or browser environments.
+
+---
+
+### 🔟 Safety Considerations
+
+* Ensure `minimumRequests` and `failureThreshold` are set appropriately.
+* Timeouts should reflect the expected response time of the API.
+* HALF-OPEN trial calls should be limited to avoid spamming a recovering service.
+* Always provide a fallback to maintain system reliability.
+
+---
+
+This pattern complements modules like **PromiseTaskQueue** by allowing you to **control concurrency** while also **handling failures gracefully**.
+
+---
 ````
