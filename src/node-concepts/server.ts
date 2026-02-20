@@ -101,6 +101,18 @@ function runWorker(): Promise<number> {
 
 //
 // ──────────────────────────────────────────
+// WebSocket Types
+// ──────────────────────────────────────────
+//
+
+type WSData = {
+	username: string;
+	channel: string;
+	connectedAt: number;
+};
+
+//
+// ──────────────────────────────────────────
 // Server
 // ──────────────────────────────────────────
 //
@@ -148,6 +160,87 @@ export const server = Bun.serve({
 				activeRequests: server.pendingRequests,
 				activeWebSockets: server.pendingWebSockets,
 			}),
+		"/ws": (req, server) => {
+			const url = new URL(req.url);
+
+			const username = url.searchParams.get("username");
+			const channel = url.searchParams.get("channel");
+
+			if (!username || !channel) {
+				return new Response("Missing username or channel", {
+					status: 400,
+				});
+			}
+
+			const upgraded = server.upgrade(req, {
+				data: {
+					username,
+					channel,
+					connectedAt: Date.now(),
+				},
+			});
+
+			return upgraded
+				? undefined
+				: new Response("Upgrade failed", { status: 500 });
+		},
+	},
+	websocket: {
+		data: {} as WSData,
+
+		perMessageDeflate: true,
+		idleTimeout: 60,
+		maxPayloadLength: 1024 * 1024,
+		backpressureLimit: 1024 * 1024,
+		closeOnBackpressureLimit: false,
+
+		open(ws) {
+			const { username, channel } = ws.data;
+
+			ws.subscribe(channel);
+
+			ws.publish(
+				channel,
+				JSON.stringify({
+					type: "system",
+					message: `${username} joined ${channel}`,
+					timestamp: Date.now(),
+				}),
+				true,
+			);
+		},
+
+		message(ws, message) {
+			const { username, channel } = ws.data;
+
+			const payload = JSON.stringify({
+				type: "chat",
+				user: username,
+				message: message.toString(),
+				timestamp: Date.now(),
+			});
+
+			const result = ws.publish(channel, payload, true);
+
+			if (result === -1) {
+				console.warn("Backpressure detected");
+			}
+		},
+
+		close(ws) {
+			const { username, channel } = ws.data;
+
+			ws.unsubscribe(channel);
+
+			ws.publish(
+				channel,
+				JSON.stringify({
+					type: "system",
+					message: `${username} left ${channel}`,
+					timestamp: Date.now(),
+				}),
+			);
+		},
 	},
 
 	error(error) {

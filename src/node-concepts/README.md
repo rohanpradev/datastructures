@@ -1,610 +1,359 @@
-# PromiseTaskQueue Concepts
+# JavaScript/TypeScript Async Utilities & Bun Modules – Learning Guide
 
-This module implements a **concurrency-limited, FIFO async task queue** for JavaScript/TypeScript. It’s designed to safely manage async tasks in environments like **Bun, Node.js, and browsers**.
+This repository is designed to teach **modern async patterns** in JavaScript/TypeScript while providing **practical, production-ready examples** for Bun, Node.js, and browser environments.
+
+It covers:
+
+- **PromiseTaskQueue** – safely manage concurrent tasks
+- **Bun HTTP Server** – non-blocking architecture and CPU-heavy task handling
+- **CircuitBreaker** – resilient API calls and error isolation
+- **Async Cancellable Operations** – cancelable, stepwise async workflows
+- **Bun WebSocket Pub/Sub** – real-time, topic-based messaging
+
+This guide explains **not just the code**, but _why_ and _how_ it works.
 
 ---
 
-## Key Concepts
+## 1️⃣ PromiseTaskQueue – Learning Concurrency Control
 
-### 1️⃣ Async Task Factory
+A **FIFO async task queue with concurrency limits**. This ensures your app handles multiple tasks safely without overwhelming CPU or network resources.
 
-- Each task is a function returning a `Promise`.
-- Using a **factory function** ensures the task does **not start immediately**, but only when the queue schedules it.
+### Why it matters
 
-**Type Definition:**
+In JavaScript, Promises are **eager**—they start immediately when created. For heavy tasks or rate-limited APIs, you need:
+
+- Controlled concurrency
+- FIFO execution order
+- Isolation of errors
+
+This queue does all three.
+
+### How it works
+
+1. **Task Factory:** Each task is a function returning a Promise, so it doesn’t start until scheduled.
 
 ```ts
 export type AsyncTask<T> = () => Promise<T>;
 ```
 
----
-
-### 2️⃣ Concurrency-Limited Execution
-
-- The queue allows only `maxConcurrency` tasks to run simultaneously.
-- Tasks beyond the limit are queued and executed in **FIFO order**.
-- Prevents overloading CPU or network resources.
-
-**Example Concept:**
+2. **Concurrency Management:** The queue only runs `maxConcurrency` tasks at a time; others wait.
 
 ```ts
 const queue = new PromiseTaskQueue(2);
 queue.enqueue(task1);
 queue.enqueue(task2);
-queue.enqueue(task3); // queued until one finishes
+queue.enqueue(task3); // waits until one finishes
 ```
 
----
+3. **FIFO Execution:** Tasks complete in order, making dependent workflows predictable.
 
-### 3️⃣ Deterministic FIFO Behavior
-
-- Tasks execute in the order they were enqueued.
-- Ensures predictable results and execution order.
-- Important for tasks where order matters, e.g., sequential API calls or dependent computations.
-
----
-
-### 4️⃣ Idle Detection
-
-- The queue can notify when it becomes **idle** (no active or pending tasks).
-- Useful for batching operations or synchronizing with other parts of an app.
-
-**Usage:**
+4. **Idle Detection:** Wait for all tasks to finish.
 
 ```ts
-await queue.waitForIdle(); // resolves with results & errors
+await queue.waitForIdle(); // returns results + errors
 ```
 
-- Returns a `QueueSummary`:
+5. **Error Handling:** Failed tasks do not break the queue; errors are collected for reporting.
 
 ```ts
 export interface QueueSummary<T> {
-  results: T[]; // successfully completed task results
-  errors: unknown[]; // captured errors from failed tasks
+  results: T[];
+  errors: unknown[];
 }
 ```
 
----
+**Practical Uses:**
 
-### 5️⃣ Error Isolation
+- Throttling API requests
+- Sequential data processing
+- CPU-heavy background tasks
 
-- Failed tasks do **not stop the queue**.
-- Errors are captured and returned in the summary.
-- Ensures other tasks continue executing even if some fail.
-
----
-
-### 6️⃣ Strong Typing
-
-- Generic type `T` ensures that results have predictable types.
-- Provides type safety for both results and error handling in TypeScript.
+> 💡 Tip: Use `waitForIdle()` to synchronize when all tasks are complete, for example before shutting down a server or reporting results.
 
 ---
 
-### 7️⃣ Automatic Task Scheduling
+## 2️⃣ Bun HTTP Server – High-Performance, Non-Blocking Routes
 
-- The queue automatically starts tasks whenever a slot is available.
-- No need for manual polling.
-- Handles concurrency transparently.
+This module demonstrates **fast and safe server design** in Bun.
 
-**Internal Workflow:**
+### Key Concepts
 
-1. Task enqueued → added to `pendingTasks`.
-2. `run()` checks for available slots.
-3. Task executed → `activeCount` incremented.
-4. Task finished → `activeCount` decremented, `run()` called again.
-5. Queue idle → `idleResolvers` are resolved.
-
----
-
-### 8️⃣ Practical Applications
-
-- Managing **API requests** without exceeding rate limits.
-- Running **CPU-heavy tasks** with controlled concurrency.
-- Scheduling **background jobs** in web apps.
-- Coordinating **batch operations** in Node.js or Bun.
-
----
-
-### 9️⃣ Safety Considerations
-
-- `maxConcurrency` must be ≥ 1.
-- Tasks are wrapped in `.then/.catch/.finally` to ensure `activeCount` is always decremented.
-- Idle detection is event-driven—no busy waiting.
-- Keeps **main thread responsive** while handling multiple tasks asynchronously.
-
----
-
-# Bun HTTP Server Concepts
-
-This module demonstrates **high-performance HTTP server design** in Bun with safe handling of CPU-intensive tasks.
-
-## Key Concepts
-
-### 1️⃣ Fast Routes
-
-- Routes like `/` respond immediately.
-- Ideal for serving static or lightweight requests.
-- Ensures minimal latency for end users.
-
-**Example:**
+1. **Fast Routes:** Respond immediately for lightweight requests.
 
 ```ts
 if (path === "/") return "Fast response";
 ```
 
----
-
-### 2️⃣ Blocking Routes
-
-- Demonstrates synchronous blocking work (`while` loops) for illustration.
-- Blocking routes pause the event loop, making other requests wait.
-- **Not recommended in production** for heavy computations.
-
-**Example:**
+2. **Blocking Routes:** Demonstrates synchronous, CPU-heavy operations.
+   ⚠️ Not recommended in production; blocks other requests.
 
 ```ts
-if (path === "/count") {
-  const start = Date.now();
-  while (Date.now() - start < 50) {} // busy wait
-  return "Blocking done!";
-}
+const start = Date.now();
+while (Date.now() - start < 50) {}
+return "Blocking done!";
 ```
 
----
-
-### 3️⃣ Offloading CPU Work to Workers
-
-- CPU-intensive tasks are offloaded to **Workers** to avoid blocking the main thread.
-- Each worker is terminated after completing its task for safe resource management.
-- Allows the server to remain responsive even under heavy computation.
-
-**Example:**
+3. **Worker Offloading:** Heavy computations are delegated to **Workers**.
 
 ```ts
-if (path === "/worker") {
-  const worker = new Worker(new URL("./worker.ts", import.meta.url), {
-    type: "module",
-  });
-
-  worker.onmessage = (event) => {
-    resolve(event.data);
-    worker.terminate();
-  };
-
-  worker.onerror = (err) => {
-    reject(err);
-    worker.terminate();
-  };
-
-  worker.postMessage({ task: "compute" });
-}
-```
-
----
-
-### 4️⃣ Safe Worker Lifecycle
-
-- **Start:** `worker.postMessage()` triggers computation.
-- **Completion:** `worker.onmessage` resolves the promise.
-- **Error handling:** `worker.onerror` rejects the promise.
-- **Cleanup:** `worker.terminate()` ensures no lingering CPU threads.
-
-This pattern guarantees that:
-
-- Heavy tasks do not block fast routes.
-- Resources are properly released.
-- The main event loop remains responsive.
-
----
-
-### 5️⃣ Combining Fast and Heavy Routes
-
-- Fast routes handle lightweight requests immediately.
-- Workers handle CPU-heavy routes in parallel.
-- Blocking routes illustrate what happens **without offloading**.
-- Demonstrates the importance of non-blocking architecture in Node/Bun servers.
-
----
-
-### 6️⃣ Practical Takeaways
-
-- Use **Workers** for CPU-intensive tasks in Bun.
-- Always terminate workers after use to prevent memory leaks.
-- Avoid synchronous blocking in production routes.
-- Keep the main thread light for high throughput.
-- Design APIs to separate **fast responses** from **heavy computation**.
-
----
-
-# Async Cancellable Operations
-
-This module provides a **pattern for cancellable asynchronous operations** using async generator functions in JavaScript/TypeScript.
-
-It allows you to run async operations that can be **safely cancelled**, while still producing a standard Promise result.
-
----
-
-## Key Concepts
-
-### 1️⃣ Cancellable Async Operation
-
-- Wrap an async generator function to produce an operation that can be **cancelled at any time**.
-- Returns an object containing:
-
-```ts
-{
-  promise: Promise<ReturnType>; // resolves with final generator result
-  cancel: () => void;           // immediately stops generator and rejects
-}
-```
-
----
-
-### 2️⃣ Generator-Based Flow
-
-- Async generators (`async function*`) allow sequential yields.
-- Each `yield` can produce a value or a `Promise`.
-- Generator resumes after `next(resolvedValue)`.
-
-**Why generators?**
-
-- They let you **pause/resume computation** at each step.
-- Perfect for long-running or stepwise asynchronous tasks.
-
----
-
-### 3️⃣ Cancellation Mechanism
-
-- Call `cancel()` to **stop the generator immediately**.
-- The promise returned will reject with an `"Operation Cancelled"` error.
-- Internally calls `generatorIterator.return()` to terminate generator safely.
-
-**Example:**
-
-```ts
-const cancellable = createAsyncCancellable<[], number, number>(
-  async function* () {
-    const a = yield 1;
-    const b = yield a + 2;
-    return b * 2;
-  },
-);
-
-const { promise, cancel } = cancellable();
-
-// Cancel after 100ms
-setTimeout(cancel, 100);
-
-promise
-  .then((result) => console.log("Result:", result))
-  .catch((err) => console.error(err.message)); // "Operation Cancelled" if cancelled
-```
-
----
-
-### 4️⃣ Promise Integration
-
-- The utility wraps the generator execution in a **Promise**.
-- Resolves with the final generator value if completed.
-- Rejects if cancelled or if any generator step throws an error.
-
----
-
-### 5️⃣ Safe Error Handling
-
-- Errors thrown inside the generator are caught and propagated through the Promise.
-- Cancelling triggers a controlled error (`"Operation Cancelled"`).
-- Supports async values yielded by the generator (awaitable).
-
----
-
-### 6️⃣ Practical Applications
-
-- **Long-running operations** with checkpoints (e.g., file processing, data streaming).
-- **Stepwise async workflows** that may need cancellation.
-- **UI-related async tasks** where the user may abort actions (e.g., search, download, or computation).
-- **Resource-sensitive operations** in Node.js or browser contexts.
-
----
-
-# Promise Study Suite
-
-A structured learning project that demonstrates and tests all major JavaScript Promise methods using real, testable examples.
-
-This project is designed for:
-
-- 📚 Deep understanding of Promises
-- 🧪 Writing proper async tests
-- 🎯 Interview preparation
-- 🧠 Internalizing concurrency behavior
-
----
-
-## 📦 What This Project Covers
-
-The following Promise APIs are implemented and tested:
-
-- `Promise.resolve`
-- `Promise.reject`
-- `Promise.all`
-- `Promise.allSettled`
-- `Promise.race`
-- `Promise.any`
-- `.then`
-- `.catch`
-- `.finally`
-
-Each method:
-
-- Is wrapped inside a testable utility function
-- Has both success and failure test cases
-- Includes edge-case handling
-
----
-
-## 📘 Covered Examples
-
-### 1️⃣ Promise.resolve
-
-```ts
-resolvedValue(42);
-```
-
-````
-
-Returns a resolved promise.
-
----
-
-### 2️⃣ Promise.reject
-
-```ts
-rejectedValue("error");
-```
-
-Returns a rejected promise.
-
----
-
-### 3️⃣ Promise.all
-
-- Resolves when ALL promises resolve
-- Rejects immediately if one fails
-
----
-
-### 4️⃣ Promise.allSettled
-
-- Waits for ALL promises
-- Never rejects
-- Returns status objects
-
----
-
-### 5️⃣ Promise.race
-
-- Resolves or rejects with the first settled promise
-
----
-
-### 6️⃣ Promise.any
-
-- Resolves with first successful promise
-- Rejects with `AggregateError` if all fail
-
----
-
-### 7️⃣ then chaining
-
-Demonstrates transformation through chaining:
-
-```ts
-Promise.resolve(5)
-  .then((v) => v * 2)
-  .then((v) => v + 5);
-```
-
----
-
-### 8️⃣ catch handling
-
-Demonstrates recovery from rejection.
-
----
-
-### 9️⃣ finally behavior
-
-Demonstrates cleanup logic that runs regardless of outcome.
-
----
-
-## 🧪 Example Test Case
-
-```ts
-test("resolves with provided value", async () => {
-  await expect(resolvedValue(42)).resolves.toBe(42);
+const worker = new Worker(new URL("./worker.ts", import.meta.url), {
+  type: "module",
 });
+worker.onmessage = (e) => resolve(e.data);
+worker.postMessage({ task: "compute" });
 ```
 
----
+4. **Worker Lifecycle:** Safe startup, error handling, and termination prevent leaks and main thread blocking.
 
-## ⚠️ Important Concepts Reinforced
+5. **Combining Fast & Heavy Routes:** Fast routes handle lightweight traffic; workers handle CPU-intensive tasks in parallel.
 
-- Promises are eager (executor runs immediately)
-- Resolution happens in the microtask queue
-- `.then()` always returns a new Promise
-- Errors thrown inside `.then()` automatically reject
-- `.finally()` does not receive resolved value
-- `Promise.any()` throws `AggregateError`
+**Key Takeaways:**
 
----
+- Always offload heavy computations
+- Never block the main event loop in production
+- Keep route responsibilities clear
 
-## 🎯 Recommended Study Order
-
-1. `Promise.resolve` & `Promise.reject`
-2. `.then` chaining
-3. `.catch`
-4. `.finally`
-5. `Promise.all`
-6. `Promise.race`
-7. `Promise.allSettled`
-8. `Promise.any`
+> 💡 Teaching Note: This pattern separates “fast I/O” from “slow CPU-bound” operations—critical in high-performance web apps.
 
 ---
 
-## 🧠 Advanced Extensions (Optional)
+## 3️⃣ CircuitBreaker – Resilient API Calls
 
-You can extend this project by:
+A **robust pattern for handling external or internal service failures**.
 
-- Adding fake timer tests
-- Implementing a custom Promise
-- Testing microtask ordering
-- Adding concurrency limiters
-- Simulating network delays
-- Writing stress tests with 1000+ promises
+### Why it matters
 
----
+APIs fail. If too many requests hit a failing service, you can trigger **cascading failures**. The circuit breaker prevents that.
 
-Here’s a detailed **README** for your **Circuit Breaker** module, written in the same style as your `PromiseTaskQueue` documentation:
+### Core Features
 
----
-
-# CircuitBreaker Concepts
-
-This module implements a **robust circuit breaker pattern** for JavaScript/TypeScript.
-It is designed to **protect external services or internal APIs** from overload, failures, or latency spikes. Compatible with **Bun, Node.js, and browsers**.
-
----
-
-## Key Concepts
-
-### 1️⃣ Circuit Breaker States
-
-The circuit breaker has **three main states**:
-
-1. **CLOSED** – requests flow normally; failures are counted.
-2. **OPEN** – requests are short-circuited; fallback is returned immediately.
-3. **HALF-OPEN** – limited requests are allowed to test if the service has recovered.
-
-**State Diagram:**
-
-```
-CLOSED → OPEN → HALF-OPEN → CLOSED
-```
-
----
-
-### 2️⃣ Configurable Failure Threshold
-
-* The breaker trips (opens) when the **failure ratio exceeds a threshold**.
-* Threshold can be a percentage (e.g., 50%) of the **minimum number of requests** within a rolling window.
-* Prevents transient errors from opening the breaker too aggressively.
-
-**Example:**
+- **States:** CLOSED, OPEN, HALF-OPEN
+- **Failure Threshold:** Trips when error rate exceeds a set percentage
+- **Rolling Window:** Counts requests only in recent history
+- **Timeouts:** Slow requests are treated as failures
+- **Reset Timeout & HALF-OPEN:** Test if service has recovered
+- **Fallback Function:** Provides a default response when the service is down
 
 ```ts
 const breaker = new CircuitBreaker(callApi, {
-  failureThreshold: 50,  // 50% of requests failing triggers OPEN
-  minimumRequests: 5,    // only consider after 5 requests
-  windowDuration: 10000, // 10s rolling window
+  failureThreshold: 50,
+  minimumRequests: 5,
 });
-```
-
----
-
-### 3️⃣ Rolling Window of Requests
-
-* The breaker counts successes and failures in a **time-based window**.
-* Only requests in this window contribute to the failure ratio.
-* Helps avoid tripping the breaker due to old or irrelevant errors.
-
----
-
-### 4️⃣ Timeout per Request
-
-* Each request can have a **timeout**.
-* Requests exceeding the timeout count as failures.
-* Ensures slow responses don’t block the system indefinitely.
-
-```ts
-timeout: 3000 // 3 seconds
-```
-
----
-
-### 5️⃣ Reset Timeout & HALF-OPEN
-
-* After being OPEN, the breaker automatically transitions to **HALF-OPEN** after `resetTimeout`.
-* Allows **limited trial requests** to test if the API is healthy.
-* Successful trial → breaker closes; failed trial → breaker re-opens.
-
-```ts
-resetTimeout: 8000 // 8 seconds before trying HALF-OPEN
-halfOpenMaxCalls: 2 // allow 2 trial requests
-```
-
----
-
-### 6️⃣ Fallback Function
-
-* You can provide a **fallback function** to execute when the breaker is OPEN.
-* Ensures your system continues functioning even if the API is down.
-
-```ts
-async () => ({
-  userId: -1,
-  id: -1,
-  title: "Fallback response",
-  completed: false,
-})
-```
-
----
-
-### 7️⃣ Fire Method
-
-* `.fire()` is used to invoke the protected function.
-* Handles **state transitions, timeouts, and fallback** automatically.
-* Returns either the normal result or the fallback.
-
-```ts
-const result = await breaker.fire();
-```
-
----
-
-### 8️⃣ State Introspection
-
-* Use `.getState()` to inspect the current breaker state:
-
-```ts
+const result = await breaker.fire(); // either normal result or fallback
 breaker.getState(); // "CLOSED" | "OPEN" | "HALF-OPEN"
 ```
 
-* Useful for **monitoring, metrics, or alerting**.
+**Practical Uses:**
+
+- Protect external APIs from overload
+- Maintain reliability in microservices
+- Prevent one failing service from collapsing others
+
+> 💡 Teaching Note: Circuit breakers are fundamental in **resilient distributed systems**. Always combine with logging and metrics.
 
 ---
 
-### 9️⃣ Practical Applications
+## 4️⃣ Async Cancellable Operations
 
-* Protecting **external APIs** from overload.
-* Preventing **cascading failures** in microservices.
-* Safeguarding **database queries** or **heavy internal computations**.
-* Implementing **resilient web services** in Bun, Node.js, or browser environments.
+Allows **long-running async operations** to be safely cancelled.
+
+### Why it matters
+
+Sometimes the user wants to **abort a task**, e.g., a file download or data processing.
+
+### How it works
+
+- Wrap an **async generator** in a cancellable wrapper.
+- Returns:
+
+```ts
+{
+  promise: Promise<ReturnType>; // resolves when done
+  cancel: () => void;           // stops the generator
+}
+```
+
+- `cancel()` calls `generator.return()`, rejecting the promise with `"Operation Cancelled"`.
+
+**Example:**
+
+```ts
+const { promise, cancel } = createAsyncCancellable(async function* () {
+  const a = yield 1;
+  const b = yield a + 2;
+  return b * 2;
+})();
+setTimeout(cancel, 100); // cancel after 100ms
+```
+
+**Applications:**
+
+- Stepwise async workflows
+- Long-running batch operations
+- UI-driven tasks where the user can abort
+
+> 💡 Teaching Note: Async generators give you **pausable, resumable workflows**, which combined with cancellation improves responsiveness in complex apps.
 
 ---
 
-### 🔟 Safety Considerations
+## 5️⃣ Bun WebSocket Pub/Sub – Real-Time Messaging
 
-* Ensure `minimumRequests` and `failureThreshold` are set appropriately.
-* Timeouts should reflect the expected response time of the API.
-* HALF-OPEN trial calls should be limited to avoid spamming a recovering service.
-* Always provide a fallback to maintain system reliability.
+Implements a **topic-based Pub/Sub system** using Bun’s WebSocket API.
+
+### Core Features
+
+- **Channel-Based Messaging:** Clients join channels; messages broadcast to subscribers.
+- **System Messages:** Notify all clients when someone joins or leaves.
+- **Sender Exclusion:** Clients do not receive their own messages.
+- **Metrics:** Track active WebSockets and requests via `/metrics`.
+- **Compression & Backpressure:** Handles large traffic efficiently.
+
+```ts
+ws.subscribe("room1");
+server.publish("room1", "Hello!");
+```
+
+**Applications:**
+
+- Chat apps
+- Collaborative tools
+- Multiplayer game lobbies
+- Live dashboards
+
+> 💡 Teaching Note: Focus on **non-blocking, low-latency design**. Bun’s WebSocket implementation is extremely fast—this pattern is production-ready for thousands of concurrent clients.
 
 ---
 
-This pattern complements modules like **PromiseTaskQueue** by allowing you to **control concurrency** while also **handling failures gracefully**.
+## ⚡ Summary – Learning Objectives
+
+By studying this repository, you will learn:
+
+1. How to **control concurrency** safely with a FIFO queue.
+2. How to design **non-blocking Bun servers** for both fast I/O and CPU-heavy tasks.
+3. How to implement **resilient APIs** with circuit breakers.
+4. How to create **cancellable async workflows** using generators.
+5. How to build **real-time Pub/Sub systems** with metrics and safe broadcasting.
+
+Each module includes **examples, tests, and practical applications** to reinforce learning.
 
 ---
-````
+
+# Node.js Pub/Sub Example
+
+This repository demonstrates a simple **Pub/Sub (Publisher/Subscriber) pattern** implemented purely in **Node.js** using the built-in `EventEmitter`.
+
+No external dependencies are required. This is perfect for **interview demos** or understanding how Pub/Sub works internally.
+
+---
+
+## What is Pub/Sub?
+
+Pub/Sub is a messaging pattern where:
+
+- **Publishers** send messages to a **channel**.
+- **Subscribers** listen to messages from a channel.
+- Publishers and subscribers are **decoupled**, meaning publishers don’t need to know who is receiving the messages.
+
+Think of it like a **newsletter system**: the publisher writes news, subscribers receive it if they are signed up.
+
+---
+
+## Implementation
+
+We use **Node.js `EventEmitter`** to manage channels and listeners.
+
+```js
+const EventEmitter = require("events");
+
+class PubSub {
+  constructor() {
+    this.emitter = new EventEmitter();
+  }
+
+  // Subscribe to a channel
+  subscribe(channel, listener) {
+    this.emitter.on(channel, listener);
+  }
+
+  // Unsubscribe from a channel
+  unsubscribe(channel, listener) {
+    this.emitter.off(channel, listener);
+  }
+
+  // Publish a message to a channel
+  publish(channel, message) {
+    this.emitter.emit(channel, message);
+  }
+}
+```
+
+---
+
+## Usage Example
+
+Here’s a complete example with multiple channels and subscribers:
+
+```js
+// Import PubSub
+const pubsub = new PubSub();
+
+// Subscriber 1 subscribes to "news"
+pubsub.subscribe("news", (msg) => {
+  console.log("Subscriber 1 received news:", msg);
+});
+
+// Subscriber 2 subscribes to "news"
+pubsub.subscribe("news", (msg) => {
+  console.log("Subscriber 2 received news:", msg);
+});
+
+// Subscriber 3 subscribes to "chat"
+pubsub.subscribe("chat", (msg) => {
+  console.log("Subscriber 3 received chat:", msg);
+});
+
+// Publish messages
+pubsub.publish("news", "Breaking news: Node.js is awesome!");
+pubsub.publish("chat", "Hello everyone in chat!");
+
+// Unsubscribe Subscriber 2 from "news"
+const subscriber2 = (msg) => console.log("Subscriber 2 received news:", msg);
+pubsub.unsubscribe("news", subscriber2);
+
+// Publish another news message
+pubsub.publish("news", "More news after unsubscribe");
+```
+
+---
+
+## Output
+
+```
+Subscriber 1 received news: Breaking news: Node.js is awesome!
+Subscriber 2 received news: Breaking news: Node.js is awesome!
+Subscriber 3 received chat: Hello everyone in chat!
+Subscriber 1 received news: More news after unsubscribe
+```
+
+---
+
+## Features
+
+- Supports **multiple channels** (`news`, `chat`, etc.).
+- Supports **multiple subscribers** per channel.
+- Ability to **unsubscribe a specific listener**.
+- Clean, **object-oriented design** using `EventEmitter`.
+- Lightweight, **pure Node.js implementation**.
+
+---
+
+## Interview Tips
+
+When discussing this in an interview:
+
+1. Explain the **decoupling** of publishers and subscribers.
+2. Highlight that this is **in-memory** and works for a single Node.js process.
+3. Mention that for distributed systems, you would need a **real message broker** like **Redis Pub/Sub**, **RabbitMQ**, or **Kafka**.
+4. Show understanding of **unsubscribe mechanics**, which prevents memory leaks.
+
+---
