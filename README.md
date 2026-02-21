@@ -223,6 +223,6 @@ O(2ⁿ)      Naive recursion
 
 **Happy Coding 🚀**
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_
 
 ---
