@@ -970,3 +970,60 @@ export function longestPalindromeSubString(input: string): string {
 	// Extract and return the longest palindromic substring
 	return input.slice(longestStartIndex, longestStartIndex + longestLength);
 }
+
+/**
+ * Returns the k most frequent numbers from the given array.
+ * This implementation uses a bucket sort strategy to achieve
+ * linear time complexity O(n).
+ *
+ * @param nums - The input array of numbers.
+ * @param k - The number of most frequent elements to return.
+ * @returns An array containing the k most frequent numbers.
+ */
+export function topK(nums: number[], k: number): number[] {
+	/**
+	 * Holds the final top-k frequent elements.
+	 * The array will never exceed length k.
+	 */
+	const result: number[] = [];
+
+	/**
+	 * A frequency map where:
+	 * key   = number from nums
+	 * value = how many times it appears
+	 */
+	const freqMap = new Map<number, number>();
+
+	/**
+	 * Bucket array where index represents frequency.
+	 * buckets[i] contains numbers that appear exactly i times.
+	 * Maximum possible frequency is nums.length.
+	 */
+	const buckets: number[][] = Array.from({ length: nums.length + 1 }, () => []);
+
+	/**
+	 * Step 1: Count how many times each number appears.
+	 */
+	for (const num of nums) {
+		freqMap.set(num, (freqMap.get(num) ?? 0) + 1);
+	}
+
+	/**
+	 * Step 2: Place numbers into buckets based on frequency.
+	 */
+	for (const [num, freq] of freqMap) {
+		buckets[freq].push(num);
+	}
+
+	/**
+	 * Step 3: Traverse buckets from highest frequency to lowest,
+	 * collecting elements until k results are gathered.
+	 */
+	for (let i = nums.length; i >= 0 && result.length < k; i--) {
+		for (const num of buckets[i]) {
+			if (result.length < k) result.push(num);
+		}
+	}
+
+	return result;
+}

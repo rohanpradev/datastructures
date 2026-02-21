@@ -2291,3 +2291,134 @@ export function longestPalindromeSubString(input: string): string {
 - Classic string problem that tests two-pointer reasoning.
 
 ---
+
+## Problem: Top K Frequent Elements (LeetCode 347)
+
+### Problem Statement
+
+Given an integer array `nums` and an integer `k`, return the **k most frequent elements**.
+You may return the answer in **any order**.
+
+---
+
+### Examples
+
+```
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+
+Input: nums = [1], k = 1
+Output: [1]
+```
+
+---
+
+### Visual Explanation
+
+```
+Input: nums = [1,1,1,2,2,3], k = 2
+
+Step 1: Count frequencies
+        1 → 3 times
+        2 → 2 times
+        3 → 1 time
+
+Step 2: Create buckets (index = frequency)
+
+Index:  0   1    2    3
+        []  [3]  [2]  [1]
+
+Step 3: Traverse from highest frequency to lowest
+
+Start from index 6 → down to 0
+At index 3 → take [1]
+At index 2 → take [2]
+
+Collected 2 elements → stop
+
+Result: [1, 2]
+```
+
+---
+
+## Algorithm (Bucket Sort Approach)
+
+1. Create a **frequency map** to count occurrences of each number.
+2. Create a **bucket array** where:
+   - Index = frequency
+   - Value = list of numbers with that frequency.
+
+3. Traverse the bucket array from highest frequency to lowest.
+4. Collect elements until `k` elements are gathered.
+5. Return the result.
+
+This avoids sorting the entire array.
+
+---
+
+## Implementation
+
+```typescript
+/**
+ * Returns the k most frequent elements in the array.
+ *
+ * Uses a bucket sort approach for optimal O(n) time complexity.
+ *
+ * @param nums - Array of integers.
+ * @param k - Number of most frequent elements to return.
+ * @returns An array containing the k most frequent elements.
+ *
+ * @example
+ * topK([1,1,1,2,2,3], 2)
+ * // → [1,2]
+ */
+export function topK(nums: number[], k: number): number[] {
+  const result: number[] = [];
+  const freqMap = new Map<number, number>();
+  const buckets: number[][] = Array.from({ length: nums.length + 1 }, () => []);
+
+  // Step 1: Count frequency
+  for (const num of nums) {
+    freqMap.set(num, (freqMap.get(num) ?? 0) + 1);
+  }
+
+  // Step 2: Place numbers into frequency buckets
+  for (const [num, freq] of freqMap) {
+    buckets[freq].push(num);
+  }
+
+  // Step 3: Traverse buckets from highest frequency
+  for (let i = nums.length; i >= 0 && result.length < k; i--) {
+    for (const num of buckets[i]) {
+      if (result.length < k) result.push(num);
+    }
+  }
+
+  return result;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** O(n)
+  - Counting frequencies → O(n)
+  - Filling buckets → O(n)
+  - Traversing buckets → O(n)
+
+- **Space:** O(n)
+  - Frequency map + bucket array
+
+---
+
+## Key Takeaways
+
+- No sorting required → avoids O(n log n).
+- Bucket index directly represents frequency.
+- Very common interview pattern.
+- Alternative solutions:
+  - Min Heap → O(n log k)
+  - Quickselect → Average O(n)
+
+---

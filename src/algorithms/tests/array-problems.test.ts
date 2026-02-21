@@ -15,6 +15,7 @@ import {
   maxExpressionValue,
   nextDeparture,
   longestPalindromeSubString,
+  topK,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -853,5 +854,44 @@ describe("longestPalindromeSubString", () => {
     const result = longestPalindromeSubString(input);
 
     expect(result).toBe("racecar");
+  });
+});
+
+describe("topK", () => {
+  test("returns k most frequent elements", () => {
+    const nums = [1, 1, 1, 2, 2, 3];
+    const result = topK(nums, 2);
+
+    // Order is not guaranteed, so sort before asserting
+    expect(result.sort()).toEqual([1, 2]);
+  });
+
+  test("returns single element when array has one item", () => {
+    const nums = [1];
+    const result = topK(nums, 1);
+
+    expect(result).toEqual([1]);
+  });
+
+  test("handles multiple elements with same frequency", () => {
+    const nums = [1, 2, 3, 4];
+    const result = topK(nums, 2);
+
+    expect(result.length).toBe(2);
+    expect([1, 2, 3, 4]).toEqual(expect.arrayContaining(result));
+  });
+
+  test("returns all elements when k equals unique count", () => {
+    const nums = [1, 1, 2, 2, 3];
+    const result = topK(nums, 3);
+
+    expect(result.sort()).toEqual([1, 2, 3]);
+  });
+
+  test("handles empty input", () => {
+    const nums: number[] = [];
+    const result = topK(nums, 0);
+
+    expect(result).toEqual([]);
   });
 });
