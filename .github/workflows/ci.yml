@@ -56,18 +56,21 @@ jobs:
 
       - name: Update Last Updated
         run: |
-          DATE=$(date +"%B %Y")
-          sed -i "s/_Last Updated:.*$/_Last Updated: $DATE_/" README.md
+          DATE=$(date +"%B %d, %Y")
+          # Replace line starting with *Last Updated: or _Last Updated: and keep formatting
+          sed -i -E "s/^([*_])Last Updated:.*\1/\1Last Updated: $DATE\1/" README.md
+
+      - name: Show README changes
+        run: git diff README.md || echo "No changes detected"
 
       - name: Commit & Push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          # only commit if there are changes
+          # Only commit if there are changes
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: update README last updated"
             git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
-          fi
