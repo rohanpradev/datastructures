@@ -10,6 +10,22 @@
 **A comprehensive Data Structures & Algorithms workspace in TypeScript**, powered by **Bun**, featuring **1,900+ tests**, visual learning guides, automated practice generation, and interview-ready solutions.
 
 Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA understanding**.
+Here’s a cleaned-up and navigable version of your README with consistent headings, proper linking, and a few readability improvements:
+
+---
+
+# Data Structures & Algorithms (DSA) in TypeScript — Bun-Powered Learning Workspace
+
+[![CI](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanpradev/datastructures/actions/workflows/ci.yml)
+[![Biome](https://img.shields.io/badge/Code_Quality-Biome-60a5fa?logo=biome)](https://biomejs.dev)
+[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?logo=typescript&logoColor=white)]()
+[![Bun](https://img.shields.io/badge/Bun-%23000000.svg?logo=bun&logoColor=white)]()
+
+<img width="1024" alt="DSA Workspace Banner" src="https://github.com/user-attachments/assets/06b59555-ad3f-49c5-95b3-919f81170e14" />
+
+**A comprehensive Data Structures & Algorithms workspace in TypeScript**, powered by **Bun**, featuring **1,900+ tests**, visual learning guides, automated practice generation, and interview-ready solutions.
+
+Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA understanding**.
 
 ---
 
@@ -17,6 +33,10 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 
 - [Features](#features)
 - [Learning Guides](#learning-guides)
+  - [Data Structures](#data-structures)
+  - [Algorithms](#algorithms)
+  - [Node/Bun Concepts](#nodebun-concepts)
+
 - [Quick Start](#quick-start)
 - [Learning Workflow](#learning-workflow)
 - [Project Structure](#project-structure)
@@ -25,6 +45,7 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 - [Complexity Reference](#complexity-reference)
 - [Technologies](#technologies)
 - [Stats](#stats)
+- [Ideal For](#ideal-for)
 
 ---
 
@@ -61,7 +82,7 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 - [Recursion & Fibonacci](src/algorithms/recursion/FIBONACCI_GUIDE.md)
 - [Sorting Algorithms](src/algorithms/sorting/SORTING_GUIDE.md)
 
-### Node/Bun concepts
+### Node/Bun Concepts
 
 - [Node Concepts](src/node-concepts/README.md)
 
@@ -122,7 +143,7 @@ bun dev        # Run development server
 DSA/
 ├─ src/                # Reference implementations
 │  ├─ algorithms/
-│  └─ data-structures/
+│  ├─ data-structures/
 │  └─ node-concepts/
 ├─ practice/           # Generated practice workspace
 ├─ scripts/            # Bun automation scripts
@@ -166,7 +187,7 @@ bun test
 - 1,919 passing tests
 - 23 test files
 - Zero TypeScript errors
-- Biome enforced formatting
+- Biome-enforced formatting
 
 ---
 
@@ -217,3 +238,5 @@ O(2ⁿ)      Naive recursion
 **Happy Coding 🚀**
 
 _Last Updated: January 2026_
+
+---
