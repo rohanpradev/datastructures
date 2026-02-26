@@ -1027,3 +1027,52 @@ export function topK(nums: number[], k: number): number[] {
 
 	return result;
 }
+/**
+ * Searches for a target number in a row-wise and column-wise sorted matrix.
+ * Starts from the top-right corner and moves left or down depending on the comparison.
+ *
+ * @param {number[][]} matrix - 2D array where each row and column is sorted in ascending order
+ * @param {number} target - The number to search for
+ * @returns {[number, number] | -1} The coordinates [row, col] of the target if found, otherwise -1
+ *
+ * @example
+ * const matrix = [
+ *   [1, 4, 7, 11],
+ *   [2, 5, 8, 12],
+ *   [3, 6, 9, 16],
+ *   [10, 13, 14, 17]
+ * ];
+ * searchInSortedMatrix(matrix, 9); // returns [2, 2]
+ * searchInSortedMatrix(matrix, 20); // returns -1
+ */
+export function searchInSortedMatrix(
+	matrix: number[][],
+	target: number,
+): [number, number] | -1 {
+	// Handle empty matrix
+	if (matrix.length === 0 || matrix[0].length === 0) return -1;
+
+	// Start from top-right corner
+	let row = 0;
+	let col = matrix[0].length - 1;
+
+	// Traverse the matrix until we go out of bounds
+	while (row < matrix.length && col >= 0) {
+		const current = matrix[row][col];
+
+		if (current === target) {
+			// Target found
+			return [row, col];
+		}
+		if (current > target) {
+			// Current is too big, move left
+			col--;
+		} else {
+			// Current is too small, move down
+			row++;
+		}
+	}
+
+	// Target not found
+	return -1;
+}
