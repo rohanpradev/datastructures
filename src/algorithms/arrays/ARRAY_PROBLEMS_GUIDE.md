@@ -2542,3 +2542,114 @@ export function searchInSortedMatrix(
 - Works for **any m × n sorted matrix**, making it ideal for search problems in 2D grids.
 
 ---
+
+## Problem: Three Numbers Sort
+
+### Problem Statement
+
+Given an array `nums` containing **exactly three distinct numbers**, and an array `order` specifying the desired order `[first, second, third]`, **sort the array in-place** so that all occurrences of `order[0]` come first, followed by `order[1]`, and then `order[2]`.
+
+### Examples
+
+```
+Input: nums = [3, 1, 2, 1, 3, 2], order = [1, 2, 3]
+Output: [1, 1, 2, 2, 3, 3]
+
+Input: nums = [2, 3, 1, 3, 2, 1], order = [3, 1, 2]
+Output: [3, 3, 1, 1, 2, 2]
+```
+
+### Visual Explanation
+
+```
+Original: [3, 1, 2, 1, 3, 2], order = [1, 2, 3]
+
+Step 1: Move all 1s to the front
+        [1, 1, 2, 3, 3, 2]
+
+Step 2: Move all 3s to the back
+        [1, 1, 2, 2, 3, 3]
+
+Result: [1, 1, 2, 2, 3, 3]
+```
+
+---
+
+## Algorithm (Two-Pass Approach)
+
+1. **Pass 1 – Move `order[0]` to the front**
+   - Iterate through the array and swap each occurrence of `order[0]` with the next available front index.
+
+2. **Pass 2 – Move `order[2]` to the back**
+   - Iterate from the end and swap each occurrence of `order[2]` with the next available back index.
+   - Stop at the first index to avoid overwriting `order[0]`.
+
+3. **Remaining numbers** (`order[1]`) automatically fall in the middle.
+
+---
+
+## Implementation
+
+```typescript
+/**
+ * Sorts an array containing exactly three distinct numbers according to a given order.
+ *
+ * Two-pass approach:
+ *   1. Move all occurrences of order[0] to the front.
+ *   2. Move all occurrences of order[2] to the back.
+ * The remaining elements (order[1]) naturally fall in the middle.
+ *
+ * @param nums - array of numbers
+ * @param order - tuple of three numbers [first, second, third] defining desired order
+ * @returns the sorted array
+ *
+ * @example
+ * threeNumbersSort([3,1,2,1,3,2], [1,2,3])
+ * // → [1,1,2,2,3,3]
+ */
+export function threeNumbersSort(
+  nums: number[],
+  order: [number, number, number],
+): number[] {
+  let firstIdx = 0;
+  let lastIdx = nums.length - 1;
+
+  // Pass 1: move order[0] to the front
+  for (let i = 0; i <= lastIdx; i++) {
+    if (nums[i] === order[0]) {
+      [nums[firstIdx], nums[i]] = [nums[i], nums[firstIdx]];
+      firstIdx++;
+    }
+  }
+
+  // Pass 2: move order[2] to the back
+  // Stop at firstIdx to avoid overwriting order[0]
+  for (let i = nums.length - 1; i >= firstIdx; i--) {
+    if (nums[i] === order[2]) {
+      [nums[lastIdx], nums[i]] = [nums[i], nums[lastIdx]];
+      lastIdx--;
+    }
+  }
+
+  return nums;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** `O(n)` → two passes through the array.
+- **Space:** `O(1)` → in-place sorting, no extra array needed.
+
+---
+
+## Key Takeaways
+
+- Two-pass approach is simple and works for **exactly three distinct numbers**.
+- First pass ensures all smallest numbers are at the front.
+- Second pass ensures all largest numbers are at the back.
+- Middle numbers naturally fall into place without extra swaps.
+- Useful in problems similar to **Dutch National Flag** sorting or categorization tasks.
+
+---

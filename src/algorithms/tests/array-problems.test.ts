@@ -17,6 +17,7 @@ import {
   longestPalindromeSubString,
   topK,
   searchInSortedMatrix,
+  threeNumbersSort,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -936,5 +937,45 @@ describe("searchInSortedMatrix", () => {
     const colMatrix = [[1], [2], [3], [4]];
     expect(searchInSortedMatrix(colMatrix, 3)).toEqual([2, 0]);
     expect(searchInSortedMatrix(colMatrix, 5)).toBe(-1);
+  });
+});
+
+describe("threeNumbersSort", () => {
+  test("sorts numbers according to given order", () => {
+    expect(threeNumbersSort([3, 1, 2, 1, 3, 2], [1, 2, 3])).toEqual([
+      1, 1, 2, 2, 3, 3,
+    ]);
+    expect(threeNumbersSort([2, 3, 1, 3, 2, 1], [3, 1, 2])).toEqual([
+      3, 3, 1, 1, 2, 2,
+    ]);
+    expect(threeNumbersSort([1, 2, 3, 1, 2, 3], [2, 3, 1])).toEqual([
+      2, 2, 3, 3, 1, 1,
+    ]);
+  });
+
+  test("works with already sorted arrays", () => {
+    expect(threeNumbersSort([1, 1, 2, 2, 3, 3], [1, 2, 3])).toEqual([
+      1, 1, 2, 2, 3, 3,
+    ]);
+    expect(threeNumbersSort([3, 3, 2, 2, 1, 1], [3, 2, 1])).toEqual([
+      3, 3, 2, 2, 1, 1,
+    ]);
+  });
+
+  test("works with arrays of length 1 or 2", () => {
+    expect(threeNumbersSort([1], [1, 2, 3])).toEqual([1]);
+    expect(threeNumbersSort([2, 1], [1, 2, 3])).toEqual([1, 2]);
+    expect(threeNumbersSort([3, 2], [2, 3, 1])).toEqual([2, 3]);
+  });
+
+  test("works when all elements are the same", () => {
+    expect(threeNumbersSort([1, 1, 1], [1, 2, 3])).toEqual([1, 1, 1]);
+    expect(threeNumbersSort([2, 2, 2], [1, 2, 3])).toEqual([2, 2, 2]);
+  });
+
+  test("works with shuffled arrays", () => {
+    const arr = [2, 1, 3, 2, 3, 1, 2, 1, 3];
+    const sorted = threeNumbersSort(arr, [1, 2, 3]);
+    expect(sorted).toEqual([1, 1, 1, 2, 2, 2, 3, 3, 3]);
   });
 });

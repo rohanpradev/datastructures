@@ -1076,3 +1076,42 @@ export function searchInSortedMatrix(
 	// Target not found
 	return -1;
 }
+
+/**
+ * Sorts an array containing exactly three distinct numbers according to a given order.
+ *
+ * Two-pass approach:
+ *   1. Move all occurrences of order[0] to the front.
+ *   2. Move all occurrences of order[2] to the back.
+ * The remaining elements (order[1]) naturally fall in the middle.
+ *
+ * @param nums - array of numbers
+ * @param order - tuple of three numbers [first, second, third] defining desired order
+ * @returns the sorted array
+ */
+export function threeNumbersSort(
+	nums: number[],
+	order: [number, number, number],
+): number[] {
+	let firstIdx = 0;
+	let lastIdx = nums.length - 1;
+
+	// Pass 1: move order[0] to the front
+	for (let i = 0; i <= lastIdx; i++) {
+		if (nums[i] === order[0]) {
+			[nums[firstIdx], nums[i]] = [nums[i], nums[firstIdx]];
+			firstIdx++;
+		}
+	}
+
+	// Pass 2: move order[2] to the back
+	// Start from the end, but stop at firstIdx (all order[0] are before firstIdx)
+	for (let i = nums.length - 1; i >= firstIdx; i--) {
+		if (nums[i] === order[2]) {
+			[nums[lastIdx], nums[i]] = [nums[i], nums[lastIdx]];
+			lastIdx--;
+		}
+	}
+
+	return nums;
+}
