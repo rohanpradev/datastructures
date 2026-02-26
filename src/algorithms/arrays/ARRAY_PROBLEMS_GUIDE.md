@@ -2422,3 +2422,123 @@ export function topK(nums: number[], k: number): number[] {
   - Quickselect → Average O(n)
 
 ---
+
+## Problem: Search in a Sorted Matrix
+
+### Problem Statement
+
+Given an `m x n` matrix where **each row and each column is sorted in ascending order**, implement a function to **search for a target number**. Return the coordinates `[row, col]` of the target if found, otherwise return `-1`.
+
+### Examples
+
+```
+Input: matrix = [
+  [1, 4, 7, 11],
+  [2, 5, 8, 12],
+  [3, 6, 9, 16],
+  [10, 13, 14, 17]
+], target = 9
+Output: [2, 2]
+
+Input: matrix = [
+  [1, 4, 7, 11],
+  [2, 5, 8, 12],
+  [3, 6, 9, 16],
+  [10, 13, 14, 17]
+], target = 20
+Output: -1
+```
+
+### Visual Explanation
+
+```
+Matrix:
+[
+  [1,  4,  7, 11],
+  [2,  5,  8, 12],
+  [3,  6,  9, 16],
+  [10, 13, 14, 17]
+]
+
+Start at top-right corner (0,3) → 11
+Target 9 < 11 → move left → 7
+Target 9 > 7 → move down → 8
+Target 9 > 8 → move down → 9
+Found target at (2,2)
+```
+
+---
+
+## Algorithm (Iterative Search)
+
+1. Start at the **top-right corner** `(0, n-1)`.
+2. While within matrix bounds:
+   - If current value == target → **return coordinates**.
+   - If current value > target → **move left**.
+   - If current value < target → **move down**.
+
+3. If out of bounds → **target not found**, return `-1`.
+
+> This works because each row and column is sorted.
+
+---
+
+## Implementation
+
+```typescript
+/**
+ * Searches for a target number in a row-wise and column-wise sorted matrix.
+ *
+ * Starts from the top-right corner and moves left or down depending on the comparison.
+ *
+ * @param {number[][]} matrix - 2D array where each row and column is sorted in ascending order
+ * @param {number} target - The number to search for
+ * @returns {[number, number] | -1} Coordinates [row, col] if found, otherwise -1
+ *
+ * @example
+ * const matrix = [
+ *   [1, 4, 7, 11],
+ *   [2, 5, 8, 12],
+ *   [3, 6, 9, 16],
+ *   [10, 13, 14, 17]
+ * ];
+ * searchInSortedMatrix(matrix, 9); // → [2, 2]
+ * searchInSortedMatrix(matrix, 20); // → -1
+ */
+export function searchInSortedMatrix(
+  matrix: number[][],
+  target: number,
+): [number, number] | -1 {
+  if (matrix.length === 0 || matrix[0].length === 0) return -1;
+
+  let row = 0;
+  let col = matrix[0].length - 1;
+
+  while (row < matrix.length && col >= 0) {
+    const current = matrix[row][col];
+
+    if (current === target) return [row, col];
+    if (current > target) col--;
+    else row++;
+  }
+
+  return -1;
+}
+```
+
+---
+
+## Complexity Analysis
+
+- **Time:** `O(m + n)` → At most move `m` steps down and `n` steps left.
+- **Space:** `O(1)` → No extra memory used.
+
+---
+
+## Key Takeaways
+
+- Start **top-right** (or bottom-left) to leverage both row and column sorting.
+- Only **move left or down** based on comparison → efficient traversal.
+- Works for **any m × n sorted matrix**, making it ideal for search problems in 2D grids.
+
+---

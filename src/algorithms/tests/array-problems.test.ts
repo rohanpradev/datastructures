@@ -16,6 +16,7 @@ import {
   nextDeparture,
   longestPalindromeSubString,
   topK,
+  searchInSortedMatrix,
 } from "@/algorithms/arrays/array-problems";
 
 describe("mergeIntervals", () => {
@@ -893,5 +894,47 @@ describe("topK", () => {
     const result = topK(nums, 0);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("searchInSortedMatrix", () => {
+  const matrix = [
+    [1, 4, 7, 11],
+    [2, 5, 8, 12],
+    [3, 6, 9, 16],
+    [10, 13, 14, 17],
+  ];
+
+  test("finds existing numbers", () => {
+    expect(searchInSortedMatrix(matrix, 1)).toEqual([0, 0]);
+    expect(searchInSortedMatrix(matrix, 9)).toEqual([2, 2]);
+    expect(searchInSortedMatrix(matrix, 17)).toEqual([3, 3]);
+    expect(searchInSortedMatrix(matrix, 8)).toEqual([1, 2]);
+  });
+
+  test("returns -1 for numbers not in matrix", () => {
+    expect(searchInSortedMatrix(matrix, 0)).toBe(-1);
+    expect(searchInSortedMatrix(matrix, 15)).toBe(-1);
+    expect(searchInSortedMatrix(matrix, 20)).toBe(-1);
+  });
+
+  test("handles single element matrices", () => {
+    expect(searchInSortedMatrix([[5]], 5)).toEqual([0, 0]);
+    expect(searchInSortedMatrix([[5]], 3)).toBe(-1);
+  });
+
+  test("handles empty matrix", () => {
+    expect(searchInSortedMatrix([], 1)).toBe(-1);
+    expect(searchInSortedMatrix([[]], 1)).toBe(-1);
+  });
+
+  test("handles single row or column", () => {
+    const rowMatrix = [[1, 2, 3, 4]];
+    expect(searchInSortedMatrix(rowMatrix, 3)).toEqual([0, 2]);
+    expect(searchInSortedMatrix(rowMatrix, 5)).toBe(-1);
+
+    const colMatrix = [[1], [2], [3], [4]];
+    expect(searchInSortedMatrix(colMatrix, 3)).toEqual([2, 0]);
+    expect(searchInSortedMatrix(colMatrix, 5)).toBe(-1);
   });
 });
