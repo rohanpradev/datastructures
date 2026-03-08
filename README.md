@@ -7,7 +7,7 @@
 
 <img width="1024" alt="DSA Workspace Banner" src="https://github.com/user-attachments/assets/06b59555-ad3f-49c5-95b3-919f81170e14" />
 
-**A comprehensive Data Structures & Algorithms workspace in TypeScript**, powered by **Bun**, featuring **1,900+ tests**, visual learning guides, automated practice generation, and interview-ready solutions.
+**A comprehensive Data Structures & Algorithms workspace in TypeScript**, powered by **Bun**, featuring **2,171 src/ tests**, visual learning guides, automated practice generation, and interview-ready solutions.
 
 Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA understanding**.
 
@@ -36,7 +36,7 @@ Perfect for **coding interviews**, **algorithm mastery**, and **deep DSA underst
 ## 🚀 Features
 
 * ✅ **451+ DSA problems**
-* ✅ **1,919 passing test cases**
+* ✅ **2,171 passing test cases (src/)**
 * ✅ **11 visual learning guides**
 * ✅ **Bun-powered practice template generator**
 * ✅ **TypeScript (strict mode)**
@@ -86,7 +86,7 @@ bun install
 
 ```bash
 bun practice   # Generate empty practice templates
-bun test       # Run all tests (1,919)
+bun test src   # Run all src tests (2,171)
 bun check      # Lint & format with Biome
 bun dev        # Run development server
 ```
@@ -170,8 +170,8 @@ DSA/
 bun test
 ```
 
-* 1,919 passing tests
-* 23 test files
+* 2,171 passing tests (src/)
+* 31 test files (src/)
 * Zero TypeScript errors
 * Biome-enforced formatting
 
@@ -205,9 +205,9 @@ O(2ⁿ)      Naive recursion
 ## 📊 Stats
 
 * **Problems:** 451
-* **Tests:** 1,919
+* **Tests (src):** 2,171
 * **Guides:** 11
-* **Test Files:** 23
+* **Test Files (src):** 31
 * **Docs:** 5,000+ lines
 
 ---
@@ -226,3 +226,5 @@ O(2ⁿ)      Naive recursion
 _Last Updated: January 2026_
 
 ---
+
+

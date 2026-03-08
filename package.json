@@ -10,8 +10,8 @@
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.4",
-		"@types/bun": "^1.3.9"
+		"@biomejs/biome": "2.4.6",
+		"@types/bun": "^1.3.10"
 	},
 	"peerDependencies": {
 		"typescript": "^5.9.3"
