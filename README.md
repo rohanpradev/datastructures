@@ -1,5 +1,23 @@
 # Data Structures, Algorithms, Node/Bun, and System Design Prep
 
+<p align="center">
+  <a href="https://svgl.app/?search=bun"><img src="https://svgl.app/library/bun.svg" alt="Bun" height="46" /></a>
+  &nbsp;&nbsp;
+  <a href="https://svgl.app/?search=typescript"><img src="https://svgl.app/library/typescript.svg" alt="TypeScript" height="46" /></a>
+  &nbsp;&nbsp;
+  <a href="https://svgl.app/?search=biome"><img src="https://svgl.app/library/biomejs.svg" alt="Biome" height="46" /></a>
+  &nbsp;&nbsp;
+  <a href="https://svgl.app/?search=node"><img src="https://svgl.app/library/nodejs.svg" alt="Node.js" height="46" /></a>
+  &nbsp;&nbsp;
+  <a href="https://svgl.app/?search=javascript"><img src="https://svgl.app/library/javascript.svg" alt="JavaScript" height="46" /></a>
+  &nbsp;&nbsp;
+  <a href="https://svgl.app/?search=github"><img src="https://svgl.app/library/github_light.svg" alt="GitHub" height="46" /></a>
+</p>
+
+<p align="center">
+  <strong>Bun runtime</strong> | <strong>TypeScript 7</strong> | <strong>Biome quality</strong> | <strong>Node.js concepts</strong> | <strong>JavaScript fundamentals</strong> | <strong>GitHub CI</strong>
+</p>
+
 TypeScript 7 + Bun interview-prep workspace with reference implementations, tests, guides, and generated practice templates.
 
 This repo is organized by topic so you can learn a pattern, implement it in `practice/`, run the matching tests, and compare against the reference in `src/`.
