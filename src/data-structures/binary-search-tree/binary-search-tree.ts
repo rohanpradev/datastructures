@@ -693,4 +693,4 @@ class BinarySearchTree<T = number> {
 	}
 }
 
-export { TreeNode, BinarySearchTree };
+export { BinarySearchTree, TreeNode };

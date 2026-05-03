@@ -280,4 +280,4 @@ class Queue<T> {
 	}
 }
 
-export { QueueNode, Queue };
+export { Queue, QueueNode };

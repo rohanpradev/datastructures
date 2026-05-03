@@ -241,6 +241,9 @@ bun test practice/algorithms/tests/sorting.test.ts
 
 # Run tests for a specific data structure
 bun test practice/data-structures/tests/binary-search-tree.test.ts
+
+# Run tests by reference topic first
+bun test src/algorithms/tests/backtracking.test.ts
 \`\`\`
 
 ## Directory Structure
@@ -249,6 +252,10 @@ bun test practice/data-structures/tests/binary-search-tree.test.ts
 practice/
 |-- algorithms/
 |   |-- arrays/          # Array manipulation exercises
+|   |-- backtracking/    # Choice-tree and grid-search problems
+|   |-- bit-manipulation/# XOR, bit counts, bit shifts
+|   |-- dynamic-programming/
+|   |-- math-geometry/   # Matrix transforms and cycle checks
 |   |-- recursion/       # Fibonacci and recursive problems
 |   \`-- sorting/         # Sorting algorithms
 |-- data-structures/
@@ -258,9 +265,34 @@ practice/
 |   |-- heap/
 |   |-- queue/
 |   |-- singly-linked-list/
+|   |-- trie/
 |   \`-- stack/
+|-- node-concepts/
+|   |-- async/
+|   |-- basics/
+|   |-- bun-runtime/     # Bun file I/O, glob, hashing, cookies, shell
+|   |-- system-design/   # Rate limiters, LRU cache, service building blocks
 \`-- README.md
 \`\`\`
+
+## Fast Learning Loop
+
+Use the same loop for every topic:
+
+1. Read the guide in \`src/\`
+2. Open the matching file in \`practice/\`
+3. Implement one function or class at a time
+4. Run the smallest matching test file
+5. Compare against the reference implementation only after you try
+6. Write down the pattern, invariant, edge cases, and complexity
+
+## Interview Checklist
+
+- Can you explain the brute-force solution?
+- Can you name the optimized pattern?
+- Can you state the invariant in one sentence?
+- Did you test empty input, duplicates, one item, no-solution cases, and boundary values?
+- Can you explain time and space complexity without looking?
 
 ## Tips
 

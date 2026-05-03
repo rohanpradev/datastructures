@@ -19,6 +19,10 @@ describe("rotateImage", () => {
 			[9, 6, 3],
 		]);
 	});
+
+	test("handles a 1x1 matrix", () => {
+		expect(rotateImage([[1]])).toEqual([[1]]);
+	});
 });
 
 describe("setMatrixZeroes", () => {
@@ -49,10 +53,16 @@ describe("setMatrixZeroes", () => {
 			[0, 3, 1, 0],
 		]);
 	});
+
+	test("handles empty matrices", () => {
+		expect(setMatrixZeroes([])).toEqual([]);
+		expect(setMatrixZeroes([[]])).toEqual([[]]);
+	});
 });
 
 describe("isHappyNumber", () => {
 	test("detects happy and unhappy numbers", () => {
+		expect(isHappyNumber(1)).toBe(true);
 		expect(isHappyNumber(19)).toBe(true);
 		expect(isHappyNumber(2)).toBe(false);
 	});

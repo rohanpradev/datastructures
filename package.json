@@ -5,8 +5,17 @@
 	"private": true,
 	"scripts": {
 		"dev": "bun run src/node-concepts/server.ts",
-		"check": "biome check --write",
+		"check": "bun run lint && bun run typecheck && bun run test:ci",
+		"fix": "biome check --write .",
+		"format": "biome format --write .",
+		"lint": "biome check .",
 		"test": "bun test --preload src/node-concepts/setup.ts",
+		"test:algorithms": "bun test src/algorithms/tests",
+		"test:bun": "bun test src/node-concepts/test/bun-runtime.test.ts",
+		"test:ci": "bun test",
+		"test:coverage": "bun test --coverage --coverage-reporter=text",
+		"test:data-structures": "bun test src/data-structures/tests",
+		"test:node": "bun test src/node-concepts/test",
 		"typecheck": "bunx tsgo --noEmit",
 		"practice": "bun run scripts/generate-practice.ts",
 		"generate:practice": "bun run scripts/generate-practice.ts"

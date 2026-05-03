@@ -38,20 +38,41 @@ Research references:
 
 ```bash
 bun install
-bun test
-bun run typecheck
 bun run check
 ```
 
 Useful commands:
 
 ```bash
-bun run practice        # Generate empty practice templates
-bun test src            # Run reference tests
-bun test practice       # Run generated practice tests
-bun run typecheck       # TypeScript 7 beta via tsgo
-bun dev                 # Run Bun server examples
+bun run check                 # Lint, typecheck, and run tests
+bun run fix                   # Apply Biome fixes and formatting
+bun run format                # Format supported files
+bun run lint                  # Non-mutating Biome check for CI
+bun run typecheck             # TypeScript 7 beta via tsgo
+bun run test:algorithms       # Algorithm tests only
+bun run test:bun              # Bun runtime concept tests only
+bun run test:data-structures  # Data structure tests only
+bun run test:node             # Node/Bun concept tests only
+bun run test:coverage         # Text coverage report
+bun run practice              # Generate empty practice templates
+bun dev                       # Run Bun server examples
 ```
+
+## Quality Gates
+
+The repository is designed so one command verifies the working tree:
+
+```bash
+bun run check
+```
+
+That command runs:
+
+1. `bun run lint`
+2. `bun run typecheck`
+3. `bun run test:ci`
+
+CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`.
 
 ## How To Solve A Problem You Do Not Know
 
@@ -271,6 +292,8 @@ How to think:
 ### Node/Bun Concepts
 
 Folder: `src/node-concepts`
+System design guide: [Node System Design Building Blocks](./src/node-concepts/system-design/SYSTEM_DESIGN_NODE_GUIDE.md)
+Bun runtime guide: [Bun Runtime Interview Guide](./src/node-concepts/bun-runtime/BUN_RUNTIME_GUIDE.md)
 
 Interview topics covered:
 
@@ -283,6 +306,14 @@ Interview topics covered:
 - Retry logic
 - Pub/Sub
 - Bun server and worker offloading
+- Bun file I/O with `Bun.file()` and `Bun.write()`
+- Bun glob scanning with `Bun.Glob`
+- Bun password hashing, cookies, and Shell scripting
+- Token bucket rate limiter
+- Sliding window rate limiter
+- LRU cache
+- Base62 URL-shortener IDs
+- Snowflake-style distributed IDs
 
 ## Practice Workflow
 
@@ -303,6 +334,33 @@ bun test practice/algorithms/tests/array-problems.test.ts
 
 6. Compare with `src/`.
 7. Explain the pattern and complexity in your own words.
+
+## Fast Learning Tracks
+
+Use these tracks when you want a focused session instead of jumping across the whole repo.
+
+### 30-Minute Warmup
+
+1. Read one beginner guide.
+2. Implement one easy function in `practice/`.
+3. Run one focused test file.
+4. Explain brute force and optimized complexity.
+
+### 2-Hour Pattern Session
+
+1. Pick one pattern: sliding window, stack, heap, DP, graph, backtracking, or system design.
+2. Read the guide and all JSDoc comments for that topic.
+3. Implement three related practice problems.
+4. Run the focused test command.
+5. Write one paragraph explaining the invariant.
+
+### Mock Interview Session
+
+1. Pick a problem you have not solved recently.
+2. Set a 35-minute timer.
+3. Speak through constraints, brute force, pattern, invariant, code, tests, and complexity.
+4. After the timer, compare against `src/`.
+5. Add any missed edge case to the matching test file.
 
 ## Project Structure
 

@@ -265,4 +265,4 @@ class Stack<T> {
 	}
 }
 
-export { StackNode, Stack };
+export { Stack, StackNode };

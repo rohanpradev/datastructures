@@ -613,4 +613,4 @@ function swapPairs(list: DoublyLinkedList<number>): DoublyLinkedList<number> {
 	return list;
 }
 
-export { palindromeChecker, reverseList, partitionList, swapPairs };
+export { palindromeChecker, partitionList, reverseList, swapPairs };

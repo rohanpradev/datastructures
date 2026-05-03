@@ -15,6 +15,7 @@ describe("singleNumber", () => {
 
 describe("countingBits", () => {
 	test("counts set bits from 0 to n", () => {
+		expect(countingBits(0)).toEqual([0]);
 		expect(countingBits(2)).toEqual([0, 1, 1]);
 		expect(countingBits(5)).toEqual([0, 1, 1, 2, 1, 2]);
 	});
@@ -34,5 +35,6 @@ describe("reverseBits", () => {
 			964176192,
 		);
 		expect(reverseBits(0)).toBe(0);
+		expect(reverseBits(0xffffffff)).toBe(0xffffffff);
 	});
 });

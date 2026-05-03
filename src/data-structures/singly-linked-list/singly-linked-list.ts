@@ -565,7 +565,7 @@ class SinglyLinkedList<T> {
 	}
 }
 
-export { SinglyLinkedList, Node };
+export { Node, SinglyLinkedList };
 
 /**
  * ============================================================================

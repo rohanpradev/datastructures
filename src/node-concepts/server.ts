@@ -1,20 +1,16 @@
 /**
- * Production-optimized Bun server
- * - Native routes API
- * - Circuit breaker
- * - Worker endpoint
+ * Production-oriented Bun server examples.
+ *
+ * Concepts covered:
+ * - Native Bun.serve routes
+ * - Circuit breaker protected dependency calls
+ * - Worker offloading for CPU-heavy tasks
  * - Metrics endpoint
- * - Centralized error handling
- * - Test-safe startup
+ * - WebSocket pub/sub
+ * - Test-safe server lifecycle
  */
 
 import { CircuitBreaker } from "@/node-concepts/async/circuit-breaker";
-
-//
-// ──────────────────────────────────────────
-// Utilities
-// ──────────────────────────────────────────
-//
 
 function busyWait(ms: number) {
 	const start = performance.now();
@@ -23,12 +19,6 @@ function busyWait(ms: number) {
 
 const isTest = process.env.NODE_ENV === "test";
 const isProd = process.env.NODE_ENV === "production";
-
-//
-// ──────────────────────────────────────────
-// External API (Typed)
-// ──────────────────────────────────────────
-//
 
 interface Todo {
 	userId: number;
@@ -49,35 +39,23 @@ async function callExternalAPI(): Promise<Todo> {
 	return res.json() as Promise<Todo>;
 }
 
-//
-// ──────────────────────────────────────────
-// Circuit Breaker
-// ──────────────────────────────────────────
-//
-
 export const apiBreaker = new CircuitBreaker<[], Todo>(
 	callExternalAPI,
 	{
-		failureThreshold: isTest ? 20 : 50, // 20% for tests
+		failureThreshold: isTest ? 20 : 50,
+		halfOpenMaxCalls: 2,
 		minimumRequests: isTest ? 1 : 5,
-		windowDuration: 10000,
 		resetTimeout: 8000,
 		timeout: 3000,
-		halfOpenMaxCalls: 2,
+		windowDuration: 10000,
 	},
 	async () => ({
-		userId: -1,
+		completed: false,
 		id: -1,
 		title: "Fallback response",
-		completed: false,
+		userId: -1,
 	}),
 );
-
-//
-// ──────────────────────────────────────────
-// Worker
-// ──────────────────────────────────────────
-//
 
 const HEAVY_WORKER_URL = new URL("./worker/worker.ts", import.meta.url);
 
@@ -99,43 +77,29 @@ function runWorker(): Promise<number> {
 	});
 }
 
-//
-// ──────────────────────────────────────────
-// WebSocket Types
-// ──────────────────────────────────────────
-//
-
 type WSData = {
-	username: string;
 	channel: string;
 	connectedAt: number;
+	username: string;
 };
 
-//
-// ──────────────────────────────────────────
-// Server
-// ──────────────────────────────────────────
-//
-
 export const server = Bun.serve({
-	port: Number(process.env.PORT ?? 3000),
+	error(error) {
+		console.error("Server error:", error);
+		return new Response("Internal Server Error", { status: 500 });
+	},
 	idleTimeout: 10,
-
+	port: Number(process.env.PORT ?? 3000),
 	routes: {
 		"/": new Response("Welcome to Bun!"),
 
-		// Only allow blocking route outside production
 		"/block": () => {
 			if (isProd) {
 				return new Response("Not Found", { status: 404 });
 			}
+
 			busyWait(50);
 			return new Response("Blocking done!");
-		},
-
-		"/heavy-task": async () => {
-			const result = await runWorker();
-			return Response.json({ result });
 		},
 
 		"/circuit-breaker": async (req, server) => {
@@ -144,9 +108,9 @@ export const server = Bun.serve({
 			const data = await apiBreaker.fire();
 
 			return Response.json({
-				success: true,
-				state: apiBreaker.getState(),
 				data,
+				state: apiBreaker.getState(),
+				success: true,
 			});
 		},
 
@@ -155,14 +119,19 @@ export const server = Bun.serve({
 				state: apiBreaker.getState(),
 			}),
 
+		"/heavy-task": async () => {
+			const result = await runWorker();
+			return Response.json({ result });
+		},
+
 		"/metrics": (_req, server) =>
 			Response.json({
 				activeRequests: server.pendingRequests,
 				activeWebSockets: server.pendingWebSockets,
 			}),
+
 		"/ws": (req, server) => {
 			const url = new URL(req.url);
-
 			const username = url.searchParams.get("username");
 			const channel = url.searchParams.get("channel");
 
@@ -174,9 +143,9 @@ export const server = Bun.serve({
 
 			const upgraded = server.upgrade(req, {
 				data: {
-					username,
 					channel,
 					connectedAt: Date.now(),
+					username,
 				},
 			});
 
@@ -186,38 +155,36 @@ export const server = Bun.serve({
 		},
 	},
 	websocket: {
-		data: {} as WSData,
-
-		perMessageDeflate: true,
-		idleTimeout: 60,
-		maxPayloadLength: 1024 * 1024,
 		backpressureLimit: 1024 * 1024,
 		closeOnBackpressureLimit: false,
+		data: {} as WSData,
+		idleTimeout: 60,
+		maxPayloadLength: 1024 * 1024,
+		perMessageDeflate: true,
 
-		open(ws) {
-			const { username, channel } = ws.data;
+		close(ws) {
+			const { channel, username } = ws.data;
 
-			ws.subscribe(channel);
+			ws.unsubscribe(channel);
 
 			ws.publish(
 				channel,
 				JSON.stringify({
-					type: "system",
-					message: `${username} joined ${channel}`,
+					message: `${username} left ${channel}`,
 					timestamp: Date.now(),
+					type: "system",
 				}),
-				true,
 			);
 		},
 
 		message(ws, message) {
-			const { username, channel } = ws.data;
+			const { channel, username } = ws.data;
 
 			const payload = JSON.stringify({
-				type: "chat",
-				user: username,
 				message: message.toString(),
 				timestamp: Date.now(),
+				type: "chat",
+				user: username,
 			});
 
 			const result = ws.publish(channel, payload, true);
@@ -227,40 +194,28 @@ export const server = Bun.serve({
 			}
 		},
 
-		close(ws) {
-			const { username, channel } = ws.data;
+		open(ws) {
+			const { channel, username } = ws.data;
 
-			ws.unsubscribe(channel);
+			ws.subscribe(channel);
 
 			ws.publish(
 				channel,
 				JSON.stringify({
-					type: "system",
-					message: `${username} left ${channel}`,
+					message: `${username} joined ${channel}`,
 					timestamp: Date.now(),
+					type: "system",
 				}),
+				true,
 			);
 		},
 	},
-
-	error(error) {
-		console.error("Server error:", error);
-		return new Response("Internal Server Error", { status: 500 });
-	},
 });
 
-//
-// ──────────────────────────────────────────
-// Lifecycle Management
-// ──────────────────────────────────────────
-//
-
-// Prevent tests from hanging
 if (isTest) {
 	server.unref();
 }
 
-// Graceful shutdown (production safe)
 if (!isTest) {
 	process.on("SIGTERM", async () => {
 		console.log("SIGTERM received. Shutting down...");
@@ -275,4 +230,4 @@ if (!isTest) {
 	});
 }
 
-console.log(`🚀 Server running at ${server.url}`);
+console.log(`Server running at ${server.url}`);

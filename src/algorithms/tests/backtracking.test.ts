@@ -23,6 +23,10 @@ describe("letterCombinations", () => {
 	test("handles empty input", () => {
 		expect(letterCombinations("")).toEqual([]);
 	});
+
+	test("ignores unsupported digits by returning no paths", () => {
+		expect(letterCombinations("10")).toEqual([]);
+	});
 });
 
 describe("generateParentheses", () => {
@@ -38,6 +42,10 @@ describe("generateParentheses", () => {
 
 	test("handles zero pairs", () => {
 		expect(generateParentheses(0)).toEqual([""]);
+	});
+
+	test("handles one pair", () => {
+		expect(generateParentheses(1)).toEqual(["()"]);
 	});
 });
 
@@ -55,5 +63,10 @@ describe("wordSearch", () => {
 
 	test("does not reuse cells in the same path", () => {
 		expect(wordSearch(board.map((row) => [...row]), "ABCB")).toBe(false);
+	});
+
+	test("handles empty word and empty board", () => {
+		expect(wordSearch([], "")).toBe(true);
+		expect(wordSearch([], "A")).toBe(false);
 	});
 });
