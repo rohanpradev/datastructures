@@ -15,6 +15,8 @@ import {
   maxExpressionValue,
   nextDeparture,
   longestPalindromeSubString,
+  longestConsecutiveSequence,
+  medianOfTwoSortedArrays,
   topK,
   searchInSortedMatrix,
   threeNumbersSort,
@@ -977,5 +979,39 @@ describe("threeNumbersSort", () => {
     const arr = [2, 1, 3, 2, 3, 1, 2, 1, 3];
     const sorted = threeNumbersSort(arr, [1, 2, 3]);
     expect(sorted).toEqual([1, 1, 1, 2, 2, 2, 3, 3, 3]);
+  });
+});
+
+describe("longestConsecutiveSequence", () => {
+  test("finds the longest consecutive run in unordered input", () => {
+    expect(longestConsecutiveSequence([100, 4, 200, 1, 3, 2])).toBe(4);
+  });
+
+  test("handles duplicates without double-counting", () => {
+    expect(longestConsecutiveSequence([1, 2, 0, 1])).toBe(3);
+  });
+
+  test("handles empty and negative inputs", () => {
+    expect(longestConsecutiveSequence([])).toBe(0);
+    expect(longestConsecutiveSequence([-2, -1, 0, 3])).toBe(3);
+  });
+});
+
+describe("medianOfTwoSortedArrays", () => {
+  test("finds median for odd total length", () => {
+    expect(medianOfTwoSortedArrays([1, 3], [2])).toBe(2);
+  });
+
+  test("finds median for even total length", () => {
+    expect(medianOfTwoSortedArrays([1, 2], [3, 4])).toBe(2.5);
+  });
+
+  test("handles one empty array", () => {
+    expect(medianOfTwoSortedArrays([], [1])).toBe(1);
+    expect(medianOfTwoSortedArrays([2], [])).toBe(2);
+  });
+
+  test("handles uneven array sizes", () => {
+    expect(medianOfTwoSortedArrays([1, 2, 3, 4, 5], [6, 7])).toBe(4);
   });
 });

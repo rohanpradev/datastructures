@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import {
+  dailyTemperatures,
   isBalanced,
+  MinStack,
   QueueUsingStacks,
   reverseString,
   sortStack,
   evaluate,
+  largestRectangleArea,
   nodeDepths,
 } from "@/data-structures/stack/problems/leetcode-stack";
 import { Stack } from "@/data-structures/stack/stack";
@@ -989,6 +992,88 @@ describe("QueueUsingStacks", () => {
   });
 });
 
+describe("MinStack", () => {
+  test("tracks the minimum across pushes and pops", () => {
+    const stack = new MinStack();
+
+    stack.push(3);
+    stack.push(5);
+    stack.push(2);
+    stack.push(1);
+
+    expect(stack.getMin()).toBe(1);
+    expect(stack.top()).toBe(1);
+
+    expect(stack.pop()).toBe(1);
+    expect(stack.getMin()).toBe(2);
+
+    expect(stack.pop()).toBe(2);
+    expect(stack.getMin()).toBe(3);
+    expect(stack.top()).toBe(5);
+  });
+
+  test("handles duplicate minimum values", () => {
+    const stack = new MinStack();
+
+    stack.push(2);
+    stack.push(2);
+    stack.push(3);
+
+    expect(stack.getMin()).toBe(2);
+    expect(stack.pop()).toBe(3);
+    expect(stack.getMin()).toBe(2);
+    expect(stack.pop()).toBe(2);
+    expect(stack.getMin()).toBe(2);
+  });
+
+  test("handles negative numbers", () => {
+    const stack = new MinStack();
+
+    stack.push(-1);
+    stack.push(4);
+    stack.push(-5);
+
+    expect(stack.getMin()).toBe(-5);
+    expect(stack.pop()).toBe(-5);
+    expect(stack.getMin()).toBe(-1);
+  });
+
+  test("returns undefined when stack is empty", () => {
+    const stack = new MinStack();
+
+    expect(stack.top()).toBeUndefined();
+    expect(stack.getMin()).toBeUndefined();
+    expect(stack.pop()).toBeUndefined();
+    expect(stack.isEmpty()).toBe(true);
+  });
+});
+
+describe("dailyTemperatures()", () => {
+  test("solves the standard LeetCode example", () => {
+    expect(dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73])).toEqual([
+      1, 1, 4, 2, 1, 1, 0, 0,
+    ]);
+  });
+
+  test("returns all zeros for descending temperatures", () => {
+    expect(dailyTemperatures([80, 79, 78, 77])).toEqual([0, 0, 0, 0]);
+  });
+
+  test("returns ones for strictly increasing temperatures", () => {
+    expect(dailyTemperatures([60, 61, 62, 63])).toEqual([1, 1, 1, 0]);
+  });
+
+  test("handles repeated temperatures", () => {
+    expect(dailyTemperatures([70, 70, 70])).toEqual([0, 0, 0]);
+    expect(dailyTemperatures([70, 70, 71])).toEqual([2, 1, 0]);
+  });
+
+  test("handles empty and single-day inputs", () => {
+    expect(dailyTemperatures([])).toEqual([]);
+    expect(dailyTemperatures([42])).toEqual([0]);
+  });
+});
+
 describe("nodeDepths()", () => {
   describe("basic functionality", () => {
     test("should return 0 for a single-node tree", () => {
@@ -1120,5 +1205,22 @@ describe("nodeDepths()", () => {
       // depths: 0 + 1 = 1
       expect(nodeDepths(tree)).toBe(1);
     });
+  });
+});
+
+describe("largestRectangleArea()", () => {
+  test("solves the standard histogram example", () => {
+    expect(largestRectangleArea([2, 1, 5, 6, 2, 3])).toBe(10);
+  });
+
+  test("handles increasing, decreasing, and flat histograms", () => {
+    expect(largestRectangleArea([1, 2, 3, 4])).toBe(6);
+    expect(largestRectangleArea([4, 3, 2, 1])).toBe(6);
+    expect(largestRectangleArea([2, 2, 2])).toBe(6);
+  });
+
+  test("handles empty and single-bar histograms", () => {
+    expect(largestRectangleArea([])).toBe(0);
+    expect(largestRectangleArea([7])).toBe(7);
   });
 });

@@ -108,3 +108,52 @@ export function semordNilap(words: string[]): [string, string][] {
 
 	return pairs;
 }
+
+/**
+ * Groups anagrams together.
+ *
+ * FAANG pattern:
+ * - Anagrams share the same character frequency.
+ * - For lowercase English strings, a 26-count signature avoids sorting each word.
+ *
+ * Time Complexity: O(n * k), where k is max word length
+ * Space Complexity: O(n * k)
+ */
+export function groupAnagrams(words: string[]): string[][] {
+	const groups = new Map<string, string[]>();
+
+	for (const word of words) {
+		const counts = new Array<number>(26).fill(0);
+
+		for (const char of word) {
+			const index = char.charCodeAt(0) - 97;
+			if (index >= 0 && index < 26) counts[index]++;
+		}
+
+		const key = counts.join("#");
+		const group = groups.get(key) ?? [];
+		group.push(word);
+		groups.set(key, group);
+	}
+
+	return Array.from(groups.values());
+}
+
+/**
+ * Checks whether two strings are anagrams.
+ *
+ * Time Complexity: O(n)
+ * Space Complexity: O(1), fixed lowercase-English alphabet
+ */
+export function isAnagram(first: string, second: string): boolean {
+	if (first.length !== second.length) return false;
+
+	const counts = new Array<number>(26).fill(0);
+
+	for (let i = 0; i < first.length; i++) {
+		counts[first.charCodeAt(i) - 97]++;
+		counts[second.charCodeAt(i) - 97]--;
+	}
+
+	return counts.every((count) => count === 0);
+}

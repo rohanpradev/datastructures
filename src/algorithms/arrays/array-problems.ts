@@ -1115,3 +1115,105 @@ export function threeNumbersSort(
 
 	return nums;
 }
+
+/**
+ * Finds the length of the longest consecutive integer sequence.
+ *
+ * FAANG pattern:
+ * - Put every number in a Set for O(1) lookup.
+ * - Only start counting when `num - 1` is missing.
+ * - That makes each sequence counted once.
+ *
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ *
+ * @example
+ * longestConsecutiveSequence([100, 4, 200, 1, 3, 2])
+ * // -> 4, for [1, 2, 3, 4]
+ */
+export function longestConsecutiveSequence(nums: number[]): number {
+	const values = new Set(nums);
+	let best = 0;
+
+	for (const num of values) {
+		if (values.has(num - 1)) continue;
+
+		let current = num;
+		let length = 1;
+
+		while (values.has(current + 1)) {
+			current++;
+			length++;
+		}
+
+		best = Math.max(best, length);
+	}
+
+	return best;
+}
+
+/**
+ * Finds the median of two sorted arrays in O(log(min(m, n))).
+ *
+ * FAANG pattern:
+ * - Binary search the partition in the smaller array.
+ * - The left partition must contain half the values.
+ * - Every left value must be <= every right value.
+ *
+ * Time Complexity: O(log(min(m, n)))
+ * Space Complexity: O(1)
+ */
+export function medianOfTwoSortedArrays(
+	first: number[],
+	second: number[],
+): number {
+	if (first.length > second.length) {
+		return medianOfTwoSortedArrays(second, first);
+	}
+
+	const total = first.length + second.length;
+	const half = Math.floor((total + 1) / 2);
+	let left = 0;
+	let right = first.length;
+
+	while (left <= right) {
+		const firstLeftSize = left + Math.floor((right - left) / 2);
+		const secondLeftSize = half - firstLeftSize;
+
+		const firstLeft =
+			firstLeftSize === 0
+				? Number.NEGATIVE_INFINITY
+				: first[firstLeftSize - 1]!;
+		const firstRight =
+			firstLeftSize === first.length
+				? Number.POSITIVE_INFINITY
+				: first[firstLeftSize]!;
+		const secondLeft =
+			secondLeftSize === 0
+				? Number.NEGATIVE_INFINITY
+				: second[secondLeftSize - 1]!;
+		const secondRight =
+			secondLeftSize === second.length
+				? Number.POSITIVE_INFINITY
+				: second[secondLeftSize]!;
+
+		if (firstLeft <= secondRight && secondLeft <= firstRight) {
+			if (total % 2 === 1) {
+				return Math.max(firstLeft, secondLeft);
+			}
+
+			return (
+				(Math.max(firstLeft, secondLeft) + Math.min(firstRight, secondRight)) /
+				2
+			);
+		}
+
+		if (firstLeft > secondRight) {
+			right = firstLeftSize - 1;
+		} else {
+			left = firstLeftSize + 1;
+		}
+	}
+
+	throw new Error("Input arrays must be sorted.");
+}

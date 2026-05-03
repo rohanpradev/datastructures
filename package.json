@@ -4,16 +4,16 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"dev": "bun run src/index.ts",
+		"dev": "bun run src/node-concepts/server.ts",
 		"check": "biome check --write",
 		"test": "bun test --preload src/node-concepts/setup.ts",
+		"typecheck": "bunx tsgo --noEmit",
+		"practice": "bun run scripts/generate-practice.ts",
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.6",
-		"@types/bun": "^1.3.10"
-	},
-	"peerDependencies": {
-		"typescript": "^5.9.3"
+		"@typescript/native-preview": "beta",
+		"@biomejs/biome": "2.4.14",
+		"@types/bun": "^1.3.13"
 	}
 }

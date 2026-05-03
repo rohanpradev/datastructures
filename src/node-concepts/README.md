@@ -9,8 +9,23 @@ It covers:
 - **CircuitBreaker** – resilient API calls and error isolation
 - **Async Cancellable Operations** – cancelable, stepwise async workflows
 - **Bun WebSocket Pub/Sub** – real-time, topic-based messaging
+- **Event Loop Ordering** – sync code, microtasks, timers, and chunked CPU work
+- **Resilience Helpers** – abortable delays, timeout wrappers, and bounded retries
 
 This guide explains **not just the code**, but _why_ and _how_ it works.
+
+## Interview Topic Index
+
+| Topic | File | Why interviewers ask |
+| --- | --- | --- |
+| Event loop ordering | `src/node-concepts/basics/event-loop.ts` | Tests understanding of sync execution, microtasks, and timer phases |
+| Chunked CPU work | `src/node-concepts/basics/event-loop.ts` | Shows how to avoid blocking the main thread |
+| Concurrency queue | `src/node-concepts/async/concurrent-operations.ts` | Covers rate limiting, backpressure, and safe async scheduling |
+| Circuit breaker | `src/node-concepts/async/circuit-breaker.ts` | Covers cascading failure prevention |
+| AbortController | `src/node-concepts/async/resilience.ts` | Modern cancellation primitive used by fetch and timers |
+| Timeout wrapper | `src/node-concepts/async/resilience.ts` | Prevents hung dependencies from consuming resources forever |
+| Retry helper | `src/node-concepts/async/resilience.ts` | Covers bounded retries, retry predicates, and backoff |
+| Pub/Sub | `src/node-concepts/async/pub-sub.ts` | Messaging pattern, decoupling, and distributed-system trade-offs |
 
 ---
 

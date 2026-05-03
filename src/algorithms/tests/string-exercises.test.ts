@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import {
   generateDocument,
   firstNonRepeatingCharacter,
+  groupAnagrams,
+  isAnagram,
   semordNilap,
 } from "@/algorithms/strings/string-exercises";
 
@@ -190,5 +192,32 @@ describe("semordNilap", () => {
     const words = ["loop", "pool", "level"];
     const result = semordNilap(words);
     expect(result).toEqual([["loop", "pool"]]);
+  });
+});
+
+describe("groupAnagrams", () => {
+  test("groups words that share the same character counts", () => {
+    const result = groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])
+      .map((group) => group.sort())
+      .sort((a, b) => a[0]!.localeCompare(b[0]!));
+
+    expect(result).toEqual([["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]);
+  });
+
+  test("handles empty strings and single word groups", () => {
+    const result = groupAnagrams(["", "b", ""]);
+
+    expect(result.map((group) => group.sort())).toEqual([["", ""], ["b"]]);
+  });
+});
+
+describe("isAnagram", () => {
+  test("returns true for valid anagrams", () => {
+    expect(isAnagram("anagram", "nagaram")).toBe(true);
+  });
+
+  test("returns false for different counts or lengths", () => {
+    expect(isAnagram("rat", "car")).toBe(false);
+    expect(isAnagram("ab", "a")).toBe(false);
   });
 });

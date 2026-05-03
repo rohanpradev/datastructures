@@ -550,3 +550,30 @@ export class MinHeap<T = number> {
 		return [...this.heap];
 	}
 }
+
+/**
+ * Returns the kth largest number in an unsorted array.
+ *
+ * FAANG pattern:
+ * - Keep a min heap of size k.
+ * - The heap root is the kth largest after all numbers are processed.
+ *
+ * Time Complexity: O(n log k)
+ * Space Complexity: O(k)
+ */
+export function kthLargestElement(nums: number[], k: number): number {
+	if (k < 1 || k > nums.length) {
+		throw new Error("k must be between 1 and nums.length");
+	}
+
+	const heap = new MinHeap<number>();
+
+	for (const num of nums) {
+		heap.insert(num);
+		if (heap.size() > k) {
+			heap.remove();
+		}
+	}
+
+	return heap.peek()!;
+}

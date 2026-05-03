@@ -13,11 +13,12 @@
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
 		"noEmit": true,
+		"rootDir": ".",
+		"types": ["bun"],
 
-		// Path aliases
-		"baseUrl": ".",
+		// Path aliases. TypeScript 7 beta no longer supports baseUrl.
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": ["./src/*"]
 		},
 
 		// Best practices
@@ -31,5 +32,6 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false
-	}
+	},
+	"exclude": ["practice", "node_modules", "**/*.test.ts"]
 }

@@ -4,6 +4,8 @@ import {
   minNumberOfCoinsForChange,
   waysOfChange,
   levenshteinDistance,
+  longestCommonSubsequence,
+  maxProductSubarray,
   numOfWaysToTraverseGraphRecursive,
   numberOfWaysToTraverseGraph,
   numberOfWaysToTraverseGraphFactorial,
@@ -293,5 +295,29 @@ describe("numberOfWaysToTraverseGraphFactorial", () => {
   test("returns correct value for rectangular grids", () => {
     expect(numberOfWaysToTraverseGraphFactorial(3, 2)).toBe(3);
     expect(numberOfWaysToTraverseGraphFactorial(4, 3)).toBe(10);
+  });
+});
+
+describe("maxProductSubarray", () => {
+  test("finds max product with positive and negative values", () => {
+    expect(maxProductSubarray([2, 3, -2, 4])).toBe(6);
+    expect(maxProductSubarray([-2, 3, -4])).toBe(24);
+  });
+
+  test("handles zeros and empty input", () => {
+    expect(maxProductSubarray([-2, 0, -1])).toBe(0);
+    expect(maxProductSubarray([])).toBe(0);
+  });
+});
+
+describe("longestCommonSubsequence", () => {
+  test("finds common subsequence length", () => {
+    expect(longestCommonSubsequence("abcde", "ace")).toBe(3);
+    expect(longestCommonSubsequence("abc", "abc")).toBe(3);
+  });
+
+  test("returns 0 when no subsequence overlaps", () => {
+    expect(longestCommonSubsequence("abc", "def")).toBe(0);
+    expect(longestCommonSubsequence("", "abc")).toBe(0);
   });
 });

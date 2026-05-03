@@ -577,6 +577,125 @@ export class QueueUsingStacks<T> {
 }
 
 /**
+ * LeetCode Problem: Min Stack
+ *
+ * Problem Statement:
+ * Design a stack that supports push, pop, top, and retrieving the minimum
+ * element in constant time.
+ *
+ * Why Two Stacks?
+ * - The main stack stores all values in order.
+ * - The min stack stores the minimum value seen at every depth.
+ * - This lets getMin() read the current minimum in O(1).
+ *
+ * Algorithm:
+ * 1. On push(value):
+ *    - Push value onto the main stack
+ *    - Push min(value, currentMin) onto the min stack
+ * 2. On pop():
+ *    - Pop from both stacks
+ * 3. top() returns the top of the main stack
+ * 4. getMin() returns the top of the min stack
+ *
+ * Time Complexity:
+ * - push(): O(1)
+ * - pop(): O(1)
+ * - top(): O(1)
+ * - getMin(): O(1)
+ *
+ * Space Complexity: O(n)
+ * - The min stack mirrors the main stack
+ */
+export class MinStack {
+	private readonly values = new Stack<number>();
+	private readonly minimums = new Stack<number>();
+
+	push(value: number): void {
+		this.values.push(value);
+
+		const currentMin = this.minimums.peek();
+		if (currentMin === undefined) {
+			this.minimums.push(value);
+			return;
+		}
+
+		this.minimums.push(Math.min(value, currentMin));
+	}
+
+	pop(): number | undefined {
+		if (this.values.isEmpty()) return undefined;
+
+		this.minimums.pop();
+		return this.values.pop();
+	}
+
+	top(): number | undefined {
+		return this.values.peek();
+	}
+
+	getMin(): number | undefined {
+		return this.minimums.peek();
+	}
+
+	isEmpty(): boolean {
+		return this.values.isEmpty();
+	}
+}
+
+/**
+ * LeetCode Problem: Daily Temperatures
+ *
+ * Problem Statement:
+ * Given an array of daily temperatures, return an array where answer[i]
+ * is the number of days you have to wait after day i to get a warmer
+ * temperature. If no warmer day exists, answer[i] = 0.
+ *
+ * Why Use a Monotonic Stack?
+ * - We need the next greater element to the right for each index.
+ * - A decreasing stack of unresolved indices lets us answer each day once.
+ * - When a warmer temperature appears, it resolves previous colder days.
+ *
+ * Algorithm:
+ * 1. Create a result array filled with 0
+ * 2. Maintain a stack of indices with decreasing temperatures
+ * 3. For each current day:
+ *    - While current temperature is warmer than the day at stack top:
+ *      * Pop the old index
+ *      * Set result[oldIndex] = currentIndex - oldIndex
+ *    - Push current index onto the stack
+ * 4. Remaining indices in the stack have no warmer future day
+ *
+ * Time Complexity: O(n)
+ * - Each index is pushed and popped at most once
+ *
+ * Space Complexity: O(n)
+ * - Stack plus output array
+ */
+export function dailyTemperatures(temperatures: number[]): number[] {
+	const waits = new Array(temperatures.length).fill(0);
+	const unresolvedIndices: number[] = [];
+
+	for (let currentDay = 0; currentDay < temperatures.length; currentDay++) {
+		const currentTemperature = temperatures[currentDay]!;
+
+		while (unresolvedIndices.length > 0) {
+			const previousDay = unresolvedIndices[unresolvedIndices.length - 1]!;
+
+			if (temperatures[previousDay]! >= currentTemperature) {
+				break;
+			}
+
+			unresolvedIndices.pop();
+			waits[previousDay] = currentDay - previousDay;
+		}
+
+		unresolvedIndices.push(currentDay);
+	}
+
+	return waits;
+}
+
+/**
  * Evaluates a mathematical expression represented as a string.
  * Supports +, -, *, /, and parentheses.
  *
@@ -780,4 +899,38 @@ export function nodeDepths(root: TreeNode<number>): number {
 	}
 
 	return sumOfDepths;
+}
+
+/**
+ * LeetCode Problem: Largest Rectangle in Histogram
+ *
+ * FAANG pattern:
+ * - Use a monotonic increasing stack of bar indices.
+ * - When a shorter bar appears, it becomes the right boundary for taller bars.
+ * - After popping a bar, the new stack top is its left boundary.
+ *
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function largestRectangleArea(heights: number[]): number {
+	const stack: number[] = [];
+	let best = 0;
+
+	for (let index = 0; index <= heights.length; index++) {
+		const currentHeight = index === heights.length ? 0 : heights[index]!;
+
+		while (
+			stack.length > 0 &&
+			heights[stack[stack.length - 1]!]! > currentHeight
+		) {
+			const height = heights[stack.pop()!]!;
+			const leftBoundary = stack.length === 0 ? -1 : stack[stack.length - 1]!;
+			const width = index - leftBoundary - 1;
+			best = Math.max(best, height * width);
+		}
+
+		stack.push(index);
+	}
+
+	return best;
 }

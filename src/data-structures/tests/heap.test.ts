@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { MaxHeap, MinHeap } from "@/data-structures/heap/heap";
+import { kthLargestElement, MaxHeap, MinHeap } from "@/data-structures/heap/heap";
 
 describe("MaxHeap", () => {
 	describe("constructor", () => {
@@ -493,5 +493,22 @@ describe("MaxHeap vs MinHeap", () => {
 
 		expect(maxSorted).toEqual([9, 8, 5, 3, 2, 1]);
 		expect(minSorted).toEqual([1, 2, 3, 5, 8, 9]);
-	});
+  });
+});
+
+describe("kthLargestElement", () => {
+  test("finds kth largest with a heap of size k", () => {
+    expect(kthLargestElement([3, 2, 1, 5, 6, 4], 2)).toBe(5);
+    expect(kthLargestElement([3, 2, 3, 1, 2, 4, 5, 5, 6], 4)).toBe(4);
+  });
+
+  test("handles k at boundaries", () => {
+    expect(kthLargestElement([7], 1)).toBe(7);
+    expect(kthLargestElement([4, 1, 9], 3)).toBe(1);
+  });
+
+  test("throws for invalid k", () => {
+    expect(() => kthLargestElement([1, 2], 0)).toThrow();
+    expect(() => kthLargestElement([1, 2], 3)).toThrow();
+  });
 });

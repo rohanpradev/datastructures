@@ -12,34 +12,35 @@ concurrency:
 
 jobs:
   test:
-    name: 🧪 Run Tests
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock', 'bun.lockb') }}
           restore-keys: |
             ${{ runner.os }}-bun-
 
       - run: bun install --frozen-lockfile
       - run: bun test
+      - run: bun run typecheck
 
   quality:
-    name: 🔍 Code Quality
+    name: Code Quality
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: biomejs/setup-biome@v2
         with:
