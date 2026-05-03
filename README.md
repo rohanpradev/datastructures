@@ -197,6 +197,58 @@ How to think:
 - Define base cases before loops.
 - If recursion repeats work, memoize or convert to bottom-up DP.
 
+### Backtracking
+
+Folder: `src/algorithms/backtracking`  
+Beginner guide: [Backtracking Guide](./src/algorithms/backtracking/BACKTRACKING_GUIDE.md)
+
+High-yield problems now covered:
+
+- Letter Combinations Of A Phone Number
+- Generate Parentheses
+- Word Search
+
+How to think:
+
+- Backtracking is choose, explore, undo.
+- Use it when the problem asks for all valid combinations or paths.
+- Always define what makes a partial state invalid so you can prune early.
+
+### Bit Manipulation
+
+Folder: `src/algorithms/bit-manipulation`  
+Beginner guide: [Bit Manipulation Guide](./src/algorithms/bit-manipulation/BIT_MANIPULATION_GUIDE.md)
+
+High-yield problems now covered:
+
+- Single Number
+- Counting Bits
+- Missing Number
+- Reverse Bits
+
+How to think:
+
+- XOR cancels duplicate values.
+- `num & 1` reads the last bit.
+- `num >> 1` drops the last bit.
+
+### Math And Geometry
+
+Folder: `src/algorithms/math-geometry`  
+Beginner guide: [Math And Geometry Guide](./src/algorithms/math-geometry/MATH_GEOMETRY_GUIDE.md)
+
+High-yield problems now covered:
+
+- Rotate Image
+- Set Matrix Zeroes
+- Happy Number
+
+How to think:
+
+- Matrix problems are mostly careful index transformations.
+- Draw a small example before coding.
+- For repeated transformations, look for cycles.
+
 ### Graphs
 
 Folder: `src/data-structures/graph` and `src/algorithms/arrays` for matrix graph problems.
