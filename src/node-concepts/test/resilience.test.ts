@@ -5,15 +5,35 @@ import {
 	withTimeout,
 } from "@/node-concepts/async/resilience";
 
+function delayedResolve<T>(value: T, delayMs: number) {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	const promise = new Promise<T>((resolve) => {
+		timer = setTimeout(() => resolve(value), delayMs);
+	});
+
+	return {
+		promise,
+		clear: () => {
+			if (timer) clearTimeout(timer);
+		},
+	};
+}
+
 describe("withTimeout", () => {
 	test("returns the operation result before timeout", async () => {
 		await expect(withTimeout(Promise.resolve("ok"), 20)).resolves.toBe("ok");
 	});
 
 	test("rejects when the timeout wins", async () => {
-		const slow = new Promise((resolve) => setTimeout(() => resolve("late"), 20));
+		const slow = delayedResolve("late", 20);
 
-		await expect(withTimeout(slow, 1, "too slow")).rejects.toThrow("too slow");
+		try {
+			await expect(withTimeout(slow.promise, 1, "too slow")).rejects.toThrow(
+				"too slow",
+			);
+		} finally {
+			slow.clear();
+		}
 	});
 });
 
@@ -57,6 +77,28 @@ describe("retry", () => {
 describe("abortableDelay", () => {
 	test("resolves after the delay", async () => {
 		await expect(abortableDelay(0)).resolves.toBeUndefined();
+	});
+
+	test("removes abort listeners after resolving", async () => {
+		const controller = new AbortController();
+		const originalAdd = controller.signal.addEventListener.bind(controller.signal);
+		const originalRemove = controller.signal.removeEventListener.bind(
+			controller.signal,
+		);
+		let activeAbortListeners = 0;
+
+		controller.signal.addEventListener = ((type, listener, options) => {
+			if (type === "abort") activeAbortListeners++;
+			return originalAdd(type, listener, options);
+		}) as typeof controller.signal.addEventListener;
+		controller.signal.removeEventListener = ((type, listener, options) => {
+			if (type === "abort") activeAbortListeners--;
+			return originalRemove(type, listener, options);
+		}) as typeof controller.signal.removeEventListener;
+
+		await abortableDelay(0, controller.signal);
+
+		expect(activeAbortListeners).toBe(0);
 	});
 
 	test("rejects when aborted", async () => {

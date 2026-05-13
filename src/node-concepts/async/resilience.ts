@@ -20,12 +20,18 @@ export function abortableDelay(
 	}
 
 	return new Promise((resolve, reject) => {
-		const timer = setTimeout(resolve, delayMs);
-
 		const abort = () => {
-			clearTimeout(timer);
+			cleanup();
 			reject(new DOMException("Aborted", "AbortError"));
 		};
+		const cleanup = () => {
+			clearTimeout(timer);
+			signal?.removeEventListener("abort", abort);
+		};
+		const timer = setTimeout(() => {
+			cleanup();
+			resolve();
+		}, delayMs);
 
 		signal?.addEventListener("abort", abort, { once: true });
 	});

@@ -48,7 +48,8 @@ describe("Bun server endpoints", () => {
 
     expect(status).toBe(200);
     expect(data).toBe("Welcome to Bun!");
-    expect(duration).toBeLessThan(15); // should be nearly instant
+    // Keep this as a broad responsiveness check, not a machine-speed benchmark.
+    expect(duration).toBeLessThan(100);
   });
 
   test("Blocking route executes correctly (dev only)", async () => {

@@ -83,13 +83,10 @@ export class SlidingWindowRateLimiter {
 	}
 
 	consume(key: string, nowMs = Date.now()): RateLimitResult {
-		const windowStart = nowMs - this.windowMs;
-		const hits = (this.hitsByKey.get(key) ?? []).filter(
-			(timestamp) => timestamp > windowStart,
-		);
+		this.cleanupExpiredKeys(nowMs);
+		const hits = this.hitsByKey.get(key) ?? [];
 
 		if (hits.length >= this.limit) {
-			this.hitsByKey.set(key, hits);
 			return {
 				allowed: false,
 				remaining: 0,
@@ -105,5 +102,23 @@ export class SlidingWindowRateLimiter {
 			remaining: this.limit - hits.length,
 			retryAfterMs: 0,
 		};
+	}
+
+	trackedKeyCount(): number {
+		return this.hitsByKey.size;
+	}
+
+	private cleanupExpiredKeys(nowMs: number): void {
+		const windowStart = nowMs - this.windowMs;
+
+		for (const [key, hits] of this.hitsByKey) {
+			const freshHits = hits.filter((timestamp) => timestamp > windowStart);
+
+			if (freshHits.length === 0) {
+				this.hitsByKey.delete(key);
+			} else if (freshHits.length !== hits.length) {
+				this.hitsByKey.set(key, freshHits);
+			}
+		}
 	}
 }

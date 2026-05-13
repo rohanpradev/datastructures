@@ -577,3 +577,115 @@ export function kthLargestElement(nums: number[], k: number): number {
 
 	return heap.peek()!;
 }
+
+/**
+ * Maintains the median of a streaming number sequence.
+ *
+ * FAANG pattern:
+ * - Max heap stores the smaller half of numbers.
+ * - Min heap stores the larger half of numbers.
+ * - Keep the heaps balanced so the median is available in O(1).
+ *
+ * Time Complexity:
+ * - addNumber: O(log n)
+ * - findMedian: O(1)
+ *
+ * Space Complexity: O(n)
+ */
+export class MedianFinder {
+	private readonly lowerHalf = new MaxHeap<number>();
+	private readonly upperHalf = new MinHeap<number>();
+
+	addNumber(num: number): MedianFinder {
+		const lowerMax = this.lowerHalf.peek();
+
+		if (lowerMax === undefined || num <= lowerMax) {
+			this.lowerHalf.insert(num);
+		} else {
+			this.upperHalf.insert(num);
+		}
+
+		this.rebalance();
+		return this;
+	}
+
+	findMedian(): number {
+		const totalSize = this.size();
+		if (totalSize === 0) {
+			throw new Error("Cannot find median of an empty stream");
+		}
+
+		if (this.lowerHalf.size() > this.upperHalf.size()) {
+			return this.lowerHalf.peek()!;
+		}
+
+		return (this.lowerHalf.peek()! + this.upperHalf.peek()!) / 2;
+	}
+
+	size(): number {
+		return this.lowerHalf.size() + this.upperHalf.size();
+	}
+
+	private rebalance(): void {
+		if (this.lowerHalf.size() > this.upperHalf.size() + 1) {
+			this.upperHalf.insert(this.lowerHalf.remove()!);
+		}
+
+		if (this.upperHalf.size() > this.lowerHalf.size()) {
+			this.lowerHalf.insert(this.upperHalf.remove()!);
+		}
+	}
+}
+
+type SortedArrayEntry = {
+	value: number;
+	arrayIndex: number;
+	elementIndex: number;
+};
+
+/**
+ * Merges k sorted numeric arrays into one sorted array.
+ *
+ * FAANG pattern:
+ * - Put the first element from each sorted array into a min heap.
+ * - Repeatedly remove the smallest value and push the next value from
+ *   the same source array.
+ *
+ * Time Complexity: O(n log k), where n is total values and k is arrays.length
+ * Space Complexity: O(k), excluding output
+ */
+export function mergeKSortedArrays(arrays: number[][]): number[] {
+	const heap = new MinHeap<SortedArrayEntry>(
+		[],
+		(first, second) =>
+			first.value - second.value ||
+			first.arrayIndex - second.arrayIndex ||
+			first.elementIndex - second.elementIndex,
+	);
+	const result: number[] = [];
+
+	for (let arrayIndex = 0; arrayIndex < arrays.length; arrayIndex++) {
+		const firstValue = arrays[arrayIndex]![0];
+		if (firstValue !== undefined) {
+			heap.insert({ value: firstValue, arrayIndex, elementIndex: 0 });
+		}
+	}
+
+	while (!heap.isEmpty()) {
+		const current = heap.remove()!;
+		result.push(current.value);
+
+		const nextElementIndex = current.elementIndex + 1;
+		const nextValue = arrays[current.arrayIndex]![nextElementIndex];
+
+		if (nextValue !== undefined) {
+			heap.insert({
+				value: nextValue,
+				arrayIndex: current.arrayIndex,
+				elementIndex: nextElementIndex,
+			});
+		}
+	}
+
+	return result;
+}

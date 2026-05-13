@@ -69,6 +69,19 @@ describe("SlidingWindowRateLimiter", () => {
 		expect(limiter.consume("b", 0).allowed).toBe(true);
 		expect(limiter.consume("a", 1001).allowed).toBe(true);
 	});
+
+	test("removes stale keys so inactive callers do not accumulate", () => {
+		const limiter = new SlidingWindowRateLimiter(2, 1000);
+
+		limiter.consume("a", 0);
+		limiter.consume("b", 100);
+		expect(limiter.trackedKeyCount()).toBe(2);
+
+		limiter.consume("c", 1201);
+
+		expect(limiter.trackedKeyCount()).toBe(1);
+		expect(limiter.consume("c", 1202).allowed).toBe(true);
+	});
 });
 
 describe("LRUCache", () => {

@@ -22,11 +22,20 @@ export class EventBus<T extends EventMap> {
 		};
 	}
 
-	subscribeOnce<K extends keyof T>(event: K, listener: Listener<T[K]>): void {
-		const unsubscribe = this.subscribe(event, async (payload) => {
-			await listener(payload);
-			unsubscribe();
+	subscribeOnce<K extends keyof T>(
+		event: K,
+		listener: Listener<T[K]>,
+	): () => void {
+		let unsubscribe: () => void = () => {};
+		unsubscribe = this.subscribe(event, async (payload) => {
+			try {
+				await listener(payload);
+			} finally {
+				unsubscribe();
+			}
 		});
+
+		return unsubscribe;
 	}
 
 	async publish<K extends keyof T>(event: K, payload: T[K]): Promise<void> {

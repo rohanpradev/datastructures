@@ -5,11 +5,12 @@ This folder covers Bun concepts that are common in real backend interviews and t
 Official references:
 
 - [Bun runtime overview](https://bun.sh/docs/runtime)
-- [Bun file I/O](https://bun.sh/docs/runtime/file-io)
+- [Bun file I/O](https://bun.sh/docs/api/file-io)
 - [Bun Glob](https://bun.sh/docs/runtime/glob)
 - [Bun hashing and passwords](https://bun.sh/docs/runtime/hashing)
 - [Bun cookies](https://bun.sh/docs/runtime/cookies)
 - [Bun Shell](https://bun.sh/docs/runtime/shell)
+- [Bun SQLite](https://bun.sh/docs/api/sqlite)
 - [Bun test runner](https://bun.sh/docs/test)
 - [Bun SQL](https://bun.sh/docs/api/sql)
 - [Bun Redis](https://bun.sh/docs/runtime/redis)
@@ -39,6 +40,9 @@ Official references:
 
 8. Bun Shell is useful for scripts.
    Its template interpolation escapes strings by default, so user input is not treated as shell syntax.
+
+9. `bun:sqlite` is useful for local durable state and tests.
+   Use prepared statements for repeated queries, strict named parameters to catch binding mistakes, transactions for batch writes, and `.finalize()` for short-lived statements in hot paths.
 
 ## Step-By-Step Problem Approach
 
@@ -88,6 +92,19 @@ Problem: "Write a script that calls a CLI with user-provided input."
 
 Reference code: [shell.ts](./shell.ts)
 
+### Local SQL State
+
+Problem: "Track interview problems, attempts, and weak patterns without a hosted database."
+
+1. Open an in-memory database with `new Database(":memory:", { strict: true })`.
+2. Create a table with constraints that match the domain.
+3. Use prepared statements for inserts and updates.
+4. Wrap bulk writes in `db.transaction()` so the batch commits or rolls back together.
+5. Finalize short-lived statements once the operation is done.
+6. Query review candidates with ordered SQL instead of sorting everything in JavaScript.
+
+Reference code: [sqlite.ts](./sqlite.ts)
+
 ## System Design Notes
 
 - `Bun.sql` is useful when you need a built-in, Promise-based SQL client with pooling and tagged template literals.
@@ -99,4 +116,5 @@ Reference code: [shell.ts](./shell.ts)
 
 ```bash
 bun test src/node-concepts/test/bun-runtime.test.ts
+bun test src/node-concepts/test/sqlite.test.ts
 ```

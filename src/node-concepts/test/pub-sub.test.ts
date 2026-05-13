@@ -38,18 +38,26 @@ function createSocket(username: string, channel: string) {
 
 function waitForOpen(socket: WebSocket, timeout = 1000) {
   return new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error("WebSocket open timeout")),
-      timeout,
-    );
-    socket.addEventListener(
-      "open",
-      () => {
-        clearTimeout(timer);
-        resolve();
-      },
-      { once: true },
-    );
+    const cleanup = () => {
+      clearTimeout(timer);
+      socket.removeEventListener("open", onOpen);
+      socket.removeEventListener("error", onError);
+    };
+    const onOpen = () => {
+      cleanup();
+      resolve();
+    };
+    const onError = () => {
+      cleanup();
+      reject(new Error("WebSocket open failed"));
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("WebSocket open timeout"));
+    }, timeout);
+
+    socket.addEventListener("open", onOpen, { once: true });
+    socket.addEventListener("error", onError, { once: true });
   });
 }
 
@@ -58,18 +66,26 @@ function waitForMessage(
   timeout = 1000,
 ): Promise<ChatMessage> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error("WebSocket message timeout")),
-      timeout,
-    );
-    socket.addEventListener(
-      "message",
-      (event) => {
-        clearTimeout(timer);
-        resolve(JSON.parse(event.data));
-      },
-      { once: true },
-    );
+    const cleanup = () => {
+      clearTimeout(timer);
+      socket.removeEventListener("message", onMessage);
+      socket.removeEventListener("error", onError);
+    };
+    const onMessage = (event: MessageEvent) => {
+      cleanup();
+      resolve(JSON.parse(event.data));
+    };
+    const onError = () => {
+      cleanup();
+      reject(new Error("WebSocket message failed"));
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("WebSocket message timeout"));
+    }, timeout);
+
+    socket.addEventListener("message", onMessage, { once: true });
+    socket.addEventListener("error", onError, { once: true });
   });
 }
 
@@ -136,14 +152,19 @@ describe("WebSocket Pub/Sub", () => {
     await delay(50);
 
     let received = false;
-    socket.addEventListener("message", () => {
+    const onMessage = () => {
       received = true;
-    });
+    };
+    socket.addEventListener("message", onMessage);
 
-    socket.send("Should not echo");
+    try {
+      socket.send("Should not echo");
 
-    await delay(100); // wait to see if message arrives
-    expect(received).toBe(false);
+      await delay(100); // wait to see if message arrives
+      expect(received).toBe(false);
+    } finally {
+      socket.removeEventListener("message", onMessage);
+    }
 
     socket.close();
   });

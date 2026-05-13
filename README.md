@@ -32,7 +32,13 @@ Research references:
 - [Google Tech Dev Guide: Interview Prep](https://techdevguide.withgoogle.com/paths/interview/)
 - [NeetCode roadmap](https://neetcode.io/roadmap)
 - [Blind 75 problem list](https://leetcode.com/discuss/general-discussion/460599/blind-75-leetcode-questions)
+- [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
+- [Node.js releases](https://nodejs.org/en/about/previous-releases)
+- [Bun documentation](https://bun.sh/docs)
+- [TC39 proposals](https://github.com/tc39/proposals)
 - [TypeScript 7 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/)
+
+Documentation refresh note: as of May 13, 2026, the Node.js release page lists Node.js 24 as LTS and Node.js 26 as Current. This repo targets interview learning, so production-facing Node examples should favor LTS behavior unless a Current-only feature is explicitly being studied.
 
 ## Quick Start
 
@@ -52,10 +58,28 @@ bun run typecheck             # TypeScript 7 beta via tsgo
 bun run test:algorithms       # Algorithm tests only
 bun run test:bun              # Bun runtime concept tests only
 bun run test:data-structures  # Data structure tests only
+bun run test:js               # JavaScript core concept tests only
 bun run test:node             # Node/Bun concept tests only
 bun run test:coverage         # Text coverage report
-bun run practice              # Generate empty practice templates
+bun run practice              # Pick one problem and generate focused practice
 bun dev                       # Run Bun server examples
+```
+
+## Practice Generator Contract
+
+The focused practice generator depends on consistent names between tests and source exports:
+
+- Standalone interview problems use `export function problemName(...)`.
+- Data structures and stateful APIs use `export class StructureName`.
+- Helper functions stay unexported unless they are intentionally tested as their own problem.
+- A top-level test block should be named after the main export, for example `describe("twoSum", ...)`.
+- Multi-export blocks should use clear broad titles such as `Integration`, `Comparison`, `Edge Cases`, or `Patterns`.
+
+Run these checks when adding or renaming problems:
+
+```bash
+bun run practice -- --audit-targets
+bun run practice -- --validate-all-focused
 ```
 
 ## Quality Gates
@@ -189,12 +213,15 @@ High-yield problems now covered:
 - Max Heap
 - Min Heap
 - Kth Largest Element
+- Find Median From Data Stream
+- Merge K Sorted Arrays
 
 How to think:
 
 - Need top k but not fully sorted: heap of size k.
 - Need repeated min/max extraction: heap.
 - Need streaming median next: combine max-heap and min-heap.
+- Need to merge many sorted sources: min heap with one active item per source.
 
 ### Dynamic Programming
 
@@ -289,6 +316,28 @@ How to think:
 - Dependency ordering: topological sort.
 - Connectivity under unions: union-find.
 
+### JavaScript Core Concepts
+
+Folder: `src/javascript-concepts`
+Guide: [JavaScript Core Concepts Interview Guide](./src/javascript-concepts/README.md)
+
+Interview topics covered:
+
+- SameValueZero equality used by `Map`, `Set`, and `includes`
+- Hash-map grouping with `Map`
+- Closures and private state
+- Iterables and `Symbol.iterator`
+- `structuredClone`
+- Deferred promises
+- Memoization with explicit cache keys
+- Bounded promise concurrency
+
+How to think:
+
+- Know which equality model an API uses before debugging `NaN`, `-0`, or object keys.
+- A promise starts when it is created. A scheduler needs task factories.
+- Memoization is only correct when the cache key represents all inputs that affect output.
+
 ### Node/Bun Concepts
 
 Folder: `src/node-concepts`
@@ -309,6 +358,7 @@ Interview topics covered:
 - Bun file I/O with `Bun.file()` and `Bun.write()`
 - Bun glob scanning with `Bun.Glob`
 - Bun password hashing, cookies, and Shell scripting
+- Bun SQLite with in-memory databases, strict named parameters, and transactions
 - Token bucket rate limiter
 - Sliding window rate limiter
 - LRU cache
@@ -319,21 +369,25 @@ Interview topics covered:
 
 1. Pick a topic from the map above.
 2. Read the guide in that folder.
-3. Generate practice templates:
+3. Generate one focused practice problem:
 
 ```bash
 bun run practice
 ```
 
-4. Implement the matching file under `practice/`.
-5. Run a focused test:
+You can also list or choose directly:
 
 ```bash
-bun test practice/algorithms/tests/array-problems.test.ts
+bun run practice -- --list heap
+bun run practice -- --problem kthLargestElement
 ```
 
+4. Implement the generated file under `practice/`.
+5. Run the exact focused test command printed by the generator.
 6. Compare with `src/`.
 7. Explain the pattern and complexity in your own words.
+
+Use `bun run practice -- --all --clean` only when you intentionally want every practice file and every copied test. The default workflow keeps the practice folder focused on one selected problem so unrelated TODOs do not create noisy test failures.
 
 ## Fast Learning Tracks
 
@@ -370,9 +424,14 @@ Use these tracks when you want a focused session instead of jumping across the w
 |-- practice/               # Generated empty implementations
 |-- scripts/                # Bun automation
 |-- src/
+|   |-- javascript-concepts/
 |   |-- algorithms/
 |   |   |-- arrays/
+|   |   |-- backtracking/
+|   |   |-- bit-manipulation/
 |   |   |-- dynamic-programming/
+|   |   |-- interview-patterns/
+|   |   |-- math-geometry/
 |   |   |-- recursion/
 |   |   |-- sorting/
 |   |   `-- strings/
@@ -398,6 +457,7 @@ Use these tracks when you want a focused session instead of jumping across the w
 - Typecheck command: `bun run typecheck`
 - Test runner: Bun test
 - Formatter/linter: Biome
+- Docs baseline: official MDN, Node.js, Bun, and TC39 references linked above
 
 ## Quality Rules For New Problems
 

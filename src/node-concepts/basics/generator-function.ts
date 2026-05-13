@@ -45,14 +45,23 @@ export function createAsyncCancellable<
 	} {
 		const generatorIterator = generatorFn(...args);
 		let isCancelled = false;
+		const cancelledError = new Error("Operation Cancelled");
+		let rejectCancelled: (reason: Error) => void = () => {};
+		const cancellation = new Promise<never>((_, reject) => {
+			rejectCancelled = reject;
+		});
 
 		const cancel = (): void => {
+			if (isCancelled) return;
 			isCancelled = true;
+			rejectCancelled(cancelledError);
 
 			// Safely terminate the generator
 			if (typeof generatorIterator.return === "function") {
 				// TypeScript requires a value of ReturnType
-				void generatorIterator.return(null as unknown as ReturnType);
+				void generatorIterator
+					.return(null as unknown as ReturnType)
+					.catch(() => {});
 			}
 		};
 
@@ -60,19 +69,35 @@ export function createAsyncCancellable<
 			// Lint-safe async function inside Promise executor
 			const processGenerator = async (): Promise<void> => {
 				try {
-					let iteration = await generatorIterator.next();
+					let iteration = await Promise.race([
+						generatorIterator.next(),
+						cancellation,
+					]);
 
 					while (!iteration.done) {
 						if (isCancelled) {
-							throw new Error("Operation Cancelled");
+							throw cancelledError;
 						}
 
 						try {
 							// Await in case the yield value is a Promise
-							const resolvedValue = await iteration.value;
-							iteration = await generatorIterator.next(resolvedValue);
+							const resolvedValue = await Promise.race([
+								Promise.resolve(iteration.value),
+								cancellation,
+							]);
+							iteration = await Promise.race([
+								generatorIterator.next(resolvedValue),
+								cancellation,
+							]);
 						} catch (error) {
-							iteration = await generatorIterator.throw(error);
+							if (isCancelled || error === cancelledError) {
+								throw error;
+							}
+
+							iteration = await Promise.race([
+								generatorIterator.throw(error),
+								cancellation,
+							]);
 						}
 					}
 

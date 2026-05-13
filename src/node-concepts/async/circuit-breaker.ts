@@ -90,15 +90,20 @@ export class CircuitBreaker<TArgs extends any[], TResult> {
 	}
 
 	private async executeWithTimeout(args: TArgs): Promise<TResult> {
-		return await Promise.race([
-			this.action(...args),
-			new Promise<never>((_, reject) =>
-				setTimeout(
-					() => reject(new Error("Execution timeout")),
-					this.options.timeout,
-				),
-			),
-		]);
+		let timer: ReturnType<typeof setTimeout> | undefined;
+
+		const timeout = new Promise<never>((_, reject) => {
+			timer = setTimeout(
+				() => reject(new Error("Execution timeout")),
+				this.options.timeout,
+			);
+		});
+
+		try {
+			return await Promise.race([this.action(...args), timeout]);
+		} finally {
+			if (timer) clearTimeout(timer);
+		}
 	}
 
 	private recordSuccess() {

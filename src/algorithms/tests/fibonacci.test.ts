@@ -39,7 +39,7 @@ describe("Fibonacci - Naive Recursive", () => {
 	});
 });
 
-describe("Fibonacci with Memoization", () => {
+describe("fibonacciMemo", () => {
 	test("should return 0 for F(0)", () => {
 		expect(fibonacciMemo(0)).toBe(0);
 	});

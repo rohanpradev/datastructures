@@ -15,6 +15,7 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 | WebSocket pub/sub | `async/pub-sub.ts` | Teaches real-time fanout, channel subscription, and in-memory limits |
 | Bun server and workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from CPU-heavy work |
 | Bun runtime APIs | `bun-runtime/` | Covers file I/O, globbing, password hashing, cookies, and Bun Shell |
+| Bun SQLite | `bun-runtime/sqlite.ts` | Uses in-memory SQL, strict parameters, and transactions without an external service |
 | Rate limiters | `system-design/rate-limiter.ts` | Models token bucket and sliding window throttling |
 | LRU cache | `system-design/lru-cache.ts` | Models hot-data caching and eviction |
 | ID generation | `system-design/id-generation.ts` | Covers Base62 public IDs and Snowflake-style distributed IDs |
@@ -31,6 +32,7 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 
 ```bash
 bun test src/node-concepts/test/bun-runtime.test.ts
+bun test src/node-concepts/test/sqlite.test.ts
 bun test src/node-concepts/test/system-design.test.ts
 bun test src/node-concepts/test/resilience.test.ts
 ```
@@ -51,8 +53,21 @@ The `bun-runtime/` folder follows the current Bun docs for:
 - `Bun.hash` for fast non-security fingerprints.
 - `Bun.Cookie` and `Bun.CookieMap` for cookie creation and parsing.
 - Bun Shell (`$`) for cross-platform scripting with escaped interpolation.
+- `bun:sqlite` for local SQL with in-memory databases, prepared statements, strict named parameters, and transactions.
 
 Official references are linked in [BUN_RUNTIME_GUIDE.md](./bun-runtime/BUN_RUNTIME_GUIDE.md).
+
+## Resource Lifecycle Checklist
+
+Use this checklist for every backend example and test:
+
+- Clear or race timers so losing timeouts do not stay alive.
+- Remove `AbortSignal` and WebSocket event listeners after success, failure, or timeout.
+- Terminate workers after result, error, or timeout.
+- Close Bun servers in test teardown with `server.stop(true)`.
+- Finalize short-lived SQLite prepared statements and close databases in `finally`.
+- Evict stale keys from in-memory maps used by rate limiters, caches, sessions, and pub/sub.
+- Prefer Bun's single shared WebSocket handler object over per-socket listeners on the server side.
 
 ## Interview Talking Points
 
@@ -63,6 +78,7 @@ Official references are linked in [BUN_RUNTIME_GUIDE.md](./bun-runtime/BUN_RUNTI
 - Use `Bun.password` for passwords, `Bun.CryptoHasher` for integrity, and `Bun.hash` only for non-security fingerprints.
 - `Bun.file()` is lazy. Reading starts when you call a method like `.text()` or `.json()`.
 - `Bun.write()` can copy a `BunFile` directly, which keeps file-copying code simple.
+- `bun:sqlite` is a strong fit for local-first tooling, coding trackers, and tests that need SQL behavior without Postgres/MySQL in CI.
 
 ## Full Verification
 

@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { kthLargestElement, MaxHeap, MinHeap } from "@/data-structures/heap/heap";
+import {
+	kthLargestElement,
+	MaxHeap,
+	MedianFinder,
+	mergeKSortedArrays,
+	MinHeap,
+} from "@/data-structures/heap/heap";
 
 describe("MaxHeap", () => {
 	describe("constructor", () => {
@@ -511,4 +517,48 @@ describe("kthLargestElement", () => {
     expect(() => kthLargestElement([1, 2], 0)).toThrow();
     expect(() => kthLargestElement([1, 2], 3)).toThrow();
   });
+});
+
+describe("MedianFinder", () => {
+	test("returns streaming medians for odd and even counts", () => {
+		const finder = new MedianFinder();
+
+		finder.addNumber(1);
+		expect(finder.findMedian()).toBe(1);
+
+		finder.addNumber(2);
+		expect(finder.findMedian()).toBe(1.5);
+
+		finder.addNumber(3);
+		expect(finder.findMedian()).toBe(2);
+
+		finder.addNumber(-10);
+		expect(finder.findMedian()).toBe(1.5);
+	});
+
+	test("throws for an empty stream", () => {
+		const finder = new MedianFinder();
+
+		expect(() => finder.findMedian()).toThrow(
+			"Cannot find median of an empty stream",
+		);
+	});
+});
+
+describe("mergeKSortedArrays", () => {
+	test("merges sorted arrays with duplicates and negatives", () => {
+		const result = mergeKSortedArrays([
+			[-3, 1, 4],
+			[-2, 1, 5],
+			[],
+			[0, 6],
+		]);
+
+		expect(result).toEqual([-3, -2, 0, 1, 1, 4, 5, 6]);
+	});
+
+	test("handles empty input and single array", () => {
+		expect(mergeKSortedArrays([])).toEqual([]);
+		expect(mergeKSortedArrays([[1, 2, 3]])).toEqual([1, 2, 3]);
+	});
 });

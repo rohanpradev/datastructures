@@ -58,22 +58,44 @@ export const apiBreaker = new CircuitBreaker<[], Todo>(
 );
 
 const HEAVY_WORKER_URL = new URL("./worker/worker.ts", import.meta.url);
+const WORKER_TIMEOUT_MS = 2000;
 
 function runWorker(): Promise<number> {
 	return new Promise<number>((resolve, reject) => {
 		const worker = new Worker(HEAVY_WORKER_URL, { type: "module" });
+		let settled = false;
 
-		worker.onmessage = (e: MessageEvent<number>) => {
-			resolve(e.data);
+		const cleanup = () => {
+			clearTimeout(timeout);
+			worker.onmessage = null;
+			worker.onerror = null;
 			worker.terminate();
 		};
 
-		worker.onerror = (err) => {
-			reject(err);
-			worker.terminate();
+		const settle = <T>(callback: (value: T) => void, value: T) => {
+			if (settled) return;
+			settled = true;
+			cleanup();
+			callback(value);
 		};
 
-		worker.postMessage({ task: "compute" });
+		const timeout = setTimeout(() => {
+			settle(reject, new Error("Worker timed out"));
+		}, WORKER_TIMEOUT_MS);
+
+		worker.onmessage = (event: MessageEvent<number>) => {
+			settle(resolve, event.data);
+		};
+
+		worker.onerror = (error) => {
+			settle(reject, error);
+		};
+
+		try {
+			worker.postMessage({ task: "compute" });
+		} catch (error) {
+			settle(reject, error instanceof Error ? error : new Error(String(error)));
+		}
 	});
 }
 
@@ -156,7 +178,7 @@ export const server = Bun.serve({
 	},
 	websocket: {
 		backpressureLimit: 1024 * 1024,
-		closeOnBackpressureLimit: false,
+		closeOnBackpressureLimit: true,
 		data: {} as WSData,
 		idleTimeout: 60,
 		maxPayloadLength: 1024 * 1024,
@@ -216,17 +238,27 @@ if (isTest) {
 	server.unref();
 }
 
+let shutdownStarted = false;
+
+export async function stopServer(force = true): Promise<void> {
+	if (shutdownStarted) return;
+	shutdownStarted = true;
+	await server.stop(force);
+}
+
+async function shutdown(signal: NodeJS.Signals): Promise<void> {
+	console.log(`${signal} received. Shutting down...`);
+	await stopServer(true);
+	process.exit(0);
+}
+
 if (!isTest) {
-	process.on("SIGTERM", async () => {
-		console.log("SIGTERM received. Shutting down...");
-		await server.stop();
-		process.exit(0);
+	process.once("SIGTERM", () => {
+		void shutdown("SIGTERM");
 	});
 
-	process.on("SIGINT", async () => {
-		console.log("SIGINT received. Shutting down...");
-		await server.stop();
-		process.exit(0);
+	process.once("SIGINT", () => {
+		void shutdown("SIGINT");
 	});
 }
 

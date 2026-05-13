@@ -11,6 +11,20 @@ import {
   resolvedValue,
 } from "@/node-concepts/basics/promise-types";
 
+function delayedResolve<T>(value: T, delayMs: number) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const promise = new Promise<T>((resolve) => {
+    timer = setTimeout(() => resolve(value), delayMs);
+  });
+
+  return {
+    promise,
+    clear: () => {
+      if (timer) clearTimeout(timer);
+    },
+  };
+}
+
 /* -------------------------------------------------- */
 /* Promise.resolve */
 /* -------------------------------------------------- */
@@ -83,24 +97,28 @@ describe("allSettledPromises", () => {
 describe("racePromises", () => {
   test("resolves with fastest promise", async () => {
     const fast = resolvedValue("fast");
+    const slow = delayedResolve("slow", 20);
 
-    const slow = new Promise<string>((resolve) =>
-      setTimeout(() => resolve("slow"), 20),
-    );
+    try {
+      const result = await racePromises([slow.promise, fast]);
 
-    const result = await racePromises([slow, fast]);
-
-    expect(result).toBe("fast");
+      expect(result).toBe("fast");
+    } finally {
+      slow.clear();
+    }
   });
 
   test("rejects if first settled promise rejects", async () => {
     const fastReject = rejectedValue("boom");
+    const slowResolve = delayedResolve("ok", 20);
 
-    const slowResolve = new Promise<string>((resolve) =>
-      setTimeout(() => resolve("ok"), 20),
-    );
-
-    await expect(racePromises([fastReject, slowResolve])).rejects.toBe("boom");
+    try {
+      await expect(racePromises([fastReject, slowResolve.promise])).rejects.toBe(
+        "boom",
+      );
+    } finally {
+      slowResolve.clear();
+    }
   });
 });
 
