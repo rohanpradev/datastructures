@@ -137,48 +137,97 @@ Use this script in every interview. It keeps you from jumping into code too earl
 8. Give complexity.
    Always state time and space. If there is a trade-off, say it.
 
+## Common Interview Mistakes To Avoid
+
+Learn from what makes candidates fail. Here are the top mistakes and how to avoid them:
+
+### Coding Mistakes
+
+| Mistake | Why It Fails | Fix |
+|---|---|---|
+| Jump to code before understanding | Write wrong solution | Follow the 8-step process first |
+| Only test happy path | Miss edge cases | Test: empty, single, duplicates, boundaries |
+| Forget null/empty checks | NullPointerException | Always check before accessing properties |
+| Off-by-one errors in loops | Wrong indices accessed | Draw boundary diagram, verify carefully |
+| Mutate input unexpectedly | Change problem requirements | Ask "can I modify input?" first |
+| Inefficient: `.shift()` on arrays | O(n) per operation, becomes O(n²) | Use index pointer instead: `array[i++]` |
+| Inefficient: searching in array every time | O(n²) or worse | Use hash map for O(1) lookups |
+
+### Communication Mistakes
+
+| Mistake | Why It Fails | Fix |
+|---|---|---|
+| Silent coding for 20 minutes | Interviewer can't follow or help | Think out loud, explain approach first |
+| Not stating complexity | Shows you don't think about efficiency | Always end with "Time: O(...), Space: O(...)" |
+| Ignoring interviewer hints | Miss the intended solution | Listen carefully; hints usually mean you're on wrong path |
+| Using single-letter variables | Interviewer can't follow `s`, `p`, `t`, `m` | Use: `slow`, `prev`, `temp`, `max` |
+| Forgetting to explain "why" | Interviewer unsure if you understand | Explain pattern choice and data structure rationale |
+
+### Algorithm Mistakes
+
+| Problem Type | Common Mistake | Correct Approach |
+|---|---|---|
+| BST validation | Only check immediate children | Pass min/max bounds through recursion |
+| LRU cache | Don't move to head on access | Must update "recently used" on every access |
+| BFS on weighted graph | Use BFS (wrong!) | Use Dijkstra or Bellman-Ford |
+| Linked list cycle | Don't track visited nodes | Use visited set or Floyd's algorithm |
+| Substring problems | Check membership slowly | Use sliding window + hash map |
+| Tree path problems | Don't carry state down recursion | Pass value/sum/path as parameter |
+| Matrix DFS | Forget to mark as visited | Mark before recursing to prevent cycles |
+| Duplicate handling | Assume input has no duplicates | Explicitly ask and handle duplicates |
+
 ## FAANG Problem Map
+
+This section maps problems by topic with difficulty levels and interview frequency. Use this to find the right problems for your skill level and target company.
+
+**Legend:**
+- 🔴 = High frequency in interviews (focus here!)
+- 🟡 = Medium frequency
+- 🟢 = Lower frequency (good for comprehensive prep)
+- 🌟 = Great follow-up question
+- ⏱️ = Estimated time: Warm-up (5-10min) | Easy (15-20min) | Medium (30-45min) | Hard (45-60min+)
 
 ### Arrays And Hashing
 
 Folder: `src/algorithms/arrays`
 Beginner guide: [FAANG Array Problems Guide](./src/algorithms/arrays/FAANG_ARRAY_PROBLEMS_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Two Sum | 🔴 High | Easy | 15min | Hash Map |
+| Valid Anagram | 🔴 High | Easy | 10min | Hash Map |
+| Group Anagrams | 🔴 High | Medium | 30min | Hash Map |
+| Top K Frequent Elements | 🔴 High | Medium | 25min | Heap/Bucket |
+| Product Except Self | 🔴 High | Medium | 20min | Prefix Sum |
+| Validate Subsequence | 🟡 Medium | Easy | 15min | Two Pointers |
+| Majority Element | 🟡 Medium | Easy | 20min | Counting/Voting |
+| Merge Intervals | 🔴 High | Medium | 30min | Sorting |
+| Search In Sorted Matrix | 🟡 Medium | Medium | 25min | Binary Search |
+| Longest Consecutive Sequence | 🔴 High | Medium | 25min | Hash Set |
+| Median Of Two Sorted Arrays | 🔴 High | Hard | 45min | Binary Search |
 
-- Two Sum
-- Validate Subsequence
-- Sorted Squared Array
-- Product Except Self
-- Top K Frequent Elements
-- Majority Element
-- Merge Intervals
-- Search In Sorted Matrix
-- Longest Consecutive Sequence
-- Median Of Two Sorted Arrays
-
-How to think:
-
+**How to think:**
 - Need fast membership or counts: use `Map` / `Set`.
 - Need a range sum: use prefix sums.
 - Need sorted pair logic: sort and use two pointers.
 - Need kth/top frequency: use buckets or heaps.
+
+**Recommended warm-up:** Start with "Two Sum", then "Valid Anagram", then "Top K Frequent".
 
 ### Strings
 
 Folder: `src/algorithms/strings`
 Beginner guide: [FAANG String Problems Guide](./src/algorithms/strings/FAANG_STRING_PROBLEMS_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Valid Anagram | 🔴 High | Easy | 15min | Frequency Count |
+| Group Anagrams | 🔴 High | Medium | 30min | Hash Map |
+| First Non-Repeating Character | 🟡 Medium | Easy | 15min | Hash Map |
+| Semordnilap | 🟢 Low | Easy | 10min | Hash Set |
+| Generate Document | 🟡 Medium | Easy | 15min | Frequency Count |
 
-- Generate Document
-- First Non-Repeating Character
-- Semordnilap
-- Group Anagrams
-- Valid Anagram
-
-How to think:
-
+**How to think:**
 - Same letters in different order usually means frequency counting.
 - Longest/shortest substring usually means sliding window.
 - Palindrome checks often use two pointers or expand-around-center.
@@ -188,17 +237,16 @@ How to think:
 Folder: `src/data-structures/stack`
 Beginner guide: [FAANG Stack Problems Guide](./src/data-structures/stack/problems/FAANG_STACK_PROBLEMS_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Valid Parentheses | 🔴 High | Easy | 15min | Stack Matching |
+| Min Stack | 🔴 High | Medium | 20min | Stack with Tracking |
+| Daily Temperatures | 🔴 High | Medium | 20min | Monotonic Stack |
+| Largest Rectangle In Histogram | 🟡 Medium | Hard | 40min | Monotonic Stack |
+| Evaluate Expression | 🟡 Medium | Medium | 25min | Stack Parsing |
+| Queue Using Two Stacks | 🟢 Low | Medium | 20min | Design |
 
-- Valid Parentheses
-- Min Stack
-- Daily Temperatures
-- Evaluate Expression
-- Largest Rectangle In Histogram
-- Queue Using Two Stacks
-
-How to think:
-
+**How to think:**
 - Matching/nesting: stack.
 - Next greater/smaller: monotonic stack.
 - "Minimum at every stack depth": companion stack.
@@ -208,16 +256,15 @@ How to think:
 Folder: `src/data-structures/heap`
 Beginner guide: [FAANG Heap Problems Guide](./src/data-structures/heap/FAANG_HEAP_PROBLEMS_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Kth Largest Element | 🔴 High | Medium | 20min | Min Heap |
+| Find Median From Data Stream | 🔴 High | Hard | 35min | Dual Heap |
+| Top K Frequent Elements | 🔴 High | Medium | 25min | Heap |
+| Merge K Sorted Arrays | 🟡 Medium | Hard | 40min | Min Heap |
+| Max Heap / Min Heap | 🟢 Low | Easy | 15min | Fundamentals |
 
-- Max Heap
-- Min Heap
-- Kth Largest Element
-- Find Median From Data Stream
-- Merge K Sorted Arrays
-
-How to think:
-
+**How to think:**
 - Need top k but not fully sorted: heap of size k.
 - Need repeated min/max extraction: heap.
 - Need streaming median next: combine max-heap and min-heap.
@@ -228,18 +275,17 @@ How to think:
 Folder: `src/algorithms/dynamic-programming`
 Beginner guide: [FAANG DP Problems Guide](./src/algorithms/dynamic-programming/FAANG_DP_PROBLEMS_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Max Sum Non-Adjacent | 🟡 Medium | Medium | 25min | 1D DP |
+| Min Coins For Change | 🔴 High | Medium | 30min | Coin Change |
+| Edit Distance | 🔴 High | Hard | 40min | 2D DP |
+| Max Product Subarray | 🟡 Medium | Medium | 25min | DP Tracking |
+| Longest Common Subsequence | 🟡 Medium | Medium | 30min | 2D DP |
+| Grid Traversal | 🟡 Medium | Medium | 25min | Path DP |
+| Number Of Ways To Make Change | 🟡 Medium | Medium | 30min | Combination DP |
 
-- Max Sum Non-Adjacent
-- Number Of Ways To Make Change
-- Min Coins For Change
-- Edit Distance
-- Grid Traversal
-- Max Product Subarray
-- Longest Common Subsequence
-
-How to think:
-
+**How to think:**
 - Define the state first: what does `dp[i]` or `dp[row][col]` mean?
 - Define the transition: how does this state use earlier states?
 - Define base cases before loops.
@@ -250,14 +296,13 @@ How to think:
 Folder: `src/algorithms/backtracking`  
 Beginner guide: [Backtracking Guide](./src/algorithms/backtracking/BACKTRACKING_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Letter Combinations Of A Phone Number | 🟡 Medium | Medium | 25min | Backtracking |
+| Generate Parentheses | 🔴 High | Medium | 30min | Backtracking |
+| Word Search | 🔴 High | Medium | 30min | Grid Backtracking |
 
-- Letter Combinations Of A Phone Number
-- Generate Parentheses
-- Word Search
-
-How to think:
-
+**How to think:**
 - Backtracking is choose, explore, undo.
 - Use it when the problem asks for all valid combinations or paths.
 - Always define what makes a partial state invalid so you can prune early.
@@ -267,15 +312,14 @@ How to think:
 Folder: `src/algorithms/bit-manipulation`  
 Beginner guide: [Bit Manipulation Guide](./src/algorithms/bit-manipulation/BIT_MANIPULATION_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Single Number | 🔴 High | Easy | 15min | XOR |
+| Counting Bits | 🟡 Medium | Medium | 20min | Bit DP |
+| Missing Number | 🟡 Medium | Easy | 15min | XOR |
+| Reverse Bits | 🟢 Low | Easy | 10min | Bit Manipulation |
 
-- Single Number
-- Counting Bits
-- Missing Number
-- Reverse Bits
-
-How to think:
-
+**How to think:**
 - XOR cancels duplicate values.
 - `num & 1` reads the last bit.
 - `num >> 1` drops the last bit.
@@ -285,14 +329,13 @@ How to think:
 Folder: `src/algorithms/math-geometry`  
 Beginner guide: [Math And Geometry Guide](./src/algorithms/math-geometry/MATH_GEOMETRY_GUIDE.md)
 
-High-yield problems now covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Rotate Image | 🟡 Medium | Medium | 25min | Index Transform |
+| Set Matrix Zeroes | 🟡 Medium | Medium | 25min | In-place |
+| Happy Number | 🟢 Low | Easy | 15min | Cycle Detection |
 
-- Rotate Image
-- Set Matrix Zeroes
-- Happy Number
-
-How to think:
-
+**How to think:**
 - Matrix problems are mostly careful index transformations.
 - Draw a small example before coding.
 - For repeated transformations, look for cycles.
@@ -300,17 +343,17 @@ How to think:
 ### Graphs
 
 Folder: `src/data-structures/graph` and `src/algorithms/arrays` for matrix graph problems.
+Beginner guide: [FAANG Graph Problems Guide](./src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md)
 
-High-yield problems covered:
+| Problem | Company Freq | Difficulty | Time | Pattern |
+|---|---|---|---|---|
+| Number of Islands | 🔴 High | Medium | 30min | DFS/BFS |
+| River Sizes | 🟡 Medium | Medium | 30min | DFS |
+| Remove Islands | 🟡 Medium | Medium | 30min | DFS |
+| Minimum Pass Matrix | 🟡 Medium | Hard | 40min | BFS |
+| Graph Traversals | 🟢 Low | Easy | 15min | Fundamentals |
 
-- Graph traversals
-- River Sizes
-- Remove Islands
-- Minimum Pass Matrix
-- Number Of Islands style matrix DFS/BFS
-
-How to think:
-
+**How to think:**
 - Shortest path in unweighted graph: BFS.
 - Explore all connected land/nodes: DFS or BFS.
 - Dependency ordering: topological sort.
@@ -337,6 +380,26 @@ How to think:
 - Know which equality model an API uses before debugging `NaN`, `-0`, or object keys.
 - A promise starts when it is created. A scheduler needs task factories.
 - Memoization is only correct when the cache key represents all inputs that affect output.
+
+### Data Structures
+
+Folder: `src/data-structures`
+
+| Data Structure | Guide | Key Problems | Time Complexity |
+|---|---|---|---|
+| Array / Vector | N/A | Sorted array, sliding window, 2D problems | Access: O(1), Insert: O(n) |
+| Singly Linked List | [Linked List Guide](./src/data-structures/singly-linked-list/problems/LINKED_LIST_GUIDE.md) 🟢 | Find middle, has cycle, reverse | Access: O(n), Insert: O(1)* |
+| Doubly Linked List | [DLL FAANG Guide](./src/data-structures/doubly-linked-list/FAANG_DLL_PROBLEMS_GUIDE.md) 🟡 | LRU Cache, Deque, Browser history | Access: O(n), Insert: O(1)* |
+| Stack | [Stack FAANG Guide](./src/data-structures/stack/problems/FAANG_STACK_PROBLEMS_GUIDE.md) 🔴 | Valid parentheses, min stack, monotonic | Push/Pop: O(1) |
+| Queue | [Queue FAANG Guide](./src/data-structures/queue/FAANG_QUEUE_PROBLEMS_GUIDE.md) 🟡 | BFS, level-order, sliding window deque | Enqueue/Dequeue: O(1) |
+| Hash Table/Map | [Hash Table Guide](./src/data-structures/hash-table/problems/HASH_TABLE_PROBLEMS_GUIDE.md) 🔴 | Two sum, group, frequency | Average: O(1) |
+| Heap | [Heap FAANG Guide](./src/data-structures/heap/FAANG_HEAP_PROBLEMS_GUIDE.md) 🔴 | Kth largest, median streaming | Insert/Delete: O(log n) |
+| Binary Tree | [Binary Tree FAANG Guide](./src/data-structures/binary-tree/FAANG_BINARY_TREE_PROBLEMS_GUIDE.md) 🟡 | Level-order, path sum, traversals | Search: O(n) |
+| Binary Search Tree | [BST FAANG Guide](./src/data-structures/binary-search-tree/FAANG_BST_PROBLEMS_GUIDE.md) 🟡 | Validate, kth smallest, LCA | Average: O(log n) |
+| Graph | [Graph Guide](./src/data-structures/graph/problems/GRAPH_PROBLEMS_GUIDE.md) 🟡 | Islands, paths, traversals (DFS/BFS) | DFS/BFS: O(V+E) |
+| Trie | [Trie FAANG Guide](./src/data-structures/trie/FAANG_TRIE_PROBLEMS_GUIDE.md) 🟡 | Autocomplete, word search, prefix | Insert/Search: O(L) |
+
+**Note:** *Time assumes you have a node reference. If searching for position first, add O(n).
 
 ### Node/Bun Concepts
 
