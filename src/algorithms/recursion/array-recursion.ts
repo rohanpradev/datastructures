@@ -1,3 +1,5 @@
+type NestedNumberArray = Array<number | NestedNumberArray>;
+
 /**
  * Calculates the "product sum" of a potentially nested array of numbers.
  *
@@ -21,7 +23,6 @@
  * @param multiplier - The depth-based multiplier (defaults to 1 for top-level)
  * @returns The calculated product sum
  */
-type NestedNumberArray = Array<number | NestedNumberArray>;
 export function productSum(
 	nums: NestedNumberArray,
 	multiplier: number = 1,

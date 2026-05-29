@@ -90,7 +90,17 @@ function waitForMessage(
 }
 
 function delay(ms: number) {
-  return new Promise((res) => setTimeout(res, ms));
+  return Bun.sleep(ms);
+}
+
+function closeSocket(socket: WebSocket | undefined) {
+  if (
+    socket &&
+    (socket.readyState === WebSocket.CONNECTING ||
+      socket.readyState === WebSocket.OPEN)
+  ) {
+    socket.close();
+  }
 }
 
 // ──────────────────────────────
@@ -100,97 +110,118 @@ function delay(ms: number) {
 describe("WebSocket Pub/Sub", () => {
   test("WebSocket upgrade succeeds", async () => {
     const socket = createSocket("TestUser", "room1");
-    await waitForOpen(socket);
-    expect(socket.readyState).toBe(WebSocket.OPEN);
-    socket.close();
+    try {
+      await waitForOpen(socket);
+      expect(socket.readyState).toBe(WebSocket.OPEN);
+    } finally {
+      closeSocket(socket);
+    }
   });
 
   test("Join system message is broadcasted", async () => {
-    const socket1 = createSocket("Alice", "room2");
-    await waitForOpen(socket1);
+    let socket1: WebSocket | undefined;
+    let socket2: WebSocket | undefined;
 
-    const socket2 = createSocket("Bob", "room2");
-    await waitForOpen(socket2);
+    try {
+      socket1 = createSocket("Alice", "room2");
+      await waitForOpen(socket1);
 
-    const joinMessage = await waitForMessage(socket1);
+      socket2 = createSocket("Bob", "room2");
+      await waitForOpen(socket2);
 
-    expect(joinMessage.type).toBe("system");
-    expect(joinMessage.message).toContain("Bob joined");
+      const joinMessage = await waitForMessage(socket1);
 
-    socket1.close();
-    socket2.close();
+      expect(joinMessage.type).toBe("system");
+      expect(joinMessage.message).toContain("Bob joined");
+    } finally {
+      closeSocket(socket1);
+      closeSocket(socket2);
+    }
   });
 
   test("Message is broadcast to other subscribers", async () => {
-    const socket1 = createSocket("Sender", "room3");
-    const socket2 = createSocket("Receiver", "room3");
+    let socket1: WebSocket | undefined;
+    let socket2: WebSocket | undefined;
 
-    await waitForOpen(socket1);
-    await waitForOpen(socket2);
+    try {
+      socket1 = createSocket("Sender", "room3");
+      socket2 = createSocket("Receiver", "room3");
 
-    // Let join messages settle
-    await delay(50);
+      await waitForOpen(socket1);
+      await waitForOpen(socket2);
 
-    const messagePromise = waitForMessage(socket2);
+      // Let join messages settle
+      await delay(50);
 
-    socket1.send("Hello World");
+      const messagePromise = waitForMessage(socket2);
 
-    const received = await messagePromise;
+      socket1.send("Hello World");
 
-    expect(received.type).toBe("chat");
-    expect(received.message).toBe("Hello World");
-    expect(received.user).toBe("Sender");
+      const received = await messagePromise;
 
-    socket1.close();
-    socket2.close();
+      expect(received.type).toBe("chat");
+      expect(received.message).toBe("Hello World");
+      expect(received.user).toBe("Sender");
+    } finally {
+      closeSocket(socket1);
+      closeSocket(socket2);
+    }
   });
 
   test("Sender does not receive its own message", async () => {
     const socket = createSocket("SelfUser", "room4");
-    await waitForOpen(socket);
-
-    await delay(50);
-
-    let received = false;
-    const onMessage = () => {
-      received = true;
-    };
-    socket.addEventListener("message", onMessage);
-
     try {
-      socket.send("Should not echo");
+      await waitForOpen(socket);
 
-      await delay(100); // wait to see if message arrives
-      expect(received).toBe(false);
+      await delay(50);
+
+      let received = false;
+      const onMessage = () => {
+        received = true;
+      };
+      socket.addEventListener("message", onMessage);
+
+      try {
+        socket.send("Should not echo");
+
+        await delay(100); // wait to see if message arrives
+        expect(received).toBe(false);
+      } finally {
+        socket.removeEventListener("message", onMessage);
+      }
     } finally {
-      socket.removeEventListener("message", onMessage);
+      closeSocket(socket);
     }
-
-    socket.close();
   });
 
   test("Metrics reflect active WebSockets", async () => {
     const socket = createSocket("MetricUser", "metricsRoom");
-    await waitForOpen(socket);
+    try {
+      await waitForOpen(socket);
 
-    await delay(50);
+      await delay(50);
 
-    const res = await fetch(new URL("/metrics", server.url));
-    const data = (await res.json()) as MetricsResponse;
+      const res = await fetch(new URL("/metrics", server.url));
+      const data = (await res.json()) as MetricsResponse;
 
-    expect(data.activeWebSockets).toBeGreaterThanOrEqual(1);
-
-    socket.close();
+      expect(data.activeWebSockets).toBeGreaterThanOrEqual(1);
+    } finally {
+      closeSocket(socket);
+    }
   });
 
   test("WebSocket closes cleanly", async () => {
     const socket = createSocket("CloseUser", "room5");
-    await waitForOpen(socket);
+    try {
+      await waitForOpen(socket);
 
-    socket.close();
+      socket.close();
 
-    await delay(50); // wait for close to propagate
+      await delay(50); // wait for close to propagate
 
-    expect(socket.readyState).toBe(WebSocket.CLOSED);
+      expect(socket.readyState).toBe(WebSocket.CLOSED);
+    } finally {
+      closeSocket(socket);
+    }
   });
 });

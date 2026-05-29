@@ -298,6 +298,12 @@ export function firstNonRepeatingChar(s: string): number {
 	return -1;
 }
 
+/**
+ * Fixed-capacity least-recently-used cache built on Map insertion order.
+ *
+ * Time Complexity: O(1) average for get and put
+ * Space Complexity: O(capacity)
+ */
 export class LRUCache<K, V> {
 	private capacity: number;
 	private cache: Map<K, V>;

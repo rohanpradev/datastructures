@@ -52,6 +52,9 @@ export function groupBy<TItem, TKey>(
 	return groups;
 }
 
+/**
+ * Public operations exposed by the closure-backed counter example.
+ */
 export type Counter = {
 	value: () => number;
 	increment: (step?: number) => number;
@@ -135,6 +138,9 @@ export function cloneStructured<T>(value: T): T {
 	return structuredClone(value);
 }
 
+/**
+ * Promise plus externally exposed resolve/reject callbacks.
+ */
 export type Deferred<T> = {
 	promise: Promise<T>;
 	resolve: (value: T | PromiseLike<T>) => void;

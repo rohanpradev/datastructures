@@ -9,12 +9,12 @@ export class MyPromiseInternal<T> {
 	state: "pending" | "fulfilled" | "rejected" = "pending";
 
 	/** Value when fulfilled or reason when rejected */
-	value?: T;
+	value?: unknown;
 
 	/** Handlers waiting for resolution */
 	handlers: Array<{
 		onFulfilled?: (value: T) => void;
-		onRejected?: (reason: any) => void;
+		onRejected?: (reason: unknown) => void;
 	}> = [];
 
 	/**
@@ -24,12 +24,12 @@ export class MyPromiseInternal<T> {
 	constructor(
 		executor: (
 			resolve: (value: T | MyPromiseInternal<T>) => void,
-			reject: (reason: any) => void,
+			reject: (reason: unknown) => void,
 		) => void,
 	) {
 		const resolve = (value: T | MyPromiseInternal<T>) =>
 			this.updateState("fulfilled", value);
-		const reject = (reason: any) => this.updateState("rejected", reason);
+		const reject = (reason: unknown) => this.updateState("rejected", reason);
 
 		try {
 			executor(resolve, reject);
@@ -45,7 +45,7 @@ export class MyPromiseInternal<T> {
 	 */
 	private updateState(
 		state: "fulfilled" | "rejected",
-		value: T | MyPromiseInternal<T> | any,
+		value: T | MyPromiseInternal<T> | unknown,
 	): void {
 		if (this.state !== "pending") return; // Ignore if already resolved/rejected
 
@@ -65,7 +65,7 @@ export class MyPromiseInternal<T> {
 		// Run all queued handlers asynchronously
 		queueMicrotask(() => {
 			this.handlers.forEach((h) => {
-				if (state === "fulfilled" && h.onFulfilled) h.onFulfilled(value);
+				if (state === "fulfilled" && h.onFulfilled) h.onFulfilled(value as T);
 				if (state === "rejected" && h.onRejected) h.onRejected(value);
 			});
 			this.handlers = []; // Clear handlers after execution
@@ -83,7 +83,7 @@ export class MyPromiseInternal<T> {
 function myThen<T, U>(
 	promise: MyPromiseInternal<T>,
 	onFulfilled?: (value: T) => U | MyPromiseInternal<U>,
-	onRejected?: (reason: any) => U | MyPromiseInternal<U>,
+	onRejected?: (reason: unknown) => U | MyPromiseInternal<U>,
 ): MyPromiseInternal<U> {
 	return new MyPromiseInternal<U>((resolve, reject) => {
 		const handler = {
@@ -101,7 +101,7 @@ function myThen<T, U>(
 					reject(err);
 				}
 			},
-			onRejected: (reason: any) => {
+			onRejected: (reason: unknown) => {
 				if (!onRejected) return reject(reason);
 				try {
 					const result = onRejected(reason);
@@ -136,7 +136,7 @@ function myThen<T, U>(
  */
 export function myCatch<T>(
 	promise: MyPromiseInternal<T>,
-	onRejected: (reason: any) => T | MyPromiseInternal<T>,
+	onRejected: (reason: unknown) => T | MyPromiseInternal<T>,
 ): MyPromiseInternal<T> {
 	return myThen(promise, undefined, onRejected);
 }

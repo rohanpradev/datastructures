@@ -643,6 +643,8 @@ export function reverseBetween<T>(
 	return list;
 }
 
+type OrderedListValue = number | string;
+
 /**
  * LeetCode Problem: Merge Two Sorted Lists
  *
@@ -671,7 +673,7 @@ export function reverseBetween<T>(
  * const merged = mergeTwoSortedLists(list1, list2);
  * // merged contains: 1 -> 2 -> 3 -> 4 -> 5 -> 6
  */
-export function mergeTwoSortedLists<T>(
+export function mergeTwoSortedLists<T extends OrderedListValue>(
 	list1: SinglyLinkedList<T>,
 	list2: SinglyLinkedList<T>,
 ): SinglyLinkedList<T> {
@@ -682,7 +684,7 @@ export function mergeTwoSortedLists<T>(
 
 	// Merge while both lists have nodes
 	while (current1 && current2) {
-		if ((current1.value as any) <= (current2.value as any)) {
+		if (current1.value <= current2.value) {
 			result.push(current1.value);
 			current1 = current1.next;
 		} else {

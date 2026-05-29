@@ -22,6 +22,44 @@ TypeScript 7 + Bun interview-prep workspace with reference implementations, test
 
 This repo is organized by topic so you can learn a pattern, implement it in `practice/`, run the matching tests, and compare against the reference in `src/`.
 
+For a week-by-week plan, use [LEARNING_PATH.md](./LEARNING_PATH.md).
+
+## Course Map
+
+Use the repo as a progressive course, not as a random problem dump.
+
+| Level | Focus | Folders | Exit criteria |
+|---|---|---|---|
+| 1 | TypeScript fluency and core JavaScript behavior | `src/typescript-concepts`, `src/javascript-concepts`, `src/node-concepts/basics` | Explain generics, `unknown`, decorators, promises, generators, event loop ordering, value/reference behavior, and module boundaries. |
+| 2 | Core data structures | `src/data-structures/{stack,queue,hash-table,singly-linked-list,doubly-linked-list,binary-tree,binary-search-tree,heap,trie,graph}` | Implement each structure from scratch and state operation complexity without notes. |
+| 3 | Interview algorithms | `src/algorithms/{arrays,strings,sorting,recursion,backtracking,dynamic-programming,bit-manipulation,math-geometry,interview-patterns}` | Recognize the pattern before coding and pass the focused test suite. |
+| 4 | Advanced problem solving | FAANG guides inside each topic folder | Solve mixed problems under time pressure, including follow-ups and edge cases. |
+| 5 | Backend/system design primitives | `src/node-concepts/async`, `src/node-concepts/system-design`, `src/node-concepts/bun-runtime` | Explain the in-memory algorithm, failure modes, and distributed production upgrade. |
+| 6 | Capstone review | `practice/` plus `bun run check` | Generate unknown practice, solve cleanly, and keep lint, typecheck, tests, and coverage healthy. |
+
+## What Is Already Covered
+
+The repo already includes broad DS&A coverage, so new work should fill gaps instead of duplicating basics:
+
+- Data structures: linked lists, stack, queue, hash table, heap, trie, graph, binary tree, BST, plus LeetCode-style problem guides.
+- Algorithms: arrays, strings, sorting, recursion, backtracking, dynamic programming, bit manipulation, math/geometry, and interview patterns.
+- Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Shell, Bun security, SQLite, and system design blocks.
+- Verification: Bun tests across each topic, TypeScript checking via `tsgo`, Biome lint/format checks, generated practice validation, and GitHub CI.
+
+## Advanced Topics To Master
+
+These are the topics that turn the repo into a senior-level TypeScript prep course:
+
+| Topic | Learn in repo | Interview/system design angle |
+|---|---|---|
+| Consistent hashing | `src/node-concepts/system-design/consistent-hash.ts` | Cache/database sharding, node joins/leaves, virtual nodes, hot-key mitigation. |
+| Bloom filters | `src/node-concepts/system-design/bloom-filter.ts` | Negative cache, read-path protection, false-positive trade-offs, memory sizing. |
+| Rate limiting | `src/node-concepts/system-design/rate-limiter.ts` | Token bucket vs sliding window, Redis atomicity, fairness vs burst tolerance. |
+| Cache eviction | `src/node-concepts/system-design/lru-cache.ts` | LRU internals, TTL, stale data, cache-aside vs write-through. |
+| ID generation | `src/node-concepts/system-design/id-generation.ts` | Base62 public IDs, Snowflake-style IDs, clock rollback, collision risks. |
+| Async resilience | `src/node-concepts/async` | Retries, timeout budgets, backpressure, circuit breakers, pub/sub fan-out. |
+| Bun-native backend work | `src/node-concepts/bun-runtime` | File I/O, Shell, password hashing, cookies, SQLite, SQL/Redis boundaries. |
+
 ## Why This Exists
 
 FAANG interviews, especially Google-style interviews, reward pattern recognition, clear reasoning, edge-case handling, and code that you can explain under time pressure. The problem set here is aligned with common public prep tracks such as Blind 75 / NeetCode 150 style patterns and Google's own emphasis on data structures, algorithms, Big-O, maps, trees, graphs, binary search, recursion, dynamic programming, and interview communication.
@@ -37,6 +75,10 @@ Research references:
 - [Bun documentation](https://bun.sh/docs)
 - [TC39 proposals](https://github.com/tc39/proposals)
 - [TypeScript 7 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/)
+- [TypeScript Handbook: Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
+- [TypeScript 4.9: `satisfies`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
+- [TypeScript 5.0: decorators and const type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html)
+- [TypeScript 5.2: `using` declarations and explicit resource management](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html)
 
 Documentation refresh note: as of May 13, 2026, the Node.js release page lists Node.js 24 as LTS and Node.js 26 as Current. This repo targets interview learning, so production-facing Node examples should favor LTS behavior unless a Current-only feature is explicitly being studied.
 
@@ -60,8 +102,13 @@ bun run test:bun              # Bun runtime concept tests only
 bun run test:data-structures  # Data structure tests only
 bun run test:js               # JavaScript core concept tests only
 bun run test:node             # Node/Bun concept tests only
-bun run test:coverage         # Text coverage report
+bun run test:coverage         # Text and lcov coverage report
+bun test src/typescript-concepts/test # Modern TypeScript concept tests
 bun run practice              # Pick one problem and generate focused practice
+bun run practice:random       # Generate a random focused problem
+bun run practice:list         # List focused practice targets with metadata
+bun run practice:manifest     # Write practice/practice-manifest.json
+bun run practice:audit        # Validate test/export naming for focused practice
 bun dev                       # Run Bun server examples
 ```
 
@@ -78,9 +125,12 @@ The focused practice generator depends on consistent names between tests and sou
 Run these checks when adding or renaming problems:
 
 ```bash
+bun run practice:manifest
 bun run practice -- --audit-targets
 bun run practice -- --validate-all-focused
 ```
+
+The manifest is Bun-native JSON output generated with `Bun.write()`. It includes every target's topic, inferred pattern, difficulty, source files, test file, and exports, which makes it useful for dashboards, SQLite progress trackers, or spaced-repetition scripts.
 
 ## Quality Gates
 
@@ -97,6 +147,8 @@ That command runs:
 3. `bun run test:ci`
 
 CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`.
+
+Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, and test-file coverage exclusion. Package installation also uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
 
 ## How To Solve A Problem You Do Not Know
 
@@ -442,8 +494,12 @@ You can also list or choose directly:
 
 ```bash
 bun run practice -- --list heap
+bun run practice -- --problem 160
+bun run practice -- --problem kth-largest-element
 bun run practice -- --problem kthLargestElement
 ```
+
+The list output includes each target's ID, slug, exported symbol, and source file. Use the slug or exported symbol when you want a repeatable command for a particular problem; use the ID for quick one-off selection from the current list.
 
 4. Implement the generated file under `practice/`.
 5. Run the exact focused test command printed by the generator.
@@ -484,14 +540,17 @@ Use these tracks when you want a focused session instead of jumping across the w
 ```text
 .
 |-- .github/workflows/      # CI for Bun tests, Biome, TypeScript 7
-|-- practice/               # Generated empty implementations
-|-- scripts/                # Bun automation
+|-- coverage/               # Generated coverage reports; not source material
+|-- practice/               # Generated empty implementations and focused tests
+|-- scripts/                # Bun automation, especially the practice generator
 |-- src/
-|   |-- javascript-concepts/
+|   |-- typescript-concepts/ # Generics, unknown, satisfies, decorators
+|   |-- javascript-concepts/ # Language fundamentals with runnable examples
 |   |-- algorithms/
-|   |   |-- arrays/
-|   |   |-- backtracking/
-|   |   |-- bit-manipulation/
+|   |   |-- README.md        # Algorithm study order and topic map
+|   |   |-- arrays/          # Hash maps, two pointers, intervals, matrices
+|   |   |-- backtracking/    # Choice trees, constraints, undo state
+|   |   |-- bit-manipulation/ # XOR, masks, shifts
 |   |   |-- dynamic-programming/
 |   |   |-- interview-patterns/
 |   |   |-- math-geometry/
@@ -499,19 +558,37 @@ Use these tracks when you want a focused session instead of jumping across the w
 |   |   |-- sorting/
 |   |   `-- strings/
 |   |-- data-structures/
+|   |   |-- README.md        # Data-structure study order and topic map
 |   |   |-- binary-search-tree/
 |   |   |-- binary-tree/
+|   |   |-- doubly-linked-list/
 |   |   |-- graph/
 |   |   |-- hash-table/
 |   |   |-- heap/
 |   |   |-- queue/
+|   |   |-- singly-linked-list/
 |   |   |-- stack/
 |   |   `-- trie/
-|   `-- node-concepts/
+|   `-- node-concepts/       # Runtime, async, Bun, and system design examples
 |-- package.json
 |-- tsconfig.json
 `-- README.md
 ```
+
+## How To Navigate The Repo
+
+Use these entry points instead of reading files alphabetically:
+
+| Goal | Start here | Then run |
+|---|---|---|
+| Learn TypeScript best practices | `src/typescript-concepts/README.md` | `bun test src/typescript-concepts/test` |
+| Learn a new algorithm pattern | `src/algorithms/README.md` | `bun test src/algorithms/tests` |
+| Learn a data structure from scratch | `src/data-structures/README.md` | `bun test src/data-structures/tests` |
+| Review JavaScript fundamentals | `src/javascript-concepts/README.md` | `bun test src/javascript-concepts/test` |
+| Review Node, Bun, async, and system design | `src/node-concepts/README.md` | `bun test src/node-concepts/test` |
+| Practice without seeing the answer | `practice/README.md` | `bun run practice` |
+
+Inside each topic, read in this order: guide first, implementation second, test file third, generated practice last. The guides explain the mental model, implementations show the reference approach, tests define edge cases, and `practice/` gives you a clean room to rebuild it.
 
 ## Tooling
 

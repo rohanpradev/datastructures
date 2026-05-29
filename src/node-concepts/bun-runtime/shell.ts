@@ -38,11 +38,11 @@ export async function readEnvWithBunShell(
 		throw new Error(`Invalid environment variable name: ${name}`);
 	}
 
-	const script = `console.log(process.env[${JSON.stringify(name)}] ?? "")`;
+	const script = `console.log(Bun.env[${JSON.stringify(name)}] ?? "")`;
 
 	return (
 		await $`bun -e ${script}`
-			.env({ ...process.env, [name]: value })
+			.env({ ...Bun.env, [name]: value })
 			.quiet()
 			.text()
 	).trim();

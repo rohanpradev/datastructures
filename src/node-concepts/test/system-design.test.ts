@@ -1,5 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
+	BloomFilter,
+	optimalBitCount,
+	optimalHashCount,
+} from "@/node-concepts/system-design/bloom-filter";
+import { ConsistentHashRing } from "@/node-concepts/system-design/consistent-hash";
+import {
+	createSortableUuid,
 	decodeBase62,
 	encodeBase62,
 	SnowflakeIdGenerator,
@@ -117,6 +124,12 @@ describe("LRUCache", () => {
 });
 
 describe("Base62 ID helpers", () => {
+	test("creates sortable UUID v7 values with Bun", () => {
+		expect(createSortableUuid()).toMatch(
+			/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+		);
+	});
+
 	test("encodes and decodes compact IDs", () => {
 		expect(encodeBase62(0)).toBe("0");
 		expect(encodeBase62(61)).toBe("Z");
@@ -170,5 +183,83 @@ describe("SnowflakeIdGenerator", () => {
 
 		generator.nextId();
 		expect(() => generator.nextId()).toThrow("clock moved backwards");
+	});
+});
+
+describe("ConsistentHashRing", () => {
+	test("maps keys to stable nodes", () => {
+		const ring = new ConsistentHashRing(["cache-a", "cache-b", "cache-c"], 25);
+
+		expect(ring.ringSize()).toBe(75);
+		expect(ring.getNode("user:123")).toBe(ring.getNode("user:123"));
+		expect(ring.nodes()).toEqual(["cache-a", "cache-b", "cache-c"]);
+	});
+
+	test("supports node removal and rejects empty rings", () => {
+		const ring = new ConsistentHashRing(["cache-a", "cache-b"], 10);
+
+		ring.removeNode("cache-a");
+
+		expect(ring.nodes()).toEqual(["cache-b"]);
+		expect(ring.getNode("any-key")).toBe("cache-b");
+
+		ring.removeNode("cache-b");
+		expect(() => ring.getNode("any-key")).toThrow("hash ring has no nodes");
+	});
+
+	test("moves only part of the keyspace when adding a node", () => {
+		const before = new ConsistentHashRing(["a", "b", "c"], 200);
+		const after = new ConsistentHashRing(["a", "b", "c"], 200);
+		const keys = Array.from({ length: 1000 }, (_, index) => `key:${index}`);
+		const originalAssignments = keys.map((key) => before.getNode(key));
+
+		after.addNode("d");
+		const movedKeys = keys.filter(
+			(key, index) => after.getNode(key) !== originalAssignments[index],
+		);
+
+		expect(movedKeys.length).toBeGreaterThan(150);
+		expect(movedKeys.length).toBeLessThan(400);
+	});
+});
+
+describe("BloomFilter", () => {
+	test("reports inserted values as present", () => {
+		const filter = new BloomFilter({
+			expectedItems: 100,
+			falsePositiveRate: 0.01,
+		});
+
+		filter.add("tenant:1");
+		filter.add("tenant:2");
+
+		expect(filter.mightContain("tenant:1")).toBe(true);
+		expect(filter.mightContain("tenant:2")).toBe(true);
+		expect(filter.mightContain("definitely-not-inserted")).toBe(false);
+	});
+
+	test("computes sizing from expected false-positive rate", () => {
+		expect(optimalBitCount(1000, 0.01)).toBe(9586);
+		expect(optimalHashCount(9586, 1000)).toBe(7);
+
+		const filter = new BloomFilter({
+			expectedItems: 1000,
+			falsePositiveRate: 0.01,
+		});
+
+		expect(filter.stats()).toEqual({
+			bitCount: 9586,
+			byteCount: 1199,
+			hashCount: 7,
+		});
+	});
+
+	test("rejects invalid sizing options", () => {
+		expect(
+			() => new BloomFilter({ expectedItems: 0, falsePositiveRate: 0.01 }),
+		).toThrow("expectedItems must be at least 1");
+		expect(
+			() => new BloomFilter({ expectedItems: 10, falsePositiveRate: 1 }),
+		).toThrow("falsePositiveRate must be between 0 and 1");
 	});
 });

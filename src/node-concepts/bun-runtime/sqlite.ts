@@ -1,7 +1,13 @@
 import { Database } from "bun:sqlite";
 
+/**
+ * Supported difficulty levels for generated practice problems.
+ */
 export type PracticeDifficulty = "easy" | "medium" | "hard";
 
+/**
+ * Input shape for creating or updating one practice problem.
+ */
 export type PracticeProblemInput = {
 	slug: string;
 	title: string;
@@ -13,6 +19,9 @@ export type PracticeProblemInput = {
 	updatedAt?: number;
 };
 
+/**
+ * Row shape returned by SQLite queries against the practice problem table.
+ */
 export type PracticeProblemRow = {
 	slug: string;
 	title: string;
@@ -24,6 +33,9 @@ export type PracticeProblemRow = {
 	updated_at: number;
 };
 
+/**
+ * Aggregated progress metrics grouped by interview pattern.
+ */
 export type PatternStats = {
 	pattern: string;
 	total: number;

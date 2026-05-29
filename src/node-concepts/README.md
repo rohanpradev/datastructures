@@ -19,6 +19,8 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 | Rate limiters | `system-design/rate-limiter.ts` | Models token bucket and sliding window throttling |
 | LRU cache | `system-design/lru-cache.ts` | Models hot-data caching and eviction |
 | ID generation | `system-design/id-generation.ts` | Covers Base62 public IDs and Snowflake-style distributed IDs |
+| Consistent hashing | `system-design/consistent-hash.ts` | Maps keys to nodes while minimizing remaps on node changes |
+| Bloom filter | `system-design/bloom-filter.ts` | Trades small false-positive risk for fast negative membership checks |
 
 ## How To Study A Topic
 
@@ -54,6 +56,7 @@ The `bun-runtime/` folder follows the current Bun docs for:
 - `Bun.Cookie` and `Bun.CookieMap` for cookie creation and parsing.
 - Bun Shell (`$`) for cross-platform scripting with escaped interpolation.
 - `bun:sqlite` for local SQL with in-memory databases, prepared statements, strict named parameters, and transactions.
+- `Bun.env`, `Bun.sleep()`, and `Bun.randomUUIDv7()` where the Bun runtime has a direct built-in primitive.
 
 Official references are linked in [BUN_RUNTIME_GUIDE.md](./bun-runtime/BUN_RUNTIME_GUIDE.md).
 

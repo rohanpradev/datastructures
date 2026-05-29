@@ -30,6 +30,9 @@
 
 export type CircuitState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
+/**
+ * Tunable thresholds and time windows for a circuit breaker instance.
+ */
 export interface CircuitBreakerOptions {
 	failureThreshold: number; // % failure rate to trip
 	minimumRequests: number; // minimum requests before evaluating
@@ -45,7 +48,10 @@ interface Metrics {
 	timestamps: number[];
 }
 
-export class CircuitBreaker<TArgs extends any[], TResult> {
+/**
+ * Executes async work behind a closed/open/half-open circuit breaker.
+ */
+export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	private state: CircuitState = "CLOSED";
 	private metrics: Metrics = { success: 0, failure: 0, timestamps: [] };
 	private nextAttempt = 0;
@@ -153,14 +159,14 @@ export class CircuitBreaker<TArgs extends any[], TResult> {
 		);
 	}
 
-	private async handleFallback(args: TArgs, error: any): Promise<TResult> {
+	private async handleFallback(args: TArgs, error: unknown): Promise<TResult> {
 		if (this.fallback) {
 			return await this.fallback(...args);
 		}
 		throw error;
 	}
 
-	getState() {
+	getState(): CircuitState {
 		return this.state;
 	}
 }

@@ -1,5 +1,8 @@
 import { Glob } from "bun";
 
+/**
+ * Lightweight metadata returned from a BunFile reference.
+ */
 export interface BunFileSummary {
 	exists: boolean;
 	size: number;

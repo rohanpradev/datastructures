@@ -12,6 +12,9 @@ const DEFAULT_PASSWORD_HASH_OPTIONS = {
 	cost: 4,
 } satisfies PasswordHashOptions;
 
+/**
+ * Session cookie options exposed by the secure cookie helper.
+ */
 export interface SessionCookieOptions {
 	maxAge?: number;
 	name?: string;

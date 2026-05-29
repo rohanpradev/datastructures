@@ -34,7 +34,9 @@ type CliOptions = {
 	clean: boolean;
 	help: boolean;
 	listQuery: string | null;
+	manifest: boolean;
 	problemQuery: string | null;
+	randomQuery: string | null;
 	validateAll: boolean;
 	auditTargets: boolean;
 };
@@ -60,14 +62,31 @@ type DescribeBlock = {
 
 type PracticeTarget = {
 	id: number;
+	difficulty: PracticeDifficulty;
+	pattern: string;
 	title: string;
 	slug: string;
+	topic: string;
 	testFile: string;
 	sourceFiles: string[];
 	testRelativePath: string;
 	sourceRelativePaths: string[];
 	targetImportPaths: string[];
 	targetSymbols: ImportSymbol[];
+};
+
+type PracticeDifficulty = "easy" | "medium" | "hard";
+
+type PracticeManifestEntry = {
+	id: number;
+	title: string;
+	slug: string;
+	topic: string;
+	pattern: string;
+	difficulty: PracticeDifficulty;
+	test: string;
+	sources: string[];
+	exports: string[];
 };
 
 type ExportInfo = {
@@ -87,7 +106,9 @@ function parseArgs(args: string[]): CliOptions {
 		clean: false,
 		help: false,
 		listQuery: null,
+		manifest: false,
 		problemQuery: null,
+		randomQuery: null,
 		validateAll: false,
 		auditTargets: false,
 	};
@@ -101,6 +122,8 @@ function parseArgs(args: string[]): CliOptions {
 			options.validateAll = true;
 		} else if (arg === "--audit-targets") {
 			options.auditTargets = true;
+		} else if (arg === "--manifest") {
+			options.manifest = true;
 		} else if (arg === "--clean") {
 			options.clean = true;
 		} else if (arg === "--help" || arg === "-h") {
@@ -115,6 +138,16 @@ function parseArgs(args: string[]): CliOptions {
 			}
 		} else if (arg.startsWith("--list=")) {
 			options.listQuery = arg.slice("--list=".length);
+		} else if (arg === "--random" || arg === "-r") {
+			const next = args[index + 1];
+			if (next && !next.startsWith("--")) {
+				options.randomQuery = next;
+				index++;
+			} else {
+				options.randomQuery = "";
+			}
+		} else if (arg.startsWith("--random=")) {
+			options.randomQuery = arg.slice("--random=".length);
 		} else if (arg === "--problem" || arg === "-p") {
 			const next = args[index + 1];
 			if (!next || next.startsWith("--")) {
@@ -139,6 +172,8 @@ Usage:
   bun run practice
   bun run practice -- --list [search]
   bun run practice -- --problem <search>
+  bun run practice -- --random [search]
+  bun run practice -- --manifest
   bun run practice -- --all --clean
   bun run practice -- --validate-all-focused
   bun run practice -- --audit-targets
@@ -149,6 +184,8 @@ Default:
 Options:
   --list [search]      List available focused practice targets.
   --problem <search>   Generate the best matching target non-interactively.
+  --random [search]    Generate one random target, optionally filtered.
+  --manifest           Write practice/practice-manifest.json for dashboards.
   --all                Generate every template and every test file.
   --validate-all-focused
                        Generate every focused target into isolated folders.
@@ -969,17 +1006,21 @@ function discoverPracticeTargets(): PracticeTarget[] {
 			const seen = usedSlugs.get(baseSlug) ?? 0;
 			usedSlugs.set(baseSlug, seen + 1);
 			const slug = seen === 0 ? baseSlug : `${baseSlug}-${seen + 1}`;
+			const sourceRelativePaths = sourceFiles.map((sourceFile) =>
+				relative(SRC_DIR, sourceFile),
+			);
 
 			targets.push({
 				id: targets.length + 1,
+				difficulty: inferDifficulty(describeBlock.title, sourceRelativePaths),
+				pattern: inferPattern(describeBlock.title, sourceRelativePaths),
 				title: describeBlock.title,
 				slug,
+				topic: inferTopic(sourceRelativePaths),
 				testFile,
 				sourceFiles,
 				testRelativePath: relative(SRC_DIR, testFile),
-				sourceRelativePaths: sourceFiles.map((sourceFile) =>
-					relative(SRC_DIR, sourceFile),
-				),
+				sourceRelativePaths,
 				targetImportPaths,
 				targetSymbols,
 			});
@@ -987,6 +1028,70 @@ function discoverPracticeTargets(): PracticeTarget[] {
 	}
 
 	return targets;
+}
+
+function inferTopic(sourceRelativePaths: string[]): string {
+	const firstPath = sourceRelativePaths[0]?.replaceAll("\\", "/") ?? "";
+	const parts = firstPath.split("/");
+
+	if (parts[0] === "algorithms") return `algorithms/${parts[1] ?? "general"}`;
+	if (parts[0] === "data-structures") {
+		return `data-structures/${parts[1] ?? "general"}`;
+	}
+	if (parts[0] === "javascript-concepts") return "javascript-concepts";
+	if (parts[0] === "node-concepts") return `node-concepts/${parts[1] ?? "general"}`;
+
+	return parts[0] || "general";
+}
+
+function inferPattern(
+	title: string,
+	sourceRelativePaths: string[],
+): string {
+	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
+	const rules: Array<[RegExp, string]> = [
+		[/twopointers|threenumber|smallestdifference|squared|palindrome/, "two pointers"],
+		[/sliding|substring|window/, "sliding window"],
+		[/prefix|zerosum|subarray|subarraysum/, "prefix sum"],
+		[/binarysearch|sortedmatrix|search/, "binary search"],
+		[/stack|parentheses|nextgreater|monotonic/, "stack"],
+		[/heap|kth|topk|median/, "heap"],
+		[/tree|bst|trie/, "tree"],
+		[/graph|island|river|path|course|topological/, "graph"],
+		[/dynamic|dp|ways|knapsack|coin|editdistance/, "dynamic programming"],
+		[/backtracking|permutation|combination|subset|nqueen/, "backtracking"],
+		[/sort|interval|merge/, "sorting"],
+		[/hash|map|set|duplicate|majority/, "hash map"],
+		[/promise|async|concurrency|retry|timeout|circuit|pubsub/, "async backend"],
+		[/file|glob|shell|sqlite|cookie|password|hashing/, "bun runtime"],
+	];
+
+	return rules.find(([pattern]) => pattern.test(text))?.[1] ?? "implementation";
+}
+
+function inferDifficulty(
+	title: string,
+	sourceRelativePaths: string[],
+): PracticeDifficulty {
+	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
+
+	if (
+		/dynamicprogramming|backtracking|graph|heap|systemdesign|consistenthash|bloom|snowflake|circuit|median|hard/.test(
+			text,
+		)
+	) {
+		return "hard";
+	}
+
+	if (
+		/tree|bst|trie|linkedlist|recursion|bit|interval|matrix|async|sqlite|medium/.test(
+			text,
+		)
+	) {
+		return "medium";
+	}
+
+	return "easy";
 }
 
 function isRouteIntegrationTarget(
@@ -1153,7 +1258,7 @@ function slugify(value: string): string {
 }
 
 function formatTarget(target: PracticeTarget): string {
-	return `${target.id}. ${target.title}  [${target.sourceRelativePaths.join(", ")}]`;
+	return `${target.id}. ${target.title}  (${target.difficulty}, ${target.pattern}, ${target.topic})  [${target.sourceRelativePaths.join(", ")}]`;
 }
 
 function searchTargets(targets: PracticeTarget[], query: string): PracticeTarget[] {
@@ -1165,6 +1270,9 @@ function searchTargets(targets: PracticeTarget[], query: string): PracticeTarget
 			[
 				target.title,
 				target.slug,
+				target.topic,
+				target.pattern,
+				target.difficulty,
 				target.testRelativePath,
 				...target.sourceRelativePaths,
 			].join(" "),
@@ -1186,6 +1294,49 @@ function findBestTarget(
 		matches.find((target) => normalizeForSearch(target.slug) === normalizedQuery) ??
 		matches[0]!
 	);
+}
+
+function pickRandomTarget(
+	targets: PracticeTarget[],
+	query: string,
+): PracticeTarget | null {
+	const matches = searchTargets(targets, query);
+	if (matches.length === 0) return null;
+
+	return matches[Math.floor(Math.random() * matches.length)]!;
+}
+
+function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
+	return {
+		id: target.id,
+		title: target.title,
+		slug: target.slug,
+		topic: target.topic,
+		pattern: target.pattern,
+		difficulty: target.difficulty,
+		test: target.testRelativePath.replaceAll("\\", "/"),
+		sources: target.sourceRelativePaths.map((sourcePath) =>
+			sourcePath.replaceAll("\\", "/"),
+		),
+		exports: target.targetSymbols.map((symbol) => symbol.importedName),
+	};
+}
+
+async function writePracticeManifest(targets: PracticeTarget[]): Promise<void> {
+	await mkdir(PRACTICE_DIR, { recursive: true });
+
+	const manifest = {
+		generatedAt: new Date().toISOString(),
+		totalTargets: targets.length,
+		targets: targets.map(toManifestEntry),
+	};
+
+	await Bun.write(
+		join(PRACTICE_DIR, "practice-manifest.json"),
+		`${JSON.stringify(manifest, null, 2)}\n`,
+	);
+
+	console.log(`Wrote practice/practice-manifest.json with ${targets.length} target(s).`);
 }
 
 async function promptForTarget(targets: PracticeTarget[]): Promise<PracticeTarget> {
@@ -1428,6 +1579,8 @@ This directory is generated by \`bun run practice\`.
 bun run practice
 bun run practice -- --list heap
 bun run practice -- --problem kthLargestElement
+bun run practice -- --random graph
+bun run practice -- --manifest
 \`\`\`
 
 The generator creates:
@@ -1452,14 +1605,33 @@ Use this only when you intentionally want every practice file and every test:
 bun run practice -- --all --clean
 \`\`\`
 
+## Build A Practice Dashboard
+
+\`\`\`bash
+bun run practice -- --manifest
+\`\`\`
+
+This writes \`practice/practice-manifest.json\` with every focused target, topic,
+pattern, difficulty, source file, test file, and export. It is intentionally
+plain JSON so it can feed a Bun CLI, SQLite tracker, spreadsheet, or dashboard.
+
 ## Learning Loop
 
 1. Generate one problem.
-2. Read the JSDoc in the generated implementation file.
-3. Implement only the selected export.
-4. Run the focused test.
-5. Compare with \`src/\` after you try.
-6. Write down the pattern, invariant, edge cases, and complexity.
+2. State the pattern and invariant before coding.
+3. Read the JSDoc in the generated implementation file.
+4. Implement only the selected export.
+5. Run the focused test, then add one edge-case test if you missed anything.
+6. Compare with \`src/\` only after you have a passing attempt.
+7. Write down the pattern, invariant, edge cases, and complexity.
+
+## Interview Self-Review
+
+- Could you explain why this pattern fits in under 60 seconds?
+- Did your solution handle empty input, duplicates, boundaries, and no-solution cases?
+- Did you avoid slow JavaScript operations such as repeated \`.shift()\` in hot loops?
+- Can you state time and space complexity without looking at the code?
+- Can you describe the production version if the problem is backend/system design?
 
 ## Source Naming Contract
 
@@ -1581,6 +1753,11 @@ async function main() {
 
 	const targets = discoverPracticeTargets();
 
+	if (options.manifest) {
+		await writePracticeManifest(targets);
+		return;
+	}
+
 	if (options.auditTargets) {
 		auditPracticeTargets(targets);
 		return;
@@ -1604,12 +1781,17 @@ async function main() {
 		await rm(PRACTICE_DIR, { recursive: true, force: true });
 	}
 
-	const target = options.problemQuery
-		? findBestTarget(targets, options.problemQuery)
-		: await promptForTarget(targets);
+	const target =
+		options.randomQuery !== null
+			? pickRandomTarget(targets, options.randomQuery)
+			: options.problemQuery
+				? findBestTarget(targets, options.problemQuery)
+				: await promptForTarget(targets);
 
 	if (!target) {
-		throw new Error(`No practice target matched: ${options.problemQuery}`);
+		throw new Error(
+			`No practice target matched: ${options.randomQuery ?? options.problemQuery}`,
+		);
 	}
 
 	await generateFocusedPractice(target);

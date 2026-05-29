@@ -48,7 +48,7 @@ class HashNode<K, V> {
  * Index 4: [key4, val4] -> null
  * ```
  */
-class HashTable<K = string, V = any> {
+class HashTable<K = string, V = unknown> {
 	private buckets: (HashNode<K, V> | null)[];
 	private capacity: number;
 	length: number;

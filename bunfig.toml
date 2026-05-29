@@ -1,0 +1,15 @@
+[test]
+preload = ["./src/node-concepts/setup.ts"]
+pathIgnorePatterns = ["practice/**"]
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["practice/**"]
+
+[install]
+minimumReleaseAge = 86400
+minimumReleaseAgeExcludes = [
+	"@biomejs/biome",
+	"@types/bun",
+	"@typescript/native-preview",
+]

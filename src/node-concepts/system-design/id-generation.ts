@@ -3,6 +3,16 @@ const BASE62_ALPHABET =
 const BASE62_BASE = BigInt(BASE62_ALPHABET.length);
 
 /**
+ * Creates a sortable UUID v7 with Bun's native generator.
+ *
+ * Prefer this for application/database IDs when you do not need to teach or
+ * customize Snowflake bit layout yourself.
+ */
+export function createSortableUuid(): string {
+	return Bun.randomUUIDv7();
+}
+
+/**
  * Encodes a non-negative integer into a Base62 string.
  *
  * System design use:
@@ -41,6 +51,9 @@ export function decodeBase62(code: string): bigint {
 	return value;
 }
 
+/**
+ * Options for configuring a Snowflake-style ID generator.
+ */
 export interface SnowflakeOptions {
 	workerId: number;
 	epochMs?: bigint;

@@ -1,3 +1,6 @@
+/**
+ * Decision returned by rate limiter consume operations.
+ */
 export interface RateLimitResult {
 	allowed: boolean;
 	remaining: number;

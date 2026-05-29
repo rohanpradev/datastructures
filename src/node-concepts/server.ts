@@ -17,8 +17,8 @@ function busyWait(ms: number) {
 	while (performance.now() - start < ms) {}
 }
 
-const isTest = process.env.NODE_ENV === "test";
-const isProd = process.env.NODE_ENV === "production";
+const isTest = Bun.env.NODE_ENV === "test";
+const isProd = Bun.env.NODE_ENV === "production";
 
 interface Todo {
 	userId: number;
@@ -39,6 +39,9 @@ async function callExternalAPI(): Promise<Todo> {
 	return res.json() as Promise<Todo>;
 }
 
+/**
+ * Shared circuit breaker guarding the example upstream API route.
+ */
 export const apiBreaker = new CircuitBreaker<[], Todo>(
 	callExternalAPI,
 	{
@@ -105,13 +108,16 @@ type WSData = {
 	username: string;
 };
 
+/**
+ * Bun.serve instance exposing HTTP, metrics, worker, and WebSocket examples.
+ */
 export const server = Bun.serve({
 	error(error) {
 		console.error("Server error:", error);
 		return new Response("Internal Server Error", { status: 500 });
 	},
 	idleTimeout: 10,
-	port: Number(process.env.PORT ?? 3000),
+	port: Number(Bun.env.PORT ?? 3000),
 	routes: {
 		"/": new Response("Welcome to Bun!"),
 
@@ -240,6 +246,9 @@ if (isTest) {
 
 let shutdownStarted = false;
 
+/**
+ * Stops the shared Bun server and makes repeated shutdown calls idempotent.
+ */
 export async function stopServer(force = true): Promise<void> {
 	if (shutdownStarted) return;
 	shutdownStarted = true;

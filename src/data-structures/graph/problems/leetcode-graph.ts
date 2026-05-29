@@ -119,6 +119,9 @@ export class GraphNode {
 	}
 }
 
+/**
+ * Deep-clones all nodes reachable from the given graph node.
+ */
 export function cloneGraph(node: GraphNode | null): GraphNode | null {
 	if (!node) return null;
 

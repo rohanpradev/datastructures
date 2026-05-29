@@ -5,15 +5,20 @@ This folder covers Bun concepts that are common in real backend interviews and t
 Official references:
 
 - [Bun runtime overview](https://bun.sh/docs/runtime)
-- [Bun file I/O](https://bun.sh/docs/api/file-io)
+- [Bun APIs overview](https://bun.sh/docs/runtime/bun-apis)
+- [Bun file I/O](https://bun.sh/docs/runtime/file-io)
 - [Bun Glob](https://bun.sh/docs/runtime/glob)
 - [Bun hashing and passwords](https://bun.sh/docs/runtime/hashing)
 - [Bun cookies](https://bun.sh/docs/runtime/cookies)
 - [Bun Shell](https://bun.sh/docs/runtime/shell)
-- [Bun SQLite](https://bun.sh/docs/api/sqlite)
+- [Bun SQLite](https://bun.sh/docs/runtime/sqlite)
 - [Bun test runner](https://bun.sh/docs/test)
-- [Bun SQL](https://bun.sh/docs/api/sql)
+- [Bun SQL](https://bun.sh/docs/runtime/sql)
 - [Bun Redis](https://bun.sh/docs/runtime/redis)
+- [Bun TypeScript setup](https://bun.sh/docs/runtime/typescript)
+- [Bun utilities](https://bun.sh/docs/runtime/utils)
+- [Bun test coverage](https://bun.com/docs/test/code-coverage)
+- [bunfig.toml](https://bun.sh/docs/runtime/bunfig)
 
 ## What To Learn First
 
@@ -43,6 +48,15 @@ Official references:
 
 9. `bun:sqlite` is useful for local durable state and tests.
    Use prepared statements for repeated queries, strict named parameters to catch binding mistakes, transactions for batch writes, and `.finalize()` for short-lived statements in hot paths.
+
+10. `bunfig.toml` should hold project-level test behavior.
+    This repo uses it for test preloading and coverage reporters so individual package scripts stay short.
+
+11. Bun executes TypeScript directly, but the repo still runs `bun run typecheck`.
+    Treat runtime execution and static type checking as separate quality gates.
+
+12. Prefer Bun-native APIs when they express the same intent clearly.
+    Use `Bun.env` for runtime environment reads, `Bun.sleep()` for simple delays, and `Bun.randomUUIDv7()` when sortable UUIDs are a better fit than a custom ID generator.
 
 ## Step-By-Step Problem Approach
 
@@ -117,4 +131,5 @@ Reference code: [sqlite.ts](./sqlite.ts)
 ```bash
 bun test src/node-concepts/test/bun-runtime.test.ts
 bun test src/node-concepts/test/sqlite.test.ts
+bun run test:coverage
 ```

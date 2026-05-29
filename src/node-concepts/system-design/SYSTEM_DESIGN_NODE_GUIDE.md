@@ -2,6 +2,38 @@
 
 This folder contains small executable versions of common system design components. The goal is not to replace Redis, Envoy, NGINX, Kafka, or a database. The goal is to understand the core algorithm well enough to explain it in an interview.
 
+## Folder Structure
+
+| File | Concept | What to practice |
+|---|---|---|
+| `rate-limiter.ts` | Token bucket and sliding window limiters | API gateway throttling, fairness, Redis atomic updates |
+| `lru-cache.ts` | LRU cache | Cache eviction, recency tracking, hit/miss metrics |
+| `id-generation.ts` | Bun UUID v7, Base62, and Snowflake-style IDs | URL shorteners, sortable distributed IDs, clock rollback |
+| `consistent-hash.ts` | Consistent hashing with virtual nodes | Sharding, cache rings, partial rebalancing |
+| `bloom-filter.ts` | Bloom filter | Negative cache, memory/probability trade-offs |
+
+## Advanced Problem Set
+
+Use these prompts after you can explain the basic implementation.
+
+| Problem | Required building block | Follow-up |
+|---|---|---|
+| Design a URL shortener | Base62, cache, rate limiter | Prevent enumeration and abuse. |
+| Design a distributed cache | LRU, consistent hashing | Add node health, replication, and hot-key handling. |
+| Design API rate limiting | Token bucket, sliding window | Make it work across multiple app servers with Redis. |
+| Design a feed fan-out service | pub/sub, queues, cache | Handle celebrity users and retry storms. |
+| Design an object metadata service | Bloom filter, cache, SQL | Avoid database hits for missing objects. |
+| Design a globally unique ID service | Snowflake-style IDs | Handle worker assignment and clock rollback. |
+
+## Bun Runtime Tie-In
+
+Use Bun primitives where they reduce course overhead:
+
+- `bun:test` keeps the examples executable without Jest/Vitest setup.
+- `bunfig.toml` keeps preload and coverage behavior in one place.
+- `Bun.file`, `Bun.write`, `Bun.Glob`, Bun Shell, `Bun.randomUUIDv7()`, and `bun:sqlite` are covered in the Bun runtime guide for local system-design exercises.
+- `Bun.sql` and `Bun.redis` are useful production discussion points, but this repo keeps tests self-contained and avoids requiring external services in CI.
+
 ## How To Discuss A System Design Component
 
 Use this order:
@@ -103,6 +135,21 @@ Production notes:
 - Use Redis/Memcached for shared cache across processes.
 - Track hit rate, miss rate, evictions, and memory usage.
 
+## Bun UUID v7
+
+File: `id-generation.ts`  
+Function: `createSortableUuid`
+
+Use case:
+
+- Sortable database primary keys
+- Event IDs that need rough creation-time ordering
+- Application IDs where a standard UUID format is preferred
+
+Beginner explanation:
+
+`Bun.randomUUIDv7()` creates a UUID v7 with timestamp ordering built in. Prefer it over a custom Snowflake implementation unless the interview or production system specifically needs custom bit fields, worker IDs, or sequence control.
+
 ## Base62 Encoding
 
 File: `id-generation.ts`  
@@ -162,3 +209,75 @@ Production notes:
 - Worker IDs must be unique across instances.
 - Clock rollback must be handled.
 - Sequence overflow can happen under extreme same-millisecond load.
+
+## Consistent Hashing
+
+File: `consistent-hash.ts`  
+Class: `ConsistentHashRing`
+
+Use case:
+
+- Distributed cache sharding
+- Partitioning users, tenants, videos, or documents across storage nodes
+- Reducing key movement when nodes join or leave
+
+Beginner explanation:
+
+Normal modulo sharding uses `hash(key) % nodeCount`. When `nodeCount` changes, most keys move. Consistent hashing places both keys and nodes on a hash ring. A key belongs to the first node clockwise from the key hash. When a node joins or leaves, only nearby keys move.
+
+Data structures:
+
+- Sorted array of virtual node hashes.
+- Set of physical nodes.
+- Binary search for the first virtual node at or after the key hash.
+
+Step-by-step:
+
+1. Hash each physical node many times to create virtual nodes.
+2. Sort the virtual nodes by hash.
+3. Hash the key.
+4. Binary-search the ring for the first node with hash greater than or equal to the key hash.
+5. Wrap around to the first node when the key hash is larger than every virtual node.
+
+Production notes:
+
+- Use many virtual nodes to smooth distribution.
+- Add replicas so one node failure does not make data unavailable.
+- Track hot keys separately; consistent hashing does not solve skew by itself.
+- Use stable node IDs, not ephemeral container hostnames.
+
+## Bloom Filter
+
+File: `bloom-filter.ts`  
+Class: `BloomFilter`
+
+Use case:
+
+- Avoiding database reads for definitely missing keys
+- Protecting a cache from penetration by random IDs
+- Fast pre-check before expensive object metadata lookups
+
+Beginner explanation:
+
+A Bloom filter is a compact bit array. To add a value, hash it several ways and set those bit positions. To check a value, hash it the same ways. If any bit is unset, the value definitely was not added. If all bits are set, the value might have been added.
+
+Trade-off:
+
+- False negatives: no, if values are only added and the filter is not corrupted.
+- False positives: yes, controlled by bit count and hash count.
+- Deletes: not supported by a standard Bloom filter. Use counting Bloom filters if deletes are required.
+
+Step-by-step:
+
+1. Pick expected item count and acceptable false-positive rate.
+2. Compute the bit-array size.
+3. Compute the number of hash functions.
+4. Add known keys during startup or from a stream.
+5. On reads, skip the expensive lookup when the filter says "definitely not present".
+
+Production notes:
+
+- Rebuild periodically when the data set changes heavily.
+- Version filters during deploys so old and new processes agree.
+- Monitor false-positive rate; it rises as the filter becomes overfilled.
+- Never use it as an authorization check because "might contain" is not proof.

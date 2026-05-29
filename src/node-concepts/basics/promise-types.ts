@@ -23,7 +23,7 @@ export function resolvedValue<T>(value: T): Promise<T> {
 /**
  * Returns a rejected promise with the given reason.
  */
-export function rejectedValue(reason: any): Promise<never> {
+export function rejectedValue(reason: unknown): Promise<never> {
 	return Promise.reject(reason);
 }
 

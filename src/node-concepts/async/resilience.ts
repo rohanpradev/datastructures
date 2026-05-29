@@ -1,3 +1,6 @@
+/**
+ * Retry budget and optional filtering for retryable failures.
+ */
 export interface RetryOptions {
 	retries: number;
 	baseDelayMs?: number;
@@ -15,6 +18,10 @@ export function abortableDelay(
 	delayMs: number,
 	signal?: AbortSignal,
 ): Promise<void> {
+	if (!signal) {
+		return Bun.sleep(delayMs);
+	}
+
 	if (signal?.aborted) {
 		return Promise.reject(new DOMException("Aborted", "AbortError"));
 	}
