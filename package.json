@@ -13,6 +13,8 @@
 		"test:algorithms": "bun test src/algorithms/tests",
 		"test:bun": "bun test src/node-concepts/test/bun-runtime.test.ts",
 		"test:ci": "bun test",
+		"test:concepts": "bun test src/javascript-concepts/test src/typescript-concepts/test src/node-concepts/test",
+		"test:concepts:smoke": "bun test --randomize --rerun-each=3 src/javascript-concepts/test src/typescript-concepts/test src/node-concepts/test",
 		"test:coverage": "bun test --coverage",
 		"test:data-structures": "bun test src/data-structures/tests",
 		"test:js": "bun test src/javascript-concepts/test",
@@ -20,9 +22,14 @@
 		"typecheck": "bun ./node_modules/@typescript/native-preview/bin/tsgo.js --noEmit",
 		"practice": "bun run scripts/generate-practice.ts",
 		"practice:audit": "bun run scripts/generate-practice.ts -- --audit-targets",
+		"practice:easy": "bun run scripts/generate-practice.ts -- --random easy",
+		"practice:hard": "bun run scripts/generate-practice.ts -- --random hard",
 		"practice:list": "bun run scripts/generate-practice.ts -- --list",
 		"practice:manifest": "bun run scripts/generate-practice.ts -- --manifest",
+		"practice:medium": "bun run scripts/generate-practice.ts -- --random medium",
 		"practice:random": "bun run scripts/generate-practice.ts -- --random",
+		"practice:smoke": "bun run scripts/generate-practice.ts -- --smoke-test",
+		"practice:validate": "bun run scripts/generate-practice.ts -- --validate-all-focused",
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {

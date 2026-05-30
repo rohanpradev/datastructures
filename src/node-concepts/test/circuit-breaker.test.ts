@@ -9,14 +9,9 @@ interface Todo {
   completed: boolean;
 }
 
-async function fetchRoute<T>(path: string) {
-  // wait for server.url to be ready
-  while (!server.url) {
-    await new Promise((resolve) => setTimeout(resolve, 5));
-  }
-
+async function fetchRoute<T>(path: string, timeout = 1000) {
   const url = new URL(path, server.url).toString();
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
   const contentType = res.headers.get("content-type") || "";
 
   if (contentType.includes("application/json")) {

@@ -22,7 +22,10 @@ TypeScript 7 + Bun interview-prep workspace with reference implementations, test
 
 This repo is organized by topic so you can learn a pattern, implement it in `practice/`, run the matching tests, and compare against the reference in `src/`.
 
-For a week-by-week plan, use [LEARNING_PATH.md](./LEARNING_PATH.md).
+Start with [docs/START_HERE.md](./docs/START_HERE.md), then use
+[LEARNING_PATH.md](./LEARNING_PATH.md) for the week-by-week plan and
+[docs/INTERVIEW_PLAYBOOK.md](./docs/INTERVIEW_PLAYBOOK.md) during timed
+practice.
 
 ## Course Map
 
@@ -105,10 +108,14 @@ bun run test:node             # Node/Bun concept tests only
 bun run test:coverage         # Text and lcov coverage report
 bun test src/typescript-concepts/test # Modern TypeScript concept tests
 bun run practice              # Pick one problem and generate focused practice
+bun run practice:easy         # Generate one random easy target
+bun run practice:medium       # Generate one random medium target
+bun run practice:hard         # Generate one random hard target
 bun run practice:random       # Generate a random focused problem
 bun run practice:list         # List focused practice targets with metadata
 bun run practice:manifest     # Write practice/practice-manifest.json
 bun run practice:audit        # Validate test/export naming for focused practice
+bun run practice:validate     # Generate every focused target and validate imports/stubs
 bun dev                       # Run Bun server examples
 ```
 
@@ -118,6 +125,8 @@ The focused practice generator depends on consistent names between tests and sou
 
 - Standalone interview problems use `export function problemName(...)`.
 - Data structures and stateful APIs use `export class StructureName`.
+- Each generated manifest entry includes `topic`, `pattern`, `difficulty`, selected `exports`, learner objectives, an attempt checklist, and a complexity prompt. Use `bun run practice:manifest` when you want to audit coverage or build a dashboard across every problem.
+- `bun run practice:audit` verifies that each focused test maps cleanly to the intended source export. Broad learner modules are allowed only when their test title makes that scope explicit.
 - Helper functions stay unexported unless they are intentionally tested as their own problem.
 - A top-level test block should be named after the main export, for example `describe("twoSum", ...)`.
 - Multi-export blocks should use clear broad titles such as `Integration`, `Comparison`, `Edge Cases`, or `Patterns`.
@@ -541,6 +550,7 @@ Use these tracks when you want a focused session instead of jumping across the w
 .
 |-- .github/workflows/      # CI for Bun tests, Biome, TypeScript 7
 |-- coverage/               # Generated coverage reports; not source material
+|-- docs/                   # Start-here route, interview playbook, typing backlog
 |-- practice/               # Generated empty implementations and focused tests
 |-- scripts/                # Bun automation, especially the practice generator
 |-- src/
@@ -581,6 +591,8 @@ Use these entry points instead of reading files alphabetically:
 
 | Goal | Start here | Then run |
 |---|---|---|
+| Follow the intended route | `docs/START_HERE.md` | `bun run practice:easy` |
+| Simulate an interview | `docs/INTERVIEW_PLAYBOOK.md` | `bun run practice:medium` |
 | Learn TypeScript best practices | `src/typescript-concepts/README.md` | `bun test src/typescript-concepts/test` |
 | Learn a new algorithm pattern | `src/algorithms/README.md` | `bun test src/algorithms/tests` |
 | Learn a data structure from scratch | `src/data-structures/README.md` | `bun test src/data-structures/tests` |

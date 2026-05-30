@@ -20,6 +20,17 @@ function busyWait(ms: number) {
 const isTest = Bun.env.NODE_ENV === "test";
 const isProd = Bun.env.NODE_ENV === "production";
 
+type TestCleanup = () => void | Promise<void>;
+type TestCleanupGlobal = typeof globalThis & {
+	__DATASTRUCTURES_TEST_CLEANUPS__?: TestCleanup[];
+};
+
+function registerTestCleanup(cleanup: TestCleanup): void {
+	const cleanupGlobal = globalThis as TestCleanupGlobal;
+	cleanupGlobal.__DATASTRUCTURES_TEST_CLEANUPS__ ??= [];
+	cleanupGlobal.__DATASTRUCTURES_TEST_CLEANUPS__.push(cleanup);
+}
+
 interface Todo {
 	userId: number;
 	id: number;
@@ -28,6 +39,15 @@ interface Todo {
 }
 
 async function callExternalAPI(): Promise<Todo> {
+	if (isTest) {
+		return {
+			completed: false,
+			id: 1,
+			title: "Test todo",
+			userId: 1,
+		};
+	}
+
 	const res = await fetch("https://jsonplaceholder.typicode.com/todos/1", {
 		signal: AbortSignal.timeout(2000),
 	});
@@ -117,7 +137,7 @@ export const server = Bun.serve({
 		return new Response("Internal Server Error", { status: 500 });
 	},
 	idleTimeout: 10,
-	port: Number(Bun.env.PORT ?? 3000),
+	port: Number(Bun.env.PORT ?? (isTest ? 0 : 3000)),
 	routes: {
 		"/": new Response("Welcome to Bun!"),
 
@@ -242,6 +262,7 @@ export const server = Bun.serve({
 
 if (isTest) {
 	server.unref();
+	registerTestCleanup(() => stopServer(true));
 }
 
 let shutdownStarted = false;
@@ -271,4 +292,6 @@ if (!isTest) {
 	});
 }
 
-console.log(`Server running at ${server.url}`);
+if (!isTest) {
+	console.log(`Server running at ${server.url}`);
+}

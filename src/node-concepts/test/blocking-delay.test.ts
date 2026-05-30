@@ -24,9 +24,10 @@ interface MetricsResponse {
 // Helper to fetch and parse JSON/text routes
 async function fetchRoute<T = unknown>(
   path: string,
+  timeout = 1000,
 ): Promise<{ status: number; data: T }> {
   const url = new URL(path, server.url).toString();
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
   const contentType = res.headers.get("content-type") || "";
 
   if (contentType.includes("application/json")) {
@@ -44,8 +45,6 @@ describe("Bun server endpoints", () => {
     const { status, data } = await fetchRoute<string>("/");
     const duration = performance.now() - start;
 
-    console.log(`Fast route duration: ${duration.toFixed(2)}ms`);
-
     expect(status).toBe(200);
     expect(data).toBe("Welcome to Bun!");
     // Keep this as a broad responsiveness check, not a machine-speed benchmark.
@@ -57,15 +56,13 @@ describe("Bun server endpoints", () => {
     const { status, data } = await fetchRoute<string>("/block");
     const duration = performance.now() - start;
 
-    console.log(`Blocking route duration: ${duration.toFixed(2)}ms`);
-
     expect(status).toBe(200);
     expect(data).toBe("Blocking done!");
     expect(duration).toBeGreaterThanOrEqual(50);
   });
 
   test("Worker route completes and returns numeric result", async () => {
-    const { status, data } = await fetchRoute<WorkerResponse>("/heavy-task");
+    const { status, data } = await fetchRoute<WorkerResponse>("/heavy-task", 3000);
 
     expect(status).toBe(200);
     expect(typeof data.result).toBe("number");

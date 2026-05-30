@@ -9,6 +9,9 @@ system design practice.
 1. Pick one target:
 
 ```bash
+bun run practice:easy
+bun run practice:medium
+bun run practice:hard
 bun run practice:random
 bun run practice:random graph
 bun run practice -- --problem twoSum
@@ -29,6 +32,8 @@ bun run practice -- --problem twoSum
 
 ```bash
 bun run check
+bun run practice:audit
+bun run practice:validate
 ```
 
 ## 8-Week Plan
@@ -66,8 +71,15 @@ bun run practice:manifest
 ```
 
 The manifest records title, slug, topic, inferred pattern, difficulty, source
-files, test file, and selected exports. Use it to build a dashboard, import into
-SQLite, or plan spaced repetition.
+files, test file, selected exports, learning objectives, an attempt checklist,
+and a complexity prompt. Use it to build a dashboard, import into SQLite, or plan
+spaced repetition.
+
+Audit the target map after adding or renaming problems:
+
+```bash
+bun run practice:audit
+```
 
 ## Interview Scorecard
 
