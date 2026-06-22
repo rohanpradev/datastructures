@@ -2,7 +2,8 @@
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"vcs": {
 		"enabled": true,
-		"clientKind": "git"
+		"clientKind": "git",
+		"useIgnoreFile": true
 	},
 	"files": {
 		"ignoreUnknown": true,
@@ -17,12 +18,14 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 80,
+		"lineEnding": "lf"
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"suspicious": {
 				"noExplicitAny": "off"
 			},
@@ -34,7 +37,8 @@
 						"filenameCases": ["kebab-case"]
 					}
 				},
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "error"
 			},
 			"complexity": {
 				"useOptionalChain": "off"

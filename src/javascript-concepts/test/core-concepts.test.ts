@@ -8,7 +8,7 @@ import {
 	range,
 	runWithConcurrency,
 	sameValueZero,
-} from "@/javascript-concepts/core-concepts";
+} from "../core-concepts";
 
 describe("sameValueZero", () => {
 	test("matches Map and Set equality semantics", () => {

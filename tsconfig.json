@@ -33,5 +33,5 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false
 	},
-	"exclude": ["practice", "node_modules", "**/*.test.ts"]
+	"exclude": ["practice", "node_modules"]
 }

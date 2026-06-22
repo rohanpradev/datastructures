@@ -11,7 +11,8 @@ Queues test:
 - **Real-world patterns** (producer-consumer, throttling)
 
 Research references:
-- [Google Tech Dev Guide: BFS](https://techdevguide.withgoogle.com/)
+- [CP-Algorithms: Breadth First Search](https://cp-algorithms.com/graph/breadth-first-search.html)
+- [MIT OCW 6.006 Lecture Notes](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/pages/lecture-notes/)
 - [LeetCode Queue Tag](https://leetcode.com/tag/queue/)
 
 ---

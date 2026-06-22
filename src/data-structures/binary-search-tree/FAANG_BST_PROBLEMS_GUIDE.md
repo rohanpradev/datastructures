@@ -11,7 +11,8 @@ BSTs test:
 - **Recursive problem solving** (validation, insertion, deletion)
 
 Research references:
-- [Google Tech Dev Guide: Binary Search](https://techdevguide.withgoogle.com/)
+- [OpenDSA Binary Search Trees](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/BST.html)
+- [CP-Algorithms: Binary Search](https://cp-algorithms.com/num_methods/binary_search.html)
 - [LeetCode BST Tag](https://leetcode.com/tag/binary-search-tree/)
 
 ---

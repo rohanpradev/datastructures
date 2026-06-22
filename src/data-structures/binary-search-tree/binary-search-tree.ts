@@ -637,16 +637,22 @@ class BinarySearchTree<T = number> {
 			node.right = this.rDeleteHelper(node.right, value);
 		} else {
 			// Found the node to delete
-			this.length--;
 
 			// Case 1: Leaf node
 			if (!node.left && !node.right) {
+				this.length--;
 				return null;
 			}
 
 			// Case 2: One child
-			if (!node.left) return node.right;
-			if (!node.right) return node.left;
+			if (!node.left) {
+				this.length--;
+				return node.right;
+			}
+			if (!node.right) {
+				this.length--;
+				return node.left;
+			}
 
 			// Case 3: Two children
 			// Find minimum value in right subtree (successor)

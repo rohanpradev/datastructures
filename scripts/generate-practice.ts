@@ -15,7 +15,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { mkdir, rm } from "node:fs/promises";
-import { stdin as input, stdout as output } from "node:process";
+import { execPath, stdin as input, stdout as output } from "node:process";
 import { createInterface } from "node:readline/promises";
 import { basename, dirname, join, relative } from "node:path";
 
@@ -32,6 +32,7 @@ const EXCLUDE_PATTERNS = [
 type CliOptions = {
 	all: boolean;
 	clean: boolean;
+	dashboard: boolean;
 	help: boolean;
 	listQuery: string | null;
 	manifest: boolean;
@@ -83,6 +84,8 @@ type PracticeTarget = {
 };
 
 type PracticeDifficulty = "easy" | "medium" | "hard";
+type LearnerLevel = "beginner" | "intermediate" | "advanced" | "expert";
+type InterviewMode = "coding" | "runtime" | "system design";
 type PracticePattern =
 	| "async backend"
 	| "backtracking"
@@ -108,9 +111,15 @@ type PracticeManifestEntry = {
 	topic: string;
 	pattern: PracticePattern;
 	difficulty: PracticeDifficulty;
+	level: LearnerLevel;
+	interviewMode: InterviewMode;
+	estimatedMinutes: number;
 	learningObjectives: string[];
 	learnerChecklist: string[];
 	complexityPrompt: string;
+	readinessRubric: string[];
+	spacedRepetitionDays: number[];
+	enterpriseDiscussionPrompts: string[];
 	test: string;
 	sources: string[];
 	exports: string[];
@@ -127,10 +136,11 @@ function shouldProcess(filePath: string): boolean {
 	return !EXCLUDE_PATTERNS.some((pattern) => pattern.test(relativePath));
 }
 
-function parseArgs(args: string[]): CliOptions {
+export function parseArgs(args: string[]): CliOptions {
 	const options: CliOptions = {
 		all: false,
 		clean: false,
+		dashboard: false,
 		help: false,
 		listQuery: null,
 		manifest: false,
@@ -152,6 +162,8 @@ function parseArgs(args: string[]): CliOptions {
 			options.auditTargets = true;
 		} else if (arg === "--smoke-test") {
 			options.smokeTest = true;
+		} else if (arg === "--dashboard") {
+			options.dashboard = true;
 		} else if (arg === "--manifest") {
 			options.manifest = true;
 		} else if (arg === "--clean") {
@@ -204,6 +216,7 @@ Usage:
   bun run practice -- --problem <search>
   bun run practice -- --random [search]
   bun run practice -- --manifest
+  bun run practice -- --dashboard
   bun run practice -- --all --clean
   bun run practice -- --validate-all-focused
   bun run practice -- --audit-targets
@@ -217,6 +230,7 @@ Options:
   --problem <search>   Generate the best matching target non-interactively.
   --random [search]    Generate one random target, optionally filtered.
   --manifest           Write practice/practice-manifest.json for dashboards.
+  --dashboard          Write practice/learning-dashboard.md for study planning.
   --all                Generate every template and every test file.
   --validate-all-focused
                        Generate every focused target into isolated folders.
@@ -241,11 +255,23 @@ function extractFunctionInfo(content: string): Array<{
 	}> = [];
 
 	const functionRegex =
-		/(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*(?:<[^>{]+>)?\s*\(/g;
+		/(?:export\s+)?(?:async\s+)?function\s+(\w+)\b/g;
 
 	let match;
 	while ((match = functionRegex.exec(content)) !== null) {
-		const openBraceIndex = content.indexOf("{", match.index);
+		if (!isCodeAtTopLevel(content, match.index)) continue;
+
+		const paramsOpenIndex = content.indexOf("(", match.index);
+		const paramsCloseIndex = findMatchingDelimiter(
+			content,
+			paramsOpenIndex,
+			"(",
+			")",
+		);
+		const openBraceIndex =
+			paramsCloseIndex === -1
+				? -1
+				: findBodyOpenBraceAfterSignature(content, paramsCloseIndex + 1);
 		if (openBraceIndex === -1) continue;
 
 		const signature = content.slice(match.index, openBraceIndex).trim();
@@ -302,6 +328,40 @@ function extractConstFunctionInfo(content: string): Array<{
 	}
 
 	return functions;
+}
+
+function extractConstValueInfo(content: string): Array<{
+	comment: string;
+	name: string;
+	isExported: boolean;
+}> {
+	const values: Array<{
+		comment: string;
+		name: string;
+		isExported: boolean;
+	}> = [];
+	const constRegex = /(?:export\s+)?const\s+(\w+)\b/g;
+
+	let match;
+	while ((match = constRegex.exec(content)) !== null) {
+		if (!isCodeAtTopLevel(content, match.index)) continue;
+
+		const name = match[1] ?? "unknown";
+		const beforeConst = content.slice(0, match.index);
+		const commentMatch = beforeConst.match(
+			/\/\*\*(?:(?!\/\*\*)[\s\S])*?\*\/\s*$/,
+		);
+		const comment = commentMatch ? commentMatch[0].trimEnd() : "";
+		const statement = match[0];
+
+		values.push({
+			comment,
+			name,
+			isExported: statement.startsWith("export "),
+		});
+	}
+
+	return values;
 }
 
 function extractClassInfo(content: string): Array<{
@@ -517,24 +577,181 @@ function findMatchingDelimiter(
 	return -1;
 }
 
+function findBodyOpenBraceAfterSignature(
+	content: string,
+	start: number,
+): number {
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = start; index < content.length; index++) {
+		const char = content[index];
+		const next = content[index + 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char !== "{") continue;
+
+		const closeBraceIndex = findMatchingBrace(content, index);
+		if (closeBraceIndex === -1) return -1;
+
+		const nextCodeIndex = skipWhitespace(content, closeBraceIndex + 1);
+		if (content[nextCodeIndex] === "{") {
+			index = closeBraceIndex;
+			continue;
+		}
+
+		return index;
+	}
+
+	return -1;
+}
+
 function extractClassMethods(
 	classBody: string,
 ): Array<{ comment: string; signature: string }> {
 	const methods: Array<{ comment: string; signature: string }> = [];
 	const methodRegex =
-		/(\/\*\*(?:(?!\/\*\*)[\s\S])*?\*\/\s*)?((?:constructor\s*\([^)]*\))|(?:(?:public|private|protected)\s*)?(?:static\s+)?\w+\s*(?:<[^>{]+>)?\s*\([^)]*\)\s*:\s*[^{]+)(?=\s*\{)/g;
+		/(\/\*\*(?:(?!\/\*\*)[\s\S])*?\*\/\s*)?((?:constructor|(?:(?:public|private|protected)\s*)?(?:static\s+)?\*?\w+)\s*(?:<[^>{]+>\s*)?\()/g;
 
 	let match;
 	while ((match = methodRegex.exec(classBody)) !== null) {
+		if (!isClassMemberBoundary(classBody, match.index)) continue;
+
 		const comment = match[1]?.trimEnd() ?? "";
-		const signature = match[2]?.trim() ?? "";
+		const signatureStart = match.index + (match[1]?.length ?? 0);
+		const paramsOpenIndex = classBody.indexOf("(", signatureStart);
+		const paramsCloseIndex = findMatchingDelimiter(
+			classBody,
+			paramsOpenIndex,
+			"(",
+			")",
+		);
+		const openBraceIndex =
+			paramsCloseIndex === -1
+				? -1
+				: findBodyOpenBraceAfterSignature(classBody, paramsCloseIndex + 1);
+		if (openBraceIndex === -1) continue;
+
+		const closeBraceIndex = findMatchingBrace(classBody, openBraceIndex);
+		const signature = classBody.slice(signatureStart, openBraceIndex).trim();
 
 		if (signature.length === 0) continue;
 
 		methods.push({ comment, signature });
+
+		if (closeBraceIndex !== -1) {
+			methodRegex.lastIndex = closeBraceIndex + 1;
+		}
 	}
 
 	return methods;
+}
+
+function isClassMemberBoundary(classBody: string, start: number): boolean {
+	const lineStart = classBody.lastIndexOf("\n", start - 1) + 1;
+	return (
+		classBody.slice(lineStart, start).trim().length === 0 &&
+		isClassBodyTopLevelAt(classBody, start)
+	);
+}
+
+function isClassBodyTopLevelAt(classBody: string, targetIndex: number): boolean {
+	let depth = 0;
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = 0; index < targetIndex; index++) {
+		const char = classBody[index];
+		const next = classBody[index + 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char === "{") depth++;
+		if (char === "}") depth--;
+	}
+
+	return state === "code" && depth === 0;
 }
 
 function getClassName(signature: string): string {
@@ -652,6 +869,299 @@ function makeExportedSignature(
 	return `export ${signature}`;
 }
 
+function sanitizeSignatureForStub(signature: string): string {
+	const paramsOpenIndex = signature.indexOf("(");
+	if (paramsOpenIndex === -1) return signature;
+
+	const paramsCloseIndex = findMatchingDelimiter(
+		signature,
+		paramsOpenIndex,
+		"(",
+		")",
+	);
+	if (paramsCloseIndex === -1) return signature;
+
+	const params = signature.slice(paramsOpenIndex + 1, paramsCloseIndex);
+	const sanitizedParams = splitTopLevelParameters(params)
+		.map(stripTopLevelInitializer)
+		.join(", ");
+
+	return `${signature.slice(0, paramsOpenIndex + 1)}${sanitizedParams}${signature.slice(paramsCloseIndex)}`;
+}
+
+function splitTopLevelParameters(params: string): string[] {
+	if (params.trim().length === 0) return [];
+
+	const parts: string[] = [];
+	let partStart = 0;
+	let roundDepth = 0;
+	let squareDepth = 0;
+	let curlyDepth = 0;
+	let angleDepth = 0;
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = 0; index < params.length; index++) {
+		const char = params[index];
+		const next = params[index + 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char === "(") roundDepth++;
+		else if (char === ")") roundDepth--;
+		else if (char === "[") squareDepth++;
+		else if (char === "]") squareDepth--;
+		else if (char === "{") curlyDepth++;
+		else if (char === "}") curlyDepth--;
+		else if (char === "<") angleDepth++;
+		else if (char === ">" && angleDepth > 0) angleDepth--;
+		else if (
+			char === "," &&
+			roundDepth === 0 &&
+			squareDepth === 0 &&
+			curlyDepth === 0 &&
+			angleDepth === 0
+		) {
+			parts.push(params.slice(partStart, index).trim());
+			partStart = index + 1;
+		}
+	}
+
+	parts.push(params.slice(partStart).trim());
+	return parts.filter((part) => part.length > 0);
+}
+
+function stripTopLevelInitializer(param: string): string {
+	let roundDepth = 0;
+	let squareDepth = 0;
+	let curlyDepth = 0;
+	let angleDepth = 0;
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = 0; index < param.length; index++) {
+		const char = param[index];
+		const next = param[index + 1];
+		const previous = param[index - 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char === "(") roundDepth++;
+		else if (char === ")") roundDepth--;
+		else if (char === "[") squareDepth++;
+		else if (char === "]") squareDepth--;
+		else if (char === "{") curlyDepth++;
+		else if (char === "}") curlyDepth--;
+		else if (char === "<") angleDepth++;
+		else if (char === ">" && angleDepth > 0) angleDepth--;
+		else if (
+			char === "=" &&
+			next !== ">" &&
+			next !== "=" &&
+			previous !== "=" &&
+			previous !== "!" &&
+			previous !== "<" &&
+			previous !== ">" &&
+			roundDepth === 0 &&
+			squareDepth === 0 &&
+			curlyDepth === 0 &&
+			angleDepth === 0
+		) {
+			return param.slice(0, index).trimEnd();
+		}
+	}
+
+	return param;
+}
+
+function sanitizeClassFieldForStub(field: string): string {
+	const assignmentIndex = findTopLevelAssignment(field);
+	if (assignmentIndex === -1) return field;
+
+	return `${field.slice(0, assignmentIndex).trimEnd()};`;
+}
+
+function makeExportedConstStub(
+	name: string,
+	isDirectExport: boolean,
+	exportInfo: ExportInfo | null,
+): string {
+	const initializer = `(() => {\n\tthrow new Error("Not implemented: ${name}");\n})()`;
+
+	if (exportInfo?.isDefault) {
+		return `const ${name} = ${initializer};\nexport default ${name};`;
+	}
+
+	if (isDirectExport || exportInfo === null || exportInfo.exportedName === name) {
+		return `export const ${name} = ${initializer};`;
+	}
+
+	return `const ${name} = ${initializer};\nexport { ${name} as ${exportInfo.exportedName} };`;
+}
+
+function findTopLevelAssignment(value: string): number {
+	let roundDepth = 0;
+	let squareDepth = 0;
+	let curlyDepth = 0;
+	let angleDepth = 0;
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = 0; index < value.length; index++) {
+		const char = value[index];
+		const next = value[index + 1];
+		const previous = value[index - 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char === "(") roundDepth++;
+		else if (char === ")") roundDepth--;
+		else if (char === "[") squareDepth++;
+		else if (char === "]") squareDepth--;
+		else if (char === "{") curlyDepth++;
+		else if (char === "}") curlyDepth--;
+		else if (char === "<") angleDepth++;
+		else if (char === ">" && angleDepth > 0) angleDepth--;
+		else if (
+			char === "=" &&
+			next !== ">" &&
+			next !== "=" &&
+			previous !== "=" &&
+			previous !== "!" &&
+			previous !== "<" &&
+			previous !== ">" &&
+			roundDepth === 0 &&
+			squareDepth === 0 &&
+			curlyDepth === 0 &&
+			angleDepth === 0
+		) {
+			return index;
+		}
+	}
+
+	return -1;
+}
+
 function generatePracticeTemplate(
 	content: string,
 	filePath: string,
@@ -664,6 +1174,11 @@ function generatePracticeTemplate(
  *
  * This file contains empty implementations for the selected source module.
  * A focused generated test will call only the problem you selected.
+ *
+ * Learning loop:
+ * 1. Write the pattern, invariant, dry run, edge cases, and complexity.
+ * 2. Trace one representative input before coding.
+ * 3. Compare with src/ only after your attempt passes or has a named blocker.
  */
 
 `;
@@ -697,8 +1212,8 @@ function generatePracticeTemplate(
 		}
 
 		template += `${func.comment}\n`;
-		template += `${makeExportedSignature(func.signature, func.isExported, exportInfo)} {\n`;
-		template += `\t// TODO: Implement ${func.name}\n`;
+		template += `${makeExportedSignature(sanitizeSignatureForStub(func.signature), func.isExported, exportInfo)} {\n`;
+		template += `\t// TODO: Trace one sample, then implement ${func.name}.\n`;
 		template += `\tthrow new Error("Not implemented: ${func.name}");\n`;
 		template += `}\n\n`;
 	}
@@ -718,13 +1233,38 @@ function generatePracticeTemplate(
 		}
 
 		template += `${func.comment}\n`;
-		template += `${makeExportedSignature(func.signature, func.isExported, exportInfo)} {\n`;
-		template += `\t// TODO: Implement ${func.name}\n`;
+		template += `${makeExportedSignature(sanitizeSignatureForStub(func.signature), func.isExported, exportInfo)} {\n`;
+		template += `\t// TODO: Trace one sample, then implement ${func.name}.\n`;
 		template += `\tthrow new Error("Not implemented: ${func.name}");\n`;
 		template += `};\n\n`;
 	}
 
 	const classes = extractClassInfo(content);
+	const generatedDeclarationNames = new Set([
+		...functions.map((func) => func.name),
+		...constFunctions.map((func) => func.name),
+		...classes.map((cls) => cls.name),
+	]);
+	const constValues = extractConstValueInfo(content);
+	for (const value of constValues) {
+		if (generatedDeclarationNames.has(value.name)) continue;
+
+		const exportInfo = findExportInfo(exportInfos, value.name, allowedExports);
+		if (
+			!shouldGenerateDeclaration(
+				value.name,
+				value.isExported,
+				exportInfo,
+				allowedExports,
+			)
+		) {
+			continue;
+		}
+
+		template += `${value.comment}\n`;
+		template += `${makeExportedConstStub(value.name, value.isExported, exportInfo)}\n\n`;
+	}
+
 	for (const cls of classes) {
 		const exportInfo = findExportInfo(exportInfos, cls.name, allowedExports);
 		if (
@@ -739,9 +1279,9 @@ function generatePracticeTemplate(
 		}
 
 		template += `${cls.comment}\n`;
-		template += `${makeExportedSignature(cls.signature, cls.isExported, exportInfo)} {\n`;
+		template += `${makeExportedSignature(sanitizeSignatureForStub(cls.signature), cls.isExported, exportInfo)} {\n`;
 		for (const field of cls.fields) {
-			template += `\t${field}\n`;
+			template += `\t${sanitizeClassFieldForStub(field)}\n`;
 		}
 		if (cls.fields.length > 0) template += "\n";
 		if (!cls.methods.some((method) => method.signature.startsWith("constructor"))) {
@@ -751,7 +1291,8 @@ function generatePracticeTemplate(
 		}
 		for (const method of cls.methods) {
 			template += `\t${method.comment}\n`;
-			template += `\t${method.signature} {\n`;
+			template += `\t${sanitizeSignatureForStub(method.signature)} {\n`;
+			template += `\t\t// TODO: Preserve the method contract and class invariant.\n`;
 			template += `\t\tthrow new Error("Not implemented");\n`;
 			template += `\t}\n\n`;
 		}
@@ -1165,7 +1706,7 @@ function filterToTestBlocks(
 	return result.replace(/\n{3,}/g, "\n\n").trimEnd() + "\n";
 }
 
-function discoverPracticeTargets(): PracticeTarget[] {
+export function discoverPracticeTargets(): PracticeTarget[] {
 	const testFiles = walkFiles(SRC_DIR).filter((filePath) =>
 		filePath.endsWith(".test.ts"),
 	);
@@ -1327,7 +1868,7 @@ function inferPattern(
 		[/heap|topk|median|kthlargestelement|mergeksorted/, "heap"],
 		[/binarysearch(?!tree)|lowerbound|rotatedsorted|sortedmatrix|koko/, "binary search"],
 		[/stack|parentheses|nextgreater|monotonic/, "stack"],
-		[/dynamic|dp|ways|knapsack|coin|editdistance/, "dynamic programming"],
+		[/dynamic|ways|knapsack|coin|editdistance/, "dynamic programming"],
 		[/backtracking|permutation|combination|subset|nqueen/, "backtracking"],
 		[/recursion|fibonacci|staircase|minesweeper|productsum/, "recursion"],
 		[/sort|interval|merge/, "sorting"],
@@ -1528,10 +2069,13 @@ function slugify(value: string): string {
 }
 
 function formatTarget(target: PracticeTarget): string {
-	return `${target.id}. ${target.title}  (${target.difficulty}, ${target.pattern}, ${target.topic})  [${target.sourceRelativePaths.join(", ")}]`;
+	return `${target.id}. ${target.title}  (${inferLearnerLevel(target)}, ${target.difficulty}, ${target.pattern}, ${inferInterviewMode(target)}, ${estimateTargetMinutes(target)} min)  [${target.sourceRelativePaths.join(", ")}]`;
 }
 
-function searchTargets(targets: PracticeTarget[], query: string): PracticeTarget[] {
+export function searchTargets(
+	targets: PracticeTarget[],
+	query: string,
+): PracticeTarget[] {
 	const normalizedQuery = normalizeForSearch(query);
 	if (normalizedQuery.length === 0) return targets;
 
@@ -1543,6 +2087,8 @@ function searchTargets(targets: PracticeTarget[], query: string): PracticeTarget
 				target.topic,
 				target.pattern,
 				target.difficulty,
+				inferLearnerLevel(target),
+				inferInterviewMode(target),
 				target.testRelativePath,
 				...target.sourceRelativePaths,
 			].join(" "),
@@ -1551,7 +2097,7 @@ function searchTargets(targets: PracticeTarget[], query: string): PracticeTarget
 	});
 }
 
-function findBestTarget(
+export function findBestTarget(
 	targets: PracticeTarget[],
 	query: string,
 ): PracticeTarget | null {
@@ -1576,7 +2122,11 @@ function pickRandomTarget(
 	return matches[Math.floor(Math.random() * matches.length)]!;
 }
 
-function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
+export function formatFocusedTestCommand(testOutputRelativePath: string): string {
+	return `bun test --cwd practice ${testOutputRelativePath.replaceAll("\\", "/")}`;
+}
+
+export function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
 	return {
 		id: target.id,
 		title: target.title,
@@ -1584,15 +2134,71 @@ function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
 		topic: target.topic,
 		pattern: target.pattern,
 		difficulty: target.difficulty,
+		level: inferLearnerLevel(target),
+		interviewMode: inferInterviewMode(target),
+		estimatedMinutes: estimateTargetMinutes(target),
 		learningObjectives: inferLearningObjectives(target),
 		learnerChecklist: buildLearnerChecklist(target),
 		complexityPrompt: buildComplexityPrompt(target),
+		readinessRubric: buildReadinessRubric(target),
+		spacedRepetitionDays: buildSpacedRepetitionDays(target),
+		enterpriseDiscussionPrompts: buildEnterpriseDiscussionPrompts(target),
 		test: target.testRelativePath.replaceAll("\\", "/"),
 		sources: target.sourceRelativePaths.map((sourcePath) =>
 			sourcePath.replaceAll("\\", "/"),
 		),
 		exports: target.targetSymbols.map((symbol) => symbol.importedName),
 	};
+}
+
+function inferLearnerLevel(target: PracticeTarget): LearnerLevel {
+	const text = normalizeForSearch(
+		`${target.title} ${target.topic} ${target.pattern} ${target.sourceRelativePaths.join(" ")}`,
+	);
+
+	if (
+		/systemdesign|consistenthash|bloomfilter|snowflake|ratelimiter|lrucache|circuitbreaker|pubsub|resilience|worker|sqlite|bunruntime/.test(
+			text,
+		)
+	) {
+		return target.difficulty === "hard" ? "expert" : "advanced";
+	}
+
+	if (target.difficulty === "hard") return "advanced";
+	if (target.difficulty === "medium") return "intermediate";
+	return "beginner";
+}
+
+function inferInterviewMode(target: PracticeTarget): InterviewMode {
+	const sourceText = normalizeForSearch(target.sourceRelativePaths.join(" "));
+
+	if (sourceText.includes("nodeconceptssystemdesign")) {
+		return "system design";
+	}
+
+	if (
+		sourceText.includes("nodeconcepts") ||
+		target.pattern === "async backend" ||
+		target.pattern === "bun runtime"
+	) {
+		return "runtime";
+	}
+
+	return "coding";
+}
+
+function estimateTargetMinutes(target: PracticeTarget): number {
+	const levelMinutes: Record<LearnerLevel, number> = {
+		beginner: 20,
+		intermediate: 35,
+		advanced: 50,
+		expert: 70,
+	};
+	const mode = inferInterviewMode(target);
+	const modeAdjustment =
+		mode === "system design" ? 15 : mode === "runtime" ? 5 : 0;
+
+	return levelMinutes[inferLearnerLevel(target)] + modeAdjustment;
 }
 
 function inferLearningObjectives(target: PracticeTarget): string[] {
@@ -1667,23 +2273,16 @@ function inferLearningObjectives(target: PracticeTarget): string[] {
 }
 
 function buildLearnerChecklist(target: PracticeTarget): string[] {
-	const checklist = [
+	return [
 		"Write the brute-force idea and why it is too slow.",
 		`Name the pattern: ${target.pattern}.`,
+		"Write the invariant, recurrence, or data-structure contract in one sentence.",
+		"Trace one representative input by hand, including pointer, map, stack, queue, or table state.",
 		"List empty, one-item, duplicate, boundary, and no-solution cases.",
 		"Implement the reference API without changing exported names.",
 		"Run the focused test, then add one missed edge-case test before reviewing the source.",
+		"After passing, compare with src/ and rewrite the invariant and complexity in your own words.",
 	];
-
-	if (target.difficulty !== "easy") {
-		checklist.splice(
-			2,
-			0,
-			"Write the invariant or recurrence in one sentence before coding.",
-		);
-	}
-
-	return checklist;
 }
 
 function buildComplexityPrompt(target: PracticeTarget): string {
@@ -1700,12 +2299,105 @@ function buildComplexityPrompt(target: PracticeTarget): string {
 	return `State time and auxiliary space complexity. ${variableHint}`;
 }
 
+function buildReadinessRubric(target: PracticeTarget): string[] {
+	const mode = inferInterviewMode(target);
+	const rubric = [
+		"Restate the problem, constraints, and edge cases without reading the tests.",
+		"Dry-run one small input and explain the state changes without relying on comments.",
+		`Explain why ${target.pattern} is the right pattern and what invariant proves correctness.`,
+		"Pass the focused Bun test and state time and auxiliary space complexity.",
+	];
+
+	if (target.difficulty !== "easy") {
+		rubric.push("Handle at least one follow-up without changing the public API.");
+	}
+
+	if (mode === "runtime") {
+		rubric.push(
+			"Explain cleanup, cancellation, failure behavior, and what changes across multiple processes.",
+		);
+	}
+
+	if (mode === "system design") {
+		rubric.push(
+			"Name the SLO, bottleneck, failure mode, scaling lever, and production datastore or queue.",
+		);
+	}
+
+	return rubric;
+}
+
+function buildSpacedRepetitionDays(target: PracticeTarget): number[] {
+	const level = inferLearnerLevel(target);
+
+	if (level === "expert") return [1, 3, 7, 14, 30, 60];
+	if (level === "advanced") return [1, 3, 7, 21, 45];
+	if (level === "intermediate") return [1, 4, 10, 30];
+	return [1, 7, 21];
+}
+
+function buildEnterpriseDiscussionPrompts(target: PracticeTarget): string[] {
+	const mode = inferInterviewMode(target);
+
+	if (mode === "system design") {
+		return [
+			"What is the request, data, and dependency path at 10x and 100x scale?",
+			"Which SLO would you publish, and which metrics, traces, logs, and profiles would prove it?",
+			"What is the security, abuse, privacy, and tenant-isolation boundary?",
+			"How would the design change for multi-region traffic or partial dependency failure?",
+		];
+	}
+
+	if (mode === "runtime") {
+		return [
+			"What happens when a dependency is slow, down, or returns partial data?",
+			"Where do timeouts, retries, abort signals, cleanup, and backpressure belong?",
+			"Which metric or trace would show this code hurting production latency?",
+		];
+	}
+
+	return [
+		"What input shape breaks the naive solution first?",
+		"How would memory, mutation, or numeric limits matter in production code?",
+		"Which edge-case test would you add before trusting this solution?",
+	];
+}
+
+function countBy<T extends string>(
+	targets: PracticeTarget[],
+	classify: (target: PracticeTarget) => T,
+): Record<T, number> {
+	return targets.reduce(
+		(counts, target) => {
+			const key = classify(target);
+			counts[key] = (counts[key] ?? 0) + 1;
+			return counts;
+		},
+		{} as Record<T, number>,
+	);
+}
+
+function formatCountRows<T extends string>(
+	counts: Record<T, number>,
+	order: readonly T[],
+): string {
+	return order
+		.map((key) => `| ${key} | ${counts[key] ?? 0} |`)
+		.join("\n");
+}
+
 async function writePracticeManifest(targets: PracticeTarget[]): Promise<void> {
 	await mkdir(PRACTICE_DIR, { recursive: true });
 
 	const manifest = {
 		generatedAt: new Date().toISOString(),
 		totalTargets: targets.length,
+		summary: {
+			byLevel: countBy(targets, inferLearnerLevel),
+			byDifficulty: countBy(targets, (target) => target.difficulty),
+			byInterviewMode: countBy(targets, inferInterviewMode),
+			byPattern: countBy(targets, (target) => target.pattern),
+		},
 		targets: targets.map(toManifestEntry),
 	};
 
@@ -1715,6 +2407,115 @@ async function writePracticeManifest(targets: PracticeTarget[]): Promise<void> {
 	);
 
 	console.log(`Wrote practice/practice-manifest.json with ${targets.length} target(s).`);
+}
+
+async function writeLearningDashboard(targets: PracticeTarget[]): Promise<void> {
+	await mkdir(PRACTICE_DIR, { recursive: true });
+
+	const levels = ["beginner", "intermediate", "advanced", "expert"] as const;
+	const difficulties = ["easy", "medium", "hard"] as const;
+	const modes = ["coding", "runtime", "system design"] as const;
+	const levelCounts = countBy(targets, inferLearnerLevel);
+	const difficultyCounts = countBy(targets, (target) => target.difficulty);
+	const modeCounts = countBy(targets, inferInterviewMode);
+	const patternCounts = countBy(targets, (target) => target.pattern);
+	const patternRows = Object.entries(patternCounts)
+		.sort(([left], [right]) => left.localeCompare(right))
+		.map(([pattern, count]) => `| ${pattern} | ${count} |`)
+		.join("\n");
+	const exemplarRows = levels
+		.map((level) => {
+			const examples = targets
+				.filter((target) => inferLearnerLevel(target) === level)
+				.slice(0, 5)
+				.map((target) => `\`${target.title}\``)
+				.join(", ");
+			return `| ${level} | ${examples || "No targets yet"} |`;
+		})
+		.join("\n");
+
+	const dashboard = `# Learning Dashboard
+
+Generated by \`bun run practice:dashboard\`.
+
+## Coverage Snapshot
+
+| Level | Targets |
+| --- | ---: |
+${formatCountRows(levelCounts, levels)}
+
+| Difficulty | Targets |
+| --- | ---: |
+${formatCountRows(difficultyCounts, difficulties)}
+
+| Interview mode | Targets |
+| --- | ---: |
+${formatCountRows(modeCounts, modes)}
+
+| Pattern | Targets |
+| --- | ---: |
+${patternRows}
+
+## How To Use This Dashboard
+
+For every target, use the same active-learning loop:
+
+1. Preview the guide or JSDoc for the mental model.
+2. Write the pattern, invariant, dry run, edge cases, and complexity.
+3. Implement under \`practice/\` without changing exported names.
+4. Run the focused test and add one missed edge-case test.
+5. Compare with \`src/\` only after passing or naming the blocker.
+6. Record the bug or insight and schedule the next review.
+
+Use the level search terms directly:
+
+\`\`\`bash
+bun run practice -- --random beginner
+bun run practice -- --random intermediate
+bun run practice -- --random advanced
+bun run practice -- --random expert
+\`\`\`
+
+Use the mode search terms when you want interview-type practice:
+
+\`\`\`bash
+bun run practice -- --random coding
+bun run practice -- --random runtime
+bun run practice -- --random "system design"
+\`\`\`
+
+## Level Examples
+
+| Level | Example targets |
+| --- | --- |
+${exemplarRows}
+
+## Weekly Operating Rhythm
+
+| Day | Focus | Command |
+| --- | --- | --- |
+| Monday | Pattern recall and clean coding | \`bun run practice -- --random coding\` |
+| Tuesday | Data structure rebuild | \`bun run practice -- --random implementation\` |
+| Wednesday | Medium/hard pattern pressure | \`bun run practice:medium\` or \`bun run practice:hard\` |
+| Thursday | Runtime and backend failure modes | \`bun run practice -- --random runtime\` |
+| Friday | System design primitive | \`bun run practice -- --random "system design"\` |
+| Saturday | Mixed mock interview | \`bun run practice:random\` |
+| Sunday | Review missed targets and regenerate manifest | \`bun run practice:manifest\` |
+
+## Mastery Signals
+
+- Beginner: you can identify the data structure and pass easy focused tests without reading the reference.
+- Intermediate: you can state the invariant before coding and pass medium targets in one focused session.
+- Advanced: you can solve mixed graph, DP, heap, backtracking, and async targets while explaining trade-offs.
+- Expert: you can connect a runnable primitive to SLOs, failure modes, observability, security, and distributed deployment.
+
+The richer JSON version lives in \`practice/practice-manifest.json\` and includes learner level, interview mode, estimated minutes, spaced-review cadence, readiness rubric, and enterprise discussion prompts for every target.
+`;
+
+	await Bun.write(join(PRACTICE_DIR, "learning-dashboard.md"), dashboard);
+	console.log(
+		`Wrote practice/learning-dashboard.md with ${targets.length} target(s).`,
+	);
 }
 
 async function promptForTarget(targets: PracticeTarget[]): Promise<PracticeTarget> {
@@ -1762,9 +2563,10 @@ function getFocusedImplementationPath(importPath: string, slug: string): string 
 function toRelativeImport(
 	fromFilePath: string,
 	toRelativePracticePath: string,
+	outputRoot: string,
 ): string {
 	const targetPathWithoutExtension = join(
-		PRACTICE_DIR,
+		outputRoot,
 		toRelativePracticePath.replace(/\.ts$/, ""),
 	);
 	let relativeImport = relative(dirname(fromFilePath), targetPathWithoutExtension)
@@ -1810,15 +2612,26 @@ function rewriteFocusedTestImports(
 	practiceTestPath: string,
 	target: PracticeTarget,
 	practicePathByImportPath: Map<string, string>,
+	outputRoot: string,
 ): string {
 	let rewritten = content;
 	const imports = parseLocalImports(content);
 
 	for (const localImport of imports) {
-		const selectedSymbols = target.targetSymbols.filter(
-			(symbol) =>
-				symbol.importPath === localImport.importPath &&
-				isSymbolUsed(symbol.localName, content),
+		const contentWithoutImport = content.replace(localImport.statement, "");
+		const usedSymbols = localImport.symbols.filter((symbol) =>
+			isSymbolUsed(symbol.localName, contentWithoutImport),
+		);
+		const selectedSymbols = usedSymbols.filter((symbol) =>
+			target.targetSymbols.some(
+				(targetSymbol) =>
+					targetSymbol.importPath === symbol.importPath &&
+					targetSymbol.importedName === symbol.importedName &&
+					targetSymbol.localName === symbol.localName,
+			),
+		);
+		const helperSymbols = usedSymbols.filter(
+			(symbol) => !selectedSymbols.includes(symbol),
 		);
 		const practiceRelativePath = practicePathByImportPath.get(
 			localImport.importPath,
@@ -1829,10 +2642,24 @@ function rewriteFocusedTestImports(
 			const relativeImport = toRelativeImport(
 				practiceTestPath,
 				practiceRelativePath,
+				outputRoot,
 			);
-			const replacement = `import ${importSpecifier} from "${relativeImport}";`;
+			const replacements = [`import ${importSpecifier} from "${relativeImport}";`];
 
-			rewritten = rewritten.replace(localImport.statement, replacement);
+			if (helperSymbols.length > 0) {
+				const helperRelativeImport = toRelativeSourceImport(
+					practiceTestPath,
+					localImport.importPath,
+				);
+				replacements.push(
+					`import ${buildImportSpecifier(helperSymbols)} from "${helperRelativeImport}";`,
+				);
+			}
+
+			rewritten = rewritten.replace(
+				localImport.statement,
+				replacements.join("\n"),
+			);
 			continue;
 		}
 
@@ -1871,7 +2698,7 @@ async function generateFocusedPractice(target: PracticeTarget): Promise<void> {
 	await writeFocusedPractice(target, PRACTICE_DIR, true);
 }
 
-async function writeFocusedPractice(
+export async function writeFocusedPractice(
 	target: PracticeTarget,
 	outputRoot: string,
 	printSummary: boolean,
@@ -1926,6 +2753,7 @@ async function writeFocusedPractice(
 		practiceTestPath,
 		target,
 		practicePathByImportPath,
+		outputRoot,
 	);
 
 	await mkdir(dirname(practiceTestPath), { recursive: true });
@@ -1935,12 +2763,13 @@ async function writeFocusedPractice(
 	if (printSummary) {
 		console.log(`Generated focused test: ${testOutputRelativePath}`);
 		console.log("\nPractice ready.");
-		console.log(
-			`Target: ${target.title} (${target.difficulty}, ${target.pattern}, ${target.topic})`,
-		);
+		console.log(`Target: ${formatTarget(target)}`);
 		console.log(`Implement: practice/${generatedImplementationPaths.join(", practice/")}`);
-		console.log(`Run: bun test practice/${testOutputRelativePath.replaceAll("\\", "/")}`);
+		console.log(`Run: ${formatFocusedTestCommand(testOutputRelativePath)}`);
 		console.log(`Complexity prompt: ${buildComplexityPrompt(target)}`);
+		console.log(
+			`Review cadence: day ${buildSpacedRepetitionDays(target).join(", day ")}`,
+		);
 	}
 
 	return testOutputRelativePath.replaceAll("\\", "/");
@@ -1978,7 +2807,7 @@ function normalizeGeneratedTestText(value: string): string {
 	return value.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
-function runPracticeSmokeTests(targets: PracticeTarget[]): void {
+export function runPracticeSmokeTests(targets: PracticeTarget[]): void {
 	const syntheticTest = `
 import { describe, expect, it, test } from "bun:test";
 import { alpha as renamedAlpha, beta, gamma } from '@/fake/source';
@@ -2154,6 +2983,61 @@ function assertSmoke(
 	}
 }
 
+async function assertGeneratedFocusedTestLoads(
+	outputRoot: string,
+	testPath: string,
+	target: PracticeTarget,
+): Promise<void> {
+	const subprocess = Bun.spawn([execPath, "test", "--cwd", outputRoot, testPath], {
+		stdout: "pipe",
+		stderr: "pipe",
+	});
+	const [stdoutText, stderrText, exitCode] = await Promise.all([
+		readSubprocessText(subprocess.stdout),
+		readSubprocessText(subprocess.stderr),
+		subprocess.exited,
+	]);
+	const outputText = `${stdoutText}\n${stderrText}`;
+
+	if (exitCode === 0) {
+		throw new Error(
+			`Generated focused test unexpectedly passed, so the selected stub may not be exercised: ${testPath}`,
+		);
+	}
+
+	if (
+		/(Cannot find module|Could not resolve|Failed to resolve|does not provide an export named|No matching export|SyntaxError|error: Expected|error: Unexpected|Transform failed)/i.test(
+			outputText,
+		)
+	) {
+		throw new Error(
+			`Generated focused test failed before reaching the practice stub for ${target.title}:\n${trimSubprocessOutput(outputText)}`,
+		);
+	}
+
+	if (!outputText.includes("Not implemented")) {
+		throw new Error(
+			`Generated focused test did not fail on the practice stub for ${target.title}:\n${trimSubprocessOutput(outputText)}`,
+		);
+	}
+}
+
+async function readSubprocessText(
+	stream: ReadableStream<Uint8Array> | null,
+): Promise<string> {
+	if (!stream) return "";
+	return new Response(stream).text();
+}
+
+function trimSubprocessOutput(outputText: string): string {
+	return outputText
+		.replace(/\r\n/g, "\n")
+		.split("\n")
+		.slice(0, 40)
+		.join("\n")
+		.trim();
+}
+
 async function createReadme(outputRoot = PRACTICE_DIR) {
 	const readme = `# Focused DSA Practice
 
@@ -2170,6 +3054,7 @@ bun run practice -- --list heap
 bun run practice -- --problem kthLargestElement
 bun run practice -- --random graph
 bun run practice -- --manifest
+bun run practice -- --dashboard
 \`\`\`
 
 The generator creates:
@@ -2183,8 +3068,8 @@ The generator creates:
 Use the command printed by the generator, for example:
 
 \`\`\`bash
-bun test practice/data-structures/tests/kth-largest-element.test.ts
-bun test practice/data-structures/tests --test-name-pattern kthLargestElement
+bun test --cwd practice data-structures/tests/kth-largest-element.test.ts
+bun test --cwd practice data-structures/tests --test-name-pattern kthLargestElement
 \`\`\`
 
 ## Generate Everything
@@ -2199,12 +3084,20 @@ bun run practice -- --all --clean
 
 \`\`\`bash
 bun run practice -- --manifest
+bun run practice -- --dashboard
 \`\`\`
 
 This writes \`practice/practice-manifest.json\` with every focused target, topic,
-pattern, difficulty, source file, test file, export, learning objectives,
-attempt checklist, and complexity prompt. It is intentionally plain JSON so it
-can feed a Bun CLI, SQLite tracker, spreadsheet, or dashboard.
+pattern, difficulty, learner level, interview mode, estimated minutes, source
+file, test file, export, learning objectives, attempt checklist, complexity
+prompt, readiness rubric, spaced-review cadence, and enterprise prompts. It is
+intentionally plain JSON so it can feed a Bun CLI, SQLite tracker, spreadsheet,
+or dashboard.
+
+\`practice/learning-dashboard.md\` summarizes the discovered targets by level,
+difficulty, pattern, and interview mode, then gives a weekly operating rhythm.
+You can filter practice directly with terms like \`beginner\`, \`advanced\`,
+\`expert\`, \`runtime\`, and \`system design\`.
 
 ## Validate The Practice System
 
@@ -2220,12 +3113,12 @@ broken imports or missing stubs.
 ## Learning Loop
 
 1. Generate one problem.
-2. State the pattern and invariant before coding.
+2. State the learner level, interview mode, pattern, invariant, dry run, edge cases, and expected complexity before coding.
 3. Read the JSDoc in the generated implementation file.
 4. Implement only the selected export.
 5. Run the focused test, then add one edge-case test if you missed anything.
-6. Compare with \`src/\` only after you have a passing attempt.
-7. Write down the pattern, invariant, edge cases, and complexity.
+6. Compare with \`src/\` only after you have a passing attempt or a named blocker.
+7. Write down the pattern, invariant, missed edge case, complexity, and review date.
 
 ## Interview Self-Review
 
@@ -2233,7 +3126,7 @@ broken imports or missing stubs.
 - Did your solution handle empty input, duplicates, boundaries, and no-solution cases?
 - Did you avoid slow JavaScript operations such as repeated \`.shift()\` in hot loops?
 - Can you state time and space complexity without looking at the code?
-- Can you describe the production version if the problem is backend/system design?
+- Can you describe the production version, including SLOs, telemetry, failure modes, and security boundaries?
 
 ## Source Naming Contract
 
@@ -2296,6 +3189,8 @@ async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<voi
 						);
 					}
 				}
+
+				await assertGeneratedFocusedTestLoads(targetRoot, testPath, target);
 
 				console.log(`Validated ${target.id}/${targets.length}: ${target.title}`);
 			} catch (error) {
@@ -2362,6 +3257,12 @@ async function main() {
 		return;
 	}
 
+	if (options.dashboard) {
+		await writePracticeManifest(targets);
+		await writeLearningDashboard(targets);
+		return;
+	}
+
 	if (options.auditTargets) {
 		auditPracticeTargets(targets);
 		return;
@@ -2406,7 +3307,9 @@ async function main() {
 	await generateFocusedPractice(target);
 }
 
-main().catch((error) => {
-	console.error("Error generating practice templates:", error);
-	process.exit(1);
-});
+if (import.meta.main) {
+	main().catch((error) => {
+		console.error("Error generating practice templates:", error);
+		process.exit(1);
+	});
+}

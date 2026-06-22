@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  type MinesweeperData,
   productSum,
   staircaseTraversal,
   revealMinesweeper,
@@ -207,7 +208,7 @@ describe("revealMinesweeper", () => {
       ["H", "H"],
     ];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     expect(result[0][0]).toBe("1");
   });
@@ -225,7 +226,7 @@ describe("revealMinesweeper", () => {
       ["H", "H"],
     ];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     expect(result[0][0]).toBe("0");
   });
@@ -243,7 +244,7 @@ describe("revealMinesweeper", () => {
       ["H", "H"],
     ];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     expect(result).toEqual([
       ["0", "0"],
@@ -264,7 +265,7 @@ describe("revealMinesweeper", () => {
       ["0", "H"],
     ];
 
-    const result = revealMinesweeper(board, 1, 1);
+    const result = revealMinesweeper(board as MinesweeperData[][], 1, 1);
 
     expect(result[1][1]).toBe("0");
   });
@@ -275,7 +276,7 @@ describe("revealMinesweeper", () => {
       ["H", "H"],
     ];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     // Should remain unchanged
     expect(result[0][0]).toBe("1");
@@ -294,7 +295,7 @@ describe("revealMinesweeper", () => {
       ["H", "H"],
     ];
 
-    const result = revealMinesweeper(board, 1, 1);
+    const result = revealMinesweeper(board as MinesweeperData[][], 1, 1);
 
     expect(result[1][1]).toBe("1");
   });
@@ -302,7 +303,7 @@ describe("revealMinesweeper", () => {
   test("handles single-cell board with mine", () => {
     const board = [["M"]];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     expect(result).toEqual([["X"]]);
   });
@@ -310,7 +311,7 @@ describe("revealMinesweeper", () => {
   test("handles single-cell board without mine", () => {
     const board = [["H"]];
 
-    const result = revealMinesweeper(board, 0, 0);
+    const result = revealMinesweeper(board as MinesweeperData[][], 0, 0);
 
     expect(result).toEqual([["0"]]);
   });

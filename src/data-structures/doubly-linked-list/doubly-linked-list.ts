@@ -64,10 +64,16 @@ class DoublyLinkedList<T> {
 	 * // Creates: null ← [10] → null
 	 */
 	constructor(value: T) {
-		const newNode = new Node(value);
-		this.head = newNode;
-		this.tail = newNode;
-		this.length = 1;
+		this.head = null;
+		this.tail = null;
+		this.length = 0;
+
+		if (value !== undefined) {
+			const newNode = new Node(value);
+			this.head = newNode;
+			this.tail = newNode;
+			this.length = 1;
+		}
 	}
 
 	/**

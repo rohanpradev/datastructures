@@ -255,15 +255,17 @@ export function rotate(nums: number[], k: number): void {
 	if (n === 0) return;
 
 	// Normalize k to be within array bounds
-	k = k % n;
-	if (k === 0) return;
+	const steps = k % n;
+	if (steps === 0) return;
 
 	// Helper function to reverse array segment
 	const reverse = (start: number, end: number) => {
-		while (start < end) {
-			[nums[start], nums[end]] = [nums[end]!, nums[start]!];
-			start++;
-			end--;
+		let left = start;
+		let right = end;
+		while (left < right) {
+			[nums[left], nums[right]] = [nums[right]!, nums[left]!];
+			left++;
+			right--;
 		}
 	};
 

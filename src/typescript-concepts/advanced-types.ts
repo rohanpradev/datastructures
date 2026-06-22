@@ -88,7 +88,7 @@ export function indexBy<
  */
 export function parseJson(value: string): Result<unknown, SyntaxError> {
 	try {
-		return { ok: true, value: JSON.parse(value) as unknown };
+		return { ok: true, value: JSON.parse(value) };
 	} catch (error) {
 		return {
 			ok: false,

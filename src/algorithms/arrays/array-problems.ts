@@ -924,21 +924,19 @@ export function longestPalindromeSubString(input: string): string {
 		leftIndex: number,
 		rightIndex: number,
 	): [number, number] {
+		let left = leftIndex;
+		let right = rightIndex;
 		// Expand while:
 		// 1. We are within bounds
 		// 2. The characters at both ends are equal
-		while (
-			leftIndex >= 0 &&
-			rightIndex < input.length &&
-			input[leftIndex] === input[rightIndex]
-		) {
-			leftIndex--;
-			rightIndex++;
+		while (left >= 0 && right < input.length && input[left] === input[right]) {
+			left--;
+			right++;
 		}
 
 		// When the loop exits, indices have moved one step too far.
 		// Adjust them back to the last valid palindrome positions.
-		return [leftIndex + 1, rightIndex - 1];
+		return [left + 1, right - 1];
 	}
 
 	// Iterate through each character in the string

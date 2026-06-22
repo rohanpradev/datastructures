@@ -26,6 +26,7 @@
 		"practice:hard": "bun run scripts/generate-practice.ts -- --random hard",
 		"practice:list": "bun run scripts/generate-practice.ts -- --list",
 		"practice:manifest": "bun run scripts/generate-practice.ts -- --manifest",
+		"practice:dashboard": "bun run scripts/generate-practice.ts -- --dashboard",
 		"practice:medium": "bun run scripts/generate-practice.ts -- --random medium",
 		"practice:random": "bun run scripts/generate-practice.ts -- --random",
 		"practice:smoke": "bun run scripts/generate-practice.ts -- --smoke-test",
@@ -33,8 +34,8 @@
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.16",
+		"@biomejs/biome": "2.5.0",
 		"@types/bun": "1.3.14",
-		"@typescript/native-preview": "7.0.0-dev.20260527.2"
+		"@typescript/native-preview": "7.0.0-dev.20260622.1"
 	}
 }

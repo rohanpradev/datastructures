@@ -108,7 +108,7 @@ export function staircaseTraversal(height: number, maxSteps: number): number {
  * X → Exploded mine (when user clicks a mine)
  * 0-8 → Revealed cell showing number of adjacent mines
  */
-type MinesweeperData =
+export type MinesweeperData =
 	| "H"
 	| "M"
 	| "X"
@@ -121,6 +121,18 @@ type MinesweeperData =
 	| "6"
 	| "7"
 	| "8";
+
+const MINE_COUNT_LABELS = [
+	"0",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+] as const satisfies readonly MinesweeperData[];
 
 /**
  * Reveals a cell in the Minesweeper board.
@@ -164,7 +176,7 @@ export function revealMinesweeper(
 
 	// If there are adjacent mines → reveal the count
 	if (adjMines > 0) {
-		board[row][column] = adjMines.toString() as MinesweeperData;
+		board[row][column] = MINE_COUNT_LABELS[adjMines];
 	} else {
 		// If no adjacent mines → reveal as "0"
 		board[row][column] = "0";

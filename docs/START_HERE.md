@@ -2,7 +2,41 @@
 
 This repo is a TypeScript-first interview course, not a loose snippet folder.
 Use this route when you want a clean path from fundamentals to mixed interview
-readiness.
+readiness, system design, and current AI-era interview formats.
+
+## Best Entry Route
+
+1. Read [RESEARCH_BRIEF_2026.md](./RESEARCH_BRIEF_2026.md) to understand the
+   current interview and enterprise signals that shaped the platform.
+2. Read [LEARNER_NOTE_STANDARDS.md](./LEARNER_NOTE_STANDARDS.md) so you know
+   how to use guides, source comments, tests, and generated TODOs for actual
+   understanding.
+3. Use [MASTERY_MATRIX.md](./MASTERY_MATRIX.md) to choose beginner,
+   intermediate, advanced, or expert work.
+4. Study [WORKED_EXAMPLES.md](./WORKED_EXAMPLES.md) before your first clean-room
+   practice session.
+5. Use [AI_INTERVIEW_TRENDS_2026.md](./AI_INTERVIEW_TRENDS_2026.md) for
+   AI-assisted, no-AI, debugging, and repo-comprehension interview drills.
+6. Use
+   [ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md)
+   for senior/staff system-design practice.
+7. Generate a dashboard:
+
+```bash
+bun run practice:dashboard
+```
+
+This writes `practice/practice-manifest.json` and
+`practice/learning-dashboard.md` with levels, interview modes, estimated
+minutes, rubrics, spaced-review cadence, and enterprise prompts.
+
+## How The Notes Work
+
+For each topic, read the guide first, skim JSDoc/comments for invariants, inspect
+tests for edge cases, then rebuild the selected export in `practice/`. Do not
+open the reference implementation until your attempt passes or you can name the
+specific blocker. Your own note should stay compact: target, pattern, invariant,
+missed edge case, next review.
 
 ## Current Tooling Baseline
 
@@ -13,8 +47,8 @@ use `@types/bun`, `moduleResolution: "bundler"`, `module: "Preserve"`,
 
 References:
 
-- Bun TypeScript docs: https://bun.sh/docs/typescript
-- Bun test docs: https://bun.sh/docs/test/writing-tests
+- Bun TypeScript docs: https://bun.com/docs/typescript
+- Bun test docs: https://bun.com/docs/test/writing-tests
 - TypeScript docs: https://www.typescriptlang.org/docs/
 - TypeScript TSConfig reference: https://www.typescriptlang.org/tsconfig/
 
@@ -24,7 +58,7 @@ Read top-level docs first, source folders second, tests third, generated
 practice last.
 
 ```text
-docs/                    learner route, interview playbook, tooling notes
+docs/                    learner route, worked examples, trends, system design
 src/typescript-concepts/ modern TypeScript syntax and type-system practice
 src/javascript-concepts/ JavaScript semantics that interviews often probe
 src/algorithms/          pattern-first algorithm implementations and guides
@@ -42,11 +76,14 @@ Use difficulty commands when you want a low-friction session:
 bun run practice:easy
 bun run practice:medium
 bun run practice:hard
+bun run practice:dashboard
 ```
 
 Use topic search when you know what to drill:
 
 ```bash
+bun run practice -- --random beginner
+bun run practice -- --random expert
 bun run practice -- --list graph
 bun run practice -- --random sliding
 bun run practice -- --problem kthLargestElement
@@ -57,13 +94,14 @@ the focused test command printed by the generator.
 
 ## Study Order
 
-1. TypeScript and JavaScript fundamentals.
-2. Stack, queue, linked list, hash table.
-3. Arrays, strings, sorting, two pointers, sliding window.
-4. Trees, BSTs, tries, heaps, graphs.
-5. Recursion, backtracking, dynamic programming, bit manipulation.
-6. Mixed interview patterns.
-7. Bun runtime, async resilience, and system-design primitives.
+1. Research brief and mastery matrix.
+2. Worked examples and beginner TypeScript/JavaScript fundamentals.
+3. Stack, queue, linked list, hash table.
+4. Arrays, strings, sorting, two pointers, sliding window.
+5. Trees, BSTs, tries, heaps, graphs.
+6. Recursion, backtracking, dynamic programming, bit manipulation.
+7. Mixed interview patterns and AI-era interview drills.
+8. Bun runtime, async resilience, and enterprise system-design primitives.
 
 ## End-To-End Checks
 
@@ -78,4 +116,3 @@ bun run practice:validate
 `bun run check` verifies formatting, linting, typechecking, and all tests.
 `practice:audit` verifies test-to-export mapping. `practice:validate` generates
 every focused target and catches broken generated imports or stubs.
-

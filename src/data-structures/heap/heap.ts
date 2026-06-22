@@ -77,9 +77,14 @@ export class MaxHeap<T = number> {
 		}
 
 		if (values && values.length > 0) {
-			for (const value of values) {
-				this.insert(value);
-			}
+			this.heap = [...values];
+			this.buildHeap();
+		}
+	}
+
+	private buildHeap(): void {
+		for (let i = Math.floor(this.heap.length / 2) - 1; i >= 0; i--) {
+			this.heapifyDown(i);
 		}
 	}
 
@@ -250,10 +255,11 @@ export class MaxHeap<T = number> {
 	 * Moves element down until heap property is satisfied
 	 * Time Complexity: O(log n)
 	 *
+	 * @param start - Optional starting index (default 0)
 	 * For MaxHeap: Move down if current < largest child
 	 */
-	private heapifyDown(): void {
-		let index = 0;
+	private heapifyDown(start = 0): void {
+		let index = start;
 
 		// Continue while has at least left child
 		while (this.hasLeftChild(index)) {
@@ -358,9 +364,14 @@ export class MinHeap<T = number> {
 		}
 
 		if (values && values.length > 0) {
-			for (const value of values) {
-				this.insert(value);
-			}
+			this.heap = [...values];
+			this.buildHeap();
+		}
+	}
+
+	private buildHeap(): void {
+		for (let i = Math.floor(this.heap.length / 2) - 1; i >= 0; i--) {
+			this.heapifyDown(i);
 		}
 	}
 
@@ -485,9 +496,10 @@ export class MinHeap<T = number> {
 	/**
 	 * Heapify down (sink down)
 	 * For MinHeap: Move down if current > smallest child
+	 * @param start - Optional starting index (default 0)
 	 */
-	private heapifyDown(): void {
-		let index = 0;
+	private heapifyDown(start: number = 0): void {
+		let index = start;
 
 		while (this.hasLeftChild(index)) {
 			let smallerChildIndex = this.getLeftChildIndex(index);

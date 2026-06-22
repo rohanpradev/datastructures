@@ -208,8 +208,8 @@ describe("ConsistentHashRing", () => {
 	});
 
 	test("moves only part of the keyspace when adding a node", () => {
-		const before = new ConsistentHashRing(["a", "b", "c"], 200);
-		const after = new ConsistentHashRing(["a", "b", "c"], 200);
+		const before = new ConsistentHashRing<string>(["a", "b", "c"], 200);
+		const after = new ConsistentHashRing<string>(["a", "b", "c"], 200);
 		const keys = Array.from({ length: 1000 }, (_, index) => `key:${index}`);
 		const originalAssignments = keys.map((key) => before.getNode(key));
 

@@ -11,7 +11,8 @@ Binary trees appear in roughly 30% of FAANG interviews. They test:
 - **Edge case handling** (empty trees, single nodes, skewed trees)
 
 Research references:
-- [Google Tech Dev Guide: Trees](https://techdevguide.withgoogle.com/)
+- [OpenDSA Binary Trees](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/BinaryTree.html)
+- [MIT OCW 6.006 Lecture Notes](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/pages/lecture-notes/)
 - [LeetCode Binary Tree Tag](https://leetcode.com/tag/binary-tree/)
 
 ---

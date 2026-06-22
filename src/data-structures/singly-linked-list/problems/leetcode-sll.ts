@@ -601,8 +601,8 @@ export function reverseBetween<T>(
 	if (!list.head || left === right) return list;
 
 	// Create a dummy node to handle the case when left = 1
-	const dummy = { next: list.head } as Node<T>;
-	let beforeLeft: Node<T> | typeof dummy = dummy;
+	const dummy: { next: Node<T> | null } = { next: list.head };
+	let beforeLeft: { next: Node<T> | null } = dummy;
 
 	// Phase 1: Navigate to the node before the left position
 	for (let i = 1; i < left; i++) {
@@ -847,16 +847,19 @@ export function sumOfLinkedList(
 	// Pointer used to build the new linked list
 	let current = dummy;
 
+	let node1 = l1;
+	let node2 = l2;
+
 	// Stores carry-over value when sum >= 10
 	let carry = 0;
 
 	// Continue looping while:
 	// - At least one list still has digits
 	// - OR there is a remaining carry
-	while (l1 !== null || l2 !== null || carry !== 0) {
+	while (node1 !== null || node2 !== null || carry !== 0) {
 		// Get current values (0 if the list is exhausted)
-		const value1 = l1?.value ?? 0;
-		const value2 = l2?.value ?? 0;
+		const value1 = node1?.value ?? 0;
+		const value2 = node2?.value ?? 0;
 
 		// Calculate total sum of current digits and carry
 		const total = value1 + value2 + carry;
@@ -874,8 +877,8 @@ export function sumOfLinkedList(
 		current = current.next;
 
 		// Advance input list pointers if possible
-		l1 = l1?.next ?? null;
-		l2 = l2?.next ?? null;
+		node1 = node1?.next ?? null;
+		node2 = node2?.next ?? null;
 	}
 
 	// The result list starts after the dummy node

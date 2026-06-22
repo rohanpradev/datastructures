@@ -271,14 +271,15 @@ export function slidingWindowMaximum(nums: number[], k: number): number[] {
 
 	const result: number[] = [];
 	const deque: number[] = [];
+	let head = 0;
 
 	for (let right = 0; right < nums.length; right++) {
-		while (deque.length > 0 && deque[0]! <= right - k) {
-			deque.shift();
+		while (head < deque.length && deque[head]! <= right - k) {
+			head++;
 		}
 
 		while (
-			deque.length > 0 &&
+			deque.length > head &&
 			nums[deque[deque.length - 1]!]! <= nums[right]!
 		) {
 			deque.pop();
@@ -287,7 +288,7 @@ export function slidingWindowMaximum(nums: number[], k: number): number[] {
 		deque.push(right);
 
 		if (right >= k - 1) {
-			result.push(nums[deque[0]!]!);
+			result.push(nums[deque[head]!]!);
 		}
 	}
 

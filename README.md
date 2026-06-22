@@ -23,9 +23,44 @@ TypeScript 7 + Bun interview-prep workspace with reference implementations, test
 This repo is organized by topic so you can learn a pattern, implement it in `practice/`, run the matching tests, and compare against the reference in `src/`.
 
 Start with [docs/START_HERE.md](./docs/START_HERE.md), then use
-[LEARNING_PATH.md](./LEARNING_PATH.md) for the week-by-week plan and
+[docs/LEARNER_NOTE_STANDARDS.md](./docs/LEARNER_NOTE_STANDARDS.md) to understand
+how the notes, comments, and generated practice prompts are meant to teach,
+[docs/WORKED_EXAMPLES.md](./docs/WORKED_EXAMPLES.md) for concrete lessons,
+[LEARNING_PATH.md](./LEARNING_PATH.md) for the week-by-week plan, and
 [docs/INTERVIEW_PLAYBOOK.md](./docs/INTERVIEW_PLAYBOOK.md) during timed
-practice.
+practice. Current AI-era and enterprise material lives in
+[docs/AI_INTERVIEW_TRENDS_2026.md](./docs/AI_INTERVIEW_TRENDS_2026.md),
+[docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md),
+and [docs/RESEARCH_BRIEF_2026.md](./docs/RESEARCH_BRIEF_2026.md).
+
+Generate a learner dashboard any time:
+
+```bash
+bun run practice:dashboard
+```
+
+That creates `practice/practice-manifest.json` and
+`practice/learning-dashboard.md` with learner levels, interview modes,
+estimated session times, readiness rubrics, spaced-review cadence, and
+enterprise discussion prompts.
+
+## How To Learn From The Notes
+
+Use the repo as an active course:
+
+1. Read the guide or JSDoc for the mental model, not the final answer.
+2. Write the pattern, invariant, dry run, edge cases, and complexity before
+   coding.
+3. Implement only under `practice/`.
+4. Run the focused test and add one missing edge-case test when you are wrong.
+5. Compare with `src/` only after your attempt has passed or you can name the
+   specific blocker.
+6. Record one compact note and schedule the next review.
+
+The full note and comment standard is in
+[docs/LEARNER_NOTE_STANDARDS.md](./docs/LEARNER_NOTE_STANDARDS.md). It is based
+on the same shape used by strong public references: concepts, traceable
+examples, practice, verification, and complexity.
 
 ## Course Map
 
@@ -65,17 +100,23 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 
 ## Why This Exists
 
-FAANG interviews, especially Google-style interviews, reward pattern recognition, clear reasoning, edge-case handling, and code that you can explain under time pressure. The problem set here is aligned with common public prep tracks such as Blind 75 / NeetCode 150 style patterns and Google's own emphasis on data structures, algorithms, Big-O, maps, trees, graphs, binary search, recursion, dynamic programming, and interview communication.
+FAANG interviews and strong engineering screens reward pattern recognition,
+clear reasoning, edge-case handling, and code that you can explain under time
+pressure. The problem set here is aligned with common public prep tracks such
+as Blind 75 / NeetCode 150 style patterns and durable algorithm references that
+emphasize data structures, algorithms, Big-O, maps, trees, graphs, binary
+search, recursion, dynamic programming, and interview communication.
 
 Research references:
 
-- [Google Tech Dev Guide: Data Structures and Algorithms](https://techdevguide.withgoogle.com/paths/data-structures-and-algorithms/)
-- [Google Tech Dev Guide: Interview Prep](https://techdevguide.withgoogle.com/paths/interview/)
+- [MIT OCW 6.006: Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/)
+- [OpenDSA Data Structures and Algorithms](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/)
+- [CP-Algorithms](https://cp-algorithms.com/)
 - [NeetCode roadmap](https://neetcode.io/roadmap)
 - [Blind 75 problem list](https://leetcode.com/discuss/general-discussion/460599/blind-75-leetcode-questions)
 - [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
 - [Node.js releases](https://nodejs.org/en/about/previous-releases)
-- [Bun documentation](https://bun.sh/docs)
+- [Bun documentation](https://bun.com/docs)
 - [TC39 proposals](https://github.com/tc39/proposals)
 - [TypeScript 7 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/)
 - [TypeScript Handbook: Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
@@ -114,6 +155,7 @@ bun run practice:hard         # Generate one random hard target
 bun run practice:random       # Generate a random focused problem
 bun run practice:list         # List focused practice targets with metadata
 bun run practice:manifest     # Write practice/practice-manifest.json
+bun run practice:dashboard    # Write manifest plus learning-dashboard.md
 bun run practice:audit        # Validate test/export naming for focused practice
 bun run practice:validate     # Generate every focused target and validate imports/stubs
 bun dev                       # Run Bun server examples
@@ -125,7 +167,7 @@ The focused practice generator depends on consistent names between tests and sou
 
 - Standalone interview problems use `export function problemName(...)`.
 - Data structures and stateful APIs use `export class StructureName`.
-- Each generated manifest entry includes `topic`, `pattern`, `difficulty`, selected `exports`, learner objectives, an attempt checklist, and a complexity prompt. Use `bun run practice:manifest` when you want to audit coverage or build a dashboard across every problem.
+- Each generated manifest entry includes `topic`, `pattern`, `difficulty`, `level`, `interviewMode`, `estimatedMinutes`, selected `exports`, learner objectives, an attempt checklist, a complexity prompt, readiness rubric, spaced-review cadence, and enterprise discussion prompts. Use `bun run practice:manifest` when you want to audit coverage or build a dashboard across every problem.
 - `bun run practice:audit` verifies that each focused test maps cleanly to the intended source export. Broad learner modules are allowed only when their test title makes that scope explicit.
 - Helper functions stay unexported unless they are intentionally tested as their own problem.
 - A top-level test block should be named after the main export, for example `describe("twoSum", ...)`.
@@ -139,7 +181,7 @@ bun run practice -- --audit-targets
 bun run practice -- --validate-all-focused
 ```
 
-The manifest is Bun-native JSON output generated with `Bun.write()`. It includes every target's topic, inferred pattern, difficulty, source files, test file, and exports, which makes it useful for dashboards, SQLite progress trackers, or spaced-repetition scripts.
+The manifest is Bun-native JSON output generated with `Bun.write()`. It includes every target's topic, inferred pattern, difficulty, learner level, interview mode, estimated session time, source files, test file, exports, review cadence, and enterprise prompts, which makes it useful for dashboards, SQLite progress trackers, or spaced-repetition scripts.
 
 ## Quality Gates
 
