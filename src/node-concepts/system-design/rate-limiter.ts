@@ -32,6 +32,29 @@ export class TokenBucketRateLimiter {
 		this.lastRefillMs = nowMs;
 	}
 
+	/**
+	 * Attempts to consume tokens from the bucket.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * Refills tokens based on elapsed time since last call, then checks if enough tokens exist.
+	 * Returns decision and remaining tokens or retry-after delay.
+	 *
+	 * Algorithm:
+	 * 1. Calculate tokens to refill based on elapsed time
+	 * 2. Cap refilled tokens at bucket capacity
+	 * 3. If tokens >= cost, subtract cost and return allowed=true
+	 * 4. Otherwise calculate time until enough tokens available
+	 *
+	 * @param nowMs - Current timestamp in milliseconds (default: Date.now())
+	 * @param cost - Number of tokens to consume (default: 1)
+	 * @returns RateLimitResult with decision (allowed) and retry info
+	 *
+	 * @example
+	 * const limiter = new TokenBucketRateLimiter(10, 2); // 10 capacity, 2 refill/sec
+	 * limiter.consume(); // { allowed: true, remaining: 9, retryAfterMs: 0 }
+	 * limiter.consume(Date.now(), 15); // { allowed: false, remaining: 9, retryAfterMs: 3000 }
+	 */
 	consume(nowMs = Date.now(), cost = 1): RateLimitResult {
 		if (cost < 1) throw new Error("cost must be at least 1");
 
@@ -85,6 +108,30 @@ export class SlidingWindowRateLimiter {
 		if (windowMs < 1) throw new Error("windowMs must be at least 1");
 	}
 
+	/**
+	 * Attempts to consume a token from the sliding window for a given key.
+	 * Time Complexity: O(n) where n is average hits per key in the window
+	 * Space Complexity: O(m) where m is number of tracked keys
+	 *
+	 * Cleans up expired entries before checking the limit.
+	 * Allows up to `limit` hits within the `windowMs` rolling window.
+	 *
+	 * Algorithm:
+	 * 1. Remove expired entries outside the current window
+	 * 2. Check if hits within window >= limit
+	 * 3. If not, record new hit and return allowed=true
+	 * 4. If at limit, return retry-after time until oldest hit expires
+	 *
+	 * @param key - Identifier for rate limit tracking (e.g., user ID, IP address)
+	 * @param nowMs - Current timestamp in milliseconds (default: Date.now())
+	 * @returns RateLimitResult with decision and retry info
+	 *
+	 * @example
+	 * const limiter = new SlidingWindowRateLimiter(10, 60000); // 10 requests per minute
+	 * limiter.consume("user123"); // { allowed: true, remaining: 9, retryAfterMs: 0 }
+	 * // After 11 calls in quick succession:
+	 * limiter.consume("user123"); // { allowed: false, remaining: 0, retryAfterMs: ~60000 }
+	 */
 	consume(key: string, nowMs = Date.now()): RateLimitResult {
 		this.cleanupExpiredKeys(nowMs);
 		const hits = this.hitsByKey.get(key) ?? [];
@@ -107,6 +154,22 @@ export class SlidingWindowRateLimiter {
 		};
 	}
 
+	/**
+	 * Returns the number of distinct keys currently being tracked.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * Useful for monitoring active clients or users being rate limited.
+	 * Note: Stale keys are cleaned up lazily during consume() calls.
+	 *
+	 * @returns Number of keys with hit records still in memory
+	 *
+	 * @example
+	 * const limiter = new SlidingWindowRateLimiter(10, 60000);
+	 * limiter.consume("user1");
+	 * limiter.consume("user2");
+	 * limiter.trackedKeyCount(); // 2
+	 */
 	trackedKeyCount(): number {
 		return this.hitsByKey.size;
 	}

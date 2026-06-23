@@ -12,6 +12,18 @@
 
 import { CircuitBreaker } from "@/node-concepts/async/circuit-breaker";
 
+/**
+ * Performs a busy-wait (spin-loop) for the specified duration.
+ * This blocks the thread and consumes CPU, useful for simulating heavy synchronous work.
+ * 
+ * Time Complexity: O(1) in terms of operations, but O(ms) in real time
+ * Space Complexity: O(1)
+ * 
+ * @param ms - Duration to busy-wait in milliseconds
+ * 
+ * @example
+ * busyWait(100); // Spins for ~100ms, blocking current thread
+ */
 function busyWait(ms: number) {
 	const start = performance.now();
 	while (performance.now() - start < ms) {}
@@ -25,6 +37,18 @@ type TestCleanupGlobal = typeof globalThis & {
 	__DATASTRUCTURES_TEST_CLEANUPS__?: TestCleanup[];
 };
 
+/**
+ * Registers a cleanup function to be executed after tests complete.
+ * Useful for closing connections, terminating workers, or clearing resources.
+ * 
+ * Time Complexity: O(1)
+ * Space Complexity: O(1)
+ * 
+ * @param cleanup - Cleanup function to register (can be async)
+ * 
+ * @example
+ * registerTestCleanup(() => server.close());
+ */
 function registerTestCleanup(cleanup: TestCleanup): void {
 	const cleanupGlobal = globalThis as TestCleanupGlobal;
 	cleanupGlobal.__DATASTRUCTURES_TEST_CLEANUPS__ ??= [];
@@ -38,6 +62,21 @@ interface Todo {
 	completed: boolean;
 }
 
+/**
+ * Calls an external API (JSONPlaceholder) to fetch a todo item.
+ * Returns a mock response in test environment, actual API call in production.
+ * Includes a 2-second timeout to prevent hanging requests.
+ * 
+ * Time Complexity: O(1) - single API call
+ * Space Complexity: O(1)
+ * 
+ * @returns Promise resolving to a Todo object
+ * @throws Error if API response is not ok or request times out
+ * 
+ * @example
+ * const todo = await callExternalAPI();
+ * console.log(todo.title); // "delectus aut autem"
+ */
 async function callExternalAPI(): Promise<Todo> {
 	if (isTest) {
 		return {
@@ -83,6 +122,19 @@ export const apiBreaker = new CircuitBreaker<[], Todo>(
 const HEAVY_WORKER_URL = new URL("./worker/worker.ts", import.meta.url);
 const WORKER_TIMEOUT_MS = 2000;
 
+/**
+ * Spawns a worker thread to execute CPU-intensive tasks off the main thread.
+ * The worker is terminated after completion or timeout.
+ * 
+ * Time Complexity: O(1) for spawning, depends on worker execution
+ * Space Complexity: O(1) + worker memory
+ * 
+ * @returns Promise resolving to the numeric result from the worker
+ * @throws Error if worker times out (>2000ms) or encounters an error
+ * 
+ * @example
+ * const result = await runWorker(); // Offloads heavy computation
+ */
 function runWorker(): Promise<number> {
 	return new Promise<number>((resolve, reject) => {
 		const worker = new Worker(HEAVY_WORKER_URL, { type: "module" });
@@ -276,6 +328,19 @@ export async function stopServer(force = true): Promise<void> {
 	await server.stop(force);
 }
 
+/**
+ * Handles graceful shutdown of the server in response to system signals.
+ * Logs the signal received, stops the server, and exits the process.
+ * 
+ * Time Complexity: O(1) for signaling
+ * Space Complexity: O(1)
+ * 
+ * @param signal - The shutdown signal received (e.g., 'SIGTERM', 'SIGINT')
+ * @returns Promise that resolves before process exit
+ * 
+ * @example
+ * await shutdown('SIGTERM'); // Graceful shutdown triggered
+ */
 async function shutdown(signal: NodeJS.Signals): Promise<void> {
 	console.log(`${signal} received. Shutting down...`);
 	await stopServer(true);

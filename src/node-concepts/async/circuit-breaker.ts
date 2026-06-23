@@ -63,6 +63,31 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 		private fallback?: (...args: TArgs) => TResult | Promise<TResult>,
 	) {}
 
+	/**
+	 * Executes the action behind the circuit breaker, applying all protective logic.
+	 * Time Complexity: O(1) amortized
+	 * Space Complexity: O(1)
+	 *
+	 * Algorithm:
+	 * 1. If OPEN and cooldown passed, transition to HALF_OPEN
+	 * 2. If OPEN and cooldown not passed, use fallback or throw
+	 * 3. If HALF_OPEN at max test calls limit, use fallback
+	 * 4. Execute action with timeout
+	 * 5. Record success/failure and update state as needed
+	 *
+	 * States:
+	 * - CLOSED: Normal operation, all calls pass through
+	 * - OPEN: Failing, fast-fail with fallback or throw
+	 * - HALF_OPEN: Testing recovery with limited calls
+	 *
+	 * @param args - Arguments to pass to the underlying action
+	 * @returns Promise resolving to the action result or fallback value
+	 * @throws Error if action fails and no fallback available
+	 *
+	 * @example
+	 * const breaker = new CircuitBreaker(asyncCall, { ... });
+	 * const result = await breaker.fire(param1, param2);
+	 */
 	async fire(...args: TArgs): Promise<TResult> {
 		if (this.state === "OPEN") {
 			if (Date.now() > this.nextAttempt) {
@@ -166,6 +191,21 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 		throw error;
 	}
 
+	/**
+	 * Returns the current state of the circuit breaker.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * Use this for monitoring and debugging circuit breaker behavior.
+	 *
+	 * @returns Current circuit state: 'CLOSED' (normal), 'OPEN' (failing fast), or 'HALF_OPEN' (testing recovery)
+	 *
+	 * @example
+	 * const breaker = new CircuitBreaker(asyncCall, { ... });
+	 * if (breaker.getState() === "OPEN") {
+	 *   console.log("Service is down, using fallback");
+	 * }
+	 */
 	getState(): CircuitState {
 		return this.state;
 	}

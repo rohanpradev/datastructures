@@ -7,6 +7,27 @@ type Listener<T> = (payload: T) => void | Promise<void>;
  */
 export type Unsubscribe = (() => void) & Disposable;
 
+/**
+ * Wraps a dispose function as an Unsubscribe function.
+ * Time Complexity: O(1)
+ * Space Complexity: O(1)
+ *
+ * Creates a callable unsubscribe function that also implements the Disposable pattern,
+ * allowing use with TypeScript's `using` statement and ensuring idempotency.
+ *
+ * @param dispose - Callback to invoke when unsubscribing
+ * @returns Disposable unsubscribe function that can be called or used with `using`
+ *
+ * @example
+ * const unsub = toDisposableUnsubscribe(() => console.log("Unsubscribed"));
+ * unsub(); // Calls dispose
+ * unsub(); // No-op (already disposed)
+ *
+ * @example
+ * // With TypeScript's using statement:
+ * using unsub = toDisposableUnsubscribe(() => console.log("Cleanup"));
+ * // Automatically unsubscribe when scope exits
+ */
 function toDisposableUnsubscribe(dispose: () => void): Unsubscribe {
 	let disposed = false;
 

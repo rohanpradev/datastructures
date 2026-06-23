@@ -22,6 +22,22 @@ export class LRUCache<K, V> {
 		if (capacity < 1) throw new Error("capacity must be at least 1");
 	}
 
+	/**
+	 * Retrieves a value by key and marks it as recently used.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * If the key exists, it is moved to the front of the linked list (most recent).
+	 *
+	 * @param key - The key to retrieve
+	 * @returns The value associated with the key, or undefined if not found
+	 *
+	 * @example
+	 * const cache = new LRUCache<string, number>(2);
+	 * cache.set("a", 1);
+	 * cache.get("a"); // 1
+	 * cache.get("b"); // undefined
+	 */
 	get(key: K): V | undefined {
 		const entry = this.entries.get(key);
 		if (!entry) return undefined;
@@ -30,6 +46,23 @@ export class LRUCache<K, V> {
 		return entry.value;
 	}
 
+	/**
+	 * Inserts or updates a key-value pair in the cache.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * If the key already exists, the value is updated and the entry is moved to the front.
+	 * If the key is new and the cache is at capacity, the least recently used item is evicted.
+	 *
+	 * @param key - The key to insert or update
+	 * @param value - The value to associate with the key
+	 *
+	 * @example
+	 * const cache = new LRUCache<string, number>(2);
+	 * cache.set("a", 1);
+	 * cache.set("b", 2);
+	 * cache.set("c", 3); // Evicts "a" (least recently used)
+	 */
 	set(key: K, value: V): void {
 		const existing = this.entries.get(key);
 		if (existing) {
@@ -47,14 +80,58 @@ export class LRUCache<K, V> {
 		}
 	}
 
+	/**
+	 * Checks if a key exists in the cache without affecting its recency.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * This is a non-access check that does NOT update the LRU ordering.
+	 * Use this when you want to check existence without affecting cache state.
+	 *
+	 * @param key - The key to check
+	 * @returns true if the key exists, false otherwise
+	 *
+	 * @example
+	 * const cache = new LRUCache<string, number>(2);
+	 * cache.set("a", 1);
+	 * cache.has("a"); // true
+	 * cache.has("b"); // false
+	 */
 	has(key: K): boolean {
 		return this.entries.has(key);
 	}
 
+	/**
+	 * Returns the current number of items in the cache.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * @returns The number of entries currently stored in the cache
+	 *
+	 * @example
+	 * const cache = new LRUCache<string, number>(5);
+	 * cache.set("a", 1).set("b", 2);
+	 * cache.size(); // 2
+	 */
 	size(): number {
 		return this.entries.size;
 	}
 
+	/**
+	 * Returns all keys in the cache ordered from most recently used to least recently used.
+	 * Time Complexity: O(n) where n is the cache size
+	 * Space Complexity: O(n) for the output array
+	 *
+	 * This provides insight into the LRU ordering and which items would be evicted next.
+	 *
+	 * @returns Array of keys in LRU order (most recent first)
+	 *
+	 * @example
+	 * const cache = new LRUCache<string, number>(3);
+	 * cache.set("a", 1).set("b", 2).set("c", 3);
+	 * cache.get("a"); // Access "a", making it most recent
+	 * cache.keysMostRecentFirst(); // ["a", "c", "b"]
+	 */
 	keysMostRecentFirst(): K[] {
 		const keys: K[] = [];
 		let current = this.head;

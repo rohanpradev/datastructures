@@ -109,6 +109,22 @@ export function optimalHashCount(
 	return Math.max(1, Math.round((bitCount / expectedItems) * Math.LN2));
 }
 
+/**
+ * FNV-1a hash function with a custom seed for hashing values in Bloom filter.
+ * Time Complexity: O(k) where k is the length of the input value
+ * Space Complexity: O(1)
+ *
+ * Uses FNV-1a algorithm with bitwise operations for fast hashing.
+ * The seed allows generating multiple independent hash functions.
+ *
+ * @param value - String value to hash
+ * @param seed - FNV offset basis (different seeds produce different hashes)
+ * @returns 32-bit unsigned integer hash value
+ *
+ * @example
+ * hashWithSeed("hello", 0x811c9dc5); // Returns hash with first seed
+ * hashWithSeed("hello", 0x9e3779b9); // Returns different hash with second seed
+ */
 function hashWithSeed(value: string, seed: number): number {
 	let hash = seed;
 

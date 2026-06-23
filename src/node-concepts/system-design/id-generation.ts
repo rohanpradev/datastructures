@@ -85,6 +85,32 @@ export class SnowflakeIdGenerator {
 		this.nowMs = options.nowMs ?? (() => BigInt(Date.now()));
 	}
 
+	/**
+	 * Generates the next unique Snowflake ID.
+	 * Time Complexity: O(1)
+	 * Space Complexity: O(1)
+	 *
+	 * Algorithm:
+	 * 1. Get current timestamp
+	 * 2. Check for clock drift (clock going backwards) - throw error if detected
+	 * 3. If same millisecond, increment sequence counter
+	 * 4. If new millisecond, reset sequence to 0
+	 * 5. Combine: (timestamp << 22) | (workerId << 12) | sequence
+	 *
+	 * Guarantees:
+	 * - Globally unique across worker instances
+	 * - Sortable by timestamp
+	 * - Per-millisecond sequence prevents collisions
+	 * - Throws if clock moves backwards or sequence exhausted
+	 *
+	 * @returns Next 64-bit Snowflake ID as a bigint
+	 * @throws Error if clock moved backwards or sequence exhausted for the millisecond
+	 *
+	 * @example
+	 * const gen = new SnowflakeIdGenerator({ workerId: 1 });
+	 * const id1 = gen.nextId(); // 123456789...
+	 * const id2 = gen.nextId(); // 123456789... (incremented)
+	 */
 	nextId(): bigint {
 		const timestamp = this.nowMs();
 
