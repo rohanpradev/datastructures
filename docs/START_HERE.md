@@ -43,12 +43,16 @@ missed edge case, next review.
 This repo follows the current official Bun guidance for TypeScript projects:
 run TypeScript directly with Bun, keep static checking in a separate command,
 use `@types/bun`, `moduleResolution: "bundler"`, `module: "Preserve"`,
-`verbatimModuleSyntax`, and strict TypeScript checking.
+`verbatimModuleSyntax`, and strict TypeScript checking. Current strictness
+includes `exactOptionalPropertyTypes` and indexed-signature bracket access;
+`noUncheckedIndexedAccess` remains a documented backlog because the algorithm
+track needs focused indexing fixes before it can be enabled globally.
 
 References:
 
-- Bun TypeScript docs: https://bun.com/docs/typescript
+- Bun TypeScript docs: https://bun.com/docs/runtime/typescript
 - Bun test docs: https://bun.com/docs/test/writing-tests
+- TypeScript native preview: https://www.npmjs.com/package/@typescript/native-preview
 - TypeScript docs: https://www.typescriptlang.org/docs/
 - TypeScript TSConfig reference: https://www.typescriptlang.org/tsconfig/
 

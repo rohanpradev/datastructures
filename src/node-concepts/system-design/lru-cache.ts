@@ -1,8 +1,8 @@
 interface Entry<K, V> {
 	key: K;
 	value: V;
-	prev?: Entry<K, V>;
-	next?: Entry<K, V>;
+	prev: Entry<K, V> | undefined;
+	next: Entry<K, V> | undefined;
 }
 
 /**
@@ -15,8 +15,8 @@ interface Entry<K, V> {
  */
 export class LRUCache<K, V> {
 	private readonly entries = new Map<K, Entry<K, V>>();
-	private head?: Entry<K, V>;
-	private tail?: Entry<K, V>;
+	private head: Entry<K, V> | undefined;
+	private tail: Entry<K, V> | undefined;
 
 	constructor(private readonly capacity: number) {
 		if (capacity < 1) throw new Error("capacity must be at least 1");
@@ -71,7 +71,7 @@ export class LRUCache<K, V> {
 			return;
 		}
 
-		const entry: Entry<K, V> = { key, value };
+		const entry: Entry<K, V> = { key, next: undefined, prev: undefined, value };
 		this.entries.set(key, entry);
 		this.addToFront(entry);
 

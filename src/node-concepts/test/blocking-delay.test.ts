@@ -10,10 +10,11 @@
 
 import { describe, test, expect } from "bun:test";
 import { server } from "@/node-concepts/server";
+import type { BunImageProcessingResult } from "@/node-concepts/bun-runtime/image-processing";
 
 // Typed response helpers
 interface WorkerResponse {
-  result: number;
+  result: BunImageProcessingResult;
 }
 
 interface MetricsResponse {
@@ -61,12 +62,20 @@ describe("Bun server endpoints", () => {
     expect(duration).toBeGreaterThanOrEqual(50);
   });
 
-  test("Worker route completes and returns numeric result", async () => {
+  test("Worker route processes an image with Bun.Image", async () => {
     const { status, data } = await fetchRoute<WorkerResponse>("/heavy-task", 3000);
 
     expect(status).toBe(200);
-    expect(typeof data.result).toBe("number");
-    expect(data.result).toBeGreaterThan(0);
+    expect(data.result.source).toMatchObject({
+      format: "bmp",
+      height: 180,
+      width: 320,
+    });
+    expect(data.result.output.format).toBe("webp");
+    expect(data.result.output.mimeType).toBe("image/webp");
+    expect(data.result.output.bytes).toBeGreaterThan(0);
+    expect(data.result.output.width).toBeLessThanOrEqual(160);
+    expect(data.result.output.height).toBeLessThanOrEqual(90);
   });
 
   test("Metrics endpoint returns active requests and web sockets", async () => {

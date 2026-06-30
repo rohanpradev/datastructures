@@ -664,7 +664,6 @@ class BinarySearchTree<T = number> {
 			node.value = minNode.value;
 			// Delete the successor node from right subtree
 			node.right = this.rDeleteHelper(node.right, minNode.value);
-			this.length++; // Compensate for the extra decrement
 		}
 
 		return node;

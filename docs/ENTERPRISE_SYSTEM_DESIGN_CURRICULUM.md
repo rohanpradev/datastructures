@@ -299,6 +299,70 @@ Minimum components:
 - How do you handle stale documents?
 - How do you degrade when the model provider is down?
 
+## Scenario 7: Multi-Tenant Job Scheduler
+
+Related code: `weighted-fair-queue.ts`
+
+### Prompt
+
+Design a shared background-job scheduler for thousands of tenants.
+
+### Teaching Notes
+
+Start with one worker process:
+
+- FIFO is simple but lets a noisy tenant monopolize the queue.
+- Hard priority can starve low-priority tenants.
+- Weighted fair queuing gives each tenant a proportional share while still
+  making progress for small tenants.
+
+Production upgrade:
+
+- Store jobs durably in a queue or database.
+- Use measured job cost when available: CPU time, tokens, bytes, rows, or
+  downstream calls.
+- Add admission control before the queue so memory cannot grow without bound.
+- Separate tenant fairness from worker autoscaling, retries, and dead-letter
+  handling.
+
+### Follow-Ups
+
+- How do you estimate cost before the job runs?
+- What metrics prove that tenants are receiving their intended share?
+- How do you prevent one very expensive job from blocking cheap jobs?
+- Where do retries and dead-letter queues fit?
+
+## Scenario 8: Retry-Safe Checkout API
+
+Related code: `idempotency-store.ts`
+
+### Prompt
+
+Design a checkout or payment API that clients can safely retry after timeouts.
+
+### Teaching Notes
+
+Start with one process:
+
+- Claim an idempotency key before performing the side effect.
+- Return a conflict/retry signal for concurrent duplicates.
+- Store the completed response and replay it for later duplicates.
+
+Production upgrade:
+
+- Use Redis, SQL, or another shared store with atomic insert-if-absent behavior.
+- Scope the key by tenant, user, endpoint, and request hash.
+- Keep separate TTLs for in-flight work and completed response replay.
+- Decide which failures release the key and which failures should be replayed.
+
+### Follow-Ups
+
+- How do you reject the same idempotency key with a different request body?
+- What happens if the process dies after charging the card but before saving
+  completion?
+- How long should completed responses be replayable?
+- How do you observe claim, conflict, replay, completion, and expiry rates?
+
 ## Mock Interview Drills
 
 ### 35-Minute Mid-Level Drill

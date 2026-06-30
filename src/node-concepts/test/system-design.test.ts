@@ -11,11 +11,13 @@ import {
 	encodeBase62,
 	SnowflakeIdGenerator,
 } from "@/node-concepts/system-design/id-generation";
+import { IdempotencyKeyStore } from "@/node-concepts/system-design/idempotency-store";
 import { LRUCache } from "@/node-concepts/system-design/lru-cache";
 import {
 	SlidingWindowRateLimiter,
 	TokenBucketRateLimiter,
 } from "@/node-concepts/system-design/rate-limiter";
+import { WeightedFairQueue } from "@/node-concepts/system-design/weighted-fair-queue";
 
 describe("TokenBucketRateLimiter", () => {
 	test("allows requests while tokens are available", () => {
@@ -261,5 +263,113 @@ describe("BloomFilter", () => {
 		expect(
 			() => new BloomFilter({ expectedItems: 10, falsePositiveRate: 1 }),
 		).toThrow("falsePositiveRate must be between 0 and 1");
+	});
+});
+
+describe("WeightedFairQueue", () => {
+	test("interleaves equal-weight tenants instead of draining one tenant first", () => {
+		const queue = new WeightedFairQueue<string, string>();
+
+		queue.enqueue("tenant-a", "a1");
+		queue.enqueue("tenant-a", "a2");
+		queue.enqueue("tenant-b", "b1");
+		queue.enqueue("tenant-b", "b2");
+
+		expect([
+			queue.dequeue()?.value,
+			queue.dequeue()?.value,
+			queue.dequeue()?.value,
+			queue.dequeue()?.value,
+		]).toEqual(["a1", "b1", "a2", "b2"]);
+		expect(queue.dequeue()).toBeUndefined();
+	});
+
+	test("gives higher-weight tenants a larger early share", () => {
+		const queue = new WeightedFairQueue<string, string>([
+			["premium", 2],
+			["standard", 1],
+		]);
+
+		queue.enqueue("premium", "p1");
+		queue.enqueue("premium", "p2");
+		queue.enqueue("standard", "s1");
+		queue.enqueue("standard", "s2");
+
+		const firstThreeTenants = [
+			queue.dequeue()?.tenant,
+			queue.dequeue()?.tenant,
+			queue.dequeue()?.tenant,
+		];
+
+		expect(firstThreeTenants.filter((tenant) => tenant === "premium")).toHaveLength(
+			2,
+		);
+		expect(queue.size()).toBe(1);
+	});
+
+	test("accounts for work cost when ordering shared queues", () => {
+		const queue = new WeightedFairQueue<string, string>();
+
+		queue.enqueue("tenant-a", "expensive", 4);
+		queue.enqueue("tenant-b", "cheap", 1);
+
+		expect(queue.peek()?.value).toBe("cheap");
+		expect(queue.dequeue()).toEqual({
+			cost: 1,
+			tenant: "tenant-b",
+			value: "cheap",
+		});
+		expect(queue.stats().queuedItems).toBe(1);
+	});
+});
+
+describe("IdempotencyKeyStore", () => {
+	test("starts a write, blocks concurrent duplicates, then replays completion", () => {
+		const store = new IdempotencyKeyStore<{ orderId: string }>({
+			inFlightTtlMs: 1000,
+			replayTtlMs: 5000,
+		});
+
+		expect(store.claim("checkout:1", 0)).toEqual({ status: "started" });
+		expect(store.claim("checkout:1", 250)).toEqual({
+			retryAfterMs: 750,
+			status: "conflict",
+		});
+
+		store.complete("checkout:1", { orderId: "order-123" }, 500);
+
+		expect(store.claim("checkout:1", 1000)).toEqual({
+			response: { orderId: "order-123" },
+			status: "replay",
+		});
+	});
+
+	test("expires stuck in-flight work and completed replay records", () => {
+		const store = new IdempotencyKeyStore<string>({
+			inFlightTtlMs: 1000,
+			replayTtlMs: 2000,
+		});
+
+		expect(store.claim("payment:1", 0)).toEqual({ status: "started" });
+		expect(store.claim("payment:1", 1001)).toEqual({ status: "started" });
+		store.complete("payment:1", "ok", 1200);
+
+		expect(store.pruneExpired(3201)).toBe(1);
+		expect(store.size()).toBe(0);
+	});
+
+	test("releases failed writes so callers can retry the same key", () => {
+		const store = new IdempotencyKeyStore<string>({
+			inFlightTtlMs: 1000,
+			replayTtlMs: 2000,
+		});
+
+		store.claim("invoice:1", 0);
+
+		expect(store.fail("invoice:1")).toBe(true);
+		expect(store.claim("invoice:1", 10)).toEqual({ status: "started" });
+		expect(() => store.complete("missing", "ok")).toThrow(
+			"idempotency key was not claimed",
+		);
 	});
 });

@@ -4,23 +4,24 @@
  * Concepts covered:
  * - Native Bun.serve routes
  * - Circuit breaker protected dependency calls
- * - Worker offloading for CPU-heavy tasks
+ * - Worker offloading for Bun-native image processing
  * - Metrics endpoint
  * - WebSocket pub/sub
  * - Test-safe server lifecycle
  */
 
 import { CircuitBreaker } from "@/node-concepts/async/circuit-breaker";
+import type { BunImageProcessingResult } from "@/node-concepts/bun-runtime/image-processing";
 
 /**
  * Performs a busy-wait (spin-loop) for the specified duration.
  * This blocks the thread and consumes CPU, useful for simulating heavy synchronous work.
- * 
+ *
  * Time Complexity: O(1) in terms of operations, but O(ms) in real time
  * Space Complexity: O(1)
- * 
+ *
  * @param ms - Duration to busy-wait in milliseconds
- * 
+ *
  * @example
  * busyWait(100); // Spins for ~100ms, blocking current thread
  */
@@ -40,12 +41,12 @@ type TestCleanupGlobal = typeof globalThis & {
 /**
  * Registers a cleanup function to be executed after tests complete.
  * Useful for closing connections, terminating workers, or clearing resources.
- * 
+ *
  * Time Complexity: O(1)
  * Space Complexity: O(1)
- * 
+ *
  * @param cleanup - Cleanup function to register (can be async)
- * 
+ *
  * @example
  * registerTestCleanup(() => server.close());
  */
@@ -66,13 +67,13 @@ interface Todo {
  * Calls an external API (JSONPlaceholder) to fetch a todo item.
  * Returns a mock response in test environment, actual API call in production.
  * Includes a 2-second timeout to prevent hanging requests.
- * 
+ *
  * Time Complexity: O(1) - single API call
  * Space Complexity: O(1)
- * 
+ *
  * @returns Promise resolving to a Todo object
  * @throws Error if API response is not ok or request times out
- * 
+ *
  * @example
  * const todo = await callExternalAPI();
  * console.log(todo.title); // "delectus aut autem"
@@ -123,20 +124,30 @@ const HEAVY_WORKER_URL = new URL("./worker/worker.ts", import.meta.url);
 const WORKER_TIMEOUT_MS = 2000;
 
 /**
- * Spawns a worker thread to execute CPU-intensive tasks off the main thread.
+ * Spawns a worker thread to execute Bun.Image work off the main thread.
  * The worker is terminated after completion or timeout.
- * 
- * Time Complexity: O(1) for spawning, depends on worker execution
+ *
+ * Time Complexity: O(1) for spawning, depends on image size and encoding format
  * Space Complexity: O(1) + worker memory
- * 
- * @returns Promise resolving to the numeric result from the worker
+ *
+ * @returns Promise resolving to the processed image summary from the worker
  * @throws Error if worker times out (>2000ms) or encounters an error
- * 
+ *
  * @example
- * const result = await runWorker(); // Offloads heavy computation
+ * const result = await runWorker(); // Offloads thumbnail generation
  */
-function runWorker(): Promise<number> {
-	return new Promise<number>((resolve, reject) => {
+type ImageWorkerMessage =
+	| {
+			ok: true;
+			result: BunImageProcessingResult;
+	  }
+	| {
+			error: string;
+			ok: false;
+	  };
+
+function runWorker(): Promise<BunImageProcessingResult> {
+	return new Promise<BunImageProcessingResult>((resolve, reject) => {
 		const worker = new Worker(HEAVY_WORKER_URL, { type: "module" });
 		let settled = false;
 
@@ -158,8 +169,13 @@ function runWorker(): Promise<number> {
 			settle(reject, new Error("Worker timed out"));
 		}, WORKER_TIMEOUT_MS);
 
-		worker.onmessage = (event: MessageEvent<number>) => {
-			settle(resolve, event.data);
+		worker.onmessage = (event: MessageEvent<ImageWorkerMessage>) => {
+			if (event.data.ok) {
+				settle(resolve, event.data.result);
+				return;
+			}
+
+			settle(reject, new Error(event.data.error));
 		};
 
 		worker.onerror = (error) => {
@@ -167,7 +183,11 @@ function runWorker(): Promise<number> {
 		};
 
 		try {
-			worker.postMessage({ task: "compute" });
+			worker.postMessage({
+				targetHeight: 90,
+				targetWidth: 160,
+				task: "image-thumbnail",
+			});
 		} catch (error) {
 			settle(reject, error instanceof Error ? error : new Error(String(error)));
 		}
@@ -189,7 +209,8 @@ export const server = Bun.serve({
 		return new Response("Internal Server Error", { status: 500 });
 	},
 	idleTimeout: 10,
-	port: Number(Bun.env.PORT ?? (isTest ? 0 : 3000)),
+	// biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket access for Bun.env.
+	port: Number(Bun.env["PORT"] ?? (isTest ? 0 : 3000)),
 	routes: {
 		"/": new Response("Welcome to Bun!"),
 
@@ -331,13 +352,13 @@ export async function stopServer(force = true): Promise<void> {
 /**
  * Handles graceful shutdown of the server in response to system signals.
  * Logs the signal received, stops the server, and exits the process.
- * 
+ *
  * Time Complexity: O(1) for signaling
  * Space Complexity: O(1)
- * 
+ *
  * @param signal - The shutdown signal received (e.g., 'SIGTERM', 'SIGINT')
  * @returns Promise that resolves before process exit
- * 
+ *
  * @example
  * await shutdown('SIGTERM'); // Graceful shutdown triggered
  */

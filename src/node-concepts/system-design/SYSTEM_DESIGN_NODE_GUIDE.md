@@ -11,6 +11,8 @@ This folder contains small executable versions of common system design component
 | `id-generation.ts` | Bun UUID v7, Base62, and Snowflake-style IDs | URL shorteners, sortable distributed IDs, clock rollback |
 | `consistent-hash.ts` | Consistent hashing with virtual nodes | Sharding, cache rings, partial rebalancing |
 | `bloom-filter.ts` | Bloom filter | Negative cache, memory/probability trade-offs |
+| `weighted-fair-queue.ts` | Weighted fair queuing | Multi-tenant fairness, noisy-neighbor control, work cost |
+| `idempotency-store.ts` | Idempotency-key state machine | Retry-safe writes, duplicate suppression, TTL trade-offs |
 
 ## Advanced Problem Set
 
@@ -24,6 +26,10 @@ Use these prompts after you can explain the basic implementation.
 | Design a feed fan-out service | pub/sub, queues, cache | Handle celebrity users and retry storms. |
 | Design an object metadata service | Bloom filter, cache, SQL | Avoid database hits for missing objects. |
 | Design a globally unique ID service | Snowflake-style IDs | Handle worker assignment and clock rollback. |
+| Design a multi-tenant job scheduler | Weighted fair queue | Prevent noisy neighbors without starving low-volume tenants. |
+| Design a payment or checkout API | Idempotency key store | Replay completed writes and handle stuck in-flight attempts. |
+| Design an AI inference gateway | Rate limiter, weighted queue, idempotency | Separate admission control, fair scheduling, and duplicate request handling. |
+| Design a webhook delivery service | Idempotency, queues, circuit breaker | Retry safely, dedupe provider events, and isolate bad receivers. |
 
 ## Bun Runtime Tie-In
 
@@ -281,3 +287,66 @@ Production notes:
 - Version filters during deploys so old and new processes agree.
 - Monitor false-positive rate; it rises as the filter becomes overfilled.
 - Never use it as an authorization check because "might contain" is not proof.
+
+## Weighted Fair Queue
+
+File: `weighted-fair-queue.ts`  
+Class: `WeightedFairQueue`
+
+Use case:
+
+- Multi-tenant job execution
+- Shared AI inference workers
+- Webhook delivery across customers
+- Background task queues where work has different cost
+
+Beginner explanation:
+
+Priority queues can starve low-priority users. Plain FIFO lets one tenant flood the queue. Weighted fair queuing gives each tenant a proportional share by assigning every item a virtual finish time. Higher-weight tenants move through virtual time more slowly, so they receive more service over time without making other tenants disappear.
+
+Step-by-step:
+
+1. Assign each tenant a weight.
+2. Estimate each work item's cost.
+3. Compute `virtualFinish = max(currentVirtualTime, tenantLastFinish) + cost / weight`.
+4. Dequeue the item with the lowest virtual finish time.
+5. Advance virtual time to the dequeued item's finish time.
+
+Production notes:
+
+- Use measured cost when possible: tokens, bytes, CPU milliseconds, rows scanned, or downstream calls.
+- Store queued work durably when losing jobs is unacceptable.
+- Pair fairness with admission control; a fair queue does not protect memory by itself.
+- Track per-tenant queued items, wait time, service time, rejects, and effective share.
+
+## Idempotency Key Store
+
+File: `idempotency-store.ts`  
+Class: `IdempotencyKeyStore`
+
+Use case:
+
+- Payment and checkout APIs
+- Order creation
+- Webhook processing
+- Any write that clients may retry after a timeout
+
+Beginner explanation:
+
+An idempotency key lets the server tell "this retry is the same write attempt." The first request claims the key and performs the write. A concurrent duplicate gets a conflict/retry response. After the write completes, later duplicates receive the same response instead of creating a second order or charge.
+
+Step-by-step:
+
+1. Client sends a stable idempotency key with the write request.
+2. Server atomically claims the key before doing side effects.
+3. Concurrent duplicates are rejected or told to retry later.
+4. On success, store the response for a replay TTL.
+5. On failure, release the in-flight key when retrying is safe.
+
+Production notes:
+
+- Use Redis `SET NX PX`, SQL unique constraints, or another atomic store; process memory is only a teaching model.
+- Scope keys by user, tenant, endpoint, and request shape so unrelated writes cannot collide.
+- Store a request hash with the key to reject mismatched retries.
+- Tune in-flight TTL and replay TTL separately.
+- Log claim, conflict, replay, completion, expiration, and mismatch counts.

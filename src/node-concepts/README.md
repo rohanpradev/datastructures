@@ -13,8 +13,8 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 | Circuit breaker | `async/circuit-breaker.ts` | Prevents cascading failure when dependencies are slow or down |
 | Timeout, retry, abort | `async/resilience.ts` | Builds safe dependency calls with cancellation and retry boundaries |
 | WebSocket pub/sub | `async/pub-sub.ts` | Teaches real-time fanout, channel subscription, and in-memory limits |
-| Bun server and workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from CPU-heavy work |
-| Bun runtime APIs | `bun-runtime/` | Covers file I/O, globbing, password hashing, cookies, and Bun Shell |
+| Bun server and image workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from native image processing work |
+| Bun runtime APIs | `bun-runtime/` | Covers file I/O, image processing, globbing, subprocesses, password hashing, cookies, and Bun Shell |
 | Bun SQLite | `bun-runtime/sqlite.ts` | Uses in-memory SQL, strict parameters, and transactions without an external service |
 | Rate limiters | `system-design/rate-limiter.ts` | Models token bucket and sliding window throttling |
 | LRU cache | `system-design/lru-cache.ts` | Models hot-data caching and eviction |
@@ -50,11 +50,13 @@ The `bun-runtime/` folder follows the current Bun docs for:
 
 - `Bun.file()` and `Bun.write()` for optimized file I/O.
 - `Bun.Glob` for native glob scanning and matching.
+- `Bun.Image` for metadata reads, resize operations, and WebP thumbnail encoding.
 - `Bun.password` for salted password hashing and verification.
 - `Bun.CryptoHasher` for cryptographic content hashes.
 - `Bun.hash` for fast non-security fingerprints.
 - `Bun.Cookie` and `Bun.CookieMap` for cookie creation and parsing.
 - Bun Shell (`$`) for cross-platform scripting with escaped interpolation.
+- `Bun.spawn()` and `Bun.spawnSync()` for direct subprocess control, stream handling, scoped environment variables, exit codes, and resource usage.
 - `bun:sqlite` for local SQL with in-memory databases, prepared statements, strict named parameters, and transactions.
 - `Bun.env`, `Bun.sleep()`, and `Bun.randomUUIDv7()` where the Bun runtime has a direct built-in primitive.
 
@@ -81,6 +83,8 @@ Use this checklist for every backend example and test:
 - Use `Bun.password` for passwords, `Bun.CryptoHasher` for integrity, and `Bun.hash` only for non-security fingerprints.
 - `Bun.file()` is lazy. Reading starts when you call a method like `.text()` or `.json()`.
 - `Bun.write()` can copy a `BunFile` directly, which keeps file-copying code simple.
+- `Bun.Image` can replace mock CPU loops in server examples with real thumbnail and format-conversion workloads.
+- `Bun.spawn()` is better than shell strings when you need direct command arrays, explicit pipes, cancellation, and exit/resource details.
 - `bun:sqlite` is a strong fit for local-first tooling, coding trackers, and tests that need SQL behavior without Postgres/MySQL in CI.
 
 ## Full Verification

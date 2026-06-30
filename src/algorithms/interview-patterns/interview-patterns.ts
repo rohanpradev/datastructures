@@ -94,6 +94,69 @@ export function maxProfit(prices: number[]): number {
 }
 
 /**
+ * Returns the longest run of consecutive integers.
+ *
+ * Pattern: hash set
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function longestConsecutiveRun(nums: number[]): number {
+	const values = new Set(nums);
+	let best = 0;
+
+	for (const num of values) {
+		if (values.has(num - 1)) continue;
+
+		let current = num;
+		let length = 1;
+
+		while (values.has(current + 1)) {
+			current++;
+			length++;
+		}
+
+		best = Math.max(best, length);
+	}
+
+	return best;
+}
+
+/**
+ * Returns the k most frequent numbers in any order.
+ *
+ * Pattern: frequency map + bucket sort
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function topKFrequentElements(nums: number[], k: number): number[] {
+	if (k <= 0 || nums.length === 0) return [];
+
+	const counts = new Map<number, number>();
+	for (const num of nums) {
+		counts.set(num, (counts.get(num) ?? 0) + 1);
+	}
+
+	const buckets = Array.from({ length: nums.length + 1 }, () => [] as number[]);
+	for (const [num, count] of counts) {
+		buckets[count]!.push(num);
+	}
+
+	const result: number[] = [];
+	for (
+		let count = buckets.length - 1;
+		count >= 0 && result.length < k;
+		count--
+	) {
+		for (const num of buckets[count]!) {
+			result.push(num);
+			if (result.length === k) break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Returns all unique triplets that sum to zero.
  *
  * Pattern: sorting + two pointers
@@ -129,6 +192,33 @@ export function threeSum(nums: number[]): number[][] {
 	}
 
 	return result;
+}
+
+/**
+ * Returns the largest area formed by two vertical lines.
+ *
+ * Pattern: two pointers
+ * Time Complexity: O(n)
+ * Space Complexity: O(1)
+ */
+export function containerWithMostWater(heights: number[]): number {
+	let left = 0;
+	let right = heights.length - 1;
+	let best = 0;
+
+	while (left < right) {
+		const width = right - left;
+		const height = Math.min(heights[left]!, heights[right]!);
+		best = Math.max(best, width * height);
+
+		if (heights[left]! < heights[right]!) {
+			left++;
+		} else {
+			right--;
+		}
+	}
+
+	return best;
 }
 
 /**
@@ -296,6 +386,88 @@ export function slidingWindowMaximum(nums: number[], k: number): number[] {
 }
 
 /**
+ * Checks whether brackets close in the correct order.
+ *
+ * Pattern: stack
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function validParentheses(input: string): boolean {
+	const stack: string[] = [];
+	const closingToOpening = new Map<string, string>([
+		[")", "("],
+		["]", "["],
+		["}", "{"],
+	]);
+
+	for (const char of input) {
+		if (char === "(" || char === "[" || char === "{") {
+			stack.push(char);
+		} else if (closingToOpening.has(char)) {
+			if (stack.pop() !== closingToOpening.get(char)) return false;
+		}
+	}
+
+	return stack.length === 0;
+}
+
+/**
+ * Returns how many days until a warmer temperature for each day.
+ *
+ * Pattern: monotonic stack
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function dailyTemperatures(temperatures: number[]): number[] {
+	const waits = new Array<number>(temperatures.length).fill(0);
+	const stack: number[] = [];
+
+	for (let day = 0; day < temperatures.length; day++) {
+		while (
+			stack.length > 0 &&
+			temperatures[stack[stack.length - 1]!]! < temperatures[day]!
+		) {
+			const previousDay = stack.pop()!;
+			waits[previousDay] = day - previousDay;
+		}
+
+		stack.push(day);
+	}
+
+	return waits;
+}
+
+/**
+ * Computes the largest rectangle area in a histogram.
+ *
+ * Pattern: monotonic stack
+ * Time Complexity: O(n)
+ * Space Complexity: O(n)
+ */
+export function largestRectangleArea(heights: number[]): number {
+	const stack: number[] = [];
+	let best = 0;
+
+	for (let index = 0; index <= heights.length; index++) {
+		const currentHeight = index === heights.length ? 0 : heights[index]!;
+
+		while (
+			stack.length > 0 &&
+			heights[stack[stack.length - 1]!]! > currentHeight
+		) {
+			const height = heights[stack.pop()!]!;
+			const leftBoundary = stack[stack.length - 1] ?? -1;
+			const width = index - leftBoundary - 1;
+			best = Math.max(best, height * width);
+		}
+
+		stack.push(index);
+	}
+
+	return best;
+}
+
+/**
  * Finds the minimum eating speed to finish all piles within h hours.
  *
  * Pattern: binary search on answer
@@ -360,6 +532,61 @@ export function canAttendMeetings(intervals: Array<[number, number]>): boolean {
 	}
 
 	return true;
+}
+
+/**
+ * Merges overlapping intervals into non-overlapping ranges.
+ *
+ * Pattern: intervals
+ * Time Complexity: O(n log n)
+ * Space Complexity: O(n)
+ */
+export function mergeOverlappingIntervals(
+	intervals: Array<[number, number]>,
+): Array<[number, number]> {
+	if (intervals.length === 0) return [];
+
+	const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+	const merged: Array<[number, number]> = [];
+
+	for (const [start, end] of sorted) {
+		const previous = merged[merged.length - 1];
+
+		if (!previous || previous[1] < start) {
+			merged.push([start, end]);
+		} else {
+			previous[1] = Math.max(previous[1], end);
+		}
+	}
+
+	return merged;
+}
+
+/**
+ * Returns the minimum rooms required to host all meetings.
+ *
+ * Pattern: intervals + sweep line
+ * Time Complexity: O(n log n)
+ * Space Complexity: O(n)
+ */
+export function minMeetingRooms(intervals: Array<[number, number]>): number {
+	const events: Array<[time: number, delta: number]> = [];
+
+	for (const [start, end] of intervals) {
+		events.push([start, 1], [end, -1]);
+	}
+
+	events.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+
+	let rooms = 0;
+	let maxRooms = 0;
+
+	for (const [, delta] of events) {
+		rooms += delta;
+		maxRooms = Math.max(maxRooms, rooms);
+	}
+
+	return maxRooms;
 }
 
 /**
@@ -628,6 +855,64 @@ export function shortestPathBinaryMatrix(grid: number[][]): number {
 	}
 
 	return -1;
+}
+
+/**
+ * Returns minutes until all oranges rot, or -1 if impossible.
+ *
+ * Pattern: multi-source BFS over a matrix
+ * Time Complexity: O(rows * cols)
+ * Space Complexity: O(rows * cols)
+ */
+export function rottingOranges(grid: number[][]): number {
+	if (grid.length === 0 || grid[0]?.length === 0) return 0;
+
+	const rows = grid.length;
+	const cols = grid[0]!.length;
+	const queue: Array<[number, number, number]> = [];
+	let fresh = 0;
+
+	for (let row = 0; row < rows; row++) {
+		for (let col = 0; col < cols; col++) {
+			if (grid[row]![col] === 1) fresh++;
+			if (grid[row]![col] === 2) queue.push([row, col, 0]);
+		}
+	}
+
+	const directions: Array<[number, number]> = [
+		[1, 0],
+		[-1, 0],
+		[0, 1],
+		[0, -1],
+	];
+	let minutes = 0;
+	let head = 0;
+
+	while (head < queue.length) {
+		const [row, col, elapsed] = queue[head++]!;
+		minutes = Math.max(minutes, elapsed);
+
+		for (const [rowOffset, colOffset] of directions) {
+			const nextRow = row + rowOffset;
+			const nextCol = col + colOffset;
+
+			if (
+				nextRow < 0 ||
+				nextCol < 0 ||
+				nextRow >= rows ||
+				nextCol >= cols ||
+				grid[nextRow]![nextCol] !== 1
+			) {
+				continue;
+			}
+
+			grid[nextRow]![nextCol] = 2;
+			fresh--;
+			queue.push([nextRow, nextCol, elapsed + 1]);
+		}
+	}
+
+	return fresh === 0 ? minutes : -1;
 }
 
 /**

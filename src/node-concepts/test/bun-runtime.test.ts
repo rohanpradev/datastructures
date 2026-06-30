@@ -10,6 +10,13 @@ import {
 	summarizeFile,
 	writeJsonFile,
 } from "@/node-concepts/bun-runtime/file-system";
+import { processSampleImageWithBun } from "@/node-concepts/bun-runtime/image-processing";
+import {
+	bunVersionFromSpawn,
+	bunVersionFromSpawnSync,
+	readEnvWithSpawn,
+	uppercaseWithSpawn,
+} from "@/node-concepts/bun-runtime/process-execution";
 import {
 	contentFingerprint,
 	createSessionCookie,
@@ -85,6 +92,31 @@ describe("Bun file I/O and Glob", () => {
 	});
 });
 
+describe("Bun Image", () => {
+	test("resizes and re-encodes image bytes without external packages", async () => {
+		const result = await processSampleImageWithBun({
+			targetHeight: 80,
+			targetWidth: 120,
+		});
+
+		expect(result.source).toMatchObject({
+			format: "bmp",
+			height: 180,
+			width: 320,
+		});
+		expect(result.output.format).toBe("webp");
+		expect(result.output.mimeType).toBe("image/webp");
+		expect(result.output.bytes).toBeGreaterThan(0);
+		expect(result.output.width).toBeLessThanOrEqual(120);
+		expect(result.output.height).toBeLessThanOrEqual(80);
+		expect(result.operation).toMatchObject({
+			filter: "lanczos3",
+			fit: "inside",
+			format: "webp",
+		});
+	});
+});
+
 describe("Bun hashing, password, and cookie APIs", () => {
 	test("computes a known SHA-256 digest", () => {
 		expect(sha256Hex("hello")).toBe(
@@ -153,5 +185,53 @@ describe("Bun Shell", () => {
 		await expect(readEnvWithBunShell("bad-name", "value")).rejects.toThrow(
 			"Invalid environment variable name",
 		);
+	});
+});
+
+describe("Bun spawn", () => {
+	test("runs an async subprocess and captures stdout", async () => {
+		const result = await bunVersionFromSpawn();
+
+		expect(result.success).toBe(true);
+		expect(result.exitCode).toBe(0);
+		expect(result.stdout).toMatch(/^\d+\.\d+\.\d+/);
+		expect(result.stderr).toBe("");
+		expect(result.maxRSS).toBeGreaterThan(0);
+	});
+
+	test("passes stdin to a subprocess and reads transformed stdout", async () => {
+		const result = await uppercaseWithSpawn("hello spawn");
+
+		expect(result).toMatchObject({
+			exitCode: 0,
+			stderr: "",
+			stdout: "HELLO SPAWN",
+			success: true,
+		});
+	});
+
+	test("runs a subprocess with scoped environment variables", async () => {
+		const result = await readEnvWithSpawn(
+			"BUN_SPAWN_CONCEPT_VALUE",
+			"spawned-value",
+		);
+
+		expect(result.stdout).toBe("spawned-value");
+		expect(result.success).toBe(true);
+	});
+
+	test("rejects invalid spawn environment variable names", async () => {
+		await expect(readEnvWithSpawn("bad-name", "value")).rejects.toThrow(
+			"Invalid environment variable name",
+		);
+	});
+
+	test("runs a sync subprocess when blocking is acceptable", () => {
+		const result = bunVersionFromSpawnSync();
+
+		expect(result.success).toBe(true);
+		expect(result.exitCode).toBe(0);
+		expect(result.stdout).toMatch(/^\d+\.\d+\.\d+/);
+		expect(result.maxRSS).toBeGreaterThan(0);
 	});
 });

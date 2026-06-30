@@ -255,7 +255,7 @@ export function rotate(nums: number[], k: number): void {
 	if (n === 0) return;
 
 	// Normalize k to be within array bounds
-	const steps = k % n;
+	const steps = ((k % n) + n) % n;
 	if (steps === 0) return;
 
 	// Helper function to reverse array segment
@@ -273,10 +273,10 @@ export function rotate(nums: number[], k: number): void {
 	reverse(0, n - 1);
 
 	// Step 2: Reverse first k elements
-	reverse(0, k - 1);
+	reverse(0, steps - 1);
 
 	// Step 3: Reverse remaining n-k elements
-	reverse(k, n - 1);
+	reverse(steps, n - 1);
 }
 
 /**

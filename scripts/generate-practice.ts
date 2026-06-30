@@ -96,6 +96,8 @@ type PracticePattern =
 	| "hash map"
 	| "heap"
 	| "implementation"
+	| "intervals"
+	| "monotonic stack"
 	| "recursion"
 	| "sorting"
 	| "stack"
@@ -1857,21 +1859,26 @@ function inferPattern(
 ): PracticePattern {
 	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
 	const rules: Array<[RegExp, PracticePattern]> = [
-		[/twopointers|threenumber|smallestdifference|squared|palindrome/, "two pointers"],
+		[/dailytemperatures|largestrectangle|monotonicstack|nextgreater/, "monotonic stack"],
+		[/meeting|interval|overlap|mergeinterval|sweepline/, "intervals"],
+		[
+			/twopointers|threenumber|smallestdifference|squared|palindrome|container|water/,
+			"two pointers",
+		],
 		[/sliding|substring|window/, "sliding window"],
 		[/prefix|zerosum|subarray|subarraysum/, "prefix sum"],
 		[
 			/binarytree|binarysearchtree|treenode|bst|trie|depth|ancestor|invert|symmetric|pathsum|successor/,
 			"tree",
 		],
-		[/graph|island|river|path|course|topological/, "graph"],
+		[/graph|island|river|path|course|topological|rottingoranges/, "graph"],
 		[/heap|topk|median|kthlargestelement|mergeksorted/, "heap"],
 		[/binarysearch(?!tree)|lowerbound|rotatedsorted|sortedmatrix|koko/, "binary search"],
-		[/stack|parentheses|nextgreater|monotonic/, "stack"],
+		[/stack|parentheses/, "stack"],
 		[/dynamic|ways|knapsack|coin|editdistance/, "dynamic programming"],
 		[/backtracking|permutation|combination|subset|nqueen/, "backtracking"],
 		[/recursion|fibonacci|staircase|minesweeper|productsum/, "recursion"],
-		[/sort|interval|merge/, "sorting"],
+		[/sort|merge/, "sorting"],
 		[/hash|map|set|duplicate|majority/, "hash map"],
 		[/promise|async|concurrency|retry|timeout|circuit|pubsub/, "async backend"],
 		[/file|glob|shell|sqlite|cookie|password|hashing/, "bun runtime"],
@@ -2238,6 +2245,14 @@ function inferLearningObjectives(target: PracticeTarget): string[] {
 		implementation: [
 			"match the public API contract exactly",
 			"explain the data representation and edge cases",
+		],
+		intervals: [
+			"sort or sweep endpoints before reasoning about overlap",
+			"define whether touching endpoints count as a conflict",
+		],
+		"monotonic stack": [
+			"store unresolved indices while the stack invariant holds",
+			"pop only when the current value proves an answer for prior values",
 		],
 		recursion: [
 			"define the base case before the recursive case",

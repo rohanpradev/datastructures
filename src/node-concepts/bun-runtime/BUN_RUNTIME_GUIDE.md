@@ -8,9 +8,11 @@ Official references:
 - [Bun APIs overview](https://bun.com/docs/runtime/bun-apis)
 - [Bun file I/O](https://bun.com/docs/runtime/file-io)
 - [Bun Glob](https://bun.com/docs/runtime/glob)
+- [Bun Image](https://bun.com/docs/runtime/image)
 - [Bun hashing and passwords](https://bun.com/docs/runtime/hashing)
 - [Bun cookies](https://bun.com/docs/runtime/cookies)
 - [Bun Shell](https://bun.com/docs/runtime/shell)
+- [Bun child processes](https://bun.com/docs/runtime/child-process)
 - [Bun SQLite](https://bun.com/docs/runtime/sqlite)
 - [Bun test runner](https://bun.com/docs/test)
 - [Bun SQL](https://bun.com/docs/runtime/sql)
@@ -32,43 +34,52 @@ Official references:
 3. `Bun.Glob` helps build CLIs and tooling.
    Use it for "find all changed tests", "scan all markdown", or "copy assets" style tasks.
 
-4. `Bun.password` is for password hashing.
+4. `Bun.Image` is a native image pipeline.
+   Use it for metadata reads, thumbnail generation, resizing, and format conversion without adding `sharp` or a native addon. Await a terminal method such as `.blob()`, `.bytes()`, `.metadata()`, or `.write()` before returning from server code.
+
+5. `Bun.password` is for password hashing.
    Use it for password storage because it supports slow password-hashing algorithms. Do not use SHA-256 for passwords.
 
-5. `Bun.CryptoHasher` is for integrity.
+6. `Bun.CryptoHasher` is for integrity.
    Use it for content hashes, cache keys, checksums, or signatures where a cryptographic digest is needed.
 
-6. `Bun.hash` is for fast non-security fingerprints.
+7. `Bun.hash` is for fast non-security fingerprints.
    Use it for internal cache bucketing, dedupe hints, or sharding. Do not use it for auth.
 
-7. `Bun.Cookie` and `Bun.CookieMap` make cookie work explicit.
+8. `Bun.Cookie` and `Bun.CookieMap` make cookie work explicit.
    Prefer `HttpOnly`, `Secure`, `SameSite=Lax` or stricter, and a bounded `Max-Age` for sessions.
 
-8. Bun Shell is useful for scripts.
+9. Bun Shell is useful for scripts.
    Its template interpolation escapes strings by default, so user input is not treated as shell syntax.
 
-9. `bun:sqlite` is useful for local durable state and tests.
-   Use prepared statements for repeated queries, strict named parameters to catch binding mistakes, transactions for batch writes, and `.finalize()` for short-lived statements in hot paths.
+10. `Bun.spawn()` is for direct subprocess control.
+    Use it when you want a command array, explicit stdin/stdout/stderr handling, `exited`, `kill()`, `unref()`, `resourceUsage()`, timeouts, AbortSignal cancellation, or no shell parsing. Use `Bun.spawnSync()` only when blocking the current isolate is acceptable.
 
-10. `bunfig.toml` should hold project-level test behavior.
+11. `bun:sqlite` is useful for local durable state and tests.
+    Use prepared statements for repeated queries, strict named parameters to catch binding mistakes, transactions for batch writes, and `.finalize()` for short-lived statements in hot paths.
+
+12. `bunfig.toml` should hold project-level test behavior.
     This repo uses it for test preloading and coverage reporters so individual package scripts stay short.
 
-11. `Bun.SQL` is Bun's native Promise-based SQL client.
+13. `Bun.SQL` is Bun's native Promise-based SQL client.
     The current docs describe a unified tagged-template API for PostgreSQL, MySQL, and SQLite with pooling, transactions, prepared statements, TLS, and environment-based configuration. Use it for production database discussion; keep `bun:sqlite` for CI-safe local examples.
 
-12. `Bun.redis` and `RedisClient` are Bun's native Redis APIs.
+14. `Bun.redis` and `RedisClient` are Bun's native Redis APIs.
     Use them in system-design answers for distributed rate limits, counters, shared cache, sessions, pub/sub, locks, and queue-adjacent coordination. Do not hide the production trade-offs: Redis availability, eviction policy, key design, and multi-region consistency still matter.
 
-13. Bun executes TypeScript directly, but the repo still runs `bun run typecheck`.
+15. Bun executes TypeScript directly, but the repo still runs `bun run typecheck`.
     Treat runtime execution and static type checking as separate quality gates.
 
-14. Prefer Bun-native APIs when they express the same intent clearly.
+16. Prefer Bun-native APIs when they express the same intent clearly.
     Use `Bun.env` for runtime environment reads, `Bun.sleep()` for simple delays, and `Bun.randomUUIDv7()` when sortable UUIDs are a better fit than a custom ID generator.
 
-15. Keep supply-chain controls visible.
+17. Keep TypeScript runtime and static semantics aligned.
+    The current Bun TypeScript docs recommend `moduleResolution: "bundler"`, `module: "Preserve"`, `verbatimModuleSyntax`, `types: ["bun"]`, and strict checking. This repo enables the strict flags that are currently clean and keeps `noUncheckedIndexedAccess` as an explicit backlog for algorithm-heavy files.
+
+18. Keep supply-chain controls visible.
     This repo uses `install.minimumReleaseAge` in `bunfig.toml`, which Bun documents as a filter against very recently published package versions. The docs also expose a security scanner hook for deeper install-time checks.
 
-16. Keep coverage behavior centralized.
+19. Keep coverage behavior centralized.
     This repo uses Bun's coverage reporters, `coverageSkipTestFiles`, and `coveragePathIgnorePatterns` in `bunfig.toml` so generated practice files do not distort the course signal.
 
 ## Step-By-Step Problem Approach
@@ -96,6 +107,21 @@ Problem: "Find every TypeScript file under a folder."
 
 Reference code: [file-system.ts](./file-system.ts)
 
+### Image Processing
+
+Problem: "Generate a thumbnail for an uploaded avatar without adding an image-processing package."
+
+1. Validate the source before touching the filesystem or accepting untrusted paths.
+2. Create the image with `new Bun.Image(input, { maxPixels })` or `Bun.file(path).image()`.
+3. Read metadata when you need width, height, or format without decoding the full pixel buffer.
+4. Chain transforms such as `.resize(width, height, { fit: "inside" })`.
+5. Pick an output format such as `.webp({ quality: 82 })`.
+6. Await a terminal method such as `.blob()`, `.bytes()`, or `.write()` so the native pipeline runs before the response is built.
+7. Offload request-sized image work to a worker when you want the main server isolate to stay focused on I/O.
+
+Reference code: [image-processing.ts](./image-processing.ts)
+Server route: [server.ts](../server.ts) exposes the worker-backed `/heavy-task` example.
+
 ### Login And Sessions
 
 Problem: "Store a password and issue a session cookie."
@@ -118,6 +144,21 @@ Problem: "Write a script that calls a CLI with user-provided input."
 4. Validate dynamic environment variable names before using them.
 
 Reference code: [shell.ts](./shell.ts)
+
+### Direct Process Execution
+
+Problem: "Run a trusted executable, feed it input, capture output, and fail cleanly."
+
+1. Prefer a command array: `Bun.spawn(["bun", "--version"])`.
+2. Set `stdout: "pipe"` and `stderr: "pipe"` when the parent process must inspect output.
+3. Pass structured input through `stdin` as a `Blob`, stream, typed array, file, or `"pipe"` sink instead of building shell strings.
+4. Await `proc.exited` and read output before returning a result.
+5. Check `exitCode` and `success`; include `stderr` in failure diagnostics.
+6. Use `resourceUsage()` after async subprocess exit when memory or CPU cost matters.
+7. Use `timeout`, `killSignal`, or AbortSignal for bounded process lifetimes.
+8. Reserve `Bun.spawnSync()` for short startup checks, local CLIs, or test helpers where blocking is acceptable.
+
+Reference code: [process-execution.ts](./process-execution.ts)
 
 ### Local SQL State
 
@@ -203,6 +244,8 @@ Interview follow-ups:
 
 - `Bun.sql` is useful when you need a built-in, Promise-based SQL client with pooling and tagged template literals.
 - `Bun.redis` is useful when a design needs distributed cache, pub/sub, counters, rate limiting, or session storage.
+- `Bun.Image` is useful when an app needs thumbnails, avatars, previews, placeholders, or format conversion without pulling in a native image package.
+- `Bun.spawn` is useful for direct subprocess control. Use Bun Shell for shell-style scripts; use `Bun.spawn` when command boundaries, streams, exit codes, and cancellation matter.
 - The code in this repo keeps Redis and SQL as documentation topics because CI should not depend on external services.
 - For an interview, explain the boundary: in-memory examples are fine for one process; Redis/Postgres are needed when the design spans multiple processes or machines.
 - Bun Shell is safer than string-concatenated shell commands because interpolated values are treated as literal arguments, but you still need validation for command choice, file paths, environment names, and permissions.
@@ -212,6 +255,8 @@ Interview follow-ups:
 
 ```bash
 bun test src/node-concepts/test/bun-runtime.test.ts
+# server route and worker-backed image processing
+bun test src/node-concepts/test/blocking-delay.test.ts
 bun test src/node-concepts/test/sqlite.test.ts
 bun run test:coverage
 ```

@@ -93,7 +93,7 @@ Focus on mixed problem solving and runtime behavior.
 Focus on senior/staff interview material.
 
 1. System-design primitives: rate limiter, LRU cache, ID generation, consistent
-   hashing, Bloom filters.
+   hashing, Bloom filters, weighted fair queues, and idempotency keys.
 2. Enterprise requirements: SLOs, SLIs, capacity estimates, data ownership,
    multi-tenant isolation, abuse prevention, privacy, and cost controls.
 3. Observability: traces for request paths, metrics for health and saturation,

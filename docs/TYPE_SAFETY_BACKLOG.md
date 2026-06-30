@@ -8,7 +8,7 @@ needs a careful pass to avoid noisy non-null assertions.
 Audit command used:
 
 ```bash
-bun ./node_modules/@typescript/native-preview/bin/tsgo.js --noEmit --noUncheckedIndexedAccess true
+tsgo --noEmit --noUncheckedIndexedAccess true
 ```
 
 ## Upgrade Plan
@@ -28,4 +28,3 @@ bun ./node_modules/@typescript/native-preview/bin/tsgo.js --noEmit --noUnchecked
 - `src/algorithms/dynamic-programming`: DP table initialization and indexing.
 - `src/data-structures/graph`: adjacency and grid traversal helpers.
 - `scripts/generate-practice.ts`: parser helpers with inferred arrays.
-

@@ -5,26 +5,35 @@ import {
 	canFinishCourses,
 	coinChange,
 	combinationSum,
+	containerWithMostWater,
 	countComponents,
+	dailyTemperatures,
 	eraseOverlapIntervals,
 	isBipartite,
 	kokoEatingBananas,
+	largestRectangleArea,
 	lengthOfLongestSubstring,
 	lowerBound,
+	longestConsecutiveRun,
 	longestIncreasingSubsequence,
 	maxProfit,
+	mergeOverlappingIntervals,
+	minMeetingRooms,
 	minWindowSubstring,
 	numIslands,
 	permutations,
 	productExceptSelf,
+	rottingOranges,
 	searchRotatedSortedArray,
 	shortestPathBinaryMatrix,
 	slidingWindowMaximum,
 	subarraySumEqualsK,
 	subsets,
 	threeSum,
+	topKFrequentElements,
 	trapRainWater,
 	UnionFind,
+	validParentheses,
 	wordBreak,
 } from "@/algorithms/interview-patterns/interview-patterns";
 
@@ -69,6 +78,30 @@ describe("maxProfit", () => {
 	});
 });
 
+describe("longestConsecutiveRun", () => {
+	test("finds the longest run without sorting", () => {
+		expect(longestConsecutiveRun([100, 4, 200, 1, 3, 2])).toBe(4);
+		expect(longestConsecutiveRun([0, -1, 1, 2, 2])).toBe(4);
+	});
+
+	test("handles empty input", () => {
+		expect(longestConsecutiveRun([])).toBe(0);
+	});
+});
+
+describe("topKFrequentElements", () => {
+	test("returns the most frequent values", () => {
+		expect(topKFrequentElements([1, 1, 1, 2, 2, 3], 2).sort()).toEqual([
+			1, 2,
+		]);
+		expect(topKFrequentElements([4, 4, 4, 6, 6, 7], 1)).toEqual([4]);
+	});
+
+	test("handles invalid k", () => {
+		expect(topKFrequentElements([1, 2], 0)).toEqual([]);
+	});
+});
+
 describe("threeSum", () => {
 	test("returns unique triplets that sum to zero", () => {
 		const result = threeSum([-1, 0, 1, 2, -1, -4])
@@ -80,6 +113,13 @@ describe("threeSum", () => {
 
 	test("returns empty array when no triplet exists", () => {
 		expect(threeSum([1, 2, 3])).toEqual([]);
+	});
+});
+
+describe("containerWithMostWater", () => {
+	test("finds the maximum area", () => {
+		expect(containerWithMostWater([1, 8, 6, 2, 5, 4, 8, 3, 7])).toBe(49);
+		expect(containerWithMostWater([1, 1])).toBe(1);
 	});
 });
 
@@ -132,6 +172,42 @@ describe("slidingWindowMaximum", () => {
 	});
 });
 
+describe("validParentheses", () => {
+	test("accepts balanced bracket strings", () => {
+		expect(validParentheses("()[]{}")).toBe(true);
+		expect(validParentheses("{[()]}")).toBe(true);
+	});
+
+	test("rejects crossing or unfinished brackets", () => {
+		expect(validParentheses("(]")).toBe(false);
+		expect(validParentheses("([)]")).toBe(false);
+		expect(validParentheses("(")).toBe(false);
+	});
+});
+
+describe("dailyTemperatures", () => {
+	test("returns waits for the next warmer day", () => {
+		expect(dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73])).toEqual([
+			1, 1, 4, 2, 1, 1, 0, 0,
+		]);
+	});
+
+	test("returns zero where no warmer day exists", () => {
+		expect(dailyTemperatures([80, 79, 78])).toEqual([0, 0, 0]);
+	});
+});
+
+describe("largestRectangleArea", () => {
+	test("computes the best histogram rectangle", () => {
+		expect(largestRectangleArea([2, 1, 5, 6, 2, 3])).toBe(10);
+		expect(largestRectangleArea([2, 4])).toBe(4);
+	});
+
+	test("handles empty histograms", () => {
+		expect(largestRectangleArea([])).toBe(0);
+	});
+});
+
 describe("kokoEatingBananas", () => {
 	test("finds the minimum feasible speed", () => {
 		expect(kokoEatingBananas([3, 6, 7, 11], 8)).toBe(4);
@@ -160,6 +236,43 @@ describe("interval patterns", () => {
 				[5, 10],
 			]),
 		).toBe(false);
+	});
+
+	test("merges overlapping intervals", () => {
+		expect(
+			mergeOverlappingIntervals([
+				[1, 3],
+				[2, 6],
+				[8, 10],
+				[15, 18],
+			]),
+		).toEqual([
+			[1, 6],
+			[8, 10],
+			[15, 18],
+		]);
+		expect(
+			mergeOverlappingIntervals([
+				[1, 4],
+				[4, 5],
+			]),
+		).toEqual([[1, 5]]);
+	});
+
+	test("counts required meeting rooms", () => {
+		expect(
+			minMeetingRooms([
+				[0, 30],
+				[5, 10],
+				[15, 20],
+			]),
+		).toBe(2);
+		expect(
+			minMeetingRooms([
+				[7, 10],
+				[2, 4],
+			]),
+		).toBe(1);
 	});
 
 	test("removes the fewest overlapping intervals", () => {
@@ -201,6 +314,32 @@ describe("backtracking patterns", () => {
 			.sort();
 
 		expect(result).toEqual(["1,2,3", "1,3,2", "2,1,3", "2,3,1", "3,1,2", "3,2,1"]);
+	});
+});
+
+describe("rottingOranges", () => {
+	test("returns minutes for multi-source BFS spread", () => {
+		expect(
+			rottingOranges([
+				[2, 1, 1],
+				[1, 1, 0],
+				[0, 1, 1],
+			]),
+		).toBe(4);
+	});
+
+	test("returns -1 when fresh oranges are isolated", () => {
+		expect(
+			rottingOranges([
+				[2, 1, 1],
+				[0, 1, 1],
+				[1, 0, 1],
+			]),
+		).toBe(-1);
+	});
+
+	test("handles no fresh oranges", () => {
+		expect(rottingOranges([[0, 2]])).toBe(0);
 	});
 });
 

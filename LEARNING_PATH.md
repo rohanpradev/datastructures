@@ -107,6 +107,10 @@ runner. Use that directly in this repo:
 - Use `bun test --coverage` through `bun run test:coverage`.
 - Prefer `Bun.file()` and `Bun.write()` for optimized file reads/writes.
 - Use `bunfig.toml` for shared test preload, coverage, and install behavior.
+- Keep Bun execution and static checking separate: Bun can run TypeScript
+  directly, while `bun run typecheck` verifies the repo with `tsgo`.
+- Treat `types: ["bun"]`, `moduleResolution: "bundler"`,
+  `module: "Preserve"`, and `verbatimModuleSyntax` as the project baseline.
 
 ## Practice Metadata
 
@@ -149,6 +153,6 @@ Rate each attempt from 0 to 5:
 - [Bun documentation](https://bun.com/docs)
 - [Bun file I/O](https://bun.com/docs/runtime/file-io)
 - [Bun test runner](https://bun.com/docs/test)
-- [Bun TypeScript](https://bun.com/docs/typescript)
+- [Bun TypeScript](https://bun.com/docs/runtime/typescript)
 - [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
 - [NeetCode roadmap](https://neetcode.io/roadmap)

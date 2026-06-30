@@ -81,7 +81,7 @@ The repo already includes broad DS&A coverage, so new work should fill gaps inst
 
 - Data structures: linked lists, stack, queue, hash table, heap, trie, graph, binary tree, BST, plus LeetCode-style problem guides.
 - Algorithms: arrays, strings, sorting, recursion, backtracking, dynamic programming, bit manipulation, math/geometry, and interview patterns.
-- Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Shell, Bun security, SQLite, and system design blocks.
+- Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Image processing, Bun process execution, Bun Shell, Bun security, SQLite, and system design blocks.
 - Verification: Bun tests across each topic, TypeScript checking via `tsgo`, Biome lint/format checks, generated practice validation, and GitHub CI.
 
 ## Advanced Topics To Master
@@ -95,8 +95,11 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 | Rate limiting | `src/node-concepts/system-design/rate-limiter.ts` | Token bucket vs sliding window, Redis atomicity, fairness vs burst tolerance. |
 | Cache eviction | `src/node-concepts/system-design/lru-cache.ts` | LRU internals, TTL, stale data, cache-aside vs write-through. |
 | ID generation | `src/node-concepts/system-design/id-generation.ts` | Base62 public IDs, Snowflake-style IDs, clock rollback, collision risks. |
+| Fair scheduling | `src/node-concepts/system-design/weighted-fair-queue.ts` | Noisy-neighbor control, multi-tenant work queues, cost-aware scheduling. |
+| Idempotency | `src/node-concepts/system-design/idempotency-store.ts` | Retry-safe writes, duplicate suppression, TTLs, request hashing. |
+| TypeScript API design | `src/typescript-concepts/advanced-types.ts` | Branded IDs, `NoInfer`, template literal routes, exhaustive unions, typed events. |
 | Async resilience | `src/node-concepts/async` | Retries, timeout budgets, backpressure, circuit breakers, pub/sub fan-out. |
-| Bun-native backend work | `src/node-concepts/bun-runtime` | File I/O, Shell, password hashing, cookies, SQLite, SQL/Redis boundaries. |
+| Bun-native backend work | `src/node-concepts/bun-runtime` | File I/O, image processing, subprocesses, Shell, password hashing, cookies, SQLite, SQL/Redis boundaries. |
 
 ## Why This Exists
 
@@ -117,8 +120,12 @@ Research references:
 - [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
 - [Node.js releases](https://nodejs.org/en/about/previous-releases)
 - [Bun documentation](https://bun.com/docs)
+- [Bun Image docs](https://bun.com/docs/runtime/image)
+- [Bun child process docs](https://bun.com/docs/runtime/child-process)
+- [Bun TypeScript docs](https://bun.com/docs/runtime/typescript)
 - [TC39 proposals](https://github.com/tc39/proposals)
 - [TypeScript 7 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/)
+- [TypeScript native preview package](https://www.npmjs.com/package/@typescript/native-preview)
 - [TypeScript Handbook: Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [TypeScript 4.9: `satisfies`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
 - [TypeScript 5.0: decorators and const type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html)
@@ -521,6 +528,8 @@ Interview topics covered:
 - Retry logic
 - Pub/Sub
 - Bun server and worker offloading
+- Bun Image thumbnailing with worker offloading
+- Bun process execution with `Bun.spawn()` and `Bun.spawnSync()`
 - Bun file I/O with `Bun.file()` and `Bun.write()`
 - Bun glob scanning with `Bun.Glob`
 - Bun password hashing, cookies, and Shell scripting
@@ -530,6 +539,8 @@ Interview topics covered:
 - LRU cache
 - Base62 URL-shortener IDs
 - Snowflake-style distributed IDs
+- Weighted fair queue for multi-tenant scheduling
+- Idempotency-key store for retry-safe writes
 
 ## Practice Workflow
 
