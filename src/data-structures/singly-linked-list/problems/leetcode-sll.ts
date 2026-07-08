@@ -648,22 +648,23 @@ type OrderedListValue = number | string;
 /**
  * LeetCode Problem: Merge Two Sorted Lists
  *
- * Problem: Merge two sorted linked lists and return as a new sorted list.
- * The new list should be made by splicing together the nodes of the lists.
+ * Problem: Merge two sorted linked lists and return a new sorted list.
+ * This implementation copies node values into new nodes; it does not splice
+ * or mutate the input lists.
  *
  * Algorithm:
- * 1. Create dummy node to build result list
+ * 1. Create a result list
  * 2. Use two pointers to traverse both lists
- * 3. Compare values and append smaller to result
+ * 3. Compare values and append the smaller value to the result
  * 4. Handle remaining nodes from either list
  * 5. Return merged list
  *
  * Time Complexity: O(n + m) where n, m are lengths of lists
- * Space Complexity: O(1) - only creating new list structure
+ * Space Complexity: O(n + m) for the new nodes in the returned list
  *
- * @param list1 - First sorted linked list
- * @param list2 - Second sorted linked list
- * @returns New sorted linked list containing all nodes
+ * @param list1 - First sorted linked list; not mutated
+ * @param list2 - Second sorted linked list; not mutated
+ * @returns New sorted linked list containing copied values from both inputs
  *
  * @example
  * const list1 = new SinglyLinkedList<number>();

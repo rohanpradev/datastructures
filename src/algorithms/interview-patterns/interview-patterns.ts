@@ -535,6 +535,48 @@ export function canAttendMeetings(intervals: Array<[number, number]>): boolean {
 }
 
 /**
+ * Inserts one interval into sorted non-overlapping intervals and merges overlaps.
+ * Intervals are treated as closed ranges, so touching endpoints are merged.
+ * Returns new interval tuples without mutating the input interval tuples.
+ *
+ * Pattern: intervals
+ * Time Complexity: O(n)
+ * Space Complexity: O(n) for the returned intervals
+ *
+ * @param intervals - Sorted, non-overlapping intervals by start time
+ * @param newInterval - Interval to insert and merge
+ * @returns A new sorted, non-overlapping interval list
+ */
+export function insertInterval(
+	intervals: Array<[number, number]>,
+	newInterval: [number, number],
+): Array<[number, number]> {
+	const result: Array<[number, number]> = [];
+	let [mergedStart, mergedEnd] = newInterval;
+	let index = 0;
+
+	while (index < intervals.length && intervals[index]![1] < mergedStart) {
+		const [start, end] = intervals[index++]!;
+		result.push([start, end]);
+	}
+
+	while (index < intervals.length && intervals[index]![0] <= mergedEnd) {
+		const [start, end] = intervals[index++]!;
+		mergedStart = Math.min(mergedStart, start);
+		mergedEnd = Math.max(mergedEnd, end);
+	}
+
+	result.push([mergedStart, mergedEnd]);
+
+	while (index < intervals.length) {
+		const [start, end] = intervals[index++]!;
+		result.push([start, end]);
+	}
+
+	return result;
+}
+
+/**
  * Merges overlapping intervals into non-overlapping ranges.
  *
  * Pattern: intervals
@@ -1017,6 +1059,7 @@ export function wordBreak(s: string, wordDict: string[]): boolean {
  * Union-find data structure for connectivity problems.
  *
  * Pattern: disjoint set union with path compression and union by rank
+ * find/union run in amortized O(alpha(n)), effectively constant for practical inputs.
  */
 export class UnionFind {
 	private readonly parent: number[];
@@ -1069,7 +1112,7 @@ export class UnionFind {
  * Counts connected components in an undirected graph.
  *
  * Pattern: union-find
- * Time Complexity: nearly O(n + edges)
+ * Time Complexity: O((n + edges) * alpha(n))
  * Space Complexity: O(n)
  */
 export function countComponents(
@@ -1083,4 +1126,60 @@ export function countComponents(
 	}
 
 	return unionFind.count();
+}
+
+/**
+ * Merges account rows that share at least one email address.
+ * Assumes rows connected by shared email belong to the same person/name.
+ *
+ * Pattern: union-find + hash map
+ * Time Complexity: O(M * alpha(A) + U log U), where A is accounts,
+ * M is total email entries, and U is unique emails
+ * Space Complexity: O(A + U)
+ *
+ * @param accounts - Rows shaped as [name, ...emails]
+ * @returns Merged account rows with emails sorted within each row
+ */
+export function accountsMerge(accounts: string[][]): string[][] {
+	const unionFind = new UnionFind(accounts.length);
+	const emailToAccount = new Map<string, number>();
+	const emailLessAccounts: string[][] = [];
+
+	for (let accountIndex = 0; accountIndex < accounts.length; accountIndex++) {
+		const account = accounts[accountIndex]!;
+		if (account.length === 1) {
+			emailLessAccounts.push([account[0]!]);
+			continue;
+		}
+
+		for (let emailIndex = 1; emailIndex < account.length; emailIndex++) {
+			const email = account[emailIndex]!;
+			const previousAccount = emailToAccount.get(email);
+
+			if (previousAccount === undefined) {
+				emailToAccount.set(email, accountIndex);
+			} else {
+				unionFind.union(accountIndex, previousAccount);
+			}
+		}
+	}
+
+	const rootToEmails = new Map<number, string[]>();
+	for (const [email, accountIndex] of emailToAccount) {
+		const root = unionFind.find(accountIndex);
+		const emails = rootToEmails.get(root);
+
+		if (emails) {
+			emails.push(email);
+		} else {
+			rootToEmails.set(root, [email]);
+		}
+	}
+
+	const mergedAccounts = Array.from(rootToEmails, ([root, emails]) => [
+		accounts[root]![0]!,
+		...emails.sort(),
+	]);
+
+	return [...mergedAccounts, ...emailLessAccounts];
 }

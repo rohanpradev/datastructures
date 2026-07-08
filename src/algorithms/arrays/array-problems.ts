@@ -146,7 +146,9 @@ export function zeroSumSubarray(nums: number[]): number[] | -1 {
  * Returns the maximum possible sum of medians
  * from ⌊n / 3⌋ disjoint triplets.
  *
- * @param nums - Array of integers
+ * This implementation sorts `nums` in place.
+ *
+ * @param nums - Array of integers; sorted in place by this implementation
  * @returns Maximum sum of medians
  *
  * @example
@@ -623,15 +625,16 @@ export function minimumPassMatrix(matrix: number[][]): number {
 	];
 
 	let passes = 0;
+	let head = 0;
 
 	// Step 2: Perform BFS, one level at a time
 	// Each level corresponds to one pass
-	while (queue.length > 0 && negativeCount > 0) {
-		const levelSize = queue.length;
+	while (head < queue.length && negativeCount > 0) {
+		const levelEnd = queue.length;
 
 		// Process exactly one BFS level
-		for (let i = 0; i < levelSize; i++) {
-			const [row, col] = queue.shift()!;
+		while (head < levelEnd) {
+			const [row, col] = queue[head++]!;
 
 			for (const [dr, dc] of directions) {
 				const newRow = row + dr;
@@ -899,7 +902,7 @@ export function nextDeparture(
  *  - Every pair of adjacent characters can be the center of an even-length palindrome (e.g., "abba").
  *
  * Time Complexity: O(n^2)
- * Space Complexity: O(1)
+ * Space Complexity: O(n) for the returned substring, O(1) auxiliary while scanning
  *
  * @param input - The string to search within.
  * @returns The longest palindromic substring found in the input string.
@@ -1076,16 +1079,17 @@ export function searchInSortedMatrix(
 }
 
 /**
- * Sorts an array containing exactly three distinct numbers according to a given order.
+ * Sorts an array in place when it contains exactly three distinct numbers
+ * according to a given order.
  *
  * Two-pass approach:
  *   1. Move all occurrences of order[0] to the front.
  *   2. Move all occurrences of order[2] to the back.
  * The remaining elements (order[1]) naturally fall in the middle.
  *
- * @param nums - array of numbers
+ * @param nums - array of numbers; modified in place
  * @param order - tuple of three numbers [first, second, third] defining desired order
- * @returns the sorted array
+ * @returns the same array instance, sorted according to order
  */
 export function threeNumbersSort(
 	nums: number[],

@@ -174,9 +174,10 @@ export function shortestPathBinaryMatrix(grid: number[][]): number {
 	];
 	const queue: [number, number, number][] = [[0, 0, 1]]; // [row, col, distance]
 	grid[0]![0] = 1; // Mark visited
+	let head = 0;
 
-	while (queue.length > 0) {
-		const [r, c, dist] = queue.shift()!;
+	while (head < queue.length) {
+		const [r, c, dist] = queue[head++]!;
 
 		if (r === n - 1 && c === n - 1) return dist;
 

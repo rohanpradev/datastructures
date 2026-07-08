@@ -474,7 +474,9 @@ By sorting and selecting medians from the largest possible values, we ensure the
  * Returns the maximum possible sum of medians
  * from ⌊n / 3⌋ disjoint triplets.
  *
- * @param nums - Array of integers
+ * This implementation sorts `nums` in place.
+ *
+ * @param nums - Array of integers; sorted in place by this implementation
  * @returns Maximum sum of medians
  *
  * @example
@@ -510,7 +512,7 @@ export function maxMedianSum(nums: number[]): number {
 ## Complexity Analysis
 
 - **Time:** `O(n log n)` → sorting dominates
-- **Space:** `O(1)` → in-place sorting (excluding input)
+- **Space:** `O(1)` excluding sort internals; JavaScript engine sort scratch space can vary
 
 ---
 
@@ -1510,13 +1512,14 @@ export function minimumPassMatrix(matrix: number[][]): number {
   ];
 
   let passes = 0;
+  let head = 0;
 
   // BFS by levels (each level = one pass)
-  while (queue.length > 0 && negativeCount > 0) {
-    const levelSize = queue.length;
+  while (head < queue.length && negativeCount > 0) {
+    const levelEnd = queue.length;
 
-    for (let i = 0; i < levelSize; i++) {
-      const [row, col] = queue.shift()!;
+    while (head < levelEnd) {
+      const [row, col] = queue[head++]!;
 
       for (const [dr, dc] of directions) {
         const newRow = row + dr;
@@ -2592,16 +2595,17 @@ Result: [1, 1, 2, 2, 3, 3]
 
 ```typescript
 /**
- * Sorts an array containing exactly three distinct numbers according to a given order.
+ * Sorts an array in place when it contains exactly three distinct numbers
+ * according to a given order.
  *
  * Two-pass approach:
  *   1. Move all occurrences of order[0] to the front.
  *   2. Move all occurrences of order[2] to the back.
  * The remaining elements (order[1]) naturally fall in the middle.
  *
- * @param nums - array of numbers
+ * @param nums - array of numbers; modified in place
  * @param order - tuple of three numbers [first, second, third] defining desired order
- * @returns the sorted array
+ * @returns the same array instance, sorted according to order
  *
  * @example
  * threeNumbersSort([3,1,2,1,3,2], [1,2,3])

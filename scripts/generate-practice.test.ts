@@ -80,6 +80,11 @@ describe("generate-practice CLI model", () => {
 			true,
 		);
 		expect(entries.some((entry) => entry.interviewMode === "runtime")).toBe(true);
+		expect(findBestTarget(targets, "accountsMerge")?.pattern).toBe("graph");
+		expect(toManifestEntry(findBestTarget(targets, "accountsMerge")!).level).toBe(
+			"intermediate",
+		);
+		expect(findBestTarget(targets, "insertInterval")?.pattern).toBe("intervals");
 
 		for (const entry of entries) {
 			expect(entry.id).toBeGreaterThan(0);
@@ -171,6 +176,33 @@ describe("generate-practice focused output", () => {
 		);
 		expect(implementation).toContain(
 			'throw new Error("Not implemented: optimalFreelancing");',
+		);
+	});
+
+	test("preserves multiline source imports in generated implementations", async () => {
+		const target = findBestTarget(targets, "findMiddleNode");
+		expect(target).not.toBeNull();
+
+		const outputRoot = join(TEST_ROOT, "multiline-imports");
+		await rm(outputRoot, { recursive: true, force: true });
+		await writeFocusedPractice(target!, outputRoot, false);
+
+		const implementation = await Bun.file(
+			join(
+				outputRoot,
+				"data-structures",
+				"singly-linked-list",
+				"problems",
+				"find-middle-node.ts",
+			),
+		).text();
+		const normalizedImplementation = implementation.replace(/\r\n/g, "\n");
+
+		expect(normalizedImplementation).toContain(
+			'import {\n\tNode,\n\tSinglyLinkedList,\n} from "@/data-structures/singly-linked-list/singly-linked-list";',
+		);
+		expect(normalizedImplementation).toContain(
+			"export function findMiddleNode<T>(list: SinglyLinkedList<T>): Node<T> | null",
 		);
 	});
 

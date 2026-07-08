@@ -3704,9 +3704,10 @@ export function numberOfIslands(matrix: number[][]): number {
       matrix[row][col] = 0;
 
       const queue: Array<[number, number]> = [[row, col]];
+      let head = 0;
 
-      while (queue.length > 0) {
-        const [r, c] = queue.shift()!;
+      while (head < queue.length) {
+        const [r, c] = queue[head++]!;
 
         for (const [dr, dc] of directions) {
           const nr = r + dr;

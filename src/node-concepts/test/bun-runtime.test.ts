@@ -92,7 +92,7 @@ describe("Bun file I/O and Glob", () => {
 	});
 });
 
-describe("Bun Image", () => {
+describe("processSampleImageWithBun", () => {
 	test("resizes and re-encodes image bytes without external packages", async () => {
 		const result = await processSampleImageWithBun({
 			targetHeight: 80,
@@ -188,7 +188,7 @@ describe("Bun Shell", () => {
 	});
 });
 
-describe("Bun spawn", () => {
+describe("bunVersionFromSpawn", () => {
 	test("runs an async subprocess and captures stdout", async () => {
 		const result = await bunVersionFromSpawn();
 
@@ -198,7 +198,9 @@ describe("Bun spawn", () => {
 		expect(result.stderr).toBe("");
 		expect(result.maxRSS).toBeGreaterThan(0);
 	});
+});
 
+describe("uppercaseWithSpawn", () => {
 	test("passes stdin to a subprocess and reads transformed stdout", async () => {
 		const result = await uppercaseWithSpawn("hello spawn");
 
@@ -209,7 +211,9 @@ describe("Bun spawn", () => {
 			success: true,
 		});
 	});
+});
 
+describe("readEnvWithSpawn", () => {
 	test("runs a subprocess with scoped environment variables", async () => {
 		const result = await readEnvWithSpawn(
 			"BUN_SPAWN_CONCEPT_VALUE",
@@ -225,7 +229,9 @@ describe("Bun spawn", () => {
 			"Invalid environment variable name",
 		);
 	});
+});
 
+describe("bunVersionFromSpawnSync", () => {
 	test("runs a sync subprocess when blocking is acceptable", () => {
 		const result = bunVersionFromSpawnSync();
 

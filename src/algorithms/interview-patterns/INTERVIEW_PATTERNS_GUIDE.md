@@ -15,13 +15,13 @@ This folder contains high-frequency coding interview patterns that were not yet 
 | Prefix/suffix | `productExceptSelf` | Avoid division and extra space |
 | Greedy | `maxProfit` | Maintain best-so-far invariant |
 | Stack / monotonic stack | `validParentheses`, `dailyTemperatures`, `largestRectangleArea` | Deferred decisions, next greater values, histogram boundaries |
-| Intervals | `canAttendMeetings`, `mergeOverlappingIntervals`, `minMeetingRooms`, `eraseOverlapIntervals` | Sorting by start/end, sweep line events, overlap logic |
+| Intervals | `canAttendMeetings`, `insertInterval`, `mergeOverlappingIntervals`, `minMeetingRooms`, `eraseOverlapIntervals` | Sorting by start/end, sweep line events, overlap logic |
 | Backtracking | `subsets`, `combinationSum`, `permutations` | Choice tree, pruning, copy-on-output |
 | Matrix DFS/BFS | `numIslands`, `shortestPathBinaryMatrix`, `rottingOranges` | Graph traversal on grids and multi-source BFS |
 | Topological sort | `canFinishCourses` | Dependency ordering and cycle detection |
 | Graph coloring | `isBipartite` | BFS/DFS with state |
 | Dynamic programming | `coinChange`, `wordBreak`, `longestIncreasingSubsequence` | State definitions and transitions |
-| Union-find | `UnionFind`, `countComponents` | Connectivity, cycle detection, components |
+| Union-find | `UnionFind`, `countComponents`, `accountsMerge` | Connectivity, cycle detection, components |
 
 ## Google-Focused Priority Set
 
@@ -30,12 +30,18 @@ Public Google interview reports and common prep lists repeatedly emphasize array
 - Arrays/sliding window: 3Sum, rain water, minimum window, sliding window maximum, subarray sum equals k.
 - Hashing and frequency: longest consecutive sequence, top-k frequent elements.
 - Binary search: normal search, lower bound, rotated array, binary search on answer.
-- Stack and intervals: valid parentheses, daily temperatures, histogram rectangle, merge intervals, meeting rooms.
-- Graphs: number of islands, rotting oranges, course schedule, shortest path in binary matrix, bipartite graph, union-find components.
+- Stack and intervals: valid parentheses, daily temperatures, histogram rectangle, insert interval, merge intervals, meeting rooms.
+- Graphs: number of islands, rotting oranges, course schedule, shortest path in binary matrix, bipartite graph, union-find components, account merging.
 - Dynamic programming: coin change, word break, LIS.
 - Backtracking: subsets, permutations, combination sum.
 
 Google-style preparation should not be pure memorization. For each problem, practice explaining the invariant, proving correctness, and discussing edge cases before coding.
+
+## Contract Notes
+
+- `insertInterval` assumes the existing intervals are already sorted and non-overlapping; touching closed intervals merge.
+- `accountsMerge` assumes accounts connected by a shared email belong to the same person/name, matching the standard LeetCode contract.
+- Union-find operations are amortized `O(alpha(n))`, which is effectively constant for interview-sized inputs but not literally `O(1)`.
 
 ## Common Interview Flow
 
@@ -52,4 +58,4 @@ Google-style preparation should not be pure memorization. For each problem, prac
 - Monotonic deque: sliding window maximum.
 - Backtracking with duplicates: subsets II, combination sum II.
 - Graph BFS: shortest path in binary matrix, rotting oranges.
-- Union-find: number of connected components, redundant connection.
+- Union-find: number of connected components, accounts merge, redundant connection.

@@ -441,6 +441,11 @@ export function partitionList(head: Node | null, x: number): Node | null {
 
 Merge two sorted linked lists into one sorted list.
 
+The node-based LeetCode variant below reuses existing nodes. The repository
+implementation, `mergeTwoSortedLists` in `leetcode-sll.ts`, accepts
+`SinglyLinkedList` instances and copies values into a new list instead, so it
+does not mutate either input list.
+
 ### Example
 
 ```
@@ -529,7 +534,9 @@ export function mergeTwoLists(
 ### Complexity
 
 - **Time:** O(n + m) - visit all nodes once
-- **Space:** O(1) - reuse existing nodes
+- **Space:** O(1) for the node-splicing LeetCode variant
+- **Repository implementation space:** O(n + m) for the copied nodes returned by
+  `mergeTwoSortedLists`
 
 ---
 

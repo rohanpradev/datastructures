@@ -1164,6 +1164,86 @@ function findTopLevelAssignment(value: string): number {
 	return -1;
 }
 
+function extractImportDeclarations(content: string): string[] {
+	const imports: string[] = [];
+	const importRegex = /^import\b/gm;
+
+	let match;
+	while ((match = importRegex.exec(content)) !== null) {
+		if (!isCodeAtTopLevel(content, match.index)) continue;
+		if (!isStaticImportDeclaration(content, match.index)) continue;
+
+		const end = findImportDeclarationEnd(content, match.index);
+		if (end === -1) continue;
+
+		imports.push(content.slice(match.index, end).trimEnd());
+		importRegex.lastIndex = end;
+	}
+
+	return imports;
+}
+
+function isStaticImportDeclaration(content: string, start: number): boolean {
+	const cursor = skipWhitespace(content, start + "import".length);
+	return content[cursor] !== "(" && content[cursor] !== ".";
+}
+
+function findImportDeclarationEnd(content: string, start: number): number {
+	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
+	let quote = "";
+
+	for (let index = start; index < content.length; index++) {
+		const char = content[index];
+		const next = content[index + 1];
+
+		if (state === "line-comment") {
+			if (char === "\n") state = "code";
+			continue;
+		}
+
+		if (state === "block-comment") {
+			if (char === "*" && next === "/") {
+				state = "code";
+				index++;
+			}
+			continue;
+		}
+
+		if (state === "string") {
+			if (char === "\\") {
+				index++;
+				continue;
+			}
+			if (char === quote) {
+				state = "code";
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			state = "line-comment";
+			index++;
+			continue;
+		}
+
+		if (char === "/" && next === "*") {
+			state = "block-comment";
+			index++;
+			continue;
+		}
+
+		if (char === '"' || char === "'" || char === "`") {
+			state = "string";
+			quote = char;
+			continue;
+		}
+
+		if (char === ";") return index + 1;
+	}
+
+	return -1;
+}
+
 function generatePracticeTemplate(
 	content: string,
 	filePath: string,
@@ -1185,9 +1265,8 @@ function generatePracticeTemplate(
 
 `;
 
-	const importRegex = /^import\s+.*?;$/gm;
-	const imports = content.match(importRegex);
-	if (imports) {
+	const imports = extractImportDeclarations(content);
+	if (imports.length > 0) {
 		template += imports.join("\n") + "\n\n";
 	}
 
@@ -1871,7 +1950,10 @@ function inferPattern(
 			/binarytree|binarysearchtree|treenode|bst|trie|depth|ancestor|invert|symmetric|pathsum|successor/,
 			"tree",
 		],
-		[/graph|island|river|path|course|topological|rottingoranges/, "graph"],
+		[
+			/graph|island|river|path|course|topological|rottingoranges|unionfind|accounts?merge|components?/,
+			"graph",
+		],
 		[/heap|topk|median|kthlargestelement|mergeksorted/, "heap"],
 		[/binarysearch(?!tree)|lowerbound|rotatedsorted|sortedmatrix|koko/, "binary search"],
 		[/stack|parentheses/, "stack"],
@@ -1902,7 +1984,7 @@ function inferDifficulty(
 	}
 
 	if (
-		/tree|bst|trie|linkedlist|recursion|bit|interval|matrix|async|sqlite|lru|cache|minstack|queueusingstacks|dailytemperatures|kth|substring|window|threesum|rotated|medium/.test(
+		/tree|bst|trie|linkedlist|recursion|bit|interval|matrix|async|sqlite|lru|cache|minstack|queueusingstacks|dailytemperatures|kth|substring|window|threesum|rotated|unionfind|accounts?merge|components?|medium/.test(
 			text,
 		)
 	) {

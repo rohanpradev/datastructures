@@ -131,7 +131,7 @@ Research references:
 - [TypeScript 5.0: decorators and const type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html)
 - [TypeScript 5.2: `using` declarations and explicit resource management](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html)
 
-Documentation refresh note: as of May 13, 2026, the Node.js release page lists Node.js 24 as LTS and Node.js 26 as Current. This repo targets interview learning, so production-facing Node examples should favor LTS behavior unless a Current-only feature is explicitly being studied.
+Documentation refresh note: as of July 8, 2026, the Node.js release page lists Node.js 24 as LTS and Node.js 26 as Current. This repo targets interview learning, so production-facing Node examples should favor LTS behavior unless a Current-only feature is explicitly being studied.
 
 ## Quick Start
 
@@ -204,7 +204,7 @@ That command runs:
 2. `bun run typecheck`
 3. `bun run test:ci`
 
-CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`.
+CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`, with the Bun version pinned by `packageManager` in `package.json`.
 
 Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, and test-file coverage exclusion. Package installation also uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
 

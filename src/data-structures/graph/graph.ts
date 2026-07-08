@@ -18,9 +18,9 @@
  *
  * Time Complexities:
  * - addVertex(): O(1)
- * - addEdge(): O(1)
+ * - addEdge(): O(1) append after vertex lookup
  * - removeVertex(): O(V + E) where V is vertices, E is edges
- * - removeEdge(): O(E)
+ * - removeEdge(): O(deg(v1) + deg(v2)) for undirected graphs
  * - BFS/DFS: O(V + E)
  *
  * Visual Structure (Undirected):
@@ -75,7 +75,7 @@ class Graph<T = string> {
 
 	/**
 	 * Adds an edge between two vertices
-	 * Time Complexity: O(1)
+	 * Time Complexity: O(1) append after vertex lookup
 	 * Space Complexity: O(1)
 	 *
 	 * For undirected graphs, adds edge in both directions
@@ -135,7 +135,7 @@ class Graph<T = string> {
 
 	/**
 	 * Removes an edge between two vertices
-	 * Time Complexity: O(E) where E is number of edges from v1
+	 * Time Complexity: O(deg(v1) + deg(v2)) for undirected graphs, O(deg(v1)) for directed graphs
 	 * Space Complexity: O(1)
 	 *
 	 * @param v1 - First vertex
@@ -177,7 +177,7 @@ class Graph<T = string> {
 	 * Space Complexity: O(1)
 	 *
 	 * @param vertex - The vertex
-	 * @returns Array of neighbor vertices
+	 * @returns The stored adjacency array for the vertex, or a new empty array if missing
 	 */
 	getNeighbors(vertex: T): T[] {
 		return this.adjacencyList.get(vertex) || [];
@@ -196,7 +196,7 @@ class Graph<T = string> {
 
 	/**
 	 * Checks if an edge exists
-	 * Time Complexity: O(E) where E is edges from v1
+	 * Time Complexity: O(deg(v1))
 	 *
 	 * @param v1 - First vertex
 	 * @param v2 - Second vertex
@@ -226,10 +226,11 @@ class Graph<T = string> {
 		const result: T[] = [];
 		const visited = new Set<T>();
 		const queue: T[] = [start];
+		let head = 0;
 		visited.add(start);
 
-		while (queue.length > 0) {
-			const vertex = queue.shift()!;
+		while (head < queue.length) {
+			const vertex = queue[head++]!;
 			result.push(vertex);
 
 			const neighbors = this.adjacencyList.get(vertex)!;

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+	accountsMerge,
 	binarySearch,
 	canAttendMeetings,
 	canFinishCourses,
@@ -9,6 +10,7 @@ import {
 	countComponents,
 	dailyTemperatures,
 	eraseOverlapIntervals,
+	insertInterval,
 	isBipartite,
 	kokoEatingBananas,
 	largestRectangleArea,
@@ -222,6 +224,56 @@ describe("productExceptSelf", () => {
 	});
 });
 
+describe("insertInterval", () => {
+	test("inserts an interval without overlap", () => {
+		expect(
+			insertInterval(
+				[
+					[1, 2],
+					[5, 7],
+				],
+				[3, 4],
+			),
+		).toEqual([
+			[1, 2],
+			[3, 4],
+			[5, 7],
+		]);
+	});
+
+	test("inserts and merges across multiple intervals", () => {
+		expect(
+			insertInterval(
+				[
+					[1, 2],
+					[3, 5],
+					[6, 7],
+					[8, 10],
+					[12, 16],
+				],
+				[4, 8],
+			),
+		).toEqual([
+			[1, 2],
+			[3, 10],
+			[12, 16],
+		]);
+	});
+
+	test("inserts into empty and edge-touching ranges", () => {
+		expect(insertInterval([], [5, 7])).toEqual([[5, 7]]);
+		expect(
+			insertInterval(
+				[
+					[1, 3],
+					[6, 9],
+				],
+				[3, 6],
+			),
+		).toEqual([[1, 9]]);
+	});
+});
+
 describe("interval patterns", () => {
 	test("detects whether meetings overlap", () => {
 		expect(
@@ -291,6 +343,50 @@ describe("interval patterns", () => {
 				[1, 2],
 			]),
 		).toBe(2);
+	});
+});
+
+describe("accountsMerge", () => {
+	function normalize(accounts: string[][]): string[] {
+		return accounts
+			.map(([name, ...emails]) => [name, ...emails.sort()].join("|"))
+			.sort();
+	}
+
+	test("merges accounts connected by shared emails", () => {
+		const merged = accountsMerge([
+			["John", "johnsmith@mail.com", "john_newyork@mail.com"],
+			["John", "johnsmith@mail.com", "john00@mail.com"],
+			["Mary", "mary@mail.com"],
+			["John", "johnnybravo@mail.com"],
+		]);
+
+		expect(normalize(merged)).toEqual([
+			"John|john00@mail.com|john_newyork@mail.com|johnsmith@mail.com",
+			"John|johnnybravo@mail.com",
+			"Mary|mary@mail.com",
+		]);
+	});
+
+	test("merges transitive email connections", () => {
+		const merged = accountsMerge([
+			["Alex", "a@mail.com", "b@mail.com"],
+			["Alex", "c@mail.com"],
+			["Alex", "b@mail.com", "c@mail.com"],
+		]);
+
+		expect(normalize(merged)).toEqual(["Alex|a@mail.com|b@mail.com|c@mail.com"]);
+	});
+
+	test("deduplicates repeated emails and preserves email-less accounts", () => {
+		expect(
+			normalize(
+				accountsMerge([
+					["Nina", "n@mail.com", "n@mail.com"],
+					["Solo"],
+				]),
+			),
+		).toEqual(["Nina|n@mail.com", "Solo"]);
 	});
 });
 

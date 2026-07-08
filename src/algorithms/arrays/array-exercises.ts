@@ -666,6 +666,9 @@ export function tournamentWinner(
  *
  * Time Complexity: O(n log n)
  * Space Complexity: O(1) (ignoring sort space)
+ *
+ * @param nums - Coin values; sorted in place by this implementation
+ * @returns The smallest amount of change that cannot be constructed
  */
 export function nonConstructableChange(nums: number[]): number {
 	// Sort numerically (IMPORTANT)
@@ -858,7 +861,7 @@ export function maxPlanesStopped(
  * The optimal strategy is to execute shorter tasks first (greedy),
  * which minimizes the total waiting time.
  *
- * @param nums - An array of positive integers representing task durations
+ * @param nums - An array of positive integers representing task durations; sorted in place
  * @returns The minimum total waiting time
  *
  * @example
@@ -884,8 +887,8 @@ export function minimumWaitingTime(nums: number[]): number {
  * one shirt color is entirely in the back row and every student
  * in the back row is strictly taller than the student in front.
  *
- * @param redShirts - Heights of students wearing red shirts
- * @param blueShirts - Heights of students wearing blue shirts
+ * @param redShirts - Heights of students wearing red shirts; sorted in place
+ * @param blueShirts - Heights of students wearing blue shirts; sorted in place
  * @returns True if a valid class photo arrangement exists, otherwise false
  */
 export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
@@ -923,8 +926,8 @@ export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
  * Each tandem bicycle is ridden by one red-shirt rider and one blue-shirt rider.
  * The speed of a tandem bicycle is the maximum of the two riders' speeds.
  *
- * @param redShirtSpeeds - Speeds of red-shirt riders
- * @param blueShirtSpeeds - Speeds of blue-shirt riders
+ * @param redShirtSpeeds - Speeds of red-shirt riders; sorted in place
+ * @param blueShirtSpeeds - Speeds of blue-shirt riders; sorted in place
  * @param fastest - Whether to maximize or minimize the total speed
  * @returns The total speed of all tandem bicycles
  */
@@ -987,6 +990,9 @@ export function tandemBicycle(
  *
  * Space Complexity:
  * - O(7) → constant extra space
+ *
+ * @param jobs - Jobs to schedule; sorted in place by payment
+ * @returns Maximum payment achievable within the seven-day schedule
  */
 export function optimalFreelancing(
 	jobs: Array<{ deadline: number; payment: number }>,
@@ -1253,7 +1259,7 @@ export function runLengthEncoding(str: string): string {
  * - For each number, treat it as the first element of the triplet.
  * - Use two pointers to find pairs that sum to (target - first element).
  *
- * @param {number[]} nums - Array of numbers to search for triplets
+ * @param {number[]} nums - Array of numbers to search for triplets; sorted in place
  * @param {number} target - Target sum for the triplets
  * @returns {number[][]} Array of triplets where each triplet sums to target
  *
@@ -1301,9 +1307,10 @@ export function threeNumberSum(nums: number[], target: number): number[][] {
  * - Initialize pointers at the start of each array.
  * - Move the pointer of the smaller value to try to reduce the difference.
  *
- * @param {number[]} arr1 - The first array of numbers
- * @param {number[]} arr2 - The second array of numbers
+ * @param {number[]} arr1 - The first array of numbers; sorted in place
+ * @param {number[]} arr2 - The second array of numbers; sorted in place
  * @returns {[number, number]} A pair of numbers, one from each array, with the smallest absolute difference
+ * @throws {Error} If either array is empty
  *
  * @example
  * smallestDifference([1, 3, 15, 11, 2], [23, 127, 235, 19, 8])
@@ -1602,7 +1609,7 @@ export function arrayOfProducts(nums: number[]): number[] {
  * land cells (`1`) as water (`0`) to avoid revisiting them.
  *
  * Time Complexity: O(rows × cols)
- * Space Complexity: O(min(rows × cols)) for the BFS queue
+ * Space Complexity: O(rows × cols) worst case for the BFS queue
  *
  * @param matrix - A 2D grid where `1` represents land and `0` represents water
  * @returns The total number of islands found in the matrix
@@ -1638,9 +1645,10 @@ export function numberOfIslands(matrix: number[][]): number {
 			matrix[row][col] = 0;
 
 			const queue: Array<[number, number]> = [[row, col]];
+			let head = 0;
 
-			while (queue.length > 0) {
-				const [currentRow, currentCol] = queue.shift()!;
+			while (head < queue.length) {
+				const [currentRow, currentCol] = queue[head++]!;
 
 				for (const [dr, dc] of directions) {
 					const nextRow = currentRow + dr;
@@ -1676,6 +1684,7 @@ export function numberOfIslands(matrix: number[][]): number {
  * - 2: rotten orange
  *
  * Rotten oranges spread to adjacent fresh oranges (up, down, left, right) every minute.
+ * This function mutates the matrix by changing fresh oranges (`1`) to rotten oranges (`2`).
  *
  * @param {number[][]} matrix - A 2D grid representing oranges and empty cells.
  * @returns {number} The minimum number of minutes required for all fresh oranges to rot.
@@ -1710,11 +1719,12 @@ export function rottenOranges(matrix: number[][]): number {
 	];
 
 	// Perform BFS until no fresh oranges remain or queue is empty
-	while (queue.length && freshOranges > 0) {
-		const levelSize = queue.length; // Number of rotten oranges to process this minute
+	let head = 0;
+	while (head < queue.length && freshOranges > 0) {
+		const levelEnd = queue.length; // Rotten oranges available at this minute
 
-		for (let i = 0; i < levelSize; i++) {
-			const [currentRow, currentCol] = queue.shift()!; // Get next rotten orange
+		while (head < levelEnd) {
+			const [currentRow, currentCol] = queue[head++]!; // Get next rotten orange
 
 			for (const dir of directions) {
 				const nextRow = currentRow + dir[0];
@@ -1746,19 +1756,22 @@ export function rottenOranges(matrix: number[][]): number {
 
 /**
  * Finds the shortest distance from any gate (represented by `0`) to the nearest room (represented by `1`)
- * using Breadth-First Search (BFS). Walls are represented by `-1`, and visited cells are marked as `2`.
+ * using Breadth-First Search (BFS). Walls are represented by `-1`.
  *
  * The function iterates through the matrix, starting BFS from each gate, and computes the minimum distance
- * to the nearest room. If no path exists, it returns `Infinity`.
+ * to the nearest room. It mutates the matrix by marking visited rooms as `2`.
+ * If a gate exists but no room is reachable from any gate, it returns `-1`.
+ * If there are no gates, it returns `Infinity`.
  *
  * @param {number[][]} matrix - A 2D grid representing rooms, gates, and walls.
  *   - `0` → Gate
  *   - `1` → Empty room
  *   - `-1` → Wall
- *   - `2` → Visited cell (marked during BFS traversal)
+ *   - `2` → Internal visited marker written during BFS traversal
  *
  * @returns {number} The shortest distance from any gate to the nearest room.
- *   - Returns `Infinity` if no room is reachable from any gate.
+ *   - Returns `-1` when gates exist but no room is reachable.
+ *   - Returns `Infinity` when there are no gates.
  *
  * @example
  * const grid = [
@@ -1788,7 +1801,7 @@ export function wallsAndGates(matrix: number[][]): number {
  * Performs Breadth-First Search (BFS) from a given gate to find the nearest room.
  *
  * BFS explores all possible paths level by level, ensuring the shortest path is found.
- * Each visited room is marked as `2` to prevent revisiting.
+ * Each visited room is marked as `2` in the input matrix to prevent revisiting.
  *
  * @param {number[][]} matrix - The grid containing rooms, gates, and walls.
  * @param {number} row - The starting row index (gate position).
@@ -1801,6 +1814,7 @@ function bfs(matrix: number[][], row: number, col: number): number {
 	const queue: [number, number][] = []; // Queue for BFS traversal
 	queue.push([row, col]); // Start BFS from the given gate
 	let distance = 0; // Tracks the number of steps taken from the gate
+	let head = 0;
 
 	// Possible movement directions: up, down, left, right
 	const directions = [
@@ -1811,11 +1825,11 @@ function bfs(matrix: number[][], row: number, col: number): number {
 	];
 
 	// BFS loop: process nodes level by level
-	while (queue.length) {
-		const size = queue.length; // Number of nodes at current BFS level
+	while (head < queue.length) {
+		const levelEnd = queue.length; // End of the current BFS level
 
-		for (let i = 0; i < size; i++) {
-			const [currentRow, currentCol] = queue.shift()!; // Dequeue current cell
+		while (head < levelEnd) {
+			const [currentRow, currentCol] = queue[head++]!; // Read current cell
 
 			// If we encounter a visited room (value = 2), return the distance
 			if (matrix[currentRow][currentCol] === 2) return distance;
