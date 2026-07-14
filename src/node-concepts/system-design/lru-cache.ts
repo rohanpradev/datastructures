@@ -110,7 +110,8 @@ export class LRUCache<K, V> {
 	 *
 	 * @example
 	 * const cache = new LRUCache<string, number>(5);
-	 * cache.set("a", 1).set("b", 2);
+	 * cache.set("a", 1);
+	 * cache.set("b", 2);
 	 * cache.size(); // 2
 	 */
 	size(): number {
@@ -128,7 +129,9 @@ export class LRUCache<K, V> {
 	 *
 	 * @example
 	 * const cache = new LRUCache<string, number>(3);
-	 * cache.set("a", 1).set("b", 2).set("c", 3);
+	 * cache.set("a", 1);
+	 * cache.set("b", 2);
+	 * cache.set("c", 3);
 	 * cache.get("a"); // Access "a", making it most recent
 	 * cache.keysMostRecentFirst(); // ["a", "c", "b"]
 	 */

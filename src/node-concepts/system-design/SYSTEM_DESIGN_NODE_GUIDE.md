@@ -13,6 +13,9 @@ This folder contains small executable versions of common system design component
 | `bloom-filter.ts` | Bloom filter | Negative cache, memory/probability trade-offs |
 | `weighted-fair-queue.ts` | Weighted fair queuing | Multi-tenant fairness, noisy-neighbor control, work cost |
 | `idempotency-store.ts` | Idempotency-key state machine | Retry-safe writes, duplicate suppression, TTL trade-offs |
+| `load-balancer.ts` | Round robin and least connections | Backend selection, lifecycle accounting, health and retry discussion |
+| `replication-quorum.ts` | N/R/W quorum analysis | Replica overlap, stale reads, failure tolerance, consistency limits |
+| `at-least-once-queue.ts` | Visibility-timeout work queue | Redelivery, acknowledgements, idempotent effects, delayed retry, DLQ |
 
 ## Advanced Problem Set
 
@@ -30,6 +33,9 @@ Use these prompts after you can explain the basic implementation.
 | Design a payment or checkout API | Idempotency key store | Replay completed writes and handle stuck in-flight attempts. |
 | Design an AI inference gateway | Rate limiter, weighted queue, idempotency | Separate admission control, fair scheduling, and duplicate request handling. |
 | Design a webhook delivery service | Idempotency, queues, circuit breaker | Retry safely, dedupe provider events, and isolate bad receivers. |
+| Design a distributed work queue | At-least-once queue, idempotency | Partition ordering, durable leases, redelivery, poison work, and replay. |
+| Design a global read/write store | Replication quorums, consistent hashing | Explain stale reads, conflicts, repair, failover, and regional latency. |
+| Design an L7 service proxy | Load balancing, rate limiter, circuit breaker | Add health, draining, locality, outlier ejection, and retry budgets. |
 
 ## Bun Runtime Tie-In
 
@@ -39,6 +45,12 @@ Use Bun primitives where they reduce course overhead:
 - `bunfig.toml` keeps preload and coverage behavior in one place.
 - `Bun.file`, `Bun.write`, `Bun.Glob`, Bun Shell, `Bun.randomUUIDv7()`, and `bun:sqlite` are covered in the Bun runtime guide for local system-design exercises.
 - `Bun.sql` and `Bun.redis` are useful production discussion points, but this repo keeps tests self-contained and avoids requiring external services in CI.
+- `Bun.JSONL`, `Bun.Archive`, and `Bun.cron` provide useful ingestion,
+  export, and scheduling primitives, but do not replace validation, safe path
+  handling, durable workflow history, leases, or idempotency.
+
+Use [the system design handbook](../../../docs/SYSTEM_DESIGN_HANDBOOK.md) for
+the complete concept map and important question bank.
 
 ## How To Discuss A System Design Component
 
@@ -350,3 +362,112 @@ Production notes:
 - Store a request hash with the key to reject mismatched retries.
 - Tune in-flight TTL and replay TTL separately.
 - Log claim, conflict, replay, completion, expiration, and mismatch counts.
+
+## Round Robin And Least Connections
+
+File: `load-balancer.ts`
+
+Classes: `RoundRobinLoadBalancer`, `LeastConnectionsLoadBalancer`
+
+Use case:
+
+- Stateless API replicas
+- Long-lived or uneven-duration requests
+- Service-proxy and gateway interviews
+
+Beginner explanation:
+
+Round robin rotates through healthy backends and works well when requests cost
+roughly the same. Least connections chooses the backend with the fewest active
+requests and adapts better when one request can run much longer than another.
+
+Invariant:
+
+- Round robin advances exactly once for each successful selection.
+- Least connections increments on acquire and decrements exactly once on
+  release. The disposable lease makes cleanup safe when code returns or throws.
+
+Production notes:
+
+- Selection happens only among healthy, non-draining endpoints.
+- Passive outlier ejection must not remove every endpoint during a shared
+  dependency failure.
+- Session affinity improves locality but can create uneven load and failover
+  bursts.
+- Retries need a shared budget; otherwise the load balancer amplifies an outage.
+- Add locality, connection warmup, circuit state, endpoint weight, and overload
+  signals before treating active-connection count as complete capacity.
+
+## Replication Quorums
+
+File: `replication-quorum.ts`
+
+Functions: `analyzeQuorum`, `majorityQuorum`
+
+Use case:
+
+- Dynamo-style replicated stores
+- Multi-replica read/write trade-offs
+- Consistency and availability follow-ups
+
+Beginner explanation:
+
+`N` replicas store the data, a read waits for `R`, and a write waits for `W`.
+If `R + W > N`, every possible read set intersects every acknowledged write
+set. If `2W > N`, any two acknowledged write sets intersect.
+
+The crucial limit:
+
+Overlap does not automatically mean a linearizable database. The coordinator
+still needs version ordering, conflict rules, read repair, failure detection,
+and a protocol that prevents stale or concurrent versions from winning.
+
+Production notes:
+
+- Lower `R` improves read availability/latency but may increase stale reads.
+- Lower `W` improves write availability/latency but weakens write overlap.
+- Sloppy quorums can preserve availability without intersecting the replicas
+  that normally own the key.
+- Multi-region quorum latency is bounded by slow cross-region acknowledgements.
+- Track replica lag, divergent versions, repairs, conflicts, unavailable
+  quorums, and coordinator latency.
+
+## At-Least-Once Work Queue
+
+File: `at-least-once-queue.ts`
+
+Class: `AtLeastOnceQueue`
+
+Use case:
+
+- Email, webhook, image, and report jobs
+- Background workflows with consumer crashes
+- Queue delivery-semantics interviews
+
+Beginner explanation:
+
+Receiving a job hides it for a visibility timeout. The consumer acknowledges
+after the business effect commits. If it crashes before acknowledgement, the
+lease expires and another consumer receives the same job. Redelivery is the
+reason consumer effects must be idempotent.
+
+State transitions:
+
+```text
+queued -> delivered/invisible -> acknowledged/deleted
+                  | timeout or nack
+                  v
+               queued again -> dead letter after max attempts
+```
+
+Production notes:
+
+- Persist and replicate queue state before acknowledging the producer.
+- Use unique message IDs and reject stale delivery receipts.
+- Extend visibility with heartbeats only while the consumer still owns work.
+- Define ordering per partition/entity instead of promising global order.
+- Pair exponential backoff and jitter with retry classification.
+- A DLQ needs an owner, alert, inspection/redaction policy, replay tool, and
+  retention limit; it is not a place to forget failed data.
+- Track oldest queued age, delivery latency, attempts, timeouts, duplicate
+  effects, DLQ growth, consumer saturation, and end-to-end completion.

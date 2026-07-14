@@ -30,8 +30,10 @@ export class ConsistentHashRing<TNode extends string> {
 	/**
 	 * Adds a physical node by placing many virtual nodes around the ring.
 	 *
-	 * Time: O(v log n) because the ring is sorted after inserting v virtual nodes.
-	 * Space: O(v), where v is the configured virtual-node count.
+	 * Time: O((n + v) log(n + v)), where n is the existing number of virtual
+	 * nodes and v is the configured virtual-node count. The implementation sorts
+	 * the complete ring after insertion.
+	 * Additional space: O(v) for the inserted positions.
 	 */
 	addNode(node: TNode): void {
 		if (this.nodeSet.has(node)) return;

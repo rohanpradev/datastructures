@@ -15,18 +15,24 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 | WebSocket pub/sub | `async/pub-sub.ts` | Teaches real-time fanout, channel subscription, and in-memory limits |
 | Bun server and image workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from native image processing work |
 | Bun runtime APIs | `bun-runtime/` | Covers file I/O, image processing, globbing, subprocesses, password hashing, cookies, and Bun Shell |
+| Modern Bun APIs | `bun-runtime/modern-apis.ts` | Covers strict JSONL/JSON5 validation, Markdown boundaries, CSRF, archives, and cron previews |
 | Bun SQLite | `bun-runtime/sqlite.ts` | Uses in-memory SQL, strict parameters, and transactions without an external service |
 | Rate limiters | `system-design/rate-limiter.ts` | Models token bucket and sliding window throttling |
 | LRU cache | `system-design/lru-cache.ts` | Models hot-data caching and eviction |
 | ID generation | `system-design/id-generation.ts` | Covers Base62 public IDs and Snowflake-style distributed IDs |
 | Consistent hashing | `system-design/consistent-hash.ts` | Maps keys to nodes while minimizing remaps on node changes |
 | Bloom filter | `system-design/bloom-filter.ts` | Trades small false-positive risk for fast negative membership checks |
+| Load balancing | `system-design/load-balancer.ts` | Compares round robin with lifecycle-safe least connections |
+| Replication quorums | `system-design/replication-quorum.ts` | Models N/R/W overlap and availability trade-offs without overclaiming consistency |
+| At-least-once queue | `system-design/at-least-once-queue.ts` | Models visibility leases, redelivery, acknowledgements, delayed retries, and dead letters |
 
 ## How To Study A Topic
 
 1. Read the topic guide.
    - Bun runtime: [BUN_RUNTIME_GUIDE.md](./bun-runtime/BUN_RUNTIME_GUIDE.md)
    - System design: [SYSTEM_DESIGN_NODE_GUIDE.md](./system-design/SYSTEM_DESIGN_NODE_GUIDE.md)
+   - Master handbook: [SYSTEM_DESIGN_HANDBOOK.md](../../docs/SYSTEM_DESIGN_HANDBOOK.md)
+   - Current Bun track: [BUN_2026_CURRICULUM.md](../../docs/BUN_2026_CURRICULUM.md)
 
 2. Open the implementation file and read the JSDoc before the code.
 
@@ -59,6 +65,9 @@ The `bun-runtime/` folder follows the current Bun docs for:
 - `Bun.spawn()` and `Bun.spawnSync()` for direct subprocess control, stream handling, scoped environment variables, exit codes, and resource usage.
 - `bun:sqlite` for local SQL with in-memory databases, prepared statements, strict named parameters, and transactions.
 - `Bun.env`, `Bun.sleep()`, and `Bun.randomUUIDv7()` where the Bun runtime has a direct built-in primitive.
+- `Bun.JSON5`, `Bun.JSONL.parseChunk`, `Bun.markdown`, `Bun.Archive`,
+  `Bun.CSRF`, and `Bun.cron.parse` with explicit validation and security boundaries.
+- Bun 1.3.13+ test isolation, worker parallelism, sharding, and changed-file selection through package scripts.
 
 Official references are linked in [BUN_RUNTIME_GUIDE.md](./bun-runtime/BUN_RUNTIME_GUIDE.md).
 
@@ -93,4 +102,4 @@ Use this checklist for every backend example and test:
 bun run check
 ```
 
-This runs Biome, TypeScript 7 beta typechecking through `tsgo`, and all Bun tests.
+This runs Biome, stable TypeScript 7 typechecking, documentation integrity, and all Bun tests.

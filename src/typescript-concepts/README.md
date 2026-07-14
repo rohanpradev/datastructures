@@ -34,7 +34,7 @@ This folder demonstrates TypeScript features that improve real code quality in t
 
 ## Tooling Notes
 
-- `bun run typecheck` uses `@typescript/native-preview` / `tsgo`, which the current native-preview docs describe as experimental and still in progress.
+- `bun run typecheck` uses stable `typescript@7.0.2` and its native `tsc` compiler. The repository moved off the preview nightly when TypeScript 7 became stable in July 2026.
 - The repo follows Bun's TypeScript guidance by using `moduleResolution: "bundler"`, `module: "Preserve"`, `verbatimModuleSyntax`, and `types: ["bun"]`.
 - `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature` are enabled. `noUncheckedIndexedAccess` is documented as the next strictness backlog because enabling it now surfaces many unrelated algorithm-indexing fixes.
 

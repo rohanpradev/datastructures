@@ -6,21 +6,26 @@
 	"packageManager": "bun@1.3.14",
 	"scripts": {
 		"dev": "bun run src/node-concepts/server.ts",
-		"check": "bun run lint && bun run typecheck && bun run test:ci",
+		"check": "bun run lint && bun run typecheck && bun run docs:check && bun run test:ci",
+		"docs:check": "bun run scripts/validate-docs.ts",
 		"fix": "bun ./node_modules/@biomejs/biome/bin/biome check --write .",
 		"format": "bun ./node_modules/@biomejs/biome/bin/biome format --write .",
 		"lint": "bun ./node_modules/@biomejs/biome/bin/biome check .",
 		"test": "bun test",
 		"test:algorithms": "bun test src/algorithms/tests",
 		"test:bun": "bun test src/node-concepts/test/bun-runtime.test.ts",
-		"test:ci": "bun test",
+		"test:ci": "bun test --coverage --reporter=dots",
+		"test:changed": "bun test --changed",
 		"test:concepts": "bun test src/javascript-concepts/test src/typescript-concepts/test src/node-concepts/test",
 		"test:concepts:smoke": "bun test --randomize --rerun-each=3 src/javascript-concepts/test src/typescript-concepts/test src/node-concepts/test",
 		"test:coverage": "bun test --coverage",
 		"test:data-structures": "bun test src/data-structures/tests",
 		"test:js": "bun test src/javascript-concepts/test",
 		"test:node": "bun test src/node-concepts/test",
-		"typecheck": "tsgo --noEmit",
+		"test:parallel": "bun test --parallel",
+		"test:isolated": "bun test --isolate",
+		"test:system-design": "bun test src/node-concepts/test/system-design.test.ts",
+		"typecheck": "tsc --noEmit",
 		"practice": "bun run scripts/generate-practice.ts",
 		"practice:audit": "bun run scripts/generate-practice.ts -- --audit-targets",
 		"practice:easy": "bun run scripts/generate-practice.ts -- --random easy",
@@ -35,8 +40,8 @@
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.0",
+		"@biomejs/biome": "2.5.3",
 		"@types/bun": "1.3.14",
-		"@typescript/native-preview": "7.0.0-dev.20260629.1"
+		"typescript": "7.0.2"
 	}
 }

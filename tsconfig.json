@@ -16,7 +16,7 @@
 		"rootDir": ".",
 		"types": ["bun"],
 
-		// Path aliases. TypeScript 7 beta no longer supports baseUrl.
+		// Path aliases. TypeScript 7 no longer supports baseUrl.
 		"paths": {
 			"@/*": ["./src/*"]
 		},

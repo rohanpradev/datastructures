@@ -8,7 +8,7 @@ needs a careful pass to avoid noisy non-null assertions.
 Audit command used:
 
 ```bash
-tsgo --noEmit --noUncheckedIndexedAccess true
+tsc --noEmit --noUncheckedIndexedAccess true
 ```
 
 ## Upgrade Plan

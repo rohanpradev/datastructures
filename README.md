@@ -30,7 +30,9 @@ how the notes, comments, and generated practice prompts are meant to teach,
 [docs/INTERVIEW_PLAYBOOK.md](./docs/INTERVIEW_PLAYBOOK.md) during timed
 practice. Current AI-era and enterprise material lives in
 [docs/AI_INTERVIEW_TRENDS_2026.md](./docs/AI_INTERVIEW_TRENDS_2026.md),
+[docs/SYSTEM_DESIGN_HANDBOOK.md](./docs/SYSTEM_DESIGN_HANDBOOK.md),
 [docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md),
+[docs/BUN_2026_CURRICULUM.md](./docs/BUN_2026_CURRICULUM.md),
 and [docs/RESEARCH_BRIEF_2026.md](./docs/RESEARCH_BRIEF_2026.md).
 
 Generate a learner dashboard any time:
@@ -72,7 +74,7 @@ Use the repo as a progressive course, not as a random problem dump.
 | 2 | Core data structures | `src/data-structures/{stack,queue,hash-table,singly-linked-list,doubly-linked-list,binary-tree,binary-search-tree,heap,trie,graph}` | Implement each structure from scratch and state operation complexity without notes. |
 | 3 | Interview algorithms | `src/algorithms/{arrays,strings,sorting,recursion,backtracking,dynamic-programming,bit-manipulation,math-geometry,interview-patterns}` | Recognize the pattern before coding and pass the focused test suite. |
 | 4 | Advanced problem solving | FAANG guides inside each topic folder | Solve mixed problems under time pressure, including follow-ups and edge cases. |
-| 5 | Backend/system design primitives | `src/node-concepts/async`, `src/node-concepts/system-design`, `src/node-concepts/bun-runtime` | Explain the in-memory algorithm, failure modes, and distributed production upgrade. |
+| 5 | Backend/system design primitives | `src/node-concepts/async`, `src/node-concepts/system-design`, `src/node-concepts/bun-runtime`, `docs/SYSTEM_DESIGN_HANDBOOK.md` | Explain the in-memory algorithm, correctness invariant, failure modes, and distributed production upgrade. |
 | 6 | Capstone review | `practice/` plus `bun run check` | Generate unknown practice, solve cleanly, and keep lint, typecheck, tests, and coverage healthy. |
 
 ## What Is Already Covered
@@ -81,8 +83,9 @@ The repo already includes broad DS&A coverage, so new work should fill gaps inst
 
 - Data structures: linked lists, stack, queue, hash table, heap, trie, graph, binary tree, BST, plus LeetCode-style problem guides.
 - Algorithms: arrays, strings, sorting, recursion, backtracking, dynamic programming, bit manipulation, math/geometry, and interview patterns.
-- Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Image processing, Bun process execution, Bun Shell, Bun security, SQLite, and system design blocks.
-- Verification: Bun tests across each topic, TypeScript checking via `tsgo`, Biome lint/format checks, generated practice validation, and GitHub CI.
+- Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Image processing, Bun process execution, Bun Shell, Bun security, SQLite, current JSON5/JSONL/Markdown/Archive/CSRF/Cron APIs, and system-design blocks.
+- System design: load balancing, rate limits, caches, IDs, consistent hashing, Bloom filters, fair scheduling, idempotency, replication quorums, and at-least-once queues with visibility/DLQ semantics.
+- Verification: Bun tests across each topic, stable TypeScript 7 checking via `tsc`, Biome lint/format checks, local Markdown-link validation, generated practice validation, and Linux/Windows GitHub CI.
 
 ## Advanced Topics To Master
 
@@ -97,6 +100,9 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 | ID generation | `src/node-concepts/system-design/id-generation.ts` | Base62 public IDs, Snowflake-style IDs, clock rollback, collision risks. |
 | Fair scheduling | `src/node-concepts/system-design/weighted-fair-queue.ts` | Noisy-neighbor control, multi-tenant work queues, cost-aware scheduling. |
 | Idempotency | `src/node-concepts/system-design/idempotency-store.ts` | Retry-safe writes, duplicate suppression, TTLs, request hashing. |
+| Load balancing | `src/node-concepts/system-design/load-balancer.ts` | Round robin vs least connections, health, draining, overload, retry amplification. |
+| Replication quorums | `src/node-concepts/system-design/replication-quorum.ts` | N/R/W overlap, availability, stale reads, and why overlap alone is not linearizability. |
+| At-least-once queues | `src/node-concepts/system-design/at-least-once-queue.ts` | Visibility leases, redelivery, idempotent consumers, stale receipts, and dead letters. |
 | TypeScript API design | `src/typescript-concepts/advanced-types.ts` | Branded IDs, `NoInfer`, template literal routes, exhaustive unions, typed events. |
 | Async resilience | `src/node-concepts/async` | Retries, timeout budgets, backpressure, circuit breakers, pub/sub fan-out. |
 | Bun-native backend work | `src/node-concepts/bun-runtime` | File I/O, image processing, subprocesses, Shell, password hashing, cookies, SQLite, SQL/Redis boundaries. |
@@ -124,8 +130,8 @@ Research references:
 - [Bun child process docs](https://bun.com/docs/runtime/child-process)
 - [Bun TypeScript docs](https://bun.com/docs/runtime/typescript)
 - [TC39 proposals](https://github.com/tc39/proposals)
-- [TypeScript 7 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/)
-- [TypeScript native preview package](https://www.npmjs.com/package/@typescript/native-preview)
+- [TypeScript 7 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
+- [TypeScript package](https://www.npmjs.com/package/typescript)
 - [TypeScript Handbook: Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [TypeScript 4.9: `satisfies`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
 - [TypeScript 5.0: decorators and const type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html)
@@ -147,12 +153,17 @@ bun run check                 # Lint, typecheck, and run tests
 bun run fix                   # Apply Biome fixes and formatting
 bun run format                # Format supported files
 bun run lint                  # Non-mutating Biome check for CI
-bun run typecheck             # TypeScript 7 beta via tsgo
+bun run typecheck             # Stable TypeScript 7 via tsc
+bun run docs:check            # Validate every local Markdown link
 bun run test:algorithms       # Algorithm tests only
 bun run test:bun              # Bun runtime concept tests only
 bun run test:data-structures  # Data structure tests only
 bun run test:js               # JavaScript core concept tests only
 bun run test:node             # Node/Bun concept tests only
+bun run test:system-design    # Distributed-system primitive tests only
+bun run test:changed          # Tests affected by Git changes
+bun run test:isolated         # Fresh global object per test file
+bun run test:parallel         # Parallel worker-process test files
 bun run test:coverage         # Text and lcov coverage report
 bun test src/typescript-concepts/test # Modern TypeScript concept tests
 bun run practice              # Pick one problem and generate focused practice
@@ -202,11 +213,12 @@ That command runs:
 
 1. `bun run lint`
 2. `bun run typecheck`
-3. `bun run test:ci`
+3. `bun run docs:check`
+4. `bun run test:ci`
 
 CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`, with the Bun version pinned by `packageManager` in `package.json`.
 
-Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, and test-file coverage exclusion. Package installation also uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
+Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, test-file coverage exclusion, and a 60% per-file line/function/statement floor. The current global result is above 96%, while the per-file floor prevents a well-tested algorithm catalog from hiding a completely untested module. Focused scripts also expose Bun 1.3.13+'s changed-file, isolation, and worker-parallel modes without making parallel execution an implicit correctness assumption. Package installation uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
 
 ## How To Solve A Problem You Do Not Know
 
@@ -658,7 +670,7 @@ Inside each topic, read in this order: guide first, implementation second, test 
 ## Tooling
 
 - Runtime: Bun
-- Language: TypeScript 7 beta through `@typescript/native-preview`
+- Language: stable TypeScript 7 through `typescript`
 - Typecheck command: `bun run typecheck`
 - Test runner: Bun test
 - Formatter/linter: Biome

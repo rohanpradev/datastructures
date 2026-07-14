@@ -104,13 +104,18 @@ runner. Use that directly in this repo:
 - Run TypeScript files directly with `bun run`.
 - Keep static checking separate with `bun run typecheck`.
 - Use `bun:test` for focused, watchable, TypeScript-first tests.
+- Use `--isolate`, `--parallel`, `--shard`, and `--changed` deliberately for
+  state isolation and CI scale; keep the normal full test gate.
 - Use `bun test --coverage` through `bun run test:coverage`.
 - Prefer `Bun.file()` and `Bun.write()` for optimized file reads/writes.
 - Use `bunfig.toml` for shared test preload, coverage, and install behavior.
 - Keep Bun execution and static checking separate: Bun can run TypeScript
-  directly, while `bun run typecheck` verifies the repo with `tsgo`.
+  directly, while `bun run typecheck` verifies the repo with stable TypeScript 7.
 - Treat `types: ["bun"]`, `moduleResolution: "bundler"`,
   `module: "Preserve"`, and `verbatimModuleSyntax` as the project baseline.
+- Follow [the current Bun curriculum](./docs/BUN_2026_CURRICULUM.md) for
+  JSON5/JSONL, Markdown, Archive, CSRF, Cron, Image, SQL/Redis, testing,
+  packaging, profiling, and production trade-offs.
 
 ## Practice Metadata
 
@@ -147,6 +152,8 @@ Rate each attempt from 0 to 5:
 ## References
 
 - [Learner note standards](./docs/LEARNER_NOTE_STANDARDS.md)
+- [System design handbook](./docs/SYSTEM_DESIGN_HANDBOOK.md)
+- [Bun 1.3.14 curriculum](./docs/BUN_2026_CURRICULUM.md)
 - [MIT OCW 6.006: Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/)
 - [OpenDSA Data Structures and Algorithms](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/)
 - [CP-Algorithms](https://cp-algorithms.com/)

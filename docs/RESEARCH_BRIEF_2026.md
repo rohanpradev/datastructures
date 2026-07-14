@@ -1,6 +1,6 @@
 # 2026 Interview And Enterprise Learning Research Brief
 
-Last checked: 2026-06-30.
+Last checked: 2026-07-14.
 
 This repo should be treated as a living interview-prep platform: executable
 practice first, then concise guides, then enterprise discussion prompts. The
@@ -19,6 +19,7 @@ research below explains the priorities used for the current upgrade.
 | [TechInterview 2026 pattern comparison](https://www.techinterview.org/post/3233474682/leetcode-patterns-by-frequency/) | Current pattern prep emphasizes around 20 reusable patterns, including two pointers, sliding window, heaps, graph traversal, union-find, DP, trie, and monotonic stack/deque. | Add worked examples and reinforce pattern search in the generator instead of treating problem lists as memorization goals. |
 | [Node.js releases](https://nodejs.org/en/about/previous-releases) | Production applications should use Active LTS or Maintenance LTS releases; Node 24 is LTS and Node 26 is Current as of the checked release table. | Teach current runtime concepts while marking production-facing guidance as LTS-first. |
 | [Bun docs](https://bun.com/docs) | Bun positions itself as a cohesive JavaScript/TypeScript toolkit: runtime, package manager, transpiler, bundler, script runner, and test runner. | Keep Bun as the single local execution platform and avoid extra framework overhead. |
+| [Bun 1.3.14](https://bun.com/blog/bun-v1.3.14) and [Bun 1.3.13](https://bun.com/blog/bun-v1.3.13) | The current release adds Bun Image and platform/runtime improvements; the preceding release added isolated, parallel, sharded, and changed-file test execution. | Pin 1.3.14, add current runtime labs, and expose modern correctness/CI test modes as explicit scripts. |
 | [Bun Image docs](https://bun.com/docs/runtime/image) | Bun documents `Bun.Image` as a native chainable image pipeline for metadata, resizing, rotating, and re-encoding common image formats without npm packages or native addon setup. | Use `Bun.Image` for realistic worker and server examples instead of fake CPU loops. |
 | [Bun child process docs](https://bun.com/docs/runtime/child-process) | Bun documents `Bun.spawn` and `Bun.spawnSync` for subprocess execution with command arrays, stdin/stdout/stderr configuration, exit handling, resource usage, AbortSignal, timeouts, kill signals, and buffer limits. | Add CI-safe subprocess examples for command arrays, scoped environment variables, piped output, and sync startup checks. |
 | [Bun SQL docs](https://bun.com/docs/runtime/sql) | Bun now documents a native Promise-based SQL API for PostgreSQL, MySQL, and SQLite using tagged templates, pooling, transactions, prepared statements, TLS, and environment-based configuration. | Add production SQL discussion while keeping `bun:sqlite` as the CI-safe local exercise. |
@@ -26,11 +27,14 @@ research below explains the priorities used for the current upgrade.
 | [Bun install docs](https://bun.com/docs/pm/cli/install) | Bun documents `minimumReleaseAge` and security scanner hooks for package-install supply-chain controls. | Keep `bunfig.toml` supply-chain controls visible in tooling guidance. |
 | [Bun Shell docs](https://bun.com/docs/runtime/shell) | Bun Shell treats interpolated values as literal strings rather than shell syntax, reducing command-injection risk. | Teach Bun Shell as safer automation, with validation still required for command choice and permissions. |
 | [Bun coverage docs](https://bun.com/docs/test/code-coverage) | Bun supports built-in coverage configuration, including test-file skipping and path ignores. | Keep coverage behavior centralized in `bunfig.toml` and exclude generated practice from coverage signal. |
-| [TypeScript 7.0 beta announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/) | TypeScript 7 beta ships through `@typescript/native-preview` and `tsgo`, with the same behavior as TypeScript 6.0 for TypeScript code and faster execution. | Keep `tsgo` typechecking and document it as modern, but still beta. |
-| [Biome v2.4](https://biomejs.dev/blog/biome-v2-4/) | Biome 2.4 adds embedded snippet support, editor inline configuration, HTML accessibility rules, reporter improvements, and framework support. | Keep Biome as the quality gate and mention accessibility/toolchain awareness in enterprise material. |
+| [TypeScript 7.0 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) | TypeScript 7 is now the stable native Go-based compiler/tooling release with major typecheck and language-service performance work. | Replace the native-preview nightly with stable `typescript@7.0.2` and use `tsc` as the type gate. |
+| [Biome v2.5](https://biomejs.dev/blog/biome-v2-5/) | Biome 2.5 crosses 500 lint rules and adds cross-file linting, watcher mode, plugin fixes, a concise reporter, and many stabilized rules. | Pin the current 2.5 patch line and keep Biome as the fast formatting/lint gate. |
 | [OpenTelemetry signals](https://opentelemetry.io/docs/concepts/signals/) | OpenTelemetry supports traces, metrics, logs, and baggage; events and profiles are under development/proposal-stage material. | System-design answers should include observable signals, not just boxes and arrows. |
 | [CNCF 2025 annual survey announcement](https://www.cncf.io/announcements/2026/01/20/kubernetes-established-as-the-de-facto-operating-system-for-ai-as-production-use-hits-82-in-2025-cncf-annual-cloud-native-survey/) | Kubernetes production use is reported at 82%; future cloud-native maturity is tied to platform engineering, security, and observability standards. | Add platform engineering, GitOps, observability, and multi-tenant operations as expert-level discussion prompts. |
+| [DORA 2025](https://dora.dev/research/2025/dora-report/) | AI acts as an amplifier of the surrounding engineering system; strong platforms, feedback, user focus, and loosely coupled architecture remain foundational. | Teach AI-assisted work with explicit verification, platform quality, fast feedback, and ownership rather than prompt tricks. |
+| [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) | NIST's current AI risk material uses continuous govern, map, measure, and manage functions, with Generative AI and 2026 critical-infrastructure profile work. | Add lifecycle ownership, impact mapping, evaluation, incident handling, and risk governance to AI-system designs. |
 | [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) | OWASP continues to publish LLM application risk guidance for critical vulnerabilities in LLM-powered systems. | Add AI/LLM application design as an expert system-design track with prompt-injection, output-handling, data, supply-chain, and abuse boundaries. |
+| [OWASP Top 10:2025](https://owasp.org/www-project-top-ten/) | The current general web application baseline keeps secure design, access control, injection, supply chain, cryptographic, authentication, integrity, logging, and exception-handling risks in view. | Tie Bun security APIs to a complete threat model rather than presenting an API call as a security program. |
 
 ## Curriculum Decisions
 
@@ -55,7 +59,7 @@ research below explains the priorities used for the current upgrade.
    Learners should be able to discuss LLM app risks, evaluation, guardrails,
    retrieval boundaries, data leakage, model fallback, and operational cost.
 
-6. Keep tooling modern but pragmatic. Bun, TypeScript native preview, Biome,
+6. Keep tooling modern but pragmatic. Bun, stable TypeScript 7, Biome,
    and current Node release knowledge are useful because they make the course
    fast and realistic; the learning goal is still transferable engineering
    judgment.

@@ -12,6 +12,16 @@ import {
 } from "@/node-concepts/bun-runtime/file-system";
 import { processSampleImageWithBun } from "@/node-concepts/bun-runtime/image-processing";
 import {
+	buildLearningArchive,
+	createCsrfToken,
+	nextCronOccurrence,
+	parseCompleteJsonLines,
+	parseJson5Config,
+	readLearningArchive,
+	renderLearningMarkdown,
+	verifyCsrfToken,
+} from "@/node-concepts/bun-runtime/modern-apis";
+import {
 	bunVersionFromSpawn,
 	bunVersionFromSpawnSync,
 	readEnvWithSpawn,
@@ -161,6 +171,95 @@ describe("Bun hashing, password, and cookie APIs", () => {
 			session_id: "session-123",
 			theme: "dark",
 		});
+	});
+});
+
+describe("Modern Bun API Patterns", () => {
+	type ProgressEvent = { score: number; slug: string };
+	const isProgressEvent = (value: unknown): value is ProgressEvent => {
+		if (!value || typeof value !== "object") return false;
+		const candidate = value as Partial<ProgressEvent>;
+		return typeof candidate.score === "number" && typeof candidate.slug === "string";
+	};
+
+	test("strictly parses and validates complete JSONL imports", () => {
+		const result = parseCompleteJsonLines(
+			'{"slug":"two-sum","score":4}\n{"slug":"lru-cache","score":3}\n',
+			isProgressEvent,
+		);
+
+		expect(result.done).toBe(true);
+		expect(result.values).toEqual([
+			{ score: 4, slug: "two-sum" },
+			{ score: 3, slug: "lru-cache" },
+		]);
+		expect(() =>
+			parseCompleteJsonLines('{"slug":"broken"', isProgressEvent),
+		).toThrow();
+		expect(() =>
+			parseCompleteJsonLines('{"slug":"missing-score"}\n', isProgressEvent),
+		).toThrow("JSONL record failed validation");
+	});
+
+	test("parses human-friendly JSON5 but keeps domain validation explicit", () => {
+		const config = parseJson5Config(
+			"{ level: 'advanced', minutes: 45, topics: ['queues',], }",
+			(value): value is { level: string; minutes: number; topics: string[] } => {
+				if (!value || typeof value !== "object") return false;
+				const candidate = value as Record<string, unknown>;
+				return (
+					typeof candidate["level"] === "string" &&
+					typeof candidate["minutes"] === "number" &&
+					Array.isArray(candidate["topics"])
+				);
+			},
+		);
+
+		expect(config).toEqual({
+			level: "advanced",
+			minutes: 45,
+			topics: ["queues"],
+		});
+	});
+
+	test("renders GFM learning notes while disabling raw HTML", () => {
+		const html = renderLearningMarkdown(
+			"# Queue Design\n\n- [x] visibility timeout\n\n<script>alert(1)</script>",
+		);
+
+		expect(html).toContain('<h1 id="queue-design">Queue Design</h1>');
+		expect(html).toContain('type="checkbox"');
+		expect(html).not.toContain("<script>");
+	});
+
+	test("generates and verifies expiring CSRF tokens", () => {
+		const secret = "a-secure-demo-secret-with-32-characters";
+		const token = createCsrfToken(secret, 60_000);
+
+		expect(verifyCsrfToken(token, secret, 60_000)).toBe(true);
+		expect(
+			verifyCsrfToken(token, "another-secure-secret-with-32-characters", 60_000),
+		).toBe(false);
+	});
+
+	test("round-trips selected learning files through an in-memory archive", async () => {
+		const bytes = await buildLearningArchive({
+			"README.md": "# Course",
+			"notes/queue.md": "visibility timeout",
+			"notes/cache.md": "cache aside",
+		});
+		const files = await readLearningArchive(bytes, "notes/**");
+
+		expect([...files]).toEqual([
+			["notes/cache.md", "cache aside"],
+			["notes/queue.md", "visibility timeout"],
+		]);
+	});
+
+	test("previews UTC cron schedules without registering a job", () => {
+		expect(
+			nextCronOccurrence("0 9 * * MON-FRI", new Date("2026-07-17T10:00:00Z"))?.toISOString(),
+		).toBe("2026-07-20T09:00:00.000Z");
 	});
 });
 

@@ -33,29 +33,6 @@ function busyWait(ms: number) {
 const isTest = Bun.env.NODE_ENV === "test";
 const isProd = Bun.env.NODE_ENV === "production";
 
-type TestCleanup = () => void | Promise<void>;
-type TestCleanupGlobal = typeof globalThis & {
-	__DATASTRUCTURES_TEST_CLEANUPS__?: TestCleanup[];
-};
-
-/**
- * Registers a cleanup function to be executed after tests complete.
- * Useful for closing connections, terminating workers, or clearing resources.
- *
- * Time Complexity: O(1)
- * Space Complexity: O(1)
- *
- * @param cleanup - Cleanup function to register (can be async)
- *
- * @example
- * registerTestCleanup(() => server.close());
- */
-function registerTestCleanup(cleanup: TestCleanup): void {
-	const cleanupGlobal = globalThis as TestCleanupGlobal;
-	cleanupGlobal.__DATASTRUCTURES_TEST_CLEANUPS__ ??= [];
-	cleanupGlobal.__DATASTRUCTURES_TEST_CLEANUPS__.push(cleanup);
-}
-
 interface Todo {
 	userId: number;
 	id: number;
@@ -334,8 +311,11 @@ export const server = Bun.serve({
 });
 
 if (isTest) {
+	// Bun can rerun a test file in the same process. Do not stop this exported
+	// singleton from an afterAll hook: later runs would import the cached server
+	// after its listening socket had been closed. `unref()` lets Bun exit once
+	// the test work is done, while individual tests still close their sockets.
 	server.unref();
-	registerTestCleanup(() => stopServer(true));
 }
 
 let shutdownStarted = false;

@@ -15,9 +15,13 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify
-    runs-on: ubuntu-latest
+    name: Verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v6
@@ -40,6 +44,9 @@ jobs:
 
       - name: TypeScript 7 typecheck
         run: bun run typecheck
+
+      - name: Documentation integrity
+        run: bun run docs:check
 
       - name: Run tests
         run: bun run test:ci

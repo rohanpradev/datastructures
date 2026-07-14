@@ -85,7 +85,7 @@ Focus on mixed problem solving and runtime behavior.
    weighted graph discussion.
 4. Runtime resilience: timeout budgets, abort signals, retries, circuit
    breakers, bounded concurrency, pub/sub fanout, worker isolation.
-5. Tooling: `bun:test`, `tsgo`, Biome, coverage, manifest generation, and CI
+5. Tooling: `bun:test`, stable TypeScript 7, Biome, coverage, manifest generation, and CI
    gates.
 
 ## Expert Track

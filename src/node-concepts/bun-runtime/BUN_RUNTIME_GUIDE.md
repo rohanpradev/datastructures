@@ -20,6 +20,12 @@ Official references:
 - [Bun TypeScript setup](https://bun.com/docs/runtime/typescript)
 - [Bun utilities](https://bun.com/docs/runtime/utils)
 - [Bun test coverage](https://bun.com/docs/test/code-coverage)
+- [Bun JSONL](https://bun.com/docs/runtime/jsonl)
+- [Bun JSON5](https://bun.com/docs/runtime/json5)
+- [Bun Markdown](https://bun.com/docs/runtime/markdown)
+- [Bun Archive](https://bun.com/docs/runtime/archive)
+- [Bun CSRF](https://bun.com/docs/runtime/csrf)
+- [Bun Cron](https://bun.com/docs/runtime/cron)
 - [bun install](https://bun.com/docs/pm/cli/install)
 - [bunfig.toml](https://bun.com/docs/runtime/bunfig)
 
@@ -80,7 +86,25 @@ Official references:
     This repo uses `install.minimumReleaseAge` in `bunfig.toml`, which Bun documents as a filter against very recently published package versions. The docs also expose a security scanner hook for deeper install-time checks.
 
 19. Keep coverage behavior centralized.
-    This repo uses Bun's coverage reporters, `coverageSkipTestFiles`, and `coveragePathIgnorePatterns` in `bunfig.toml` so generated practice files do not distort the course signal.
+    This repo uses Bun's coverage reporters, a 60% per-file line/function/statement floor, `coverageSkipTestFiles`, and `coveragePathIgnorePatterns` in `bunfig.toml` so generated practice files do not distort the course signal. Global coverage remains above 96%, but the per-file floor prevents that aggregate from hiding an untested module.
+
+20. Treat JSON5 and JSONL parsing as syntax, not schema validation.
+    Keep parsed values as `unknown` until runtime guards validate the domain. Use `Bun.JSONL.parseChunk` when partial input, consumed offsets, and syntax errors must be explicit.
+
+21. Treat Markdown rendering and HTML sanitization as separate concerns.
+    Disable raw HTML for course notes, then add a dedicated sanitizer and URL policy when public/untrusted content requires it.
+
+22. Prefer in-memory archive inspection for untrusted imports.
+    `Bun.Archive.files()` can filter and inspect entries without first writing attacker-controlled paths to disk. Extraction still needs a sandbox, path policy, size limits, and resource limits.
+
+23. Separate scheduling from durable workflow guarantees.
+    `Bun.cron.parse` previews UTC schedules; in-process cron dies with the process, while OS registration persists. Distributed jobs still need single ownership, idempotency, misfire policy, history, retries, and observability.
+
+24. Use CSRF tokens as one layer in a browser security design.
+    Pair `Bun.CSRF` with secure cookies, SameSite policy, origin checks, authentication, authorization, and XSS defenses.
+
+25. Use current test-runner scale features deliberately.
+    `--isolate` catches leaked globals, `--parallel` uses worker processes, `--shard` splits CI, and `--changed` narrows feedback. Randomized full-suite runs remain important because focused selection cannot prove the entire repository is healthy.
 
 ## Step-By-Step Problem Approach
 

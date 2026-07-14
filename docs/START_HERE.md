@@ -18,9 +18,14 @@ readiness, system design, and current AI-era interview formats.
 5. Use [AI_INTERVIEW_TRENDS_2026.md](./AI_INTERVIEW_TRENDS_2026.md) for
    AI-assisted, no-AI, debugging, and repo-comprehension interview drills.
 6. Use
+   [SYSTEM_DESIGN_HANDBOOK.md](./SYSTEM_DESIGN_HANDBOOK.md) for the complete
+   concept map, answer framework, correctness checklist, and question bank.
+7. Use
    [ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md)
-   for senior/staff system-design practice.
-7. Generate a dashboard:
+   for detailed senior/staff scenario walkthroughs.
+8. Use [BUN_2026_CURRICULUM.md](./BUN_2026_CURRICULUM.md) to cover the current
+   Bun release, production boundaries, and modern test workflows.
+9. Generate a dashboard:
 
 ```bash
 bun run practice:dashboard
@@ -52,7 +57,7 @@ References:
 
 - Bun TypeScript docs: https://bun.com/docs/runtime/typescript
 - Bun test docs: https://bun.com/docs/test/writing-tests
-- TypeScript native preview: https://www.npmjs.com/package/@typescript/native-preview
+- TypeScript 7 release: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/
 - TypeScript docs: https://www.typescriptlang.org/docs/
 - TypeScript TSConfig reference: https://www.typescriptlang.org/tsconfig/
 
@@ -105,7 +110,8 @@ the focused test command printed by the generator.
 5. Trees, BSTs, tries, heaps, graphs.
 6. Recursion, backtracking, dynamic programming, bit manipulation.
 7. Mixed interview patterns and AI-era interview drills.
-8. Bun runtime, async resilience, and enterprise system-design primitives.
+8. Bun runtime and current Bun 1.3 APIs.
+9. Distributed-system primitives, the system-design handbook, and enterprise scenarios.
 
 ## End-To-End Checks
 
@@ -113,6 +119,7 @@ Run these before trusting a change:
 
 ```bash
 bun run check
+bun run docs:check
 bun run practice:audit
 bun run practice:validate
 ```

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { AtLeastOnceQueue } from "@/node-concepts/system-design/at-least-once-queue";
 import {
 	BloomFilter,
 	optimalBitCount,
@@ -12,11 +13,19 @@ import {
 	SnowflakeIdGenerator,
 } from "@/node-concepts/system-design/id-generation";
 import { IdempotencyKeyStore } from "@/node-concepts/system-design/idempotency-store";
+import {
+	LeastConnectionsLoadBalancer,
+	RoundRobinLoadBalancer,
+} from "@/node-concepts/system-design/load-balancer";
 import { LRUCache } from "@/node-concepts/system-design/lru-cache";
 import {
 	SlidingWindowRateLimiter,
 	TokenBucketRateLimiter,
 } from "@/node-concepts/system-design/rate-limiter";
+import {
+	analyzeQuorum,
+	majorityQuorum,
+} from "@/node-concepts/system-design/replication-quorum";
 import { WeightedFairQueue } from "@/node-concepts/system-design/weighted-fair-queue";
 
 describe("TokenBucketRateLimiter", () => {
@@ -373,3 +382,181 @@ describe("IdempotencyKeyStore", () => {
 		);
 	});
 });
+
+describe("Load Balancing Patterns", () => {
+	test("round robin spreads sequential requests and resets on membership change", () => {
+		const balancer = new RoundRobinLoadBalancer([
+			{ id: "api-a" },
+			{ id: "api-b" },
+			{ id: "api-c" },
+		]);
+
+		expect(Array.from({ length: 5 }, () => balancer.select()?.id)).toEqual([
+			"api-a",
+			"api-b",
+			"api-c",
+			"api-a",
+			"api-b",
+		]);
+
+		balancer.setBackends([{ id: "api-c" }]);
+		expect(balancer.select()?.id).toBe("api-c");
+	});
+
+	test("least connections accounts for active work and releases safely", () => {
+		const balancer = new LeastConnectionsLoadBalancer([
+			{ id: "slow-a" },
+			{ id: "fast-b" },
+		]);
+		const first = balancer.acquire()!;
+		const second = balancer.acquire()!;
+		const third = balancer.acquire()!;
+
+		expect([first.backend.id, second.backend.id, third.backend.id]).toEqual([
+			"slow-a",
+			"fast-b",
+			"slow-a",
+		]);
+		expect(balancer.activeConnections()).toEqual({
+			"fast-b": 1,
+			"slow-a": 2,
+		});
+
+		first.release();
+		first.release();
+		expect(first.released).toBe(true);
+		expect(balancer.activeConnections()["slow-a"]).toBe(1);
+	});
+
+	test("rejects duplicate backend identities", () => {
+		expect(
+			() => new RoundRobinLoadBalancer([{ id: "same" }, { id: "same" }]),
+		).toThrow("duplicate backend id");
+	});
+
+	test("handles empty pools and disposes acquired connection leases", () => {
+		expect(new RoundRobinLoadBalancer([]).select()).toBeUndefined();
+		expect(new LeastConnectionsLoadBalancer([]).acquire()).toBeUndefined();
+
+		const balancer = new LeastConnectionsLoadBalancer([{ id: "api-a" }]);
+		{
+			using lease = balancer.acquire();
+			expect(lease?.backend.id).toBe("api-a");
+			expect(balancer.activeConnections()).toEqual({ "api-a": 1 });
+		}
+		expect(balancer.activeConnections()).toEqual({ "api-a": 0 });
+	});
+});
+
+describe("Replication Quorum Patterns", () => {
+	test("explains majority overlap and availability trade-offs", () => {
+		expect(analyzeQuorum(majorityQuorum(3))).toEqual({
+			readFailureTolerance: 1,
+			readQuorum: 2,
+			readWriteOverlap: true,
+			replicas: 3,
+			writeFailureTolerance: 1,
+			writeQuorum: 2,
+			writeWriteOverlap: true,
+		});
+	});
+
+	test("shows why fast R=1 and W=1 reads can be stale", () => {
+		const analysis = analyzeQuorum({
+			readQuorum: 1,
+			replicas: 3,
+			writeQuorum: 1,
+		});
+
+		expect(analysis.readWriteOverlap).toBe(false);
+		expect(analysis.writeWriteOverlap).toBe(false);
+		expect(analysis.readFailureTolerance).toBe(2);
+	});
+
+	test("rejects impossible quorum plans", () => {
+		expect(() =>
+			analyzeQuorum({ readQuorum: 4, replicas: 3, writeQuorum: 2 }),
+		).toThrow("readQuorum must not exceed replicas");
+		expect(() => majorityQuorum(0)).toThrow(
+			"replicas must be a positive integer",
+		);
+	});
+});
+
+describe("AtLeastOnceQueue", () => {
+	function createQueue(maxAttempts = 3) {
+		let nextId = 1;
+		return new AtLeastOnceQueue<string>({
+			idFactory: () => `job-${nextId++}`,
+			maxAttempts,
+			visibilityTimeoutMs: 100,
+		});
+	}
+
+		test("hides delivered work until it is acknowledged", () => {
+		const queue = createQueue();
+		queue.enqueue("send-email", 0);
+
+		const delivery = queue.receive(0)!;
+		expect(delivery).toMatchObject({
+			attempt: 1,
+			id: "job-1",
+			value: "send-email",
+		});
+			expect(queue.receive(50)).toBeUndefined();
+			expect(queue.stats(50)).toEqual({
+				deadLettered: 0,
+				inFlight: 1,
+				queued: 0,
+			});
+			expect(queue.stats(101)).toEqual({
+				deadLettered: 0,
+				inFlight: 0,
+				queued: 1,
+			});
+			expect(queue.ack(delivery.receipt)).toBe(true);
+		expect(queue.stats()).toEqual({ deadLettered: 0, inFlight: 0, queued: 0 });
+	});
+
+	test("redelivers after a visibility timeout and rejects the stale receipt", () => {
+		const queue = createQueue();
+		queue.enqueue("resize-image", 0);
+
+		const first = queue.receive(0)!;
+		const second = queue.receive(101)!;
+
+		expect(second.attempt).toBe(2);
+		expect(second.id).toBe(first.id);
+		expect(second.receipt).not.toBe(first.receipt);
+		expect(queue.ack(first.receipt)).toBe(false);
+		expect(queue.ack(second.receipt)).toBe(true);
+	});
+
+		test("supports delayed retries and dead-letters exhausted work", () => {
+		const queue = createQueue(2);
+		queue.enqueue("poison-message", 0);
+
+		const first = queue.receive(0)!;
+		expect(queue.nack(first.receipt, 10, 50)).toBe(true);
+		expect(queue.receive(59)).toBeUndefined();
+		expect(queue.receive(60)?.attempt).toBe(2);
+
+		expect(queue.receive(161)).toBeUndefined();
+			expect(queue.peekDeadLetters()).toEqual([
+				{ attempts: 2, id: "job-1", value: "poison-message" },
+			]);
+		});
+
+		test("rejects reused message IDs so stale receipts cannot target new work", () => {
+			const queue = new AtLeastOnceQueue<string>({
+				idFactory: () => "duplicate-id",
+				maxAttempts: 1,
+				visibilityTimeoutMs: 100,
+			});
+
+			queue.enqueue("first", 0);
+			expect(() => queue.enqueue("second", 0)).toThrow(
+				"idFactory returned duplicate id",
+			);
+		});
+	});
