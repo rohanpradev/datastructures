@@ -172,10 +172,13 @@ bun run practice:medium       # Generate one random medium target
 bun run practice:hard         # Generate one random hard target
 bun run practice:random       # Generate a random focused problem
 bun run practice:list         # List focused practice targets with metadata
+bun run practice:run          # Run the active problem once
+bun run practice:watch        # Re-run the active problem on every save
+bun run practice:status       # Show the active problem and exact file paths
 bun run practice:manifest     # Write practice/practice-manifest.json
 bun run practice:dashboard    # Write manifest plus learning-dashboard.md
-bun run practice:audit        # Validate test/export naming for focused practice
-bun run practice:validate     # Generate every focused target and validate imports/stubs
+bun run practice:audit        # Prove every eligible test block maps exactly once
+bun run practice:validate     # Run every focused scenario against stub and reference
 bun dev                       # Run Bun server examples
 ```
 
@@ -186,7 +189,8 @@ The focused practice generator depends on consistent names between tests and sou
 - Standalone interview problems use `export function problemName(...)`.
 - Data structures and stateful APIs use `export class StructureName`.
 - Each generated manifest entry includes `topic`, `pattern`, `difficulty`, `level`, `interviewMode`, `estimatedMinutes`, selected `exports`, learner objectives, an attempt checklist, a complexity prompt, readiness rubric, spaced-review cadence, and enterprise discussion prompts. Use `bun run practice:manifest` when you want to audit coverage or build a dashboard across every problem.
-- `bun run practice:audit` verifies that each focused test maps cleanly to the intended source export. Broad learner modules are allowed only when their test title makes that scope explicit.
+- `bun run practice:audit` verifies names and exports, then proves every eligible top-level runnable block maps to exactly one focused target. Broad learner modules are allowed only when their test title makes that scope explicit.
+- `bun run practice:validate` generates every target in isolation, verifies its test reaches the generated stub, then reruns every focused scenario against the canonical implementation. Missing hooks, cases, imports, or exports fail the gate.
 - Helper functions stay unexported unless they are intentionally tested as their own problem.
 - A top-level test block should be named after the main export, for example `describe("twoSum", ...)`.
 - Multi-export blocks should use clear broad titles such as `Integration`, `Comparison`, `Edge Cases`, or `Patterns`.
@@ -571,12 +575,14 @@ bun run practice -- --list heap
 bun run practice -- --problem 160
 bun run practice -- --problem kth-largest-element
 bun run practice -- --problem kthLargestElement
+bun run practice -- --list medium graph
+bun run practice -- --random graph --seed cohort-a
 ```
 
-The list output includes each target's ID, slug, exported symbol, and source file. Use the slug or exported symbol when you want a repeatable command for a particular problem; use the ID for quick one-off selection from the current list.
+Search terms compose as filters, so `medium graph` means targets matching both terms. The list output includes each target's ID, slug, exported symbol, and source file. Use the slug or exported symbol when you want a repeatable command for a particular problem; use the ID for quick one-off selection from the current list. A seed makes random selection reproducible across machines with the same target catalog.
 
-4. Implement the generated file under `practice/`.
-5. Run the exact focused test command printed by the generator.
+4. Implement the generated file under `practice/`. Generating the same target again preserves your code; pass `--force` only when you intentionally want to reset that implementation.
+5. Run `bun run practice:run`, or keep `bun run practice:watch` open while coding. `bun run practice:status` restores the exact file and command for the active problem.
 6. Compare with `src/`.
 7. Explain the pattern and complexity in your own words.
 

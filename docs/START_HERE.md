@@ -94,12 +94,16 @@ Use topic search when you know what to drill:
 bun run practice -- --random beginner
 bun run practice -- --random expert
 bun run practice -- --list graph
+bun run practice -- --list medium graph
 bun run practice -- --random sliding
+bun run practice -- --random sliding --seed cohort-a
 bun run practice -- --problem kthLargestElement
 ```
 
-After generating a problem, implement only the file under `practice/`, then run
-the focused test command printed by the generator.
+After generating a problem, implement only the file under `practice/`, then use
+`bun run practice:run` for one test pass or `bun run practice:watch` for feedback
+on every save. `bun run practice:status` restores the active paths and commands.
+Generating the same target preserves your code; `--force` is the explicit reset.
 
 ## Study Order
 
@@ -125,5 +129,7 @@ bun run practice:validate
 ```
 
 `bun run check` verifies formatting, linting, typechecking, and all tests.
-`practice:audit` verifies test-to-export mapping. `practice:validate` generates
-every focused target and catches broken generated imports or stubs.
+`practice:audit` verifies test-to-export mapping and proves every eligible
+runnable block is mapped exactly once. `practice:validate` generates every target,
+checks its stub boundary, then runs all focused scenarios against the canonical
+implementation so missing cases or imports cannot pass silently.

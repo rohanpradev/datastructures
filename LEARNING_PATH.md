@@ -15,6 +15,8 @@ bun run practice:hard
 bun run practice:random
 bun run practice:random graph
 bun run practice -- --problem twoSum
+bun run practice -- --list medium graph
+bun run practice -- --random graph --seed cohort-a
 ```
 
 2. Before coding, write five notes in your own words:
@@ -22,7 +24,9 @@ bun run practice -- --problem twoSum
 
 3. Implement only the generated file under `practice/`.
 
-4. Run the focused test printed by the generator.
+4. Run `bun run practice:run`, or use `bun run practice:watch` for feedback on
+   every save. Use `bun run practice:status` to recover the active file and
+   command later.
 
 5. Add one missing edge-case test if your first attempt was wrong.
 
@@ -39,6 +43,13 @@ bun run check
 bun run practice:audit
 bun run practice:validate
 ```
+
+The audit prevents eligible problem blocks from disappearing from discovery;
+validation checks the generated stub boundary and reruns every focused scenario
+against the canonical implementation.
+
+Generating the same target again keeps your existing implementation. Use
+`--force` only when you deliberately want a fresh starter file.
 
 ## Learning Material First Pass
 

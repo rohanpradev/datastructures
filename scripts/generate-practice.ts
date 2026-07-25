@@ -8,19 +8,21 @@
  *
  * Useful commands:
  * - bun run practice
- * - bun run practice -- --list heap
- * - bun run practice -- --problem kthLargestElement
- * - bun run practice -- --all --clean
+ * - bun run practice --list heap
+ * - bun run practice --problem kthLargestElement
+ * - bun run practice --run
+ * - bun run practice --watch
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { mkdir, rm } from "node:fs/promises";
 import { execPath, stdin as input, stdout as output } from "node:process";
 import { createInterface } from "node:readline/promises";
-import { basename, dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 
 const SRC_DIR = join(process.cwd(), "src");
 const PRACTICE_DIR = join(process.cwd(), "practice");
+const PRACTICE_SESSION_FILE = join(PRACTICE_DIR, ".practice-session.json");
 
 const EXCLUDE_PATTERNS = [
 	/\.test\.ts$/,
@@ -31,16 +33,31 @@ const EXCLUDE_PATTERNS = [
 
 type CliOptions = {
 	all: boolean;
+	auditTargets: boolean;
 	clean: boolean;
 	dashboard: boolean;
+	force: boolean;
 	help: boolean;
 	listQuery: string | null;
 	manifest: boolean;
 	problemQuery: string | null;
 	randomQuery: string | null;
+	run: boolean;
+	seed: string | null;
 	smokeTest: boolean;
+	status: boolean;
 	validateAll: boolean;
-	auditTargets: boolean;
+	watch: boolean;
+};
+
+type PracticeSession = {
+	version: 1;
+	targetId: number;
+	title: string;
+	slug: string;
+	implementationPaths: string[];
+	testPath: string;
+	startedAt: string;
 };
 
 type ImportSymbol = {
@@ -56,7 +73,13 @@ type LocalImport = {
 };
 
 type RunnableBlockKind = "describe" | "test" | "it";
-type RunnableBlockModifier = "only" | "skip" | "todo" | null;
+type RunnableBlockModifier =
+	| "conditional"
+	| "failing"
+	| "only"
+	| "skip"
+	| "todo"
+	| null;
 
 type DescribeBlock = {
 	kind: RunnableBlockKind;
@@ -127,6 +150,22 @@ type PracticeManifestEntry = {
 	exports: string[];
 };
 
+type PracticeCatalogAudit = {
+	testFiles: number;
+	runnableBlocks: number;
+	selectableBlocks: number;
+	eligibleBlocks: number;
+	coveredBlocks: number;
+	skippedBlocks: number;
+	integrationBlocks: number;
+	localImplementationFreeBlocks: number;
+	excludedBlocks: Array<{
+		test: string;
+		title: string;
+		reason: "integration" | "no local implementation";
+	}>;
+};
+
 type ExportInfo = {
 	localName: string;
 	exportedName: string;
@@ -141,22 +180,30 @@ function shouldProcess(filePath: string): boolean {
 export function parseArgs(args: string[]): CliOptions {
 	const options: CliOptions = {
 		all: false,
+		auditTargets: false,
 		clean: false,
 		dashboard: false,
+		force: false,
 		help: false,
 		listQuery: null,
 		manifest: false,
 		problemQuery: null,
 		randomQuery: null,
+		run: false,
+		seed: null,
 		smokeTest: false,
+		status: false,
 		validateAll: false,
-		auditTargets: false,
+		watch: false,
 	};
+	const positionalQuery: string[] = [];
 
 	for (let index = 0; index < args.length; index++) {
 		const arg = args[index]!;
 
-		if (arg === "--all") {
+		if (arg === "--") {
+			continue;
+		} else if (arg === "--all") {
 			options.all = true;
 		} else if (arg === "--validate-all-focused") {
 			options.validateAll = true;
@@ -170,43 +217,131 @@ export function parseArgs(args: string[]): CliOptions {
 			options.manifest = true;
 		} else if (arg === "--clean") {
 			options.clean = true;
+		} else if (arg === "--force") {
+			options.force = true;
+		} else if (arg === "--run" || arg === "--test") {
+			options.run = true;
+		} else if (arg === "--watch") {
+			options.watch = true;
+		} else if (arg === "--status") {
+			options.status = true;
 		} else if (arg === "--help" || arg === "-h") {
 			options.help = true;
-		} else if (arg === "--list") {
-			const next = args[index + 1];
-			if (next && !next.startsWith("--")) {
-				options.listQuery = next;
-				index++;
-			} else {
-				options.listQuery = "";
-			}
+		} else if (arg === "--list" || arg === "-l") {
+			const query = consumeQueryArgs(args, index + 1);
+			options.listQuery = query.value;
+			index = query.lastIndex;
 		} else if (arg.startsWith("--list=")) {
 			options.listQuery = arg.slice("--list=".length);
 		} else if (arg === "--random" || arg === "-r") {
-			const next = args[index + 1];
-			if (next && !next.startsWith("--")) {
-				options.randomQuery = next;
-				index++;
-			} else {
-				options.randomQuery = "";
-			}
+			const query = consumeQueryArgs(args, index + 1);
+			options.randomQuery = query.value;
+			index = query.lastIndex;
 		} else if (arg.startsWith("--random=")) {
 			options.randomQuery = arg.slice("--random=".length);
 		} else if (arg === "--problem" || arg === "-p") {
-			const next = args[index + 1];
-			if (!next || next.startsWith("--")) {
+			const query = consumeQueryArgs(args, index + 1);
+			if (query.value.length === 0) {
 				throw new Error("--problem requires a search term");
 			}
-			options.problemQuery = next;
-			index++;
+			options.problemQuery = query.value;
+			index = query.lastIndex;
 		} else if (arg.startsWith("--problem=")) {
-			options.problemQuery = arg.slice("--problem=".length);
-		} else if (!arg.startsWith("--") && options.problemQuery === null) {
-			options.problemQuery = arg;
+			const query = arg.slice("--problem=".length).trim();
+			if (query.length === 0) {
+				throw new Error("--problem requires a search term");
+			}
+			options.problemQuery = query;
+		} else if (arg === "--seed") {
+			const next = args[index + 1];
+			if (!next || next.startsWith("-")) {
+				throw new Error("--seed requires a value");
+			}
+			options.seed = next;
+			index++;
+		} else if (arg.startsWith("--seed=")) {
+			const seed = arg.slice("--seed=".length).trim();
+			if (seed.length === 0) throw new Error("--seed requires a value");
+			options.seed = seed;
+		} else if (arg.startsWith("-")) {
+			throw new Error(`Unknown option: ${arg}`);
+		} else {
+			positionalQuery.push(arg);
 		}
 	}
 
+	if (positionalQuery.length > 0) {
+		if (
+			options.problemQuery !== null ||
+			options.listQuery !== null ||
+			options.randomQuery !== null
+		) {
+			throw new Error(
+				`Unexpected positional search term: ${positionalQuery.join(" ")}`,
+			);
+		}
+		options.problemQuery = positionalQuery.join(" ");
+	}
+
+	validateCliModes(options);
+
 	return options;
+}
+
+function consumeQueryArgs(
+	args: string[],
+	startIndex: number,
+): { value: string; lastIndex: number } {
+	const queryParts: string[] = [];
+	let index = startIndex;
+
+	while (index < args.length && !args[index]!.startsWith("-")) {
+		queryParts.push(args[index]!);
+		index++;
+	}
+
+	return {
+		value: queryParts.join(" ").trim(),
+		lastIndex: index - 1,
+	};
+}
+
+function validateCliModes(options: CliOptions): void {
+	if (options.help) return;
+
+	const selectedModes = [
+		options.all && "--all",
+		options.auditTargets && "--audit-targets",
+		options.dashboard && "--dashboard",
+		options.listQuery !== null && "--list",
+		options.manifest && "--manifest",
+		options.problemQuery !== null && "--problem",
+		options.randomQuery !== null && "--random",
+		options.run && "--run",
+		options.smokeTest && "--smoke-test",
+		options.status && "--status",
+		options.validateAll && "--validate-all-focused",
+		options.watch && "--watch",
+	].filter((mode): mode is string => typeof mode === "string");
+
+	if (selectedModes.length > 1) {
+		throw new Error(`Choose one mode at a time: ${selectedModes.join(", ")}`);
+	}
+
+	if (options.seed !== null && options.randomQuery === null) {
+		throw new Error("--seed can only be used with --random");
+	}
+
+	const isFocusedGeneration =
+		selectedModes.length === 0 ||
+		options.problemQuery !== null ||
+		options.randomQuery !== null;
+	if (options.force && !isFocusedGeneration) {
+		throw new Error("--force can only be used when generating one problem");
+	}
+	if (options.clean && !isFocusedGeneration && !options.all) {
+		throw new Error("--clean can only be used when generating practice files");
+	}
 }
 
 function printHelp(): void {
@@ -214,15 +349,19 @@ function printHelp(): void {
 
 Usage:
   bun run practice
-  bun run practice -- --list [search]
-  bun run practice -- --problem <search>
-  bun run practice -- --random [search]
-  bun run practice -- --manifest
-  bun run practice -- --dashboard
-  bun run practice -- --all --clean
-  bun run practice -- --validate-all-focused
-  bun run practice -- --audit-targets
-  bun run practice -- --smoke-test
+  bun run practice <search>
+  bun run practice --list [search]
+  bun run practice --problem <search>
+  bun run practice --random [search] [--seed <value>]
+  bun run practice --run
+  bun run practice --watch
+  bun run practice --status
+  bun run practice --manifest
+  bun run practice --dashboard
+  bun run practice --all --clean
+  bun run practice --validate-all-focused
+  bun run practice --audit-targets
+  bun run practice --smoke-test
 
 Default:
   Interactive search and pick one problem.
@@ -231,14 +370,19 @@ Options:
   --list [search]      List available focused practice targets.
   --problem <search>   Generate the best matching target non-interactively.
   --random [search]    Generate one random target, optionally filtered.
+  --seed <value>       Make --random selection reproducible.
+  --run, --test        Run the active problem once.
+  --watch              Re-run the active problem whenever its files change.
+  --status             Show the active problem and exact test command.
   --manifest           Write practice/practice-manifest.json for dashboards.
   --dashboard          Write practice/learning-dashboard.md for study planning.
   --all                Generate every template and every test file.
   --validate-all-focused
-                       Generate every focused target into isolated folders.
-  --audit-targets      Check that focused targets map cleanly to main exports.
+                       Generate every target and run all reference scenarios.
+  --audit-targets      Check complete one-to-one runnable-block coverage.
   --smoke-test         Exercise parser/filter edge cases that can leak tests.
   --clean              Remove practice/ before generating.
+  --force              Reset an existing implementation when generating.
   --help               Show this help text.
 `);
 }
@@ -1446,9 +1590,10 @@ async function copyTestFiles(srcDir: string) {
 		const content = await Bun.file(fullPath).text();
 		const relativePath = relative(SRC_DIR, fullPath);
 		const practiceTestPath = join(PRACTICE_DIR, relativePath);
-		const importPaths = Array.from(
-			content.matchAll(/from\s+["']@\/([^"']+)["']/g),
-			(match) => match[1],
+		const importPaths = unique(
+			parseLocalImports(content, fullPath).map(
+				(localImport) => localImport.importPath,
+			),
 		);
 
 		if (importPaths.length === 0) {
@@ -1462,7 +1607,11 @@ async function copyTestFiles(srcDir: string) {
 			continue;
 		}
 
-		const rewrittenContent = rewriteAllTestImports(content, practiceTestPath);
+		const rewrittenContent = rewriteAllTestImports(
+			content,
+			practiceTestPath,
+			fullPath,
+		);
 
 		await mkdir(dirname(practiceTestPath), { recursive: true });
 		await Bun.write(practiceTestPath, rewrittenContent);
@@ -1484,21 +1633,32 @@ async function findMissingPracticeImport(
 	return null;
 }
 
-function rewriteAllTestImports(content: string, practiceTestPath: string): string {
-	return rewriteTestImports(content, practiceTestPath, null);
+function rewriteAllTestImports(
+	content: string,
+	practiceTestPath: string,
+	sourceTestPath: string,
+): string {
+	return rewriteTestImports(content, practiceTestPath, sourceTestPath, null);
 }
 
 function rewriteTestImports(
 	content: string,
 	practiceTestPath: string,
+	sourceTestPath: string,
 	targetImportPaths: Set<string> | null,
 ): string {
-	return content.replace(/from\s+["']@\/([^"']+)["']/g, (match, importPath: string) => {
-		if (targetImportPaths !== null && !targetImportPaths.has(importPath)) {
-			return match;
+	let rewritten = content;
+	for (const localImport of parseLocalImports(content, sourceTestPath)) {
+		if (
+			targetImportPaths !== null &&
+			!targetImportPaths.has(localImport.importPath)
+		) {
+			continue;
 		}
-
-		const targetPathWithoutExtension = join(PRACTICE_DIR, importPath);
+		const targetPathWithoutExtension = join(
+			PRACTICE_DIR,
+			localImport.importPath,
+		);
 		let relativeImport = relative(
 			dirname(practiceTestPath),
 			targetPathWithoutExtension,
@@ -1508,19 +1668,34 @@ function rewriteTestImports(
 			relativeImport = `./${relativeImport}`;
 		}
 
-		return `from "${relativeImport}"`;
-	});
+		rewritten = rewritten.replace(
+			localImport.statement,
+			localImport.statement.replace(
+				/from\s+["'][^"']+["']/,
+				`from "${relativeImport}"`,
+			),
+		);
+	}
+
+	return rewritten;
 }
 
-function parseLocalImports(content: string): LocalImport[] {
+function parseLocalImports(
+	content: string,
+	containingFilePath: string,
+): LocalImport[] {
 	const imports: LocalImport[] = [];
-	const importRegex = /^import\s+([^;]*?)\s+from\s+["']@\/([^"']+)["'];/gm;
+	const importRegex = /^import\s+([^;]*?)\s+from\s+["']([^"']+)["'];/gm;
 
 	let match;
 	while ((match = importRegex.exec(content)) !== null) {
 		const statement = match[0];
 		const specifier = match[1]!.trim();
-		const importPath = match[2]!;
+		const importPath = resolveSourceImportPath(
+			match[2]!,
+			containingFilePath,
+		);
+		if (!importPath) continue;
 
 		imports.push({
 			importPath,
@@ -1530,6 +1705,30 @@ function parseLocalImports(content: string): LocalImport[] {
 	}
 
 	return imports;
+}
+
+function resolveSourceImportPath(
+	importSpecifier: string,
+	containingFilePath: string,
+): string | null {
+	if (importSpecifier.startsWith("@/")) {
+		return importSpecifier.slice(2);
+	}
+	if (!importSpecifier.startsWith(".")) return null;
+
+	const absoluteImportPath = resolve(dirname(containingFilePath), importSpecifier);
+	const relativeImportPath = relative(SRC_DIR, absoluteImportPath);
+	if (
+		relativeImportPath === ".." ||
+		relativeImportPath.startsWith(`..${sep}`) ||
+		/^[A-Za-z]:/.test(relativeImportPath)
+	) {
+		return null;
+	}
+
+	return relativeImportPath
+		.replaceAll("\\", "/")
+		.replace(/\.(?:[cm]?[jt]sx?)$/, "");
 }
 
 function parseImportSymbols(specifier: string, importPath: string): ImportSymbol[] {
@@ -1587,7 +1786,7 @@ function parseImportSymbols(specifier: string, importPath: string): ImportSymbol
 
 function parseTopLevelRunnableBlocks(content: string): DescribeBlock[] {
 	const blocks: DescribeBlock[] = [];
-	const runnableRegex = /\b(describe|test|it)\b/g;
+	const runnableRegex = /\b(xdescribe|xtest|describe|test|it)\b/g;
 	let topLevelEnd = -1;
 	let match;
 
@@ -1595,10 +1794,19 @@ function parseTopLevelRunnableBlocks(content: string): DescribeBlock[] {
 		if (match.index < topLevelEnd) continue;
 		if (!isCodeAtTopLevel(content, match.index)) continue;
 
+		const invokedName = match[1]!;
+		const kind: RunnableBlockKind =
+			invokedName === "xdescribe"
+				? "describe"
+				: invokedName === "xtest"
+					? "test"
+					: (invokedName as RunnableBlockKind);
 		const block = parseTopLevelRunnableBlockAt(
 			content,
 			match.index,
-			match[1] as RunnableBlockKind,
+			kind,
+			invokedName,
+			invokedName.startsWith("x") ? "skip" : null,
 		);
 		if (!block) continue;
 
@@ -1614,9 +1822,11 @@ function parseTopLevelRunnableBlockAt(
 	content: string,
 	start: number,
 	kind: RunnableBlockKind,
+	invokedName: string,
+	initialModifier: RunnableBlockModifier,
 ): DescribeBlock | null {
-	let cursor = start + kind.length;
-	let modifier: RunnableBlockModifier = null;
+	let cursor = start + invokedName.length;
+	let modifier = initialModifier;
 
 	while (true) {
 		cursor = skipWhitespace(content, cursor);
@@ -1624,23 +1834,41 @@ function parseTopLevelRunnableBlockAt(
 
 		const propertyMatch = content
 			.slice(cursor + 1)
-			.match(/^(only|skip|todo|each)\b/);
+			.match(
+				/^(only|skip|todo|failing|concurrent|serial|each|if|skipIf|todoIf|failingIf|concurrentIf|serialIf)\b/,
+			);
 		if (!propertyMatch) return null;
 
 		const property = propertyMatch[1]!;
 		cursor += property.length + 1;
 
-		if (property === "only" || property === "skip" || property === "todo") {
+		if (property === "only") {
+			if (modifier === null) modifier = "only";
+			continue;
+		}
+		if (property === "skip" || property === "todo" || property === "failing") {
 			modifier = property;
+			continue;
+		}
+		if (property === "concurrent" || property === "serial") {
 			continue;
 		}
 
 		cursor = skipWhitespace(content, cursor);
 		if (content[cursor] !== "(") return null;
 
-		const eachCloseIndex = findMatchingDelimiter(content, cursor, "(", ")");
-		if (eachCloseIndex === -1) return null;
-		cursor = eachCloseIndex + 1;
+		const modifierCloseIndex = findMatchingDelimiter(content, cursor, "(", ")");
+		if (modifierCloseIndex === -1) return null;
+		cursor = modifierCloseIndex + 1;
+
+		if (
+			property === "if" ||
+			property === "skipIf" ||
+			property === "todoIf" ||
+			property === "failingIf"
+		) {
+			modifier = "conditional";
+		}
 	}
 
 	cursor = skipWhitespace(content, cursor);
@@ -1796,7 +2024,7 @@ export function discoverPracticeTargets(): PracticeTarget[] {
 
 	for (const testFile of testFiles) {
 		const content = readFileSync(testFile, "utf8");
-		const imports = parseLocalImports(content);
+		const imports = parseLocalImports(content, testFile);
 		const runnableBlocks = parseTopLevelRunnableBlocks(content);
 		const describes = runnableBlocks.filter(
 			(block) => block.kind === "describe" && isSelectablePracticeBlock(block),
@@ -1861,7 +2089,9 @@ export function discoverPracticeTargets(): PracticeTarget[] {
 }
 
 function isSelectablePracticeBlock(block: DescribeBlock): boolean {
-	return block.modifier !== "skip" && block.modifier !== "todo";
+	return !["skip", "todo", "failing", "conditional"].includes(
+		block.modifier ?? "",
+	);
 }
 
 function addPracticeTarget(
@@ -1998,13 +2228,18 @@ function isRouteIntegrationTarget(
 	block: DescribeBlock,
 	imports: LocalImport[],
 ): boolean {
-	return imports.some(
+	const importsServer = imports.some(
 		(localImport) =>
 			localImport.importPath === "node-concepts/server" &&
-			localImport.symbols.some(
-				(symbol) =>
-					symbol.localName === "server" &&
-					isSymbolUsed(symbol.localName, block.text),
+			localImport.symbols.some((symbol) => symbol.localName === "server"),
+	);
+	if (!importsServer) return false;
+
+	return !imports.some(
+		(localImport) =>
+			localImport.importPath !== "node-concepts/server" &&
+			localImport.symbols.some((symbol) =>
+				isSymbolUsed(symbol.localName, block.text),
 			),
 	);
 }
@@ -2102,9 +2337,145 @@ function auditPracticeTargets(targets: PracticeTarget[]): void {
 		);
 	}
 
+	const catalog = auditPracticeCatalogCompleteness(targets);
+
 	console.log(
-		`Audited ${targets.length} focused practice target(s): names and selected exports are consistent.`,
+		`Audited ${targets.length} focused practice target(s): names and selected exports are consistent. ${catalog.coveredBlocks}/${catalog.eligibleBlocks} eligible runnable block(s) are mapped exactly once across ${catalog.testFiles} test file(s).`,
 	);
+}
+
+export function auditPracticeCatalogCompleteness(
+	targets: PracticeTarget[],
+): PracticeCatalogAudit {
+	const issues: string[] = [];
+	const coveredBlockCounts = new Map<string, number>();
+	const eligibleBlockKeys = new Set<string>();
+
+	for (const target of targets) {
+		for (const block of target.testBlocks) {
+			const key = practiceBlockKey(target.testFile, block);
+			coveredBlockCounts.set(key, (coveredBlockCounts.get(key) ?? 0) + 1);
+		}
+	}
+
+	const testFiles = walkFiles(SRC_DIR).filter((filePath) =>
+		filePath.endsWith(".test.ts"),
+	);
+	let runnableBlocks = 0;
+	let selectableBlocks = 0;
+	let skippedBlocks = 0;
+	let integrationBlocks = 0;
+	let localImplementationFreeBlocks = 0;
+	const excludedBlocks: PracticeCatalogAudit["excludedBlocks"] = [];
+
+	for (const testFile of testFiles) {
+		const content = readFileSync(testFile, "utf8");
+		const imports = parseLocalImports(content, testFile);
+		const blocks = parseTopLevelRunnableBlocks(content);
+		runnableBlocks += blocks.length;
+
+		for (const block of blocks) {
+			if (!isSelectablePracticeBlock(block)) {
+				skippedBlocks++;
+				continue;
+			}
+			selectableBlocks++;
+
+			if (isRouteIntegrationTarget(block, imports)) {
+				integrationBlocks++;
+				excludedBlocks.push({
+					test: relative(SRC_DIR, testFile),
+					title: block.title,
+					reason: "integration",
+				});
+				continue;
+			}
+
+			const usedLocalSymbols = uniqueSymbols(
+				imports.flatMap((localImport) =>
+					localImport.symbols.filter((symbol) =>
+						isSymbolUsed(symbol.localName, block.text),
+					),
+				),
+			);
+			if (usedLocalSymbols.length === 0) {
+				localImplementationFreeBlocks++;
+				excludedBlocks.push({
+					test: relative(SRC_DIR, testFile),
+					title: block.title,
+					reason: "no local implementation",
+				});
+				continue;
+			}
+
+			const key = practiceBlockKey(testFile, block);
+			eligibleBlockKeys.add(key);
+			const selectedSymbols = chooseTargetSymbols(block, imports, testFile);
+			if (selectedSymbols.length === 0) {
+				issues.push(
+					`${relative(SRC_DIR, testFile)}: "${block.title}" uses local implementations but could not be mapped to a focused target.`,
+				);
+				continue;
+			}
+
+			const missingSource = selectedSymbols.find((symbol) => {
+				const sourceFile = join(SRC_DIR, `${symbol.importPath}.ts`);
+				return !existsSync(sourceFile) || !shouldProcess(sourceFile);
+			});
+			if (missingSource) {
+				issues.push(
+					`${relative(SRC_DIR, testFile)}: "${block.title}" maps to missing or excluded source ${missingSource.importPath}.`,
+				);
+			}
+
+			const coverageCount = coveredBlockCounts.get(key) ?? 0;
+			if (coverageCount !== 1) {
+				issues.push(
+					`${relative(SRC_DIR, testFile)}: "${block.title}" is covered by ${coverageCount} focused target(s); expected exactly 1.`,
+				);
+			}
+		}
+	}
+
+	for (const [key, count] of coveredBlockCounts) {
+		if (!eligibleBlockKeys.has(key)) {
+			issues.push(`Focused target contains a non-eligible test block: ${key}.`);
+		} else if (count !== 1) {
+			issues.push(`Focused test block is mapped ${count} times: ${key}.`);
+		}
+	}
+
+	const ids = new Set(targets.map((target) => target.id));
+	const slugs = new Set(targets.map((target) => target.slug));
+	if (ids.size !== targets.length) issues.push("Practice target IDs are not unique.");
+	if (slugs.size !== targets.length) {
+		issues.push("Practice target slugs are not unique.");
+	}
+	if (targets.some((target, index) => target.id !== index + 1)) {
+		issues.push("Practice target IDs are not contiguous and stable.");
+	}
+
+	if (issues.length > 0) {
+		throw new Error(
+			`Practice catalog completeness audit found ${issues.length} issue(s):\n${issues.join("\n")}`,
+		);
+	}
+
+	return {
+		testFiles: testFiles.length,
+		runnableBlocks,
+		selectableBlocks,
+		eligibleBlocks: eligibleBlockKeys.size,
+		coveredBlocks: coveredBlockCounts.size,
+		skippedBlocks,
+		integrationBlocks,
+		localImplementationFreeBlocks,
+		excludedBlocks,
+	};
+}
+
+function practiceBlockKey(testFile: string, block: DescribeBlock): string {
+	return `${relative(SRC_DIR, testFile)}:${block.start}:${block.end}`;
 }
 
 function isAcceptedBroadPracticeTitle(title: string): boolean {
@@ -2158,31 +2529,53 @@ function slugify(value: string): string {
 }
 
 function formatTarget(target: PracticeTarget): string {
-	return `${target.id}. ${target.title}  (${inferLearnerLevel(target)}, ${target.difficulty}, ${target.pattern}, ${inferInterviewMode(target)}, ${estimateTargetMinutes(target)} min)  [${target.sourceRelativePaths.join(", ")}]`;
+	const exports = unique(
+		target.targetSymbols.map((symbol) => symbol.importedName),
+	).join(", ");
+	const metadata = [
+		inferLearnerLevel(target),
+		target.difficulty,
+		target.pattern,
+		inferInterviewMode(target),
+		`${estimateTargetMinutes(target)} min`,
+	].join(", ");
+	return `${target.id}. ${target.title}  slug=${target.slug}  exports=${exports}  (${metadata})  [${target.sourceRelativePaths.join(", ")}]`;
 }
 
 export function searchTargets(
 	targets: PracticeTarget[],
 	query: string,
 ): PracticeTarget[] {
-	const normalizedQuery = normalizeForSearch(query);
-	if (normalizedQuery.length === 0) return targets;
+	const trimmedQuery = query.trim();
+	if (trimmedQuery.length === 0) return targets;
+
+	if (/^\d+$/.test(trimmedQuery)) {
+		const targetId = Number(trimmedQuery);
+		return targets.filter((target) => target.id === targetId);
+	}
+
+	const queryTokens = trimmedQuery
+		.split(/\s+/)
+		.map(normalizeForSearch)
+		.filter((token) => token.length > 0);
+	if (queryTokens.length === 0) return targets;
 
 	return targets.filter((target) => {
-		const haystack = normalizeForSearch(
-			[
-				target.title,
-				target.slug,
-				target.topic,
-				target.pattern,
-				target.difficulty,
-				inferLearnerLevel(target),
-				inferInterviewMode(target),
-				target.testRelativePath,
-				...target.sourceRelativePaths,
-			].join(" "),
+		const searchableFields = [
+			target.title,
+			target.slug,
+			target.topic,
+			target.pattern,
+			target.difficulty,
+			inferLearnerLevel(target),
+			inferInterviewMode(target),
+			target.testRelativePath,
+			...target.sourceRelativePaths,
+		].map(normalizeForSearch);
+
+		return queryTokens.every((token) =>
+			searchableFields.some((field) => field.includes(token)),
 		);
-		return haystack.includes(normalizedQuery);
 	});
 }
 
@@ -2190,10 +2583,17 @@ export function findBestTarget(
 	targets: PracticeTarget[],
 	query: string,
 ): PracticeTarget | null {
+	const trimmedQuery = query.trim();
+	if (/^\d+$/.test(trimmedQuery)) {
+		return (
+			targets.find((target) => target.id === Number(trimmedQuery)) ?? null
+		);
+	}
+
 	const matches = searchTargets(targets, query);
 	if (matches.length === 0) return null;
 
-	const normalizedQuery = normalizeForSearch(query);
+	const normalizedQuery = normalizeForSearch(trimmedQuery);
 	return (
 		matches.find((target) => normalizeForSearch(target.title) === normalizedQuery) ??
 		matches.find((target) => normalizeForSearch(target.slug) === normalizedQuery) ??
@@ -2201,18 +2601,168 @@ export function findBestTarget(
 	);
 }
 
-function pickRandomTarget(
+export function pickRandomTarget(
 	targets: PracticeTarget[],
 	query: string,
+	seed: string | null = null,
 ): PracticeTarget | null {
 	const matches = searchTargets(targets, query);
 	if (matches.length === 0) return null;
 
-	return matches[Math.floor(Math.random() * matches.length)]!;
+	const random = seed === null ? Math.random : createSeededRandom(seed);
+	return matches[Math.floor(random() * matches.length)]!;
 }
 
-export function formatFocusedTestCommand(testOutputRelativePath: string): string {
-	return `bun test --cwd practice ${testOutputRelativePath.replaceAll("\\", "/")}`;
+function createSeededRandom(seed: string): () => number {
+	let state = 2166136261;
+	for (let index = 0; index < seed.length; index++) {
+		state = Math.imul(state ^ seed.charCodeAt(index), 16777619);
+	}
+
+	return () => {
+		state += 0x6d2b79f5;
+		let value = state;
+		value = Math.imul(value ^ (value >>> 15), value | 1);
+		value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+		return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+	};
+}
+
+export function formatFocusedTestCommand(
+	testOutputRelativePath: string,
+	watch = false,
+): string {
+	const command = watch ? "bun --watch test" : "bun test";
+	return `${command} --cwd practice ${testOutputRelativePath.replaceAll("\\", "/")}`;
+}
+
+async function writePracticeSession(
+	target: PracticeTarget,
+	testPath: string,
+): Promise<void> {
+	const session: PracticeSession = {
+		version: 1,
+		targetId: target.id,
+		title: target.title,
+		slug: target.slug,
+		implementationPaths: target.targetImportPaths.map((importPath) =>
+			getFocusedImplementationPath(importPath, target.slug).replaceAll("\\", "/"),
+		),
+		testPath: testPath.replaceAll("\\", "/"),
+		startedAt: new Date().toISOString(),
+	};
+
+	await Bun.write(PRACTICE_SESSION_FILE, `${JSON.stringify(session, null, 2)}\n`);
+}
+
+async function readPracticeSession(): Promise<PracticeSession> {
+	if (!(await Bun.file(PRACTICE_SESSION_FILE).exists())) {
+		throw new Error(
+			"No active practice problem. Generate one first with `bun run practice`.",
+		);
+	}
+
+	let value: unknown;
+	try {
+		value = await Bun.file(PRACTICE_SESSION_FILE).json();
+	} catch {
+		throw new Error(
+			"The active practice session is unreadable. Generate a problem again to repair it.",
+		);
+	}
+
+	if (!isPracticeSession(value)) {
+		throw new Error(
+			"The active practice session is invalid. Generate a problem again to repair it.",
+		);
+	}
+
+	return value;
+}
+
+function isPracticeSession(value: unknown): value is PracticeSession {
+	if (typeof value !== "object" || value === null) return false;
+
+	const session = value as Record<string, unknown>;
+	return (
+		session["version"] === 1 &&
+		typeof session["targetId"] === "number" &&
+		typeof session["title"] === "string" &&
+		typeof session["slug"] === "string" &&
+		Array.isArray(session["implementationPaths"]) &&
+		session["implementationPaths"].every(isSafePracticeRelativePath) &&
+		typeof session["testPath"] === "string" &&
+		isSafePracticeRelativePath(session["testPath"]) &&
+		session["testPath"].endsWith(".test.ts") &&
+		typeof session["startedAt"] === "string"
+	);
+}
+
+function isSafePracticeRelativePath(value: unknown): value is string {
+	if (typeof value !== "string" || value.length === 0) return false;
+	const normalized = value.replaceAll("\\", "/");
+	return (
+		!normalized.startsWith("/") &&
+		!/^[A-Za-z]:\//.test(normalized) &&
+		!normalized.split("/").includes("..")
+	);
+}
+
+async function printPracticeStatus(): Promise<void> {
+	const session = await readPracticeSession();
+	const missingImplementations = session.implementationPaths.filter(
+		(implementationPath) =>
+			!existsSync(join(PRACTICE_DIR, implementationPath)),
+	);
+	const testExists = existsSync(join(PRACTICE_DIR, session.testPath));
+	const ready = missingImplementations.length === 0 && testExists;
+
+	console.log(`Active practice
+
+Target: ${session.targetId}. ${session.title}
+Started: ${session.startedAt}
+State: ${ready ? "ready" : "incomplete"}
+Implement: ${session.implementationPaths.map((path) => `practice/${path}`).join(", ")}
+Test: practice/${session.testPath}
+Run: ${formatFocusedTestCommand(session.testPath)}
+Watch: ${formatFocusedTestCommand(session.testPath, true)}`);
+
+	if (!ready) {
+		const missing = [
+			...missingImplementations.map((path) => `practice/${path}`),
+			...(testExists ? [] : [`practice/${session.testPath}`]),
+		];
+		console.log(`Missing: ${missing.join(", ")}`);
+	}
+}
+
+async function runActivePractice(watch: boolean): Promise<number> {
+	const session = await readPracticeSession();
+	const missingPath = [...session.implementationPaths, session.testPath].find(
+		(relativePath) => !existsSync(join(PRACTICE_DIR, relativePath)),
+	);
+	if (missingPath) {
+		throw new Error(
+			`Active practice file is missing: practice/${missingPath}. Generate the target again with \`bun run practice --problem ${session.targetId}\`.`,
+		);
+	}
+
+	console.log(
+		`${watch ? "Watching" : "Testing"}: ${session.targetId}. ${session.title}`,
+	);
+	console.log(formatFocusedTestCommand(session.testPath, watch));
+
+	const command = [execPath];
+	if (watch) command.push("--watch");
+	command.push("test", "--cwd", PRACTICE_DIR, session.testPath);
+
+	const subprocess = Bun.spawn(command, {
+		stdin: "inherit",
+		stdout: "inherit",
+		stderr: "inherit",
+		windowsHide: true,
+	});
+	return subprocess.exited;
 }
 
 export function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
@@ -2712,7 +3262,7 @@ function rewriteFocusedTestImports(
 	outputRoot: string,
 ): string {
 	let rewritten = content;
-	const imports = parseLocalImports(content);
+	const imports = parseLocalImports(content, target.testFile);
 
 	for (const localImport of imports) {
 		const contentWithoutImport = content.replace(localImport.statement, "");
@@ -2791,14 +3341,43 @@ function toRelativeSourceImport(
 	return relativeImport;
 }
 
-async function generateFocusedPractice(target: PracticeTarget): Promise<void> {
-	await writeFocusedPractice(target, PRACTICE_DIR, true);
+function rewriteTestImportsToSource(
+	content: string,
+	testFilePath: string,
+	sourceTestPath: string,
+): string {
+	let rewritten = content;
+	for (const localImport of parseLocalImports(content, sourceTestPath)) {
+		rewritten = rewritten.replace(
+			localImport.statement,
+			localImport.statement.replace(
+				/from\s+["'][^"']+["']/,
+				`from "${toRelativeSourceImport(testFilePath, localImport.importPath)}"`,
+			),
+		);
+	}
+	return rewritten;
+}
+
+async function generateFocusedPractice(
+	target: PracticeTarget,
+	force: boolean,
+): Promise<void> {
+	const testPath = await writeFocusedPractice(
+		target,
+		PRACTICE_DIR,
+		true,
+		force,
+	);
+	await writePracticeSession(target, testPath);
+	console.log("Next: bun run practice:run");
 }
 
 export async function writeFocusedPractice(
 	target: PracticeTarget,
 	outputRoot: string,
 	printSummary: boolean,
+	force = false,
 ): Promise<string> {
 	await mkdir(outputRoot, { recursive: true });
 
@@ -2826,12 +3405,21 @@ export async function writeFocusedPractice(
 		generatedImplementationPaths.push(outputRelativePath);
 
 		await mkdir(dirname(practiceFilePath), { recursive: true });
-		await Bun.write(
-			practiceFilePath,
-			generatePracticeTemplate(content, sourceFile, selectedExports),
-		);
-		if (printSummary) {
-			console.log(`Generated implementation: ${outputRelativePath}`);
+		const implementationExists = await Bun.file(practiceFilePath).exists();
+
+		if (!implementationExists || force) {
+			await Bun.write(
+				practiceFilePath,
+				generatePracticeTemplate(content, sourceFile, selectedExports),
+			);
+			if (printSummary) {
+				console.log(
+					`${implementationExists ? "Reset" : "Generated"} implementation: ${outputRelativePath}`,
+				);
+			}
+		} else if (printSummary) {
+			console.log(`Kept implementation: ${outputRelativePath}`);
+			console.log("  Use --force only when you want to reset your code.");
 		}
 	}
 
@@ -2918,12 +3506,32 @@ test.skip("skipped beta", () => {
 
 test.todo("todo beta");
 
+test.failing("known beta failure", () => {
+\tbeta();
+});
+
+test.skipIf(true)("conditional beta", () => {
+\tbeta();
+});
+
+xtest("legacy skipped beta", () => {
+\tbeta();
+});
+
 test.only("loose beta 1", () => {
 \tbeta();
 }, 1000);
 
+test.concurrent("concurrent beta", () => {
+\tbeta();
+});
+
 it.each([[1], [2]])("loose beta %i", (value) => {
 \tbeta(value);
+});
+
+describe.serial.each([["serial"]])("parameterized alpha %s", () => {
+\trenamedAlpha();
 });
 
 describe("alpha target", function () {
@@ -2943,8 +3551,8 @@ describe("duplicate", () => {
 
 	const blocks = parseTopLevelRunnableBlocks(syntheticTest);
 	assertSmoke(
-		blocks.length === 7,
-		`expected 7 top-level blocks in synthetic smoke test, got ${blocks.length}`,
+		blocks.length === 12,
+		`expected 12 top-level blocks in synthetic smoke test, got ${blocks.length}`,
 	);
 	assertSmoke(
 		blocks.some(
@@ -2969,11 +3577,30 @@ describe("duplicate", () => {
 		"did not parse it.each(...) as a top-level block",
 	);
 	assertSmoke(
+		blocks.some(
+			(block) =>
+				block.kind === "describe" &&
+				block.title === "parameterized alpha %s" &&
+				block.modifier === null,
+		),
+		"did not parse chained describe.serial.each(...) as selectable",
+	);
+	assertSmoke(
+		blocks.some(
+			(block) =>
+				block.title === "concurrent beta" && block.modifier === null,
+		),
+		"did not parse test.concurrent as selectable",
+	);
+	assertSmoke(
 		!blocks.some((block) => block.title.includes("leak")),
 		"parsed fake test calls from comments or strings",
 	);
 
-	const imports = parseLocalImports(syntheticTest);
+	const imports = parseLocalImports(
+		syntheticTest,
+		join(SRC_DIR, "synthetic.test.ts"),
+	);
 	const alphaBlock = getSmokeBlock(blocks, "alpha target");
 	const alphaSymbols = chooseTargetSymbols(
 		alphaBlock,
@@ -3023,8 +3650,10 @@ describe("duplicate", () => {
 	const selectableBlocks = blocks.filter(isSelectablePracticeBlock);
 	assertSmoke(
 		!selectableBlocks.some((block) => block.modifier === "skip") &&
-			!selectableBlocks.some((block) => block.modifier === "todo"),
-		"skip/todo blocks are selectable practice targets",
+			!selectableBlocks.some((block) => block.modifier === "todo") &&
+			!selectableBlocks.some((block) => block.modifier === "failing") &&
+			!selectableBlocks.some((block) => block.modifier === "conditional"),
+		"non-runnable or expected-failure blocks are selectable practice targets",
 	);
 
 	const tandemTarget = findBestTarget(targets, "tandemBicycle");
@@ -3119,6 +3748,37 @@ async function assertGeneratedFocusedTestLoads(
 	}
 }
 
+async function assertFocusedReferenceScenariosPass(
+	outputRoot: string,
+	testPath: string,
+	target: PracticeTarget,
+): Promise<void> {
+	const testFilePath = join(outputRoot, testPath);
+	const sourceTestContent = await Bun.file(target.testFile).text();
+	const focusedReferenceTest = rewriteTestImportsToSource(
+		filterToTestBlocks(sourceTestContent, target.testBlocks),
+		testFilePath,
+		target.testFile,
+	);
+	await Bun.write(testFilePath, focusedReferenceTest);
+
+	const subprocess = Bun.spawn([execPath, "test", "--cwd", outputRoot, testPath], {
+		stdout: "pipe",
+		stderr: "pipe",
+	});
+	const [stdoutText, stderrText, exitCode] = await Promise.all([
+		readSubprocessText(subprocess.stdout),
+		readSubprocessText(subprocess.stderr),
+		subprocess.exited,
+	]);
+
+	if (exitCode !== 0) {
+		throw new Error(
+			`Focused reference scenarios failed for ${target.title}:\n${trimSubprocessOutput(`${stdoutText}\n${stderrText}`)}`,
+		);
+	}
+}
+
 async function readSubprocessText(
 	stream: ReadableStream<Uint8Array> | null,
 ): Promise<string> {
@@ -3147,11 +3807,14 @@ bun run practice
 bun run practice:easy
 bun run practice:medium
 bun run practice:hard
-bun run practice -- --list heap
-bun run practice -- --problem kthLargestElement
-bun run practice -- --random graph
-bun run practice -- --manifest
-bun run practice -- --dashboard
+bun run practice --list heap
+bun run practice --problem kthLargestElement
+bun run practice --random graph --seed cohort-a
+bun run practice:run
+bun run practice:watch
+bun run practice:status
+bun run practice --manifest
+bun run practice --dashboard
 \`\`\`
 
 The generator creates:
@@ -3159,6 +3822,10 @@ The generator creates:
 - One empty implementation module under \`practice/\`
 - One focused test file that runs only the selected problem's tests
 - Supporting imports still point at \`src/\`, so you only implement the chosen problem
+- An active-session file that powers \`practice:run\`, \`practice:watch\`, and \`practice:status\`
+
+Generating the same target again preserves your implementation. Pass \`--force\`
+only when you intentionally want to reset the starter file.
 
 ## Run The Focused Test
 
@@ -3167,6 +3834,14 @@ Use the command printed by the generator, for example:
 \`\`\`bash
 bun test --cwd practice data-structures/tests/kth-largest-element.test.ts
 bun test --cwd practice data-structures/tests --test-name-pattern kthLargestElement
+\`\`\`
+
+For the active problem, the shorter feedback loop is:
+
+\`\`\`bash
+bun run practice:run
+bun run practice:watch
+bun run practice:status
 \`\`\`
 
 ## Generate Everything
@@ -3203,9 +3878,10 @@ bun run practice:audit
 bun run practice:validate
 \`\`\`
 
-\`practice:audit\` checks that focused test titles map cleanly to exported source
-APIs. \`practice:validate\` generates every focused target in isolation and catches
-broken imports or missing stubs.
+\`practice:audit\` checks names and exports, then proves that every eligible
+runnable block is mapped exactly once. \`practice:validate\` generates every target
+in isolation, verifies the expected stub failure, and runs every focused scenario
+against the canonical source so missing hooks, cases, or imports fail the gate.
 
 ## Learning Loop
 
@@ -3288,6 +3964,11 @@ async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<voi
 				}
 
 				await assertGeneratedFocusedTestLoads(targetRoot, testPath, target);
+				await assertFocusedReferenceScenariosPass(
+					targetRoot,
+					testPath,
+					target,
+				);
 
 				console.log(`Validated ${target.id}/${targets.length}: ${target.title}`);
 			} catch (error) {
@@ -3342,6 +4023,16 @@ async function main() {
 		return;
 	}
 
+	if (options.run || options.watch) {
+		process.exitCode = await runActivePractice(options.watch);
+		return;
+	}
+
+	if (options.status) {
+		await printPracticeStatus();
+		return;
+	}
+
 	if (options.all) {
 		await generateAll(options.clean);
 		return;
@@ -3390,23 +4081,25 @@ async function main() {
 
 	const target =
 		options.randomQuery !== null
-			? pickRandomTarget(targets, options.randomQuery)
+			? pickRandomTarget(targets, options.randomQuery, options.seed)
 			: options.problemQuery
 				? findBestTarget(targets, options.problemQuery)
 				: await promptForTarget(targets);
 
 	if (!target) {
 		throw new Error(
-			`No practice target matched: ${options.randomQuery ?? options.problemQuery}`,
+			`No practice target matched "${options.randomQuery ?? options.problemQuery}". Try \`bun run practice --list <search>\`.`,
 		);
 	}
 
-	await generateFocusedPractice(target);
+	await generateFocusedPractice(target, options.force);
 }
 
 if (import.meta.main) {
 	main().catch((error) => {
-		console.error("Error generating practice templates:", error);
-		process.exit(1);
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(`Practice error: ${message}`);
+		if (Bun.env["DEBUG_PRACTICE"] === "1") console.error(error);
+		process.exitCode = 1;
 	});
 }

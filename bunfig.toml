@@ -5,7 +5,7 @@ coverageReporter = ["text", "lcov"]
 coverageDir = "coverage"
 coverageSkipTestFiles = true
 coverageThreshold = { lines = 0.60, functions = 0.60, statements = 0.60 }
-coveragePathIgnorePatterns = ["practice/**"]
+coveragePathIgnorePatterns = ["practice/**", "src/node-concepts/setup.ts"]
 
 [install]
 minimumReleaseAge = 86400

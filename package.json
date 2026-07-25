@@ -35,8 +35,11 @@
 		"practice:dashboard": "bun run scripts/generate-practice.ts -- --dashboard",
 		"practice:medium": "bun run scripts/generate-practice.ts -- --random medium",
 		"practice:random": "bun run scripts/generate-practice.ts -- --random",
+		"practice:run": "bun run scripts/generate-practice.ts -- --run",
 		"practice:smoke": "bun run scripts/generate-practice.ts -- --smoke-test",
+		"practice:status": "bun run scripts/generate-practice.ts -- --status",
 		"practice:validate": "bun run scripts/generate-practice.ts -- --validate-all-focused",
+		"practice:watch": "bun run scripts/generate-practice.ts -- --watch",
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"devDependencies": {

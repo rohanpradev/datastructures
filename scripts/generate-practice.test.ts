@@ -3,10 +3,12 @@ import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import {
+	auditPracticeCatalogCompleteness,
 	discoverPracticeTargets,
 	findBestTarget,
 	formatFocusedTestCommand,
 	parseArgs,
+	pickRandomTarget,
 	runPracticeSmokeTests,
 	searchTargets,
 	toManifestEntry,
@@ -37,10 +39,26 @@ describe("generate-practice CLI model", () => {
 		expect(parseArgs(["--validate-all-focused"]).validateAll).toBe(true);
 		expect(parseArgs(["--list=system design"]).listQuery).toBe("system design");
 		expect(parseArgs(["--random", "expert"]).randomQuery).toBe("expert");
+		expect(
+			parseArgs(["--random", "medium", "graph", "--seed", "cohort-a"]),
+		).toMatchObject({ randomQuery: "medium graph", seed: "cohort-a" });
 		expect(parseArgs(["--problem=twoSum"]).problemQuery).toBe("twoSum");
 		expect(parseArgs(["twoSum"]).problemQuery).toBe("twoSum");
+		expect(parseArgs(["two", "sum"]).problemQuery).toBe("two sum");
+		expect(parseArgs(["--run"]).run).toBe(true);
+		expect(parseArgs(["--watch"]).watch).toBe(true);
+		expect(parseArgs(["--status"]).status).toBe(true);
 		expect(() => parseArgs(["--problem"])).toThrow(
 			"--problem requires a search term",
+		);
+		expect(() => parseArgs(["--unknown"])).toThrow(
+			"Unknown option: --unknown",
+		);
+		expect(() => parseArgs(["--run", "--watch"])).toThrow(
+			"Choose one mode at a time",
+		);
+		expect(() => parseArgs(["--seed", "cohort-a"])).toThrow(
+			"--seed can only be used with --random",
 		);
 	});
 
@@ -58,6 +76,15 @@ describe("generate-practice CLI model", () => {
 		}
 	});
 
+	test("maps every eligible runnable block exactly once", () => {
+		const audit = auditPracticeCatalogCompleteness(targets);
+
+		expect(audit.testFiles).toBeGreaterThan(0);
+		expect(audit.runnableBlocks).toBeGreaterThanOrEqual(audit.selectableBlocks);
+		expect(audit.eligibleBlocks).toBe(audit.coveredBlocks);
+		expect(audit.coveredBlocks).toBeGreaterThanOrEqual(targets.length);
+	});
+
 	test("supports learner-level, mode, difficulty, and problem search filters", () => {
 		expect(searchTargets(targets, "beginner").length).toBeGreaterThan(0);
 		expect(searchTargets(targets, "intermediate").length).toBeGreaterThan(0);
@@ -67,8 +94,18 @@ describe("generate-practice CLI model", () => {
 		expect(searchTargets(targets, "runtime").length).toBeGreaterThan(0);
 		expect(searchTargets(targets, "system design").length).toBeGreaterThan(0);
 		expect(searchTargets(targets, "hard").length).toBeGreaterThan(0);
+		expect(searchTargets(targets, "medium graph").length).toBeGreaterThan(0);
 		expect(findBestTarget(targets, "twoSum")?.title).toBe("twoSum");
+		expect(findBestTarget(targets, String(targets[0]!.id))).toBe(targets[0]);
 		expect(findBestTarget(targets, "nosuchtarget")).toBeNull();
+	});
+
+	test("makes seeded random practice reproducible", () => {
+		const first = pickRandomTarget(targets, "medium", "cohort-a");
+		const second = pickRandomTarget(targets, "medium", "cohort-a");
+
+		expect(first).not.toBeNull();
+		expect(second?.slug).toBe(first?.slug);
 	});
 
 	test("builds complete learning manifest entries", () => {
@@ -116,6 +153,53 @@ describe("generate-practice focused output", () => {
 		expect(formatFocusedTestCommand("algorithms\\tests\\two-sum.test.ts")).toBe(
 			"bun test --cwd practice algorithms/tests/two-sum.test.ts",
 		);
+		expect(
+			formatFocusedTestCommand("algorithms\\tests\\two-sum.test.ts", true),
+		).toBe(
+			"bun --watch test --cwd practice algorithms/tests/two-sum.test.ts",
+		);
+	});
+
+	test("preserves learner code unless reset is explicit", async () => {
+		const target = findBestTarget(targets, "twoSum");
+		expect(target).not.toBeNull();
+
+		const outputRoot = join(TEST_ROOT, "preserve-code");
+		const implementationPath = join(
+			outputRoot,
+			"algorithms",
+			"arrays",
+			"two-sum.ts",
+		);
+		await rm(outputRoot, { recursive: true, force: true });
+		await writeFocusedPractice(target!, outputRoot, false);
+		await Bun.write(implementationPath, "// learner solution\n");
+
+		await writeFocusedPractice(target!, outputRoot, false);
+		expect(await Bun.file(implementationPath).text()).toBe(
+			"// learner solution\n",
+		);
+
+		await writeFocusedPractice(target!, outputRoot, false, true);
+		expect(await Bun.file(implementationPath).text()).toContain(
+			"Not implemented: twoSum",
+		);
+	});
+
+	test("discovers and rewrites relative source imports", async () => {
+		const target = findBestTarget(targets, "sameValueZero");
+		expect(target).not.toBeNull();
+
+		const outputRoot = join(TEST_ROOT, "relative-imports");
+		await rm(outputRoot, { recursive: true, force: true });
+		const testPath = await writeFocusedPractice(target!, outputRoot, false);
+		const generatedTest = await Bun.file(join(outputRoot, testPath)).text();
+
+		expect(
+			target?.sourceRelativePaths.map((path) => path.replaceAll("\\", "/")),
+		).toContain("javascript-concepts/core-concepts.ts");
+		expect(generatedTest).toContain('from "../same-value-zero"');
+		expect(generatedTest).not.toContain('from "../core-concepts"');
 	});
 
 	test("writes focused practice files that Bun can load up to the stub", async () => {
