@@ -1,23 +1,23 @@
 # 2026 Interview Trends Learning Lab
 
-Last checked: 2026-06-08.
+Last checked: 2026-08-09.
 
 This guide turns current interview trends into concrete practice. It is based on
 the research links in `docs/RESEARCH_BRIEF_2026.md`, including Karat's 2026
-interview-trends analysis, WIRED/404 Media reporting on AI-enabled coding
-interviews, Amazon's current SDE prep pages, LeetCode pattern lists, and current
-enterprise engineering guidance around observability, cloud-native operations,
-and LLM application risk.
+interview-trends analysis, HackerRank's April and June 2026 AI-native interview
+updates, Amazon's current SDE prep pages, LeetCode's maintained interview plan,
+GitHub's 2026 agent-workflow and MCP updates, and current enterprise guidance
+around observability, cloud-native operations, and LLM application risk.
 
 ## What Changed
 
 | Trend | What it means for candidates | How to practice here |
 | --- | --- | --- |
 | Pattern-based coding is still required. | You still need arrays, strings, graphs, DP, heaps, trees, and clean Big-O reasoning. | Use `bun run practice:random`, `practice:medium`, and `practice:hard`; read `docs/WORKED_EXAMPLES.md`. |
-| AI-assisted live interviews are emerging. | The signal shifts from "can AI produce code" to "can you guide, review, test, and explain code." | Use the AI-assisted drills below, then solve the same target without AI. |
-| Code comprehension and debugging are rising. | Interviewers may give an existing repo, failing tests, or a buggy implementation. | Generate a practice target, ask AI for a solution, then review it against the checklist before running tests. |
+| AI-assisted interview workflows are now productized. | The signal shifts from "can AI produce code" to "can you guide, review, test, iterate, and explain code." | Use the AI-assisted drills below, then solve the same target without AI. |
+| Repository comprehension and debugging are explicit formats. | Interviewers may give an existing repo, failing tests, a generated patch, or a buggy implementation. | Generate a practice target, ask AI for a solution, then review it against the checklist before running tests. |
 | System design starts earlier and goes deeper for senior roles. | You must discuss SLOs, data, bottlenecks, queues, caches, consistency, observability, and security. | Use `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md` and `src/node-concepts/system-design`. |
-| Enterprise AI systems are now fair game. | RAG, prompt injection, tool permissions, model fallback, evaluation, and cost controls can appear in design discussions. | Run the AI/RAG scenario in the enterprise curriculum and use the OWASP checklist below. |
+| Agentic systems are now fair game. | RAG, stateless MCP/tool contracts, prompt injection, permissions, checkpoints, model fallback, evaluation, and cost controls can appear in design discussions. | Run the AI/RAG scenario in the enterprise curriculum and use the OWASP checklist below. |
 
 ## AI-Assisted Coding Round Protocol
 

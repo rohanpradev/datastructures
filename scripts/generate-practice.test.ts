@@ -96,6 +96,23 @@ describe("generate-practice CLI model", () => {
 		expect(searchTargets(targets, "hard").length).toBeGreaterThan(0);
 		expect(searchTargets(targets, "medium graph").length).toBeGreaterThan(0);
 		expect(findBestTarget(targets, "twoSum")?.title).toBe("twoSum");
+		expect(findBestTarget(targets, "two sum")?.title).toBe("twoSum");
+		expect(findBestTarget(targets, "tow sum")?.title).toBe("twoSum");
+		expect(searchTargets(targets, "dp").length).toBeGreaterThan(0);
+		expect(searchTargets(targets, "ts")[0]?.topic).toBe("typescript-concepts");
+		expect(
+			searchTargets(targets, "pattern:graph difficulty:hard").every(
+				(target) => target.pattern === "graph" && target.difficulty === "hard",
+			),
+		).toBe(true);
+		expect(
+			searchTargets(targets, "pattern:graph difficulty:hard").length,
+		).toBeGreaterThan(0);
+		expect(
+			searchTargets(targets, "level:expert mode:system").every(
+				(target) => toManifestEntry(target).level === "expert",
+			),
+		).toBe(true);
 		expect(findBestTarget(targets, String(targets[0]!.id))).toBe(targets[0]);
 		expect(findBestTarget(targets, "nosuchtarget")).toBeNull();
 	});

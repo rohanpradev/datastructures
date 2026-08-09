@@ -384,6 +384,11 @@ Options:
   --clean              Remove practice/ before generating.
   --force              Reset an existing implementation when generating.
   --help               Show this help text.
+
+Search:
+  Results are relevance-ranked and tolerate small typos. Terms compose with AND.
+  Use field:value for facets: pattern:graph difficulty:hard level:expert
+  Fields: title, slug, export, topic, pattern, difficulty, level, mode, path.
 `);
 }
 
@@ -2515,7 +2520,206 @@ function uniqueSymbols(symbols: ImportSymbol[]): ImportSymbol[] {
 }
 
 function normalizeForSearch(value: string): string {
-	return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+	return value
+		.normalize("NFKD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, "");
+}
+
+type SearchFieldName =
+	| "title"
+	| "slug"
+	| "export"
+	| "topic"
+	| "pattern"
+	| "difficulty"
+	| "level"
+	| "mode"
+	| "path";
+
+type SearchField = {
+	name: SearchFieldName;
+	compact: string;
+	tokens: string[];
+	weight: number;
+};
+
+type ParsedSearchTerm = {
+	field: SearchFieldName | null;
+	alternatives: string[];
+};
+
+const SEARCH_FIELD_NAMES = new Set<SearchFieldName>([
+	"title",
+	"slug",
+	"export",
+	"topic",
+	"pattern",
+	"difficulty",
+	"level",
+	"mode",
+	"path",
+]);
+
+const SEARCH_ALIASES: Readonly<Record<string, string[]>> = {
+	ai: ["artificialintelligence", "llm"],
+	bfs: ["breadthfirstsearch", "graph"],
+	bst: ["binarysearchtree", "tree"],
+	dfs: ["depthfirstsearch", "graph"],
+	dp: ["dynamicprogramming"],
+	dsa: ["datastructures", "algorithms"],
+	js: ["javascript"],
+	llm: ["ai", "artificialintelligence"],
+	ts: ["typescript"],
+};
+
+function tokenizeForSearch(value: string): string[] {
+	const separated = value
+		.normalize("NFKD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+		.toLowerCase();
+	return separated
+		.split(/[^a-z0-9]+/)
+		.map(normalizeForSearch)
+		.filter((token) => token.length > 0);
+}
+
+function buildSearchFields(target: PracticeTarget): SearchField[] {
+	const fields: Array<[SearchFieldName, string, number]> = [
+		["title", target.title, 12],
+		["slug", target.slug, 11],
+		...target.targetSymbols.flatMap(
+			(symbol): Array<[SearchFieldName, string, number]> => [
+				["export", symbol.importedName, 11],
+				["export", symbol.localName, 11],
+			],
+		),
+		["pattern", target.pattern, 8],
+		["topic", target.topic, 7],
+		["difficulty", target.difficulty, 6],
+		["level", inferLearnerLevel(target), 6],
+		["mode", inferInterviewMode(target), 6],
+		["path", target.testRelativePath, 2],
+		...target.sourceRelativePaths.map(
+			(path): [SearchFieldName, string, number] => ["path", path, 2],
+		),
+		...target.testBlocks.map(
+			(block): [SearchFieldName, string, number] => ["title", block.title, 4],
+		),
+	];
+
+	return fields.map(([name, value, weight]) => ({
+		name,
+		compact: normalizeForSearch(value),
+		tokens: tokenizeForSearch(value),
+		weight,
+	}));
+}
+
+function parseSearchTerms(query: string): ParsedSearchTerm[] {
+	return query
+		.trim()
+		.split(/\s+/)
+		.map((rawToken): ParsedSearchTerm | null => {
+			const separatorIndex = rawToken.indexOf(":");
+			const possibleField = rawToken.slice(0, separatorIndex) as SearchFieldName;
+			const field =
+				separatorIndex > 0 && SEARCH_FIELD_NAMES.has(possibleField)
+					? possibleField
+					: null;
+			const rawValue = field ? rawToken.slice(separatorIndex + 1) : rawToken;
+			const value = normalizeForSearch(rawValue);
+			if (value.length === 0) return null;
+			return {
+				field,
+				alternatives: unique([value, ...(SEARCH_ALIASES[value] ?? [])]),
+			};
+		})
+		.filter((term): term is ParsedSearchTerm => term !== null);
+}
+
+function searchTermScore(term: ParsedSearchTerm, fields: SearchField[]): number {
+	let bestScore = 0;
+	for (const field of fields) {
+		if (term.field !== null && field.name !== term.field) continue;
+		for (const alternative of term.alternatives) {
+			if (field.compact === alternative) {
+				bestScore = Math.max(bestScore, field.weight * 100);
+				continue;
+			}
+			if (field.tokens.includes(alternative)) {
+				bestScore = Math.max(bestScore, field.weight * 40);
+				continue;
+			}
+			if (field.tokens.some((token) => token.startsWith(alternative))) {
+				bestScore = Math.max(bestScore, field.weight * 25);
+				continue;
+			}
+			if (
+				field.weight >= 7 &&
+				alternative.length >= 3 &&
+				field.compact.includes(alternative)
+			) {
+				bestScore = Math.max(bestScore, field.weight * 12);
+				continue;
+			}
+
+			// Fuzzy matching is deliberately limited to high-intent fields. A typo
+			// in a title should be recoverable; a coincidental path/test-title typo
+			// should not flood the result set.
+			if (field.weight < 10) continue;
+			const maximumDistance = alternative.length >= 7 ? 2 : alternative.length >= 3 ? 1 : 0;
+			if (maximumDistance === 0) continue;
+			for (const token of field.tokens) {
+				if (token.length < 3) continue;
+				const distance = editDistanceWithin(alternative, token, maximumDistance);
+				if (distance <= maximumDistance) {
+					bestScore = Math.max(bestScore, field.weight * (8 - distance * 2));
+				}
+			}
+		}
+	}
+	return bestScore;
+}
+
+function editDistanceWithin(left: string, right: string, limit: number): number {
+	if (Math.abs(left.length - right.length) > limit) return limit + 1;
+	let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+	let previousPrevious: number[] | null = null;
+
+	for (let leftIndex = 1; leftIndex <= left.length; leftIndex++) {
+		const current = [leftIndex];
+		let rowMinimum = leftIndex;
+		for (let rightIndex = 1; rightIndex <= right.length; rightIndex++) {
+			const substitutionCost = left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1;
+			let distance = Math.min(
+				(previous[rightIndex] ?? limit + 1) + 1,
+				(current[rightIndex - 1] ?? limit + 1) + 1,
+				(previous[rightIndex - 1] ?? limit + 1) + substitutionCost,
+			);
+			if (
+				previousPrevious !== null &&
+				leftIndex > 1 &&
+				rightIndex > 1 &&
+				left[leftIndex - 1] === right[rightIndex - 2] &&
+				left[leftIndex - 2] === right[rightIndex - 1]
+			) {
+				distance = Math.min(
+					distance,
+					(previousPrevious[rightIndex - 2] ?? limit + 1) + 1,
+				);
+			}
+			current.push(distance);
+			rowMinimum = Math.min(rowMinimum, distance);
+		}
+		if (rowMinimum > limit) return limit + 1;
+		previousPrevious = previous;
+		previous = current;
+	}
+
+	return previous[right.length] ?? limit + 1;
 }
 
 function slugify(value: string): string {
@@ -2554,29 +2758,23 @@ export function searchTargets(
 		return targets.filter((target) => target.id === targetId);
 	}
 
-	const queryTokens = trimmedQuery
-		.split(/\s+/)
-		.map(normalizeForSearch)
-		.filter((token) => token.length > 0);
-	if (queryTokens.length === 0) return targets;
+	const terms = parseSearchTerms(trimmedQuery);
+	if (terms.length === 0) return targets;
 
-	return targets.filter((target) => {
-		const searchableFields = [
-			target.title,
-			target.slug,
-			target.topic,
-			target.pattern,
-			target.difficulty,
-			inferLearnerLevel(target),
-			inferInterviewMode(target),
-			target.testRelativePath,
-			...target.sourceRelativePaths,
-		].map(normalizeForSearch);
-
-		return queryTokens.every((token) =>
-			searchableFields.some((field) => field.includes(token)),
-		);
-	});
+	return targets
+		.map((target) => {
+			const fields = buildSearchFields(target);
+			const termScores = terms.map((term) => searchTermScore(term, fields));
+			return {
+				target,
+				score: termScores.every((score) => score > 0)
+					? termScores.reduce((total, score) => total + score, 0)
+					: 0,
+			};
+		})
+		.filter((result) => result.score > 0)
+		.sort((left, right) => right.score - left.score || left.target.id - right.target.id)
+		.map((result) => result.target);
 }
 
 export function findBestTarget(
@@ -2593,12 +2791,7 @@ export function findBestTarget(
 	const matches = searchTargets(targets, query);
 	if (matches.length === 0) return null;
 
-	const normalizedQuery = normalizeForSearch(trimmedQuery);
-	return (
-		matches.find((target) => normalizeForSearch(target.title) === normalizedQuery) ??
-		matches.find((target) => normalizeForSearch(target.slug) === normalizedQuery) ??
-		matches[0]!
-	);
+	return matches[0]!;
 }
 
 export function pickRandomTarget(
@@ -3172,7 +3365,7 @@ async function promptForTarget(targets: PracticeTarget[]): Promise<PracticeTarge
 		while (true) {
 			const query = (
 				await readline.question(
-					"Search problem/topic (examples: heap, two sum, median, binary tree): ",
+					"Search problem/topic (examples: heap, two sum, pattern:graph, level:expert): ",
 				)
 			).trim();
 			const matches = searchTargets(targets, query).slice(0, 25);

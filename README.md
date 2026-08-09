@@ -112,19 +112,22 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 FAANG interviews and strong engineering screens reward pattern recognition,
 clear reasoning, edge-case handling, and code that you can explain under time
 pressure. The problem set here is aligned with common public prep tracks such
-as Blind 75 / NeetCode 150 style patterns and durable algorithm references that
-emphasize data structures, algorithms, Big-O, maps, trees, graphs, binary
-search, recursion, dynamic programming, and interview communication.
+as LeetCode's maintained Top Interview 150 and August 2026 interview signals
+that emphasize data structures, algorithms, Big-O, maps, trees, graphs, binary
+search, recursion, dynamic programming, repository comprehension, debugging,
+AI-code review, and interview communication.
 
-Research references:
+Current signals and maintained/foundational references:
 
 - [MIT OCW 6.006: Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/)
 - [OpenDSA Data Structures and Algorithms](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/)
 - [CP-Algorithms](https://cp-algorithms.com/)
-- [NeetCode roadmap](https://neetcode.io/roadmap)
-- [Blind 75 problem list](https://leetcode.com/discuss/general-discussion/460599/blind-75-leetcode-questions)
+- [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/)
+- [HackerRank April 2026 interview release](https://support.hackerrank.com/articles/4368819843-april-2026-release-notes)
+- [GitHub MCP Server July 2026 update](https://github.blog/changelog/2026-07-23-github-mcp-server-supports-the-next-mcp-specification/)
 - [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
-- [Node.js releases](https://nodejs.org/en/about/previous-releases)
+- [Node.js 26.5.0 release](https://nodejs.org/en/blog/release/v26.5.0)
+- [Node.js release schedule](https://nodejs.org/en/about/previous-releases)
 - [Bun documentation](https://bun.com/docs)
 - [Bun Image docs](https://bun.com/docs/runtime/image)
 - [Bun child process docs](https://bun.com/docs/runtime/child-process)
@@ -580,6 +583,21 @@ bun run practice -- --random graph --seed cohort-a
 ```
 
 Search terms compose as filters, so `medium graph` means targets matching both terms. The list output includes each target's ID, slug, exported symbol, and source file. Use the slug or exported symbol when you want a repeatable command for a particular problem; use the ID for quick one-off selection from the current list. A seed makes random selection reproducible across machines with the same target catalog.
+
+Search is relevance-ranked: exact titles and exports rank above patterns,
+metadata, and file paths. It also understands common aliases (`dp`, `bst`,
+`bfs`, `dfs`, `js`, `ts`), prefixes, camelCase, and small typos. Use facets when
+you want precise filtering:
+
+```bash
+bun run practice -- --list "pattern:graph difficulty:hard"
+bun run practice -- --list "level:expert mode:system"
+bun run practice -- --problem "tow sum"
+```
+
+Available facets are `title`, `slug`, `export`, `topic`, `pattern`,
+`difficulty`, `level`, `mode`, and `path`. Plain terms and facets compose with
+AND semantics.
 
 4. Implement the generated file under `practice/`. Generating the same target again preserves your code; pass `--force` only when you intentionally want to reset that implementation.
 5. Run `bun run practice:run`, or keep `bun run practice:watch` open while coding. `bun run practice:status` restores the exact file and command for the active problem.

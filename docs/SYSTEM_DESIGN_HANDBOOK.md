@@ -654,20 +654,21 @@ invariant explained without notes.
 - [OpenTelemetry signals](https://opentelemetry.io/docs/concepts/signals/)
   now frame traces, metrics, logs, baggage, and emerging profiles as connected
   views of runtime behavior.
-- The [2025 DORA report](https://dora.dev/research/2025/dora-report/) finds that
-  AI amplifies the surrounding engineering system; platform quality, feedback,
-  user focus, and loosely coupled architecture remain foundational.
-- The [2025 CNCF annual survey](https://www.cncf.io/reports/the-cncf-annual-cloud-native-survey/)
-  reports mature cloud-native/Kubernetes use alongside growing AI inference,
-  platform engineering, GitOps, observability, and profiling emphasis.
+- [GitHub Agentic Workflows](https://github.blog/changelog/2026-02-13-github-agentic-workflows-are-now-in-technical-preview/)
+  and the [July 2026 MCP Server update](https://github.blog/changelog/2026-07-23-github-mcp-server-supports-the-next-mcp-specification/)
+  make repository-native agents, explicit tool contracts, scoped permissions,
+  review gates, and auditability current system-design concerns.
+- CNCF's [January 2026 cloud-native survey announcement](https://www.cncf.io/announcements/2026/01/20/kubernetes-established-as-the-de-facto-operating-system-for-ai-as-production-use-hits-82-in-2025-cncf-annual-cloud-native-survey/)
+  connects production cloud-native maturity with AI inference, platform
+  engineering, security, observability, and profiling.
 - [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) and its
   Generative AI profile organize AI risk around continuous governance,
   mapping, measurement, and management.
 - [OWASP GenAI Security](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
   keeps prompt injection, unsafe output handling, sensitive information,
   supply chain, denial of service, and excessive agency in the design threat
-  model. The current general web baseline is the
-  [OWASP Top 10:2025](https://owasp.org/www-project-top-ten/).
+  model. The currently published general web baseline is the
+  [OWASP Web Top 10](https://owasp.org/www-project-top-ten/).
 
 Research changes what receives emphasis, not the standard of proof. Survey
 popularity does not make Kubernetes, microservices, AI, or a specific database
