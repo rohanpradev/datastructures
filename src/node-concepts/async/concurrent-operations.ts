@@ -39,8 +39,8 @@ export class PromiseTaskQueue<T> {
 	private idleResolvers: Array<(summary: QueueSummary<T>) => void> = [];
 
 	constructor(maxConcurrency = 1) {
-		if (maxConcurrency < 1) {
-			throw new Error("maxConcurrency must be at least 1");
+		if (!Number.isSafeInteger(maxConcurrency) || maxConcurrency < 1) {
+			throw new RangeError("maxConcurrency must be a positive safe integer");
 		}
 		this.maxConcurrency = maxConcurrency;
 	}
@@ -64,7 +64,8 @@ export class PromiseTaskQueue<T> {
 			const task = this.pendingTasks.shift()!;
 			this.activeCount++;
 
-			task()
+			Promise.resolve()
+				.then(task)
 				.then((result) => {
 					this.results.push(result);
 				})

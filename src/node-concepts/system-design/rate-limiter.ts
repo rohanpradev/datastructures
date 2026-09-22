@@ -23,8 +23,10 @@ export class TokenBucketRateLimiter {
 		private readonly refillTokensPerSecond: number,
 		nowMs = Date.now(),
 	) {
-		if (capacity < 1) throw new Error("capacity must be at least 1");
-		if (refillTokensPerSecond <= 0) {
+		if (!Number.isFinite(capacity) || capacity < 1) {
+			throw new Error("capacity must be a finite number of at least 1");
+		}
+		if (!Number.isFinite(refillTokensPerSecond) || refillTokensPerSecond <= 0) {
 			throw new Error("refillTokensPerSecond must be positive");
 		}
 
@@ -53,10 +55,15 @@ export class TokenBucketRateLimiter {
 	 * @example
 	 * const limiter = new TokenBucketRateLimiter(10, 2); // 10 capacity, 2 refill/sec
 	 * limiter.consume(); // { allowed: true, remaining: 9, retryAfterMs: 0 }
-	 * limiter.consume(Date.now(), 15); // { allowed: false, remaining: 9, retryAfterMs: 3000 }
+	 * limiter.consume(Date.now(), 15); // throws: cost exceeds bucket capacity
 	 */
 	consume(nowMs = Date.now(), cost = 1): RateLimitResult {
-		if (cost < 1) throw new Error("cost must be at least 1");
+		if (!Number.isFinite(cost) || cost < 1) {
+			throw new Error("cost must be a finite number of at least 1");
+		}
+		if (cost > this.capacity) {
+			throw new Error("cost must not exceed capacity");
+		}
 
 		this.refill(nowMs);
 

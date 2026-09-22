@@ -2,6 +2,10 @@
 
 Last checked: 2026-08-09.
 
+September 22 addendum: [current employer guidance and executable additions](./INTERVIEW_UPGRADE_2026_09.md)
+separates verified hiring guidance from our original practice recommendations.
+The older research below retains its original check date.
+
 This repo should be treated as a living interview-prep platform: executable
 practice first, then concise guides, then enterprise discussion prompts. The
 research below explains the priorities used for the current upgrade.
@@ -129,6 +133,10 @@ semantic-recall layer, not a replacement for exact identifiers and facets.
 
 The next problems should be executable and testable rather than trend-only
 reading material:
+
+All five are implemented in
+[AI Engineering Executable Problems](./AI_EXECUTABLE_PROBLEMS.md), with focused
+Bun tests under `src/ai/test/executable-problems.test.ts`.
 
 1. Review and repair an AI-generated pull-request-sized change with a hidden
    correctness regression, missing edge case, and misleading explanation.

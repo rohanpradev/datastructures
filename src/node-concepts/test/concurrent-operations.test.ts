@@ -22,6 +22,13 @@ function createFailingTask(error: unknown, delayMs = 10): () => Promise<never> {
 }
 
 describe("PromiseTaskQueue", () => {
+  test.each([0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])(
+    "rejects invalid concurrency %s instead of stalling or exceeding the limit",
+    (concurrency) => {
+      expect(() => new PromiseTaskQueue(concurrency)).toThrow(RangeError);
+    },
+  );
+
   test("executes tasks and resolves results", async () => {
     const queue = new PromiseTaskQueue<number>(2);
 
@@ -94,6 +101,21 @@ describe("PromiseTaskQueue", () => {
     expect([...results].sort()).toEqual([1, 2]);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toBeInstanceOf(Error);
+  });
+
+  test("captures synchronous throws without deadlocking the queue", async () => {
+    const queue = new PromiseTaskQueue<number>(1);
+    const error = new Error("synchronous boom");
+
+    queue.enqueue(() => {
+      throw error;
+    });
+    queue.enqueue(async () => 42);
+
+    const { results, errors } = await queue.waitForIdle();
+
+    expect(results).toEqual([42]);
+    expect(errors).toEqual([error]);
   });
 
   test("resolves immediately if no tasks are queued", async () => {

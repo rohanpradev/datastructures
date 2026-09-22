@@ -30,6 +30,22 @@ afterAll(async () => {
 });
 
 describe("generate-practice CLI model", () => {
+	test("classifies advanced algorithms and executable failure labs correctly", () => {
+		for (const [name, pattern] of [
+			["shortestSubarrayAtLeastK", "prefix sum"],
+			["maxScheduledProfit", "dynamic programming"],
+		]) {
+			const target = findBestTarget(targets, `export:${name}`)!;
+			expect(target).toBeDefined();
+			expect(toManifestEntry(target)).toMatchObject({ difficulty: "hard", pattern, interviewMode: "coding" });
+		}
+		for (const name of ["SingleFlight", "FencedRegister", "TransactionalOutbox"]) {
+			const target = findBestTarget(targets, `export:${name}`)!;
+			expect(target).toBeDefined();
+			expect(toManifestEntry(target)).toMatchObject({ difficulty: "hard", interviewMode: "system design", level: "expert" });
+		}
+	});
+
 	test("parses every supported noninteractive mode", () => {
 		expect(parseArgs(["--all", "--clean"]).all).toBe(true);
 		expect(parseArgs(["--dashboard"]).dashboard).toBe(true);
@@ -166,6 +182,21 @@ describe("generate-practice CLI model", () => {
 });
 
 describe("generate-practice focused output", () => {
+	test("AI exercises select implementations and preserve helper type imports", async () => {
+		for (const name of ["selectReviewChanges", "createStatelessToolEndpoint", "AgentCheckpointStore", "retrieveAuthorizedDocuments", "runEvaluation"]) {
+			const target = findBestTarget(targets, name);
+			expect(target?.targetSymbols.map((symbol) => symbol.importedName)).toEqual([name]);
+			const outputRoot = join(TEST_ROOT, `ai-${name}`);
+			const testPath = await writeFocusedPractice(target!, outputRoot, false);
+			const generated = await Bun.file(join(outputRoot, testPath)).text();
+			if (name === "AgentCheckpointStore") expect(generated).toContain("type AgentAction");
+			if (name === "createStatelessToolEndpoint") {
+				expect(generated).toContain("type ToolPrincipal");
+				expect(generated).toContain("type ToolResultEnvelope");
+			}
+		}
+	});
+
 	test("prints a Bun command that works on Windows path filtering", () => {
 		expect(formatFocusedTestCommand("algorithms\\tests\\two-sum.test.ts")).toBe(
 			"bun test --cwd practice algorithms/tests/two-sum.test.ts",

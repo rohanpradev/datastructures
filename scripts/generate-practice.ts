@@ -64,6 +64,7 @@ type ImportSymbol = {
 	localName: string;
 	importedName: string;
 	importPath: string;
+	isTypeOnly?: boolean;
 };
 
 type LocalImport = {
@@ -1738,6 +1739,7 @@ function resolveSourceImportPath(
 
 function parseImportSymbols(specifier: string, importPath: string): ImportSymbol[] {
 	const symbols: ImportSymbol[] = [];
+	const isTypeOnly = /^type\s+/.test(specifier.trim());
 	let remaining = specifier.replace(/^type\s+/, "").trim();
 
 	const namedStart = remaining.indexOf("{");
@@ -1748,6 +1750,7 @@ function parseImportSymbols(specifier: string, importPath: string): ImportSymbol
 				localName: defaultName,
 				importedName: "default",
 				importPath,
+				isTypeOnly,
 			});
 		}
 		remaining = remaining.slice(namedStart);
@@ -1760,12 +1763,14 @@ function parseImportSymbols(specifier: string, importPath: string): ImportSymbol
 				localName: namespaceName,
 				importedName: "*",
 				importPath,
+				isTypeOnly,
 			});
 		} else if (remaining.length > 0) {
 			symbols.push({
 				localName: remaining,
 				importedName: "default",
 				importPath,
+				isTypeOnly,
 			});
 		}
 		return symbols;
@@ -1783,7 +1788,10 @@ function parseImportSymbols(specifier: string, importPath: string): ImportSymbol
 		const importedName = aliasParts[0]!.trim();
 		const localName = (aliasParts[1] ?? aliasParts[0])!.trim();
 
-		symbols.push({ localName, importedName, importPath });
+		symbols.push({
+			localName, importedName, importPath,
+			isTypeOnly: isTypeOnly || /^type\s+/.test(rawPart.trim()),
+		});
 	}
 
 	return symbols;
@@ -2173,6 +2181,9 @@ function inferPattern(
 ): PracticePattern {
 	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
 	const rules: Array<[RegExp, PracticePattern]> = [
+		[/maxscheduledprofit/, "dynamic programming"],
+		[/shortestsubarrayatleastk/, "prefix sum"],
+		[/singleflight/, "async backend"],
 		[/dailytemperatures|largestrectangle|monotonicstack|nextgreater/, "monotonic stack"],
 		[/meeting|interval|overlap|mergeinterval|sweepline/, "intervals"],
 		[
@@ -2211,7 +2222,7 @@ function inferDifficulty(
 	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
 
 	if (
-		/dynamicprogramming|backtracking|graph|heap|systemdesign|consistenthash|bloom|snowflake|circuit|median|largestrectangle|wordsearch|hard/.test(
+		/shortestsubarrayatleastk|maxscheduledprofit|dynamicprogramming|backtracking|graph|heap|systemdesign|consistenthash|bloom|snowflake|circuit|median|largestrectangle|wordsearch|hard/.test(
 			text,
 		)
 	) {
@@ -2255,7 +2266,7 @@ function chooseTargetSymbols(
 	testFile: string,
 ): ImportSymbol[] {
 	const usedSymbols = imports.flatMap((localImport) =>
-		localImport.symbols.filter((symbol) => isSymbolUsed(symbol.localName, block.text)),
+		localImport.symbols.filter((symbol) => !symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text)),
 	);
 
 	const titleKey = normalizeForSearch(block.title);
@@ -2399,7 +2410,7 @@ export function auditPracticeCatalogCompleteness(
 			const usedLocalSymbols = uniqueSymbols(
 				imports.flatMap((localImport) =>
 					localImport.symbols.filter((symbol) =>
-						isSymbolUsed(symbol.localName, block.text),
+						!symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text),
 					),
 				),
 			);
@@ -3427,18 +3438,18 @@ function buildImportSpecifier(symbols: ImportSymbol[]): string {
 	const namespaceSymbol = symbols.find((symbol) => symbol.importedName === "*");
 
 	if (namespaceSymbol) {
-		return `* as ${namespaceSymbol.localName}`;
+		return `${namespaceSymbol.isTypeOnly ? "type " : ""}* as ${namespaceSymbol.localName}`;
 	}
 
 	const parts: string[] = [];
-	if (defaultSymbol) parts.push(defaultSymbol.localName);
+	if (defaultSymbol) parts.push(`${defaultSymbol.isTypeOnly ? "type " : ""}${defaultSymbol.localName}`);
 
 	if (namedSymbols.length > 0) {
 		const named = namedSymbols
-			.map((symbol) =>
+			.map((symbol) => `${symbol.isTypeOnly ? "type " : ""}${
 				symbol.importedName === symbol.localName
 					? symbol.importedName
-					: `${symbol.importedName} as ${symbol.localName}`,
+					: `${symbol.importedName} as ${symbol.localName}`}`,
 			)
 			.join(", ");
 		parts.push(`{ ${named} }`);
@@ -3686,6 +3697,13 @@ function normalizeGeneratedTestText(value: string): string {
 }
 
 export function runPracticeSmokeTests(targets: PracticeTarget[]): void {
+	const typeImports = parseImportSymbols("type { Shape as Alias }", "synthetic");
+	assertSmoke(typeImports[0]?.isTypeOnly === true, "lost import type declaration");
+	assertSmoke(buildImportSpecifier(typeImports) === "{ type Shape as Alias }", "lost type-only alias when rewriting imports");
+	const mixedImports = parseImportSymbols("{ value, type Shape }", "synthetic");
+	assertSmoke(mixedImports[0]?.isTypeOnly === false && mixedImports[1]?.isTypeOnly === true, "lost mixed import type information");
+	const typeBlock = { title: "Shape", text: "const item: Shape = {};", start: 0, end: 1, kind: "describe", modifier: null } as DescribeBlock;
+	assertSmoke(chooseTargetSymbols(typeBlock, [{ importPath: "synthetic", statement: "", symbols: mixedImports }], "synthetic.test.ts").length === 0, "selected a type as an executable practice target");
 	const syntheticTest = `
 import { describe, expect, it, test } from "bun:test";
 import { alpha as renamedAlpha, beta, gamma } from '@/fake/source';

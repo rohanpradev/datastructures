@@ -42,10 +42,9 @@ export interface CircuitBreakerOptions {
 	halfOpenMaxCalls?: number; // test calls allowed in HALF_OPEN
 }
 
-interface Metrics {
-	success: number;
-	failure: number;
-	timestamps: number[];
+interface MetricEvent {
+	outcome: "success" | "failure";
+	timestamp: number;
 }
 
 /**
@@ -53,7 +52,7 @@ interface Metrics {
  */
 export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	private state: CircuitState = "CLOSED";
-	private metrics: Metrics = { success: 0, failure: 0, timestamps: [] };
+	private metrics: MetricEvent[] = [];
 	private nextAttempt = 0;
 	private halfOpenCalls = 0;
 
@@ -65,8 +64,8 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 
 	/**
 	 * Executes the action behind the circuit breaker, applying all protective logic.
-	 * Time Complexity: O(1) amortized
-	 * Space Complexity: O(1)
+	 * Time Complexity: O(n), where n is the number of outcomes in the window
+	 * Space Complexity: O(n)
 	 *
 	 * Algorithm:
 	 * 1. If OPEN and cooldown passed, transition to HALF_OPEN
@@ -138,7 +137,7 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	}
 
 	private recordSuccess() {
-		this.metrics.success++;
+		this.metrics.push({ outcome: "success", timestamp: Date.now() });
 		this.cleanupWindow();
 
 		if (this.state === "HALF_OPEN") {
@@ -147,8 +146,7 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	}
 
 	private recordFailure() {
-		this.metrics.failure++;
-		this.metrics.timestamps.push(Date.now());
+		this.metrics.push({ outcome: "failure", timestamp: Date.now() });
 		this.cleanupWindow();
 
 		if (this.shouldTrip()) {
@@ -157,11 +155,15 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	}
 
 	private shouldTrip(): boolean {
-		const total = this.metrics.success + this.metrics.failure;
+		const total = this.metrics.length;
 
 		if (total < this.options.minimumRequests) return false;
 
-		const failureRate = (this.metrics.failure / total) * 100;
+		const failures = this.metrics.reduce(
+			(count, metric) => count + Number(metric.outcome === "failure"),
+			0,
+		);
+		const failureRate = (failures / total) * 100;
 		return failureRate >= this.options.failureThreshold;
 	}
 
@@ -172,15 +174,15 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 
 	private reset() {
 		this.state = "CLOSED";
-		this.metrics = { success: 0, failure: 0, timestamps: [] };
+		this.metrics = [];
 	}
 
 	private cleanupWindow() {
 		const now = Date.now();
 		const windowStart = now - this.options.windowDuration;
 
-		this.metrics.timestamps = this.metrics.timestamps.filter(
-			(ts) => ts >= windowStart,
+		this.metrics = this.metrics.filter(
+			(metric) => metric.timestamp >= windowStart,
 		);
 	}
 

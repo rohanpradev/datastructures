@@ -34,6 +34,18 @@ practice. Current AI-era and enterprise material lives in
 [docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md),
 [docs/BUN_2026_CURRICULUM.md](./docs/BUN_2026_CURRICULUM.md),
 and [docs/RESEARCH_BRIEF_2026.md](./docs/RESEARCH_BRIEF_2026.md).
+The local durable AI tutor, LangGraph Graph/Functional workflows, typed
+supervisor and stateful-handoff modes, MCP v2 server, Drizzle scaffolding, and
+Scalar API reference are documented in
+[docs/TYPESCRIPT_AI_TUTOR.md](./docs/TYPESCRIPT_AI_TUTOR.md).
+The five executable AI engineering review, tool-safety, checkpoint, retrieval,
+and evaluation exercises are in
+[docs/AI_EXECUTABLE_PROBLEMS.md](./docs/AI_EXECUTABLE_PROBLEMS.md).
+
+The [September 22 interview refresh](./docs/INTERVIEW_UPGRADE_2026_09.md)
+adds five executable advanced problems, six system-design mock interviews,
+failure timelines, sizing exercises, and a two-week practice route grounded
+in current employer guidance. Start there for the latest additions.
 
 Generate a learner dashboard any time:
 
@@ -103,6 +115,10 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 | Load balancing | `src/node-concepts/system-design/load-balancer.ts` | Round robin vs least connections, health, draining, overload, retry amplification. |
 | Replication quorums | `src/node-concepts/system-design/replication-quorum.ts` | N/R/W overlap, availability, stale reads, and why overlap alone is not linearizability. |
 | At-least-once queues | `src/node-concepts/system-design/at-least-once-queue.ts` | Visibility leases, redelivery, idempotent consumers, stale receipts, and dead letters. |
+| Cache stampede control | `src/node-concepts/system-design/single-flight.ts` | Shared in-flight loads, failure cleanup, tenant-qualified keys, replica boundaries. |
+| Fenced writes | `src/node-concepts/system-design/fenced-register.ts` | Expired workers, monotonic tokens, protected storage, lease authority. |
+| Transactional outbox | `src/node-concepts/system-design/transactional-outbox.ts` | Real SQLite atomicity, rollback, durable pending events, duplicate delivery. |
+| Advanced coding | `src/algorithms/interview-patterns/advanced-interview-patterns.ts` | Signed subarray sums with a monotonic deque; weighted scheduling with DP and binary search. |
 | TypeScript API design | `src/typescript-concepts/advanced-types.ts` | Branded IDs, `NoInfer`, template literal routes, exhaustive unions, typed events. |
 | Async resilience | `src/node-concepts/async` | Retries, timeout budgets, backpressure, circuit breakers, pub/sub fan-out. |
 | Bun-native backend work | `src/node-concepts/bun-runtime` | File I/O, image processing, subprocesses, Shell, password hashing, cookies, SQLite, SQL/Redis boundaries. |
@@ -144,8 +160,13 @@ Documentation refresh note: as of July 8, 2026, the Node.js release page lists N
 
 ## Quick Start
 
+Use Bun **1.4.2**, matching `packageManager` and CI. The September dependency
+refresh keeps Drizzle ORM and Kit on the matched **v1.0.0-rc.4** release.
+See [the upgrade notes](./docs/UPGRADE_2026_09.md) for package versions,
+correctness fixes, and new tutor session endpoints.
+
 ```bash
-bun install
+bun install --frozen-lockfile
 bun run check
 ```
 
@@ -159,6 +180,7 @@ bun run lint                  # Non-mutating Biome check for CI
 bun run typecheck             # Stable TypeScript 7 via tsc
 bun run docs:check            # Validate every local Markdown link
 bun run test:algorithms       # Algorithm tests only
+bun run test:ai               # Tutor API, persistence, orchestration and exercises
 bun run test:bun              # Bun runtime concept tests only
 bun run test:data-structures  # Data structure tests only
 bun run test:js               # JavaScript core concept tests only
@@ -183,6 +205,10 @@ bun run practice:dashboard    # Write manifest plus learning-dashboard.md
 bun run practice:audit        # Prove every eligible test block maps exactly once
 bun run practice:validate     # Run every focused scenario against stub and reference
 bun dev                       # Run Bun server examples
+bun run ai:dev                # Run the TypeScript AI tutor on 127.0.0.1:3001
+bun run db:generate           # Generate a Drizzle 1.0 RC migration
+bun run db:migrate            # Apply AI tutor migrations
+bun test src/ai/test/ai-service.spec.ts # Focused orchestration/API/MCP persistence tests
 ```
 
 ## Practice Generator Contract

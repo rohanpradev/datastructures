@@ -4,6 +4,8 @@
 export interface RetryOptions {
 	retries: number;
 	baseDelayMs?: number;
+	maxDelayMs?: number;
+	signal?: AbortSignal;
 	shouldRetry?: (error: unknown, attempt: number) => boolean;
 }
 
@@ -69,7 +71,9 @@ export async function withTimeout<T>(
 }
 
 /**
- * Retries a failing async operation with linear backoff.
+ * Retries a failing async operation with capped linear backoff.
+ * Cancellation stops waiting and prevents subsequent attempts. Pass the same
+ * signal to the operation (for example fetch) to cancel work already in flight.
  *
  * Interview concept:
  * Retries should be bounded, delayed, and conditional. Production systems also
@@ -80,23 +84,34 @@ export async function retry<T>(
 	options: RetryOptions,
 ): Promise<T> {
 	const baseDelayMs = options.baseDelayMs ?? 0;
-	let lastError: unknown;
-
-	for (let attempt = 1; attempt <= options.retries + 1; attempt++) {
-		try {
-			return await operation(attempt);
-		} catch (error) {
-			lastError = error;
-
-			const hasAttemptsLeft = attempt <= options.retries;
-			const canRetry = options.shouldRetry?.(error, attempt) ?? true;
-			if (!hasAttemptsLeft || !canRetry) break;
-
-			if (baseDelayMs > 0) {
-				await abortableDelay(baseDelayMs * attempt);
-			}
+	const maxDelayMs = options.maxDelayMs ?? 30_000;
+	if (!Number.isSafeInteger(options.retries) || options.retries < 0) {
+		throw new RangeError("retries must be a non-negative safe integer");
+	}
+	for (const [name, value] of Object.entries({ baseDelayMs, maxDelayMs })) {
+		if (!Number.isFinite(value) || value < 0 || value > 2_147_483_647) {
+			throw new RangeError(
+				`${name} must be between 0 and 2147483647 milliseconds`,
+			);
 		}
 	}
 
-	throw lastError;
+	for (let attempt = 1; ; attempt++) {
+		options.signal?.throwIfAborted();
+		try {
+			return await operation(attempt);
+		} catch (error) {
+			const hasAttemptsLeft = attempt <= options.retries;
+			if (!hasAttemptsLeft) throw error;
+			options.signal?.throwIfAborted();
+			if (!(options.shouldRetry?.(error, attempt) ?? true)) throw error;
+
+			if (baseDelayMs > 0) {
+				await abortableDelay(
+					Math.min(baseDelayMs * attempt, maxDelayMs),
+					options.signal,
+				);
+			}
+		}
+	}
 }

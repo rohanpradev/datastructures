@@ -65,6 +65,28 @@ describe("TokenBucketRateLimiter", () => {
 			retryAfterMs: 0,
 		});
 	});
+
+	test("rejects costs that can never fit in the bucket", () => {
+		const limiter = new TokenBucketRateLimiter(3, 1, 0);
+
+		expect(() => limiter.consume(0, 4)).toThrow(
+			"cost must not exceed capacity",
+		);
+	});
+
+	test("rejects non-finite configuration and costs", () => {
+		expect(() => new TokenBucketRateLimiter(Number.NaN, 1, 0)).toThrow(
+			"capacity must be a finite number of at least 1",
+		);
+		expect(() => new TokenBucketRateLimiter(1, Number.POSITIVE_INFINITY, 0)).toThrow(
+			"refillTokensPerSecond must be positive",
+		);
+
+		const limiter = new TokenBucketRateLimiter(1, 1, 0);
+		expect(() => limiter.consume(0, Number.NaN)).toThrow(
+			"cost must be a finite number of at least 1",
+		);
+	});
 });
 
 describe("SlidingWindowRateLimiter", () => {
@@ -339,13 +361,20 @@ describe("IdempotencyKeyStore", () => {
 			replayTtlMs: 5000,
 		});
 
-		expect(store.claim("checkout:1", 0)).toEqual({ status: "started" });
+		const claim = store.claim("checkout:1", 0);
+		expect(claim.status).toBe("started");
 		expect(store.claim("checkout:1", 250)).toEqual({
 			retryAfterMs: 750,
 			status: "conflict",
 		});
 
-		store.complete("checkout:1", { orderId: "order-123" }, 500);
+		if (claim.status !== "started") throw new Error("expected a new claim");
+		store.complete(
+			"checkout:1",
+			claim.claimToken,
+			{ orderId: "order-123" },
+			500,
+		);
 
 		expect(store.claim("checkout:1", 1000)).toEqual({
 			response: { orderId: "order-123" },
@@ -359,9 +388,14 @@ describe("IdempotencyKeyStore", () => {
 			replayTtlMs: 2000,
 		});
 
-		expect(store.claim("payment:1", 0)).toEqual({ status: "started" });
-		expect(store.claim("payment:1", 1001)).toEqual({ status: "started" });
-		store.complete("payment:1", "ok", 1200);
+		const expiredClaim = store.claim("payment:1", 0);
+		const currentClaim = store.claim("payment:1", 1001);
+		expect(expiredClaim.status).toBe("started");
+		expect(currentClaim.status).toBe("started");
+		if (currentClaim.status !== "started") {
+			throw new Error("expected a new claim");
+		}
+		store.complete("payment:1", currentClaim.claimToken, "ok", 1200);
 
 		expect(store.pruneExpired(3201)).toBe(1);
 		expect(store.size()).toBe(0);
@@ -373,13 +407,39 @@ describe("IdempotencyKeyStore", () => {
 			replayTtlMs: 2000,
 		});
 
-		store.claim("invoice:1", 0);
+		const firstClaim = store.claim("invoice:1", 0);
+		if (firstClaim.status !== "started") throw new Error("expected a new claim");
 
-		expect(store.fail("invoice:1")).toBe(true);
-		expect(store.claim("invoice:1", 10)).toEqual({ status: "started" });
-		expect(() => store.complete("missing", "ok")).toThrow(
+		expect(store.fail("invoice:1", firstClaim.claimToken)).toBe(true);
+		const retryClaim = store.claim("invoice:1", 10);
+		expect(retryClaim.status).toBe("started");
+		expect(() => store.complete("missing", "missing-token", "ok")).toThrow(
 			"idempotency key was not claimed",
 		);
+	});
+
+	test("prevents an expired claimant from completing or failing a newer claim", () => {
+		const store = new IdempotencyKeyStore<string>({
+			inFlightTtlMs: 10,
+			replayTtlMs: 100,
+		});
+
+		const staleClaim = store.claim("payment:stale", 0);
+		const currentClaim = store.claim("payment:stale", 11);
+		if (staleClaim.status !== "started" || currentClaim.status !== "started") {
+			throw new Error("expected new claims");
+		}
+
+		expect(() =>
+			store.complete("payment:stale", staleClaim.claimToken, "stale", 12),
+		).toThrow("idempotency claim is stale");
+		expect(store.fail("payment:stale", staleClaim.claimToken)).toBe(false);
+
+		store.complete("payment:stale", currentClaim.claimToken, "current", 13);
+		expect(store.claim("payment:stale", 14)).toEqual({
+			response: "current",
+			status: "replay",
+		});
 	});
 });
 

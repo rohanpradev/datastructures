@@ -79,4 +79,32 @@ describe("Circuit breaker endpoints", () => {
     expect(lastResponse!.title).toBe("Fallback response");
     expect(testBreaker.getState()).toBe("OPEN");
   });
+
+  test("forgets successes and failures outside the rolling window", async () => {
+    let shouldFail = true;
+    const testBreaker = new CircuitBreaker<[], string>(
+      async () => {
+        if (shouldFail) throw new Error("Simulated failure");
+        return "ok";
+      },
+      {
+        failureThreshold: 60,
+        minimumRequests: 2,
+        windowDuration: 20,
+        resetTimeout: 1000,
+        timeout: 1000,
+      },
+      async () => "fallback",
+    );
+
+    expect(await testBreaker.fire()).toBe("fallback");
+    await Bun.sleep(25);
+
+    shouldFail = false;
+    expect(await testBreaker.fire()).toBe("ok");
+    shouldFail = true;
+    expect(await testBreaker.fire()).toBe("fallback");
+
+    expect(testBreaker.getState()).toBe("CLOSED");
+  });
 });

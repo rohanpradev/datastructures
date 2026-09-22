@@ -22,6 +22,12 @@ This folder contains high-frequency coding interview patterns that were not yet 
 | Graph coloring | `isBipartite` | BFS/DFS with state |
 | Dynamic programming | `coinChange`, `wordBreak`, `longestIncreasingSubsequence` | State definitions and transitions |
 | Union-find | `UnionFind`, `countComponents`, `accountsMerge` | Connectivity, cycle detection, components |
+| Prefix sums + monotonic deque | `shortestSubarrayAtLeastK` | Negative values, candidate dominance, amortized linear time |
+| Weighted scheduling DP + binary search | `maxScheduledProfit` | Compatible prefixes, half-open intervals, why greedy fails |
+
+The last two problems live in `advanced-interview-patterns.ts`. Their
+[worked lessons](../../../docs/INTERVIEW_UPGRADE_2026_09.md) include invariants,
+dry runs, independent test oracles, and follow-ups.
 
 ## Google-Focused Priority Set
 

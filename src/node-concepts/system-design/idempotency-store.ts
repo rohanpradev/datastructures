@@ -4,12 +4,12 @@ export interface IdempotencyStoreOptions {
 }
 
 export type IdempotencyClaim<TResponse> =
-	| { status: "started" }
+	| { status: "started"; claimToken: string }
 	| { status: "conflict"; retryAfterMs: number }
 	| { status: "replay"; response: TResponse };
 
 type IdempotencyRecord<TResponse> =
-	| { status: "in-flight"; expiresAtMs: number }
+	| { status: "in-flight"; claimToken: string; expiresAtMs: number }
 	| { status: "completed"; expiresAtMs: number; response: TResponse };
 
 /**
@@ -37,6 +37,7 @@ export class IdempotencyKeyStore<TResponse> {
 
 	/**
 	 * Claims an idempotency key before running a write.
+	 * A started claim includes the ownership token required to complete or fail it.
 	 *
 	 * Time: O(e) for lazy expiry cleanup, where e is the number of expired keys.
 	 * Steady-state lookup/update is O(1).
@@ -47,11 +48,13 @@ export class IdempotencyKeyStore<TResponse> {
 
 		const record = this.records.get(key);
 		if (!record) {
+			const claimToken = crypto.randomUUID();
 			this.records.set(key, {
+				claimToken,
 				expiresAtMs: nowMs + this.options.inFlightTtlMs,
 				status: "in-flight",
 			});
-			return { status: "started" };
+			return { claimToken, status: "started" };
 		}
 
 		if (record.status === "in-flight") {
@@ -64,12 +67,20 @@ export class IdempotencyKeyStore<TResponse> {
 		return { response: record.response, status: "replay" };
 	}
 
-	complete(key: string, response: TResponse, nowMs = Date.now()): void {
+	complete(
+		key: string,
+		claimToken: string,
+		response: TResponse,
+		nowMs = Date.now(),
+	): void {
 		this.validateKey(key);
 		const record = this.records.get(key);
 
 		if (!record || record.status !== "in-flight") {
 			throw new Error("idempotency key was not claimed");
+		}
+		if (record.claimToken !== claimToken) {
+			throw new Error("idempotency claim is stale");
 		}
 
 		this.records.set(key, {
@@ -80,12 +91,18 @@ export class IdempotencyKeyStore<TResponse> {
 	}
 
 	/**
-	 * Releases a failed write so the same client can retry with the same key.
+	 * Releases a failed write when the caller still owns its claim, allowing a retry.
 	 */
-	fail(key: string): boolean {
+	fail(key: string, claimToken: string): boolean {
 		this.validateKey(key);
 		const record = this.records.get(key);
-		if (!record || record.status !== "in-flight") return false;
+		if (
+			!record ||
+			record.status !== "in-flight" ||
+			record.claimToken !== claimToken
+		) {
+			return false;
+		}
 
 		return this.records.delete(key);
 	}

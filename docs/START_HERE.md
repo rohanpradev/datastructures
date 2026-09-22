@@ -6,6 +6,10 @@ readiness, system design, and current AI-era interview formats.
 
 ## Best Entry Route
 
+For the newest material, use the
+[September 22 interview refresh](./INTERVIEW_UPGRADE_2026_09.md): five runnable
+problems, six design mocks, current employer sources, and a two-week route.
+
 1. Read [RESEARCH_BRIEF_2026.md](./RESEARCH_BRIEF_2026.md) to understand the
    current interview and enterprise signals that shaped the platform.
 2. Read [LEARNER_NOTE_STANDARDS.md](./LEARNER_NOTE_STANDARDS.md) so you know

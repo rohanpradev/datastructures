@@ -11,7 +11,7 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 | Async generators | `basics/generator-function.ts` | Shows cancellable step-by-step workflows |
 | Concurrency queue | `async/concurrent-operations.ts` | Handles bounded parallelism, backpressure, and result/error collection |
 | Circuit breaker | `async/circuit-breaker.ts` | Prevents cascading failure when dependencies are slow or down |
-| Timeout, retry, abort | `async/resilience.ts` | Builds safe dependency calls with cancellation and retry boundaries |
+| Timeout, retry, abort | `async/resilience.ts` | Builds dependency calls with cancellation, validated retry budgets, and capped linear backoff |
 | WebSocket pub/sub | `async/pub-sub.ts` | Teaches real-time fanout, channel subscription, and in-memory limits |
 | Bun server and image workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from native image processing work |
 | Bun runtime APIs | `bun-runtime/` | Covers file I/O, image processing, globbing, subprocesses, password hashing, cookies, and Bun Shell |

@@ -16,6 +16,12 @@ This folder contains small executable versions of common system design component
 | `load-balancer.ts` | Round robin and least connections | Backend selection, lifecycle accounting, health and retry discussion |
 | `replication-quorum.ts` | N/R/W quorum analysis | Replica overlap, stale reads, failure tolerance, consistency limits |
 | `at-least-once-queue.ts` | Visibility-timeout work queue | Redelivery, acknowledgements, idempotent effects, delayed retry, DLQ |
+| `single-flight.ts` | Request coalescing | Stampedes, shared failures, cleanup, per-process boundaries |
+| `fenced-register.ts` | Lease and protected storage | Stale worker rejection, exclusive expiry, monotonic tokens |
+| `transactional-outbox.ts` | Atomic state and event writes in SQLite | Rollback, recovery, publish/ack gap, consumer dedupe |
+
+For worked failure timelines, original mock prompts, and practice commands,
+see the [September interview refresh](../../../docs/INTERVIEW_UPGRADE_2026_09.md).
 
 ## Advanced Problem Set
 
@@ -350,10 +356,11 @@ An idempotency key lets the server tell "this retry is the same write attempt." 
 Step-by-step:
 
 1. Client sends a stable idempotency key with the write request.
-2. Server atomically claims the key before doing side effects.
+2. Server atomically claims the key and keeps the returned ownership token while doing side effects.
 3. Concurrent duplicates are rejected or told to retry later.
-4. On success, store the response for a replay TTL.
-5. On failure, release the in-flight key when retrying is safe.
+4. On success, complete the matching claim and store the response for a replay TTL.
+5. On failure, release the matching in-flight claim when retrying is safe.
+6. Reject stale ownership tokens so an expired worker cannot overwrite or release a newer claim.
 
 Production notes:
 

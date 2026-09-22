@@ -4,6 +4,10 @@ This guide turns the runnable Node/Bun primitives into interview-ready system
 design lessons. Use it after you understand the code in
 `src/node-concepts/system-design`.
 
+Extend these lessons with the [September failure labs and mock interviews](./INTERVIEW_UPGRADE_2026_09.md):
+cache stampedes, fenced writes, a real SQLite outbox, inventory reservations,
+webhook delivery, durable scheduling, collaborative editing and an AI gateway.
+
 ## The Answer Template
 
 Use this structure for every system design prompt:

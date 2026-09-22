@@ -11,6 +11,10 @@ different prompt still feels familiar.
 
 ## How To Use This Handbook
 
+Pair the concepts with the [September executable failure labs](./INTERVIEW_UPGRADE_2026_09.md).
+They include atomic SQL rollback, stale lease holders, cache stampedes, and six
+timed design prompts with explicit failure injections and capacity assumptions.
+
 For each design:
 
 1. Answer from a blank page for 35-45 minutes.

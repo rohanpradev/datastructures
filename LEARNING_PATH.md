@@ -1,5 +1,9 @@
 # Interview Learning Path
 
+For a focused advanced extension, follow the
+[September interview practice route](./docs/INTERVIEW_UPGRADE_2026_09.md).
+It connects algorithm invariants to executable system-design failure scenarios.
+
 This is the high-signal route through the repo. It is designed for Bun,
 TypeScript, JavaScript fundamentals, data structures, algorithms, and backend
 system design practice.
