@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { HashNode, HashTable } from "@/data-structures/hash-table/hash-table";
+import { HashTable } from "@/data-structures/hash-table/hash-table";
 
 describe("HashTable - Constructor", () => {
 	test("should create empty hash table with default capacity", () => {
@@ -427,6 +427,47 @@ describe("HashTable - Integration Scenarios", () => {
 });
 
 describe("HashTable - Different Data Types", () => {
+	test("distinguishes stored undefined from absence", () => {
+		const ht = new HashTable<string, undefined>();
+		ht.set("present", undefined);
+		expect(ht.has("present")).toBe(true);
+		expect(ht.has("missing")).toBe(false);
+		expect(ht.delete("present")).toBe(true);
+		expect(ht.has("present")).toBe(false);
+	});
+
+	test("uses SameValueZero for NaN and signed zero through resizing", () => {
+		const ht = new HashTable<number, string>(2);
+		ht.set(NaN, "first").set(NaN, "updated").set(-0, "zero");
+		for (let i = 1; i <= 20; i++) ht.set(i, String(i));
+		expect(ht.size()).toBe(22);
+		expect(ht.get(NaN)).toBe("updated");
+		expect(ht.has(NaN)).toBe(true);
+		expect(ht.get(0)).toBe("zero");
+		expect(ht.delete(NaN)).toBe(true);
+		expect(ht.delete(NaN)).toBe(false);
+	});
+
+	test("keeps object identity stable without calling toString", () => {
+		const ht = new HashTable<object, string>(2);
+		const key = { toString: () => "before" };
+		const bare = Object.create(null) as object;
+		ht.set(key, "object").set(bare, "bare");
+		key.toString = () => { throw new Error("must not coerce keys"); };
+		ht.set({}, "other");
+		expect(ht.get(key)).toBe("object");
+		expect(ht.get(bare)).toBe("bare");
+		expect(ht.delete(key)).toBe(true);
+	});
+
+	test("rejects invalid capacities and load factors", () => {
+		for (const capacity of [0, -1, 1.5, NaN, Infinity, 2 ** 32]) {
+			expect(() => new HashTable(capacity)).toThrow(RangeError);
+		}
+		for (const factor of [0, -1, NaN, Infinity]) {
+			expect(() => new HashTable(4, factor)).toThrow(RangeError);
+		}
+	});
 	test("should work with string keys and string values", () => {
 		const ht = new HashTable<string, string>();
 		ht.set("firstName", "John").set("lastName", "Doe");

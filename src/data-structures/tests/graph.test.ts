@@ -65,6 +65,28 @@ describe("Graph - AddEdge", () => {
 });
 
 describe("Graph - RemoveVertex", () => {
+	test("removes every parallel incoming edge while preserving neighbor order", () => {
+		for (const directed of [true, false]) {
+			const graph = new Graph<string>(directed);
+			graph.addEdge("A", "B").addEdge("A", "C").addEdge("A", "B");
+			graph.addEdge("D", "B").addEdge("D", "B");
+			const neighbors = graph.getNeighbors("A");
+			expect(graph.removeVertex("B")).toBe(true);
+			expect(neighbors).toEqual(["C"]);
+			expect(graph.getNeighbors("D")).toEqual([]);
+			expect(graph.bfs("A")).toEqual(["A", "C"]);
+			expect(graph.dfs("A")).toEqual(["A", "C"]);
+		}
+	});
+
+	test("removes NaN vertices and every reference to them", () => {
+		const graph = new Graph<number>();
+		graph.addEdge(1, NaN).addEdge(1, NaN).addEdge(1, 2);
+		expect(graph.removeVertex(NaN)).toBe(true);
+		expect(graph.getNeighbors(1)).toEqual([2]);
+		expect(graph.hasVertex(NaN)).toBe(false);
+	});
+
 	test("should remove vertex and its edges", () => {
 		const graph = new Graph<string>();
 		graph.addEdge("A", "B").addEdge("A", "C");
@@ -80,6 +102,32 @@ describe("Graph - RemoveVertex", () => {
 });
 
 describe("Graph - RemoveEdge", () => {
+	test("removes exactly one of multiple self-loops", () => {
+		for (const vertex of [1, NaN, 0]) {
+			const graph = new Graph<number>();
+			graph.addEdge(vertex, vertex).addEdge(vertex, vertex);
+			expect(graph.getNeighbors(vertex)).toHaveLength(2);
+			expect(graph.removeEdge(vertex, vertex)).toBe(true);
+			expect(graph.getNeighbors(vertex)).toHaveLength(1);
+			expect(graph.removeEdge(vertex, vertex)).toBe(true);
+			expect(graph.removeEdge(vertex, vertex)).toBe(false);
+		}
+	});
+
+	test("uses the same key equality as Map for NaN and signed zero", () => {
+		for (const directed of [true, false]) {
+			const graph = new Graph<number>(directed);
+			graph.addEdge(NaN, 1);
+			expect(graph.removeEdge(NaN, 1)).toBe(true);
+			expect(graph.getNeighbors(NaN)).toEqual([]);
+			expect(graph.getNeighbors(1)).toEqual([]);
+			graph.addEdge(0, -0).addEdge(-0, 0);
+			expect(graph.size()).toBe(3);
+			expect(graph.removeEdge(-0, 0)).toBe(true);
+			expect(graph.getNeighbors(0)).toHaveLength(1);
+		}
+	});
+
 	test("should remove edge in undirected graph", () => {
 		const graph = new Graph<string>();
 		graph.addEdge("A", "B");

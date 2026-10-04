@@ -573,7 +573,7 @@ describe("groupStringsByDifferences", () => {
     // Strings with same pattern are in the same group
     const patternGroups = result.map((group) =>
       group.map((str) =>
-        group[0]
+        str
           .split("")
           .map((c) => c.charCodeAt(0))
           .map((v, i, arr) => (i === 0 ? 0 : v - arr[i - 1])),

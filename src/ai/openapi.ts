@@ -45,6 +45,13 @@ export const openApiDocument = {
 			),
 			RunStatus: z.toJSONSchema(z.object({ run: runSchema })),
 			LearningResource: z.toJSONSchema(learningResourceSchema),
+			GatewayModel: z.toJSONSchema(
+				z.object({
+					id: z.string(),
+					name: z.string(),
+					provider: z.string(),
+				}),
+			),
 			OrchestrationCatalog: z.toJSONSchema(orchestrationCatalogSchema),
 			SearchResourcesRequest: z.toJSONSchema(searchResourcesRequestSchema),
 			TutorRequest: z.toJSONSchema(tutorRequestSchema),
@@ -89,6 +96,35 @@ export const openApiDocument = {
 					},
 				},
 				summary: "List orchestration patterns",
+			},
+		},
+		"/v1/models": {
+			get: {
+				description:
+					"Returns Vercel AI Gateway language models that support tool use, for populating a model selector.",
+				operationId: "listGatewayModels",
+				responses: {
+					"200": {
+						description: "Available Gateway models and the configured default.",
+						content: {
+							"application/json": {
+								schema: {
+									properties: {
+										defaultModel: { type: "string" },
+										models: {
+											items: { $ref: "#/components/schemas/GatewayModel" },
+											type: "array",
+										},
+									},
+									required: ["defaultModel", "models"],
+									type: "object",
+								},
+							},
+						},
+					},
+					"502": { description: "The Gateway model catalog is unavailable." },
+				},
+				summary: "List models from Vercel AI Gateway",
 			},
 		},
 		"/v1/resources/search": {

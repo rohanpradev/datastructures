@@ -29,6 +29,28 @@ import {
 import { WeightedFairQueue } from "@/node-concepts/system-design/weighted-fair-queue";
 
 describe("TokenBucketRateLimiter", () => {
+	test("does not refill the same elapsed time after a clock rollback", () => {
+		const limiter = new TokenBucketRateLimiter(1, 1, 1000);
+		expect(limiter.consume(1000).allowed).toBe(true);
+		expect(limiter.consume(500)).toEqual({
+			allowed: false,
+			remaining: 0,
+			retryAfterMs: 1500,
+		});
+		expect(limiter.consume(1000).allowed).toBe(false);
+		expect(limiter.consume(1500).retryAfterMs).toBe(500);
+		expect(limiter.consume(2000).allowed).toBe(true);
+	});
+
+	test("rejects invalid clocks without poisoning the bucket", () => {
+		for (const time of [NaN, Infinity, -Infinity]) {
+			expect(() => new TokenBucketRateLimiter(1, 1, time)).toThrow();
+			const limiter = new TokenBucketRateLimiter(1, 1, 0);
+			expect(() => limiter.consume(time)).toThrow();
+			expect(limiter.consume(0).allowed).toBe(true);
+		}
+	});
+
 	test("allows requests while tokens are available", () => {
 		const limiter = new TokenBucketRateLimiter(2, 1, 0);
 
@@ -90,6 +112,25 @@ describe("TokenBucketRateLimiter", () => {
 });
 
 describe("SlidingWindowRateLimiter", () => {
+	test("rejects unbounded or fractional limits and invalid windows", () => {
+		for (const limit of [0, -1, NaN, Infinity, 1.5, 2 ** 53]) {
+			expect(() => new SlidingWindowRateLimiter(limit, 1000)).toThrow();
+		}
+		for (const window of [0, -1, NaN, Infinity]) {
+			expect(() => new SlidingWindowRateLimiter(1, window)).toThrow();
+		}
+	});
+
+	test("invalid clocks cannot erase existing rate limits", () => {
+		for (const time of [NaN, Infinity, -Infinity]) {
+			const limiter = new SlidingWindowRateLimiter(1, 1000);
+			limiter.consume("a", 0);
+			expect(() => limiter.consume("b", time)).toThrow();
+			expect(limiter.trackedKeyCount()).toBe(1);
+			expect(limiter.consume("a", 0).allowed).toBe(false);
+		}
+	});
+
 	test("allows up to the limit inside the window", () => {
 		const limiter = new SlidingWindowRateLimiter(2, 1000);
 
@@ -152,7 +193,9 @@ describe("LRUCache", () => {
 	});
 
 	test("rejects invalid capacity", () => {
-		expect(() => new LRUCache(0)).toThrow("capacity must be at least 1");
+		for (const capacity of [0, -1, NaN, Infinity, 1.5, 2 ** 53]) {
+			expect(() => new LRUCache(capacity)).toThrow();
+		}
 	});
 });
 
@@ -355,6 +398,32 @@ describe("WeightedFairQueue", () => {
 });
 
 describe("IdempotencyKeyStore", () => {
+	test("rejects invalid TTLs and isolates its configuration from caller mutation", () => {
+		for (const ttl of [0, -1, NaN, Infinity]) {
+			expect(() => new IdempotencyKeyStore({ inFlightTtlMs: ttl, replayTtlMs: 10 })).toThrow();
+			expect(() => new IdempotencyKeyStore({ inFlightTtlMs: 10, replayTtlMs: ttl })).toThrow();
+		}
+		const options = { inFlightTtlMs: 10, replayTtlMs: 100 };
+		const store = new IdempotencyKeyStore<string>(options);
+		options.inFlightTtlMs = 0;
+		store.claim("a", 0);
+		expect(store.claim("a", 1).status).toBe("conflict");
+	});
+
+	test("invalid clocks cannot erase claims or corrupt completed responses", () => {
+		for (const time of [NaN, Infinity, -Infinity]) {
+			const store = new IdempotencyKeyStore<string>({ inFlightTtlMs: 10, replayTtlMs: 100 });
+			const claim = store.claim("a", 0);
+			if (claim.status !== "started") throw new Error("expected a new claim");
+			expect(() => store.claim("b", time)).toThrow();
+			expect(() => store.pruneExpired(time)).toThrow();
+			expect(() => store.complete("a", claim.claimToken, "bad", time)).toThrow();
+			expect(store.claim("a", 1).status).toBe("conflict");
+			store.complete("a", claim.claimToken, "ok", 2);
+			expect(store.claim("a", 3)).toEqual({ status: "replay", response: "ok" });
+		}
+	});
+
 	test("starts a write, blocks concurrent duplicates, then replays completion", () => {
 		const store = new IdempotencyKeyStore<{ orderId: string }>({
 			inFlightTtlMs: 1000,

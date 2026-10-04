@@ -1,6 +1,13 @@
 import { resolve } from "node:path";
-import type { McpHttpHandler } from "@modelcontextprotocol/server";
+import {
+	localhostAllowedHostnames,
+	localhostAllowedOrigins,
+	type McpHttpHandler,
+	validateHostHeader,
+	validateOriginHeader,
+} from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
+import { listGatewayModels } from "./gateway-models";
 import { ApiError, errorResponse, jsonResponse, parseJson } from "./json";
 import { serveMcp } from "./mcp";
 import { openApiDocument, scalarDocument } from "./openapi";
@@ -33,6 +40,7 @@ function pathId(value: string): string {
 }
 
 export interface ApiDependencies {
+	listModels?: typeof listGatewayModels;
 	mcp: McpHttpHandler;
 	models: ModelRegistry;
 	orchestration: OrchestrationRegistry;
@@ -47,13 +55,31 @@ export function createApi(dependencies: ApiDependencies) {
 			const url = new URL(request.url);
 			if (url.pathname === "/mcp") return serveMcp(dependencies.mcp, request);
 
+			// Loopback binding alone does not prevent DNS rebinding or browser CSRF.
+			// In-process Requests may omit Host; Bun supplies it on incoming HTTP.
+			const host = validateHostHeader(
+				request.headers.get("host") ?? url.host,
+				localhostAllowedHostnames(),
+			);
+			const origin = validateOriginHeader(
+				request.headers.get("origin"),
+				localhostAllowedOrigins(),
+			);
+			if (!host.ok || !origin.ok) {
+				throw new ApiError(
+					403,
+					"forbidden_origin",
+					"Only local clients are allowed.",
+				);
+			}
+
 			if (request.method === "GET" && url.pathname === "/health") {
 				return jsonResponse({
 					components: {
 						aiSdk: "7",
 						database: "drizzle-orm@1.0.0-rc.4/bun:sqlite",
 						graph: "langgraph/graph+functional",
-						mcp: "2.0.0/spec-2026-07-28",
+						mcp: "2.3.0/spec-2026-07-28",
 						orchestration: "workflow+supervisor+stateful-handoffs",
 					},
 					defaultModel: dependencies.models.defaultModelId,
@@ -63,6 +89,13 @@ export function createApi(dependencies: ApiDependencies) {
 
 			if (request.method === "GET" && url.pathname === "/openapi.json") {
 				return jsonResponse(openApiDocument);
+			}
+
+			if (request.method === "GET" && url.pathname === "/v1/models") {
+				return jsonResponse({
+					defaultModel: dependencies.models.defaultModelId,
+					models: await (dependencies.listModels ?? listGatewayModels)(),
+				});
 			}
 
 			if (

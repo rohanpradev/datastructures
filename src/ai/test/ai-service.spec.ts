@@ -1,7 +1,8 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { McpHttpHandler } from "@modelcontextprotocol/server";
 import { createApi } from "../api";
 import { FunctionalTutorWorkflow, TypeScriptTutorGraph } from "../graphs";
+import { ApiError } from "../json";
 import { createTutorMcpHandler } from "../mcp";
 import type { TutorGeneration, TutorModel } from "../model";
 import { OrchestrationRegistry, TutorOrchestrator } from "../orchestration";
@@ -286,6 +287,96 @@ describe("TypeScript AI tutor service", () => {
 		expect(missing.status).toBe(404);
 	});
 
+	test("rejects foreign REST hosts and browser origins before invoking the tutor", async () => {
+		for (const headers of [
+			{ host: "attacker.example" },
+			{ origin: "https://attacker.example" },
+			{ origin: "null" },
+			{ origin: "not-a-url" },
+		]) {
+			const response = await api(
+				new Request("http://localhost/v1/tutor/runs", {
+					method: "POST",
+					headers,
+					body: JSON.stringify({ prompt: "Explain types" }),
+				}),
+			);
+			expect(response.status).toBe(403);
+			expect(await response.json()).toMatchObject({
+				error: { code: "forbidden_origin" },
+			});
+		}
+		expect(
+			(await api(new Request("http://attacker.example/v1/threads"))).status,
+		).toBe(403);
+		expect(fakeModel.calls).toHaveLength(0);
+		for (const origin of [
+			"http://localhost:3001",
+			"http://127.0.0.1:3001",
+			"http://[::1]:3001",
+		]) {
+			expect(
+				(
+					await api(
+						new Request("http://localhost/health", { headers: { origin } }),
+					)
+				).status,
+			).toBe(200);
+		}
+	});
+
+	test("serves the injected model catalog with the configured default", async () => {
+		const models = new ModelRegistry("test/default");
+		const catalogApi = createApi({
+			mcp,
+			models,
+			orchestration,
+			repository,
+			resources,
+			tutor: graph,
+			listModels: async () => [
+				{ id: "test/model", name: "Test", provider: "test" },
+			],
+		});
+		const response = await catalogApi(
+			new Request("http://localhost/v1/models"),
+		);
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({
+			defaultModel: "test/default",
+			models: [{ id: "test/model", name: "Test", provider: "test" }],
+		});
+	});
+
+	test("checkpoint history honors zero limits, checkpoint IDs, filters, and cursors", async () => {
+		const result = await graph.run({ prompt: "Explain types" });
+		const config = { configurable: { thread_id: result.threadId } };
+		const history = await Array.fromAsync(checkpointer.list(config));
+		expect(history.length).toBeGreaterThan(1);
+		expect(
+			await Array.fromAsync(checkpointer.list(config, { limit: 0 })),
+		).toEqual([]);
+		const selected = history[1]!;
+		const exact = await Array.fromAsync(checkpointer.list(selected.config));
+		expect(exact.map((item) => item.checkpoint.id)).toEqual([
+			selected.checkpoint.id,
+		]);
+		const older = await Array.fromAsync(
+			checkpointer.list(config, { before: history[0]!.config, limit: 1 }),
+		);
+		expect(older[0]?.checkpoint.id).toBe(selected.checkpoint.id);
+		expect(
+			await Array.fromAsync(
+				checkpointer.list(config, { filter: { source: "missing" }, limit: 1 }),
+			),
+		).toEqual([]);
+		for (const limit of [-1, NaN, 1.5]) {
+			await expect(
+				Array.fromAsync(checkpointer.list(config, { limit })),
+			).rejects.toThrow(RangeError);
+		}
+	});
+
 	test("serves the MCP v2 package with legacy stateless negotiation", async () => {
 		const response = await api(
 			new Request("http://127.0.0.1:3001/mcp", {
@@ -313,6 +404,62 @@ describe("TypeScript AI tutor service", () => {
 			result?: { serverInfo?: { name?: string } };
 		};
 		expect(payload.result?.serverInfo?.name).toBe("typescript-ai-tutor");
+	});
+
+	test("redacts provider errors in MCP tool responses", async () => {
+		const secret = "provider request contained private-context-marker";
+		const generate = spyOn(fakeModel, "generate").mockRejectedValue(
+			new Error(secret),
+		);
+		const log = spyOn(console, "error").mockImplementation(() => {});
+		try {
+			const payload = await callMcp(api, "tools/call", {
+				arguments: { prompt: "Explain TypeScript" },
+				name: "ask_typescript_tutor",
+			});
+			expect(payload).toMatchObject({
+				result: {
+					isError: true,
+					content: [
+						{ type: "text", text: "The tutor run could not be completed." },
+					],
+				},
+			});
+			expect(JSON.stringify(payload)).not.toContain(secret);
+			expect(log).toHaveBeenCalled();
+		} finally {
+			generate.mockRestore();
+			log.mockRestore();
+		}
+	});
+
+	test("preserves actionable application errors in MCP tool responses", async () => {
+		const generate = spyOn(fakeModel, "generate").mockRejectedValue(
+			new ApiError(
+				409,
+				"thread_busy",
+				"A tutor run is already active for this thread.",
+			),
+		);
+		try {
+			const payload = await callMcp(api, "tools/call", {
+				arguments: { prompt: "Explain TypeScript" },
+				name: "ask_typescript_tutor",
+			});
+			expect(payload).toMatchObject({
+				result: {
+					isError: true,
+					content: [
+						{
+							type: "text",
+							text: "A tutor run is already active for this thread.",
+						},
+					],
+				},
+			});
+		} finally {
+			generate.mockRestore();
+		}
 	});
 
 	test("executes the registered MCP tools, resource, and prompts", async () => {

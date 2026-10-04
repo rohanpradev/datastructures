@@ -1,8 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	BinarySearchTree,
-	TreeNode,
-} from "@/data-structures/binary-search-tree/binary-search-tree";
+import { BinarySearchTree } from "@/data-structures/binary-search-tree/binary-search-tree";
 
 describe("BinarySearchTree - Constructor", () => {
 	test("should create an empty tree when no value provided", () => {

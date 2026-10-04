@@ -574,8 +574,8 @@ export class MinHeap<T = number> {
  * Space Complexity: O(k)
  */
 export function kthLargestElement(nums: number[], k: number): number {
-	if (k < 1 || k > nums.length) {
-		throw new Error("k must be between 1 and nums.length");
+	if (!Number.isInteger(k) || k < 1 || k > nums.length) {
+		throw new Error("k must be between 1 and nums.length and an integer");
 	}
 
 	const heap = new MinHeap<number>();

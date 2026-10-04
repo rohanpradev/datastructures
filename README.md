@@ -162,8 +162,10 @@ Documentation refresh note: as of July 8, 2026, the Node.js release page lists N
 
 Use Bun **1.4.2**, matching `packageManager` and CI. The September dependency
 refresh keeps Drizzle ORM and Kit on the matched **v1.0.0-rc.4** release.
-See [the upgrade notes](./docs/UPGRADE_2026_09.md) for package versions,
-correctness fixes, and new tutor session endpoints.
+See [the September 30 upgrade notes](./docs/UPGRADE_2026_09.md) for current
+package versions, stricter TypeScript checks, security fixes, and CI updates.
+The [October 4 audit](./docs/AUDIT_2026_10.md) covers the latest correctness
+fixes, MCP error handling, dependency checks, and practice verification.
 
 ```bash
 bun install --frozen-lockfile
@@ -173,7 +175,7 @@ bun run check
 Useful commands:
 
 ```bash
-bun run check                 # Lint, typecheck, and run tests
+bun run check                 # Lint, types, docs, practice catalog, and tests
 bun run fix                   # Apply Biome fixes and formatting
 bun run format                # Format supported files
 bun run lint                  # Non-mutating Biome check for CI

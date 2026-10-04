@@ -53,6 +53,8 @@ class HashTable<K = string, V = unknown> {
 	private capacity: number;
 	length: number;
 	private loadFactorThreshold: number;
+	private readonly objectHashes = new WeakMap<object, number>();
+	private nextObjectHash = 0;
 
 	/**
 	 * Creates a new Hash Table
@@ -73,6 +75,16 @@ class HashTable<K = string, V = unknown> {
 		initialCapacity: number = 16,
 		loadFactorThreshold: number = 0.75,
 	) {
+		if (
+			!Number.isInteger(initialCapacity) ||
+			initialCapacity < 1 ||
+			initialCapacity > 0xffff_ffff
+		) {
+			throw new RangeError("initialCapacity must be a positive array length");
+		}
+		if (!Number.isFinite(loadFactorThreshold) || loadFactorThreshold <= 0) {
+			throw new RangeError("loadFactorThreshold must be finite and positive");
+		}
 		this.capacity = initialCapacity;
 		this.buckets = new Array(this.capacity).fill(null);
 		this.length = 0;
@@ -94,8 +106,21 @@ class HashTable<K = string, V = unknown> {
 	 * @returns Index in the buckets array
 	 */
 	private hash(key: K): number {
-		// Convert key to string
-		const keyStr = String(key);
+		// Object identity must survive mutation and must not invoke user toString.
+		let keyStr: string;
+		if (
+			(typeof key === "object" && key !== null) ||
+			typeof key === "function"
+		) {
+			let id = this.objectHashes.get(key);
+			if (id === undefined) {
+				id = this.nextObjectHash++;
+				this.objectHashes.set(key, id);
+			}
+			keyStr = `object:${id}`;
+		} else {
+			keyStr = String(key);
+		}
 		let hash = 0;
 
 		// Simple polynomial rolling hash
@@ -148,7 +173,7 @@ class HashTable<K = string, V = unknown> {
 
 		// Check if key already exists
 		while (current) {
-			if (current.key === key) {
+			if (current.key === key || Object.is(current.key, key)) {
 				// Update existing value
 				current.value = value;
 				return this;
@@ -195,7 +220,7 @@ class HashTable<K = string, V = unknown> {
 		let current = this.buckets[index];
 
 		while (current) {
-			if (current.key === key) {
+			if (current.key === key || Object.is(current.key, key)) {
 				return current.value;
 			}
 			current = current.next;
@@ -219,7 +244,12 @@ class HashTable<K = string, V = unknown> {
 	 * ht.has("orange"); // false
 	 */
 	has(key: K): boolean {
-		return this.get(key) !== undefined;
+		let current = this.buckets[this.hash(key)];
+		while (current) {
+			if (current.key === key || Object.is(current.key, key)) return true;
+			current = current.next;
+		}
+		return false;
 	}
 
 	/**
@@ -260,7 +290,7 @@ class HashTable<K = string, V = unknown> {
 		let prev: HashNode<K, V> | null = null;
 
 		while (current) {
-			if (current.key === key) {
+			if (current.key === key || Object.is(current.key, key)) {
 				// Found the key
 				if (prev) {
 					// Key is not at head

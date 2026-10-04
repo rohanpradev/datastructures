@@ -105,16 +105,18 @@ export class Trie {
 		if (!word) return false;
 
 		let wordExisted = false;
+		// Match the code-point iteration used by insert and findNode.
+		const characters = [...word];
 
 		const deleteRecursive = (node: TrieNode, index: number): boolean => {
-			if (index === word.length) {
+			if (index === characters.length) {
 				if (!node.isEndOfWord) return false;
 				node.isEndOfWord = false;
 				wordExisted = true;
 				return node.children.size === 0;
 			}
 
-			const char = word[index];
+			const char = characters[index];
 			const childNode = node.children.get(char);
 			if (!childNode) return false;
 

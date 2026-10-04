@@ -97,7 +97,7 @@ class Graph<T = string> {
 		this.adjacencyList.get(v1)!.push(v2);
 
 		// For undirected graph, add reverse edge
-		if (!this.directed && v1 !== v2) {
+		if (!this.directed && !this.sameVertex(v1, v2)) {
 			this.adjacencyList.get(v2)!.push(v1);
 		}
 
@@ -120,12 +120,16 @@ class Graph<T = string> {
 			return false;
 		}
 
-		// Remove all edges pointing to this vertex
-		for (const [_v, edges] of this.adjacencyList) {
-			const index = edges.indexOf(vertex);
-			if (index !== -1) {
-				edges.splice(index, 1);
+		// Compact in place: parallel edges must all disappear, and callers of
+		// getNeighbors retain the same array with the surviving neighbor order.
+		for (const edges of this.adjacencyList.values()) {
+			let remaining = 0;
+			for (const neighbor of edges) {
+				if (!this.sameVertex(neighbor, vertex)) {
+					edges[remaining++] = neighbor;
+				}
 			}
+			edges.length = remaining;
 		}
 
 		// Remove the vertex itself
@@ -134,7 +138,7 @@ class Graph<T = string> {
 	}
 
 	/**
-	 * Removes an edge between two vertices
+	 * Removes one edge between two vertices, preserving other parallel edges
 	 * Time Complexity: O(deg(v1) + deg(v2)) for undirected graphs, O(deg(v1)) for directed graphs
 	 * Space Complexity: O(1)
 	 *
@@ -151,7 +155,7 @@ class Graph<T = string> {
 		}
 
 		const edges1 = this.adjacencyList.get(v1)!;
-		const index1 = edges1.indexOf(v2);
+		const index1 = edges1.findIndex((vertex) => this.sameVertex(vertex, v2));
 
 		if (index1 === -1) {
 			return false;
@@ -160,15 +164,20 @@ class Graph<T = string> {
 		edges1.splice(index1, 1);
 
 		// For undirected graph, remove reverse edge
-		if (!this.directed) {
+		if (!this.directed && !this.sameVertex(v1, v2)) {
 			const edges2 = this.adjacencyList.get(v2)!;
-			const index2 = edges2.indexOf(v1);
+			const index2 = edges2.findIndex((vertex) => this.sameVertex(vertex, v1));
 			if (index2 !== -1) {
 				edges2.splice(index2, 1);
 			}
 		}
 
 		return true;
+	}
+
+	private sameVertex(left: T, right: T): boolean {
+		// Map and Set use SameValueZero: NaN equals itself and +0 equals -0.
+		return left === right || Object.is(left, right);
 	}
 
 	/**

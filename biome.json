@@ -41,6 +41,7 @@
 				"noParameterAssign": "error"
 			},
 			"complexity": {
+				"useLiteralKeys": "off",
 				"useOptionalChain": "off"
 			}
 		}

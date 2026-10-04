@@ -8,6 +8,7 @@ import {
 	originValidationResponse,
 } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
+import { ApiError } from "./json";
 import type { OrchestrationRegistry, TutorRunner } from "./orchestration";
 import type { ModelRegistry, ResourceRegistry } from "./registry";
 import {
@@ -44,7 +45,7 @@ function createTutorMcpServer(dependencies: McpDependencies): McpServer {
 			annotations: {
 				destructiveHint: false,
 				idempotentHint: false,
-				openWorldHint: false,
+				openWorldHint: true,
 				readOnlyHint: false,
 			},
 			description:
@@ -54,11 +55,31 @@ function createTutorMcpServer(dependencies: McpDependencies): McpServer {
 			title: "Ask TypeScript Tutor",
 		},
 		async (input) => {
-			const output = await dependencies.tutor.run(input);
-			return {
-				content: [{ text: output.answer, type: "text" }],
-				structuredContent: output,
-			};
+			try {
+				const output = await dependencies.tutor.run(input);
+				return {
+					content: [{ text: output.answer, type: "text" }],
+					structuredContent: output,
+				};
+			} catch (error) {
+				// The SDK turns thrown errors into client-visible tool results.
+				// Provider errors may include prompts, credentials, or request details.
+				if (!(error instanceof ApiError)) {
+					console.error("MCP tutor run failed", error);
+				}
+				return {
+					content: [
+						{
+							text:
+								error instanceof ApiError
+									? error.message
+									: "The tutor run could not be completed.",
+							type: "text",
+						},
+					],
+					isError: true,
+				};
+			}
 		},
 	);
 

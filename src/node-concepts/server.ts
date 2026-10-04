@@ -186,7 +186,6 @@ export const server = Bun.serve({
 		return new Response("Internal Server Error", { status: 500 });
 	},
 	idleTimeout: 10,
-	// biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket access for Bun.env.
 	port: Number(Bun.env["PORT"] ?? (isTest ? 0 : 3000)),
 	routes: {
 		"/": new Response("Welcome to Bun!"),

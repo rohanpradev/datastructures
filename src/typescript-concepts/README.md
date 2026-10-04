@@ -37,6 +37,8 @@ This folder demonstrates TypeScript features that improve real code quality in t
 - `bun run typecheck` uses stable `typescript@7.0.2` and its native `tsc` compiler. The repository moved off the preview nightly when TypeScript 7 became stable in July 2026.
 - The repo follows Bun's TypeScript guidance by using `moduleResolution: "bundler"`, `module: "Preserve"`, `verbatimModuleSyntax`, and `types: ["bun"]`.
 - `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature` are enabled. `noUncheckedIndexedAccess` is documented as the next strictness backlog because enabling it now surfaces many unrelated algorithm-indexing fixes.
+- `noImplicitReturns`, `noUncheckedSideEffectImports`, `noUnusedLocals`, and `noUnusedParameters` catch incomplete return paths, unresolved side-effect imports, and unused code in the reference sources, scripts, and tests. Generated learner files remain excluded from the project typecheck.
+- Biome's `useLiteralKeys` rule is disabled because its dot-access suggestions conflict with `noPropertyAccessFromIndexSignature` for environment variables and dynamic configuration records.
 
 ## Test Command
 

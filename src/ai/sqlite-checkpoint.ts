@@ -119,6 +119,14 @@ export class DrizzleSqliteCheckpointer extends BaseCheckpointSaver<number> {
 		config: RunnableConfig,
 		options: CheckpointListOptions = {},
 	): AsyncGenerator<CheckpointTuple> {
+		if (options.limit !== undefined) {
+			if (!Number.isSafeInteger(options.limit) || options.limit < 0) {
+				throw new RangeError(
+					"Checkpoint limit must be a non-negative safe integer.",
+				);
+			}
+			if (options.limit === 0) return;
+		}
 		const key = checkpointKey(config);
 		const conditions = [
 			eq(graphCheckpoints.threadId, key.threadId),
@@ -128,6 +136,8 @@ export class DrizzleSqliteCheckpointer extends BaseCheckpointSaver<number> {
 			? checkpointKey(options.before).checkpointId
 			: undefined;
 		if (beforeId) conditions.push(lt(graphCheckpoints.checkpointId, beforeId));
+		if (key.checkpointId)
+			conditions.push(eq(graphCheckpoints.checkpointId, key.checkpointId));
 
 		const rows = await this.db
 			.select()

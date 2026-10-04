@@ -562,3 +562,10 @@ describe("mergeKSortedArrays", () => {
 		expect(mergeKSortedArrays([[1, 2, 3]])).toEqual([1, 2, 3]);
 	});
 });
+test("kthLargestElement rejects non-integer ranks", () => {
+	for (const k of [NaN, Infinity, -Infinity, 1.5]) {
+		expect(() => kthLargestElement([1, 2, 3], k)).toThrow(
+			"k must be between 1 and nums.length and an integer",
+		);
+	}
+});

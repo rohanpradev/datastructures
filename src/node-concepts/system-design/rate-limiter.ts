@@ -29,6 +29,9 @@ export class TokenBucketRateLimiter {
 		if (!Number.isFinite(refillTokensPerSecond) || refillTokensPerSecond <= 0) {
 			throw new Error("refillTokensPerSecond must be positive");
 		}
+		if (!Number.isFinite(nowMs)) {
+			throw new RangeError("nowMs must be finite");
+		}
 
 		this.tokens = capacity;
 		this.lastRefillMs = nowMs;
@@ -58,6 +61,9 @@ export class TokenBucketRateLimiter {
 	 * limiter.consume(Date.now(), 15); // throws: cost exceeds bucket capacity
 	 */
 	consume(nowMs = Date.now(), cost = 1): RateLimitResult {
+		if (!Number.isFinite(nowMs)) {
+			throw new RangeError("nowMs must be finite");
+		}
 		if (!Number.isFinite(cost) || cost < 1) {
 			throw new Error("cost must be a finite number of at least 1");
 		}
@@ -78,7 +84,8 @@ export class TokenBucketRateLimiter {
 
 		const missingTokens = cost - this.tokens;
 		const retryAfterMs = Math.ceil(
-			(missingTokens / this.refillTokensPerSecond) * 1000,
+			Math.max(0, this.lastRefillMs - nowMs) +
+				(missingTokens / this.refillTokensPerSecond) * 1000,
 		);
 
 		return {
@@ -93,7 +100,9 @@ export class TokenBucketRateLimiter {
 		const refillAmount = (elapsedMs / 1000) * this.refillTokensPerSecond;
 
 		this.tokens = Math.min(this.capacity, this.tokens + refillAmount);
-		this.lastRefillMs = nowMs;
+		// Preserve the high-water mark when the wall clock moves backward, so
+		// catching up cannot refill an interval that was already counted.
+		this.lastRefillMs = Math.max(this.lastRefillMs, nowMs);
 	}
 }
 
@@ -111,14 +120,18 @@ export class SlidingWindowRateLimiter {
 		private readonly limit: number,
 		private readonly windowMs: number,
 	) {
-		if (limit < 1) throw new Error("limit must be at least 1");
-		if (windowMs < 1) throw new Error("windowMs must be at least 1");
+		if (!Number.isSafeInteger(limit) || limit < 1) {
+			throw new RangeError("limit must be a positive safe integer");
+		}
+		if (!Number.isFinite(windowMs) || windowMs < 1) {
+			throw new RangeError("windowMs must be a finite number of at least 1");
+		}
 	}
 
 	/**
 	 * Attempts to consume a token from the sliding window for a given key.
-	 * Time Complexity: O(n) where n is average hits per key in the window
-	 * Space Complexity: O(m) where m is number of tracked keys
+	 * Time Complexity: O(h) where h is the total stored hits across all keys
+	 * Space Complexity: O(h + k) for h stored hits and k tracked keys
 	 *
 	 * Cleans up expired entries before checking the limit.
 	 * Allows up to `limit` hits within the `windowMs` rolling window.
@@ -140,6 +153,9 @@ export class SlidingWindowRateLimiter {
 	 * limiter.consume("user123"); // { allowed: false, remaining: 0, retryAfterMs: ~60000 }
 	 */
 	consume(key: string, nowMs = Date.now()): RateLimitResult {
+		if (!Number.isFinite(nowMs)) {
+			throw new RangeError("nowMs must be finite");
+		}
 		this.cleanupExpiredKeys(nowMs);
 		const hits = this.hitsByKey.get(key) ?? [];
 

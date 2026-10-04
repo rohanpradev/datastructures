@@ -19,7 +19,9 @@ export class LRUCache<K, V> {
 	private tail: Entry<K, V> | undefined;
 
 	constructor(private readonly capacity: number) {
-		if (capacity < 1) throw new Error("capacity must be at least 1");
+		if (!Number.isSafeInteger(capacity) || capacity < 1) {
+			throw new RangeError("capacity must be a positive safe integer");
+		}
 	}
 
 	/**

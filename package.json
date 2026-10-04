@@ -1,6 +1,5 @@
 {
 	"name": "code-practice",
-	"module": "index.ts",
 	"type": "module",
 	"private": true,
 	"packageManager": "bun@1.4.2",
@@ -11,7 +10,7 @@
 		"db:migrate": "bun run src/ai/db/migrate.ts",
 		"db:studio": "bunx drizzle-kit studio",
 		"dev": "bun run src/node-concepts/server.ts",
-		"check": "bun run lint && bun run typecheck && bun run docs:check && bun run test:ci",
+		"check": "bun run lint && bun run typecheck && bun run docs:check && bun run practice:audit && bun run test:ci",
 		"docs:check": "bun run scripts/validate-docs.ts",
 		"fix": "bun ./node_modules/@biomejs/biome/bin/biome check --write .",
 		"format": "bun ./node_modules/@biomejs/biome/bin/biome format --write .",
@@ -50,21 +49,21 @@
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"dependencies": {
-		"@langchain/core": "^1.2.12",
-		"@langchain/langgraph": "^1.4.17",
+		"@langchain/core": "^1.2.14",
+		"@langchain/langgraph": "^1.4.18",
 		"@langchain/langgraph-checkpoint": "^1.1.5",
-		"@modelcontextprotocol/server": "2.0.0",
-		"@scalar/api-reference": "^1.70.0",
-		"ai": "^7.0.109",
+		"@modelcontextprotocol/server": "2.3.0",
+		"@scalar/api-reference": "^1.72.4",
+		"ai": "^7.0.127",
 		"drizzle-orm": "1.0.0-rc.4",
 		"zod": "4.6.5"
 	},
 	"overrides": {
 		"@ai-sdk/provider-utils@4.0.5": "4.0.33",
-		"undici@7.24.4": "7.29.0"
+		"undici@7.29.0": "7.29.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.14",
+		"@biomejs/biome": "2.5.15",
 		"@types/bun": "1.4.2",
 		"drizzle-kit": "1.0.0-rc.4",
 		"typescript": "7.0.2"

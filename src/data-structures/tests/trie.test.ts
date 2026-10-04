@@ -244,3 +244,17 @@ describe("Trie", () => {
     });
   });
 });
+// Insertion and deletion must agree on Unicode code points, not UTF-16 units.
+test("Trie deletes emoji words while preserving shared prefixes", () => {
+	const trie = new Trie();
+	trie.insert("😀");
+	trie.insert("😀smile");
+	trie.insert("😀sun");
+	expect(trie.delete("😀smile")).toBe(true);
+	expect(trie.search("😀smile")).toBe(false);
+	expect(trie.search("😀sun")).toBe(true);
+	expect(trie.delete("😀")).toBe(true);
+	expect(trie.search("😀")).toBe(false);
+	expect(trie.delete("😀sun")).toBe(true);
+	expect(trie.startsWith("😀")).toBe(false);
+});

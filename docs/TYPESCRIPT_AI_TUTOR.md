@@ -26,7 +26,7 @@ The outer LangGraph owns workflow order, checkpoints, retries, and thread identi
    cp .env.example .env
    ```
 
-2. Set `AI_GATEWAY_API_KEY`. `AI_MODEL` is a provider-neutral AI Gateway model ID in `provider/model` format. The default is `openai/gpt-5.5`; a DeepSeek model can be selected through the same setting without changing the graph.
+2. For local development, set `AI_GATEWAY_API_KEY` to a key created in the Vercel AI Gateway dashboard. On Vercel, the AI SDK can authenticate with the deployment's OIDC token. You do not need separate OpenAI or Anthropic API keys. `AI_MODEL` uses the Gateway's `provider/model` format; the default is `openai/gpt-5.5`, and you can switch providers by changing this value without changing the graph. See [Vercel AI Gateway authentication](https://vercel.com/docs/ai-gateway/authentication-and-byok) and the [AI SDK provider and model documentation](https://ai-sdk.dev/docs/ai-sdk-core/provider-management).
 
 3. Generate a migration after schema changes, migrate, and start the service:
 
@@ -45,6 +45,7 @@ The service deliberately binds to loopback. Put authentication, authorization, r
 | Interface | Endpoint | Purpose |
 |---|---|---|
 | Health | `GET /health` | Runtime status and component generations |
+| Models | `GET /v1/models` | Current tool-capable language models from Vercel AI Gateway, for a model selector |
 | Tutor | `POST /v1/tutor/runs` | Run and persist one selected orchestration turn |
 | Orchestration | `GET /v1/orchestration/patterns` | Inspect modes, tradeoffs, and specialist profiles |
 | Thread | `GET /v1/threads/{threadId}` | Read persisted UI message parts |
@@ -54,6 +55,8 @@ The service deliberately binds to loopback. Put authentication, authorization, r
 | OpenAPI | `GET /openapi.json` | OpenAPI 3.1 source |
 | Scalar | `GET /docs` | Interactive API reference |
 | MCP | `POST /mcp` | MCP v2 Streamable HTTP exchange |
+
+Use each model option's `id` as the optional `model` value in `POST /v1/tutor/runs`. The catalog is refreshed hourly and only includes language models tagged by Gateway as supporting tool use, which the tutor agent needs.
 
 Example tutor request:
 
@@ -165,7 +168,7 @@ The file is named `persistence.ts` (correct spelling) rather than the requested 
 - Only curated resource URLs may be cited through tools; tools cannot browse arbitrary URLs.
 - Checkpoint runs use explicit `thread_id` and graph recursion limits.
 - Completed messages are appended idempotently by run ID inside a typed transaction.
-- Unknown internal errors are logged server-side without returning their details to clients.
+- Unknown internal errors are logged server-side without returning their details to REST or MCP clients. MCP tutor failures return `isError: true` with a generic message; intentional `ApiError` messages remain actionable.
 - SQLite uses foreign keys, a busy timeout, and WAL for file-backed databases.
 
 For a public deployment, add authenticated principals, per-principal thread authorization, rate limiting, structured OpenTelemetry export, a production database/checkpointer, encrypted secrets, and retention controls. The loopback service does not pretend those external controls already exist.

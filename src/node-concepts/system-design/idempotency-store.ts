@@ -27,20 +27,21 @@ export class IdempotencyKeyStore<TResponse> {
 	private readonly records = new Map<string, IdempotencyRecord<TResponse>>();
 
 	constructor(private readonly options: IdempotencyStoreOptions) {
-		if (options.inFlightTtlMs < 1) {
+		if (!Number.isFinite(options.inFlightTtlMs) || options.inFlightTtlMs < 1) {
 			throw new Error("inFlightTtlMs must be at least 1");
 		}
-		if (options.replayTtlMs < 1) {
+		if (!Number.isFinite(options.replayTtlMs) || options.replayTtlMs < 1) {
 			throw new Error("replayTtlMs must be at least 1");
 		}
+		this.options = { ...options };
 	}
 
 	/**
 	 * Claims an idempotency key before running a write.
 	 * A started claim includes the ownership token required to complete or fail it.
 	 *
-	 * Time: O(e) for lazy expiry cleanup, where e is the number of expired keys.
-	 * Steady-state lookup/update is O(1).
+	 * Time: O(n) for lazy expiry cleanup across all n stored keys.
+	 * Lookup/update after cleanup is O(1).
 	 */
 	claim(key: string, nowMs = Date.now()): IdempotencyClaim<TResponse> {
 		this.validateKey(key);
@@ -74,6 +75,7 @@ export class IdempotencyKeyStore<TResponse> {
 		nowMs = Date.now(),
 	): void {
 		this.validateKey(key);
+		this.validateTime(nowMs);
 		const record = this.records.get(key);
 
 		if (!record || record.status !== "in-flight") {
@@ -108,6 +110,7 @@ export class IdempotencyKeyStore<TResponse> {
 	}
 
 	pruneExpired(nowMs = Date.now()): number {
+		this.validateTime(nowMs);
 		let removed = 0;
 
 		for (const [key, record] of this.records) {
@@ -127,6 +130,12 @@ export class IdempotencyKeyStore<TResponse> {
 	private validateKey(key: string): void {
 		if (key.trim().length === 0) {
 			throw new Error("idempotency key must not be empty");
+		}
+	}
+
+	private validateTime(nowMs: number): void {
+		if (!Number.isFinite(nowMs)) {
+			throw new RangeError("nowMs must be finite");
 		}
 	}
 }

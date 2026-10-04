@@ -39,7 +39,7 @@ export interface CircuitBreakerOptions {
 	windowDuration: number; // rolling window (ms)
 	resetTimeout: number; // how long before half-open (ms)
 	timeout: number; // per-request timeout (ms)
-	halfOpenMaxCalls?: number; // test calls allowed in HALF_OPEN
+	halfOpenMaxCalls?: number; // recovery probes required to succeed (default: 1)
 }
 
 interface MetricEvent {
@@ -55,12 +55,47 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	private metrics: MetricEvent[] = [];
 	private nextAttempt = 0;
 	private halfOpenCalls = 0;
+	private halfOpenSuccesses = 0;
+	private generation = 0;
 
 	constructor(
 		private action: (...args: TArgs) => Promise<TResult>,
 		private options: CircuitBreakerOptions,
 		private fallback?: (...args: TArgs) => TResult | Promise<TResult>,
-	) {}
+	) {
+		if (
+			!Number.isFinite(options.failureThreshold) ||
+			options.failureThreshold <= 0 ||
+			options.failureThreshold > 100
+		) {
+			throw new RangeError(
+				"failureThreshold must be between 0 (exclusive) and 100",
+			);
+		}
+		for (const [name, value] of Object.entries({
+			minimumRequests: options.minimumRequests,
+			halfOpenMaxCalls: options.halfOpenMaxCalls ?? 1,
+		})) {
+			if (!Number.isSafeInteger(value) || value < 1) {
+				throw new RangeError(`${name} must be a positive safe integer`);
+			}
+		}
+		for (const [name, value] of Object.entries({
+			windowDuration: options.windowDuration,
+			resetTimeout: options.resetTimeout,
+			timeout: options.timeout,
+		})) {
+			if (!Number.isFinite(value) || value <= 0 || value > 2_147_483_647) {
+				throw new RangeError(
+					`${name} must be between 0 (exclusive) and 2147483647 ms`,
+				);
+			}
+		}
+		this.options = {
+			...options,
+			halfOpenMaxCalls: options.halfOpenMaxCalls ?? 1,
+		};
+	}
 
 	/**
 	 * Executes the action behind the circuit breaker, applying all protective logic.
@@ -89,9 +124,11 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	 */
 	async fire(...args: TArgs): Promise<TResult> {
 		if (this.state === "OPEN") {
-			if (Date.now() > this.nextAttempt) {
+			if (Date.now() >= this.nextAttempt) {
 				this.state = "HALF_OPEN";
+				this.generation++;
 				this.halfOpenCalls = 0;
+				this.halfOpenSuccesses = 0;
 			} else {
 				return this.handleFallback(args, new Error("Circuit is OPEN"));
 			}
@@ -99,8 +136,7 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 
 		if (
 			this.state === "HALF_OPEN" &&
-			this.options.halfOpenMaxCalls &&
-			this.halfOpenCalls >= this.options.halfOpenMaxCalls
+			this.halfOpenCalls >= (this.options.halfOpenMaxCalls ?? 1)
 		) {
 			return this.handleFallback(args, new Error("Half-open limit reached"));
 		}
@@ -109,12 +145,14 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 			this.halfOpenCalls++;
 		}
 
+		// Outcomes from an earlier state cannot close/reopen a newer circuit.
+		const generation = this.generation;
 		try {
 			const result = await this.executeWithTimeout(args);
-			this.recordSuccess();
+			if (generation === this.generation) this.recordSuccess();
 			return result;
 		} catch (err) {
-			this.recordFailure();
+			if (generation === this.generation) this.recordFailure();
 			return this.handleFallback(args, err);
 		}
 	}
@@ -137,15 +175,21 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	}
 
 	private recordSuccess() {
+		if (this.state === "HALF_OPEN") {
+			this.halfOpenSuccesses++;
+			if (this.halfOpenSuccesses >= (this.options.halfOpenMaxCalls ?? 1))
+				this.reset();
+			return;
+		}
 		this.metrics.push({ outcome: "success", timestamp: Date.now() });
 		this.cleanupWindow();
-
-		if (this.state === "HALF_OPEN") {
-			this.reset();
-		}
 	}
 
 	private recordFailure() {
+		if (this.state === "HALF_OPEN") {
+			this.trip();
+			return;
+		}
 		this.metrics.push({ outcome: "failure", timestamp: Date.now() });
 		this.cleanupWindow();
 
@@ -168,11 +212,13 @@ export class CircuitBreaker<TArgs extends unknown[], TResult> {
 	}
 
 	private trip() {
+		this.generation++;
 		this.state = "OPEN";
 		this.nextAttempt = Date.now() + this.options.resetTimeout;
 	}
 
 	private reset() {
+		this.generation++;
 		this.state = "CLOSED";
 		this.metrics = [];
 	}
