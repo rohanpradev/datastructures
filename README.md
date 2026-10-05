@@ -164,8 +164,6 @@ Use Bun **1.4.2**, matching `packageManager` and CI. The September dependency
 refresh keeps Drizzle ORM and Kit on the matched **v1.0.0-rc.4** release.
 See [the September 30 upgrade notes](./docs/UPGRADE_2026_09.md) for current
 package versions, stricter TypeScript checks, security fixes, and CI updates.
-The [October 4 audit](./docs/AUDIT_2026_10.md) covers the latest correctness
-fixes, MCP error handling, dependency checks, and practice verification.
 
 ```bash
 bun install --frozen-lockfile
