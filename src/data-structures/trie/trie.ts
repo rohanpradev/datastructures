@@ -97,6 +97,8 @@ export class Trie {
 	 * Deletes a word from the Trie.
 	 *
 	 * Returns true if the word existed and was removed/unmarked.
+	 * Iterative backtracking keeps long words independent of call-stack limits.
+	 * Time Complexity: O(n); auxiliary space: O(n) for the word's path.
 	 *
 	 * @param word - The word to delete
 	 * @returns true if word was deleted
@@ -104,44 +106,50 @@ export class Trie {
 	public delete(word: string): boolean {
 		if (!word) return false;
 
-		let wordExisted = false;
-		// Match the code-point iteration used by insert and findNode.
-		const characters = [...word];
+		const path: Array<[parent: TrieNode, char: string]> = [];
+		let node = this.root;
+		// Match the Unicode code-point iteration used by insert and findNode.
+		for (const char of word) {
+			const child = node.children.get(char);
+			if (!child) return false;
+			path.push([node, char]);
+			node = child;
+		}
+		if (!node.isEndOfWord) return false;
+		node.isEndOfWord = false;
 
-		const deleteRecursive = (node: TrieNode, index: number): boolean => {
-			if (index === characters.length) {
-				if (!node.isEndOfWord) return false;
-				node.isEndOfWord = false;
-				wordExisted = true;
-				return node.children.size === 0;
-			}
-
-			const char = characters[index];
-			const childNode = node.children.get(char);
-			if (!childNode) return false;
-
-			const shouldDeleteChild = deleteRecursive(childNode, index + 1);
-
-			if (shouldDeleteChild) {
-				node.children.delete(char);
-				return node.children.size === 0 && !node.isEndOfWord;
-			}
-
-			return false;
-		};
-
-		deleteRecursive(this.root, 0);
-		return wordExisted;
+		for (let index = path.length - 1; index >= 0; index--) {
+			// A surviving word or branch still owns this prefix.
+			if (node.isEndOfWord || node.children.size > 0) break;
+			const [parent, char] = path[index]!;
+			parent.children.delete(char);
+			node = parent;
+		}
+		return true;
 	}
 
 	/**
 	 * Returns all words stored in the Trie.
 	 *
-	 * Time Complexity: O(n * m), n = number of words, m = average word length
+	 * Time Complexity: O(nodes + output characters); auxiliary space: O(height),
+	 * excluding results. Child insertion order is preserved without recursion.
 	 */
 	public getAllWords(): string[] {
 		const results: string[] = [];
-		this.collectWords(this.root, "", results);
+		const characters: string[] = [];
+		const stack = [this.root.children.entries()];
+		while (stack.length > 0) {
+			const next = stack[stack.length - 1]!.next();
+			if (next.done) {
+				stack.pop();
+				characters.pop();
+				continue;
+			}
+			const [char, node] = next.value;
+			characters.push(char);
+			if (node.isEndOfWord) results.push(characters.join(""));
+			stack.push(node.children.entries());
+		}
 		return results;
 	}
 
@@ -161,26 +169,5 @@ export class Trie {
 			currentNode = nextNode;
 		}
 		return currentNode;
-	}
-
-	/**
-	 * Recursively collects all words from a given node.
-	 *
-	 * @param node - Current TrieNode
-	 * @param prefix - Accumulated prefix
-	 * @param results - Output array
-	 */
-	private collectWords(
-		node: TrieNode,
-		prefix: string,
-		results: string[],
-	): void {
-		if (node.isEndOfWord) {
-			results.push(prefix);
-		}
-
-		for (const [char, childNode] of node.children.entries()) {
-			this.collectWords(childNode, prefix + char, results);
-		}
 	}
 }

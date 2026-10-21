@@ -3,6 +3,9 @@
 For a focused advanced extension, follow the
 [September interview practice route](./docs/INTERVIEW_UPGRADE_2026_09.md).
 It connects algorithm invariants to executable system-design failure scenarios.
+For the broad interview map—including SQL, operating systems, networking,
+low-level design, debugging, project deep dives, and behavioral rounds—start
+with the [Software Engineering Interview Guide](./docs/SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md).
 
 This is the high-signal route through the repo. It is designed for Bun,
 TypeScript, JavaScript fundamentals, data structures, algorithms, and backend
@@ -14,6 +17,8 @@ system design practice.
 
 ```bash
 bun run practice:easy
+bun run practice:next
+bun run practice:next "pattern:range query"
 bun run practice:medium
 bun run practice:hard
 bun run practice:random
@@ -38,7 +43,9 @@ bun run practice -- --random graph --seed cohort-a
    or a named blocker.
 
 7. Record one compact review note: target, pattern, invariant, missed edge case,
-   and next review date.
+   and next review date. Use `bun run practice:grade good` (or `again`, `hard`,
+   `easy`) to schedule the active target. `bun run practice:review` shows due
+   work; [the review guide](./docs/PRACTICE_REVIEW.md) gives the rating rubric.
 
 8. Run the full gate before calling the session complete:
 
@@ -52,8 +59,8 @@ The audit prevents eligible problem blocks from disappearing from discovery;
 validation checks the generated stub boundary and reruns every focused scenario
 against the canonical implementation.
 
-Generating the same target again keeps your existing implementation. Use
-`--force` only when you deliberately want a fresh starter file.
+Generating the same target again keeps your implementation and added tests.
+Use `--force` only when you deliberately want to reset both.
 
 ## Learning Material First Pass
 
@@ -96,6 +103,7 @@ bun run practice -- --random expert
 | 4 | Trees, BSTs, tries, heaps, graphs | `src/data-structures` | Traverse recursively/iteratively, use heap ordering, and choose BFS/DFS/topological patterns. |
 | 5 | Recursion, backtracking, DP, bit manipulation | `src/algorithms` | State recurrence/invariant before code and identify overlapping subproblems. |
 | 6 | Mixed interview patterns | `src/algorithms/interview-patterns` and FAANG guides | Solve unknown problems under time limits with clear verbal reasoning. |
+| 6 extension | Mutable range queries | `src/data-structures/fenwick-tree`, [segment-tree guide](./src/data-structures/segment-tree/SEGMENT_TREE_GUIDE.md) | Choose prefix sums, Fenwick, or segment tree; preserve half-open bounds and ordered combination. |
 | 7 | Bun, backend fundamentals, and AI-era interview drills | `src/node-concepts/bun-runtime`, `src/node-concepts/async`, `docs/AI_INTERVIEW_TRENDS_2026.md` | Use Bun file/Shell/test APIs, `bun:sqlite`, Bun.SQL/Redis discussion, retries, circuit breakers, code review, debugging, and AI-assisted/no-AI protocols. |
 | 8 | Enterprise system design primitives | `src/node-concepts/system-design`, `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md` | Explain in-memory implementation, production distributed upgrade, SLOs, observability, security, bottlenecks, and failure modes. |
 
@@ -167,8 +175,9 @@ Rate each attempt from 0 to 5:
 ## References
 
 - [Learner note standards](./docs/LEARNER_NOTE_STANDARDS.md)
+- [Software Engineering Interview Guide](./docs/SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md)
 - [System design handbook](./docs/SYSTEM_DESIGN_HANDBOOK.md)
-- [Bun 1.3.14 curriculum](./docs/BUN_2026_CURRICULUM.md)
+- [Bun 1.4.2 curriculum](./docs/BUN_2026_CURRICULUM.md)
 - [MIT OCW 6.006: Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/)
 - [OpenDSA Data Structures and Algorithms](https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/)
 - [CP-Algorithms](https://cp-algorithms.com/)

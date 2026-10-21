@@ -424,9 +424,19 @@ function partition(arr: number[], low: number, high: number): number {
 - **Time:**
   - Best: O(n log n)
   - Average: O(n log n)
-  - Worst: O(n²) - already sorted
-- **Space:** O(log n) - recursion stack
+  - Worst: O(n²) - already sorted with a first/last pivot
+- **Space:** O(log n) average, O(n) worst-case recursion stack for the basic two-recursion implementation above
 - **Stable:** No
+
+### Repository implementation
+
+`quickSortInPlace` in [sorting.ts](sorting.ts) uses a median-of-three pivot and three-way partitioning. It finishes values equal to the pivot in one pass, so an array of equal values takes O(n) time. Only the smaller outer partition recurses; the larger partition is processed by a loop. Each nested call therefore handles at most half as many values, bounding the call stack to O(log n) even with poor pivots. Adversarial inputs can still take O(n²) time. The function returns its input array and can sort an inclusive `[left, right]` subarray.
+
+The standalone `pivot` helper still demonstrates Lomuto partitioning. The copying `quickSort` example uses O(n) auxiliary space for balanced partitions and can retain O(n²) partition storage in the worst case. The numeric sorting examples assume dense arrays without `NaN`.
+
+`merge` chooses the left input on equal keys, preserving the stability promised by `mergeSort`. Signed zeros make this observable: sorting `[0, -0]` keeps that order.
+
+References: [Princeton's three-way quicksort explanation](https://algs4.cs.princeton.edu/23quicksort/index.php) and [stable merge implementation](https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/Merge.java).
 
 ---
 

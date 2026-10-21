@@ -6,11 +6,13 @@ import {
 	type CheckpointMetadata,
 	type CheckpointPendingWrite,
 	type CheckpointTuple,
+	compareWritesSortKeys,
 	type PendingWrite,
 	type SerializerProtocol,
 	WRITES_IDX_MAP,
+	writesSortKey,
 } from "@langchain/langgraph-checkpoint";
-import { and, asc, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import type { AiDatabase } from "./persistence";
 import { graphCheckpoints, graphWrites } from "./schema";
 
@@ -199,42 +201,60 @@ export class DrizzleSqliteCheckpointer extends BaseCheckpointSaver<number> {
 		config: RunnableConfig,
 		writes: PendingWrite[],
 		taskId: string,
+		taskPath = "",
 	): Promise<void> {
 		const key = checkpointKey(config);
 		if (!key.checkpointId) {
 			throw new Error("Pending writes require configurable.checkpoint_id.");
 		}
 
+		// Serialize the entire batch before writing. A later serialization or SQL
+		// failure must not leave part of a task's checkpoint writes committed.
+		const rows: Array<typeof graphWrites.$inferInsert> = [];
 		for (const [position, [channel, value]] of writes.entries()) {
 			const [type, data] = await this.serde.dumpsTyped(value);
-			const writeIndex = WRITES_IDX_MAP[channel] ?? position;
-			const row = {
+			const writeIndex = Object.hasOwn(WRITES_IDX_MAP, channel)
+				? WRITES_IDX_MAP[channel]!
+				: position;
+			rows.push({
 				channel,
 				checkpointId: key.checkpointId,
 				checkpointNamespace: key.checkpointNamespace,
 				data: Buffer.from(data),
 				index: writeIndex,
 				taskId,
+				taskPath,
 				threadId: key.threadId,
 				type,
-			};
-			const insert = this.db.insert(graphWrites).values(row);
-
-			if (channel in WRITES_IDX_MAP) {
-				await insert.onConflictDoUpdate({
-					set: { channel, data: row.data, type },
-					target: [
-						graphWrites.threadId,
-						graphWrites.checkpointNamespace,
-						graphWrites.checkpointId,
-						graphWrites.taskId,
-						graphWrites.index,
-					],
-				});
-			} else {
-				await insert.onConflictDoNothing();
-			}
+			});
 		}
+		this.db.transaction((tx) => {
+			for (const row of rows) {
+				const insert = tx.insert(graphWrites).values(row);
+
+				if (Object.hasOwn(WRITES_IDX_MAP, row.channel)) {
+					insert
+						.onConflictDoUpdate({
+							set: {
+								channel: row.channel,
+								data: row.data,
+								taskPath,
+								type: row.type,
+							},
+							target: [
+								graphWrites.threadId,
+								graphWrites.checkpointNamespace,
+								graphWrites.checkpointId,
+								graphWrites.taskId,
+								graphWrites.index,
+							],
+						})
+						.run();
+				} else {
+					insert.onConflictDoNothing().run();
+				}
+			}
+		});
 	}
 
 	async deleteThread(threadId: string): Promise<void> {
@@ -258,8 +278,15 @@ export class DrizzleSqliteCheckpointer extends BaseCheckpointSaver<number> {
 					eq(graphWrites.checkpointNamespace, row.checkpointNamespace),
 					eq(graphWrites.checkpointId, row.checkpointId),
 				),
-			)
-			.orderBy(asc(graphWrites.taskId), asc(graphWrites.index));
+			);
+		// Use LangGraph's comparator: task paths precede IDs and string ordering
+		// is by Unicode code point, including astral characters.
+		writes.sort((left, right) =>
+			compareWritesSortKeys(
+				writesSortKey(left.taskPath, left.taskId, left.index),
+				writesSortKey(right.taskPath, right.taskId, right.index),
+			),
+		);
 		const pendingWrites: CheckpointPendingWrite[] = [];
 		for (const write of writes) {
 			pendingWrites.push([

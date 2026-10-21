@@ -1,8 +1,10 @@
-# Bun 1.3.14 Learning Curriculum
+# Bun 1.4.3 Learning Curriculum
 
-This track maps the current Bun documentation and release line to runnable
-backend, tooling, testing, and system-design practice. The repository pins
-`bun@1.3.14`, the latest published release as of this review on July 14, 2026.
+This track maps the repository's pinned Bun version to backend, tooling,
+testing, and system-design practice. The repository pins `bun@1.4.3`, released
+October 10, 2026 and verified as the latest stable release on October 15, 2026.
+See the [October upgrade notes](./UPGRADE_2026_10.md) and
+[Bun blog](https://bun.com/blog) for release details.
 
 Read [BUN_RUNTIME_GUIDE.md](../src/node-concepts/bun-runtime/BUN_RUNTIME_GUIDE.md)
 for step-by-step examples and use this document as the coverage and interview
@@ -10,19 +12,24 @@ question map.
 
 ## Why The Current Release Matters
 
-The recent Bun line adds several capabilities worth learning instead of
-treating Bun only as a faster script runner:
+The 1.4 release line adds capabilities worth learning without assuming every
+project should adopt runtime-specific APIs:
 
-- Bun 1.3 established the unified `Bun.SQL` API, native Redis, package catalogs,
-  frontend development, and security improvements.
-- 1.3.6-1.3.8 added `Bun.Archive`, JSONC/JSON5/JSONL, richer profiling output,
-  and native Markdown.
-- 1.3.10-1.3.12 added browser-target standalone HTML, a native REPL, cron,
-  WebView, and continued Markdown/runtime improvements.
-- 1.3.13 added test file isolation, worker-process parallelism, sharding,
-  changed-file selection, and lower-memory installs.
-- 1.3.14 added `Bun.Image`, isolated-install global-store improvements, and
-  experimental HTTP/2 and HTTP/3 client/server work.
+- Bun 1.4 rewrote Bun in Rust, expanded Node.js compatibility, and improved
+  memory use, startup, and stream backpressure. Treat vendor benchmarks as
+  workload-specific results, not guarantees for your service.
+- The 1.4 line includes `Bun.Image`, `Bun.WebView`, `Bun.markdown`, `Bun.cron`,
+  `Bun.Terminal`, `Bun.XML`, and more built-in data/terminal APIs. This repo
+  focuses on APIs with interview or backend learning value.
+- Bun 1.4 supports TypeScript 7 configuration, parallel test/run modes, and
+  broad Node.js 26 compatibility work. Compatibility is not complete; test
+  dependencies and production deployment targets explicitly.
+- Bun 1.4.3 adds a built-in TypeScript checker. `bun run typecheck` uses
+  `bun --check` because this project's `check` script shadows `bun check`.
+  Keep `typescript` for editor support and `bun run typecheck:tsc` comparisons.
+- The repository's `bun@1.4.3` pin and lockfile are the reproducible baseline.
+  Compare Bun-specific choices with portable Node.js APIs when portability
+  matters.
 
 Release features still need production judgment. Experimental protocols,
 runtime-specific APIs, and OS-level scheduling require compatibility tests and
@@ -248,7 +255,9 @@ Add these only after the current focused tests are mastered:
 ## Official References
 
 - [Bun documentation](https://bun.com/docs)
-- [Bun 1.3.14 release](https://bun.com/blog/bun-v1.3.14)
+- [Bun 1.4 release](https://bun.com/blog/bun-v1.4)
+- [Bun 1.4.3 release notes](https://bun.com/blog/bun-v1.4.3)
+- [Bun type checking](https://bun.com/docs/runtime/check)
 - [HTTP server](https://bun.com/docs/runtime/http/server)
 - [WebSockets](https://bun.com/docs/runtime/http/websockets)
 - [File I/O](https://bun.com/docs/runtime/file-io)

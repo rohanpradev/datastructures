@@ -170,7 +170,8 @@ export function merge(arr1: number[], arr2: number[]): number[] {
 
 	// Merge while both arrays have elements
 	while (i < arr1.length && j < arr2.length) {
-		if (arr1[i]! < arr2[j]!) {
+		// Take the left value on ties to preserve the original order of equals.
+		if (arr1[i]! <= arr2[j]!) {
 			result.push(arr1[i]!);
 			i++;
 		} else {
@@ -257,7 +258,8 @@ export function mergeSort(arr: number[]): number[] {
  * - Average: O(n log n)
  * - Worst: O(n²) with bad pivot
  *
- * Space Complexity: O(log n) - recursion stack
+ * Space Complexity: O(n) for balanced partitions; O(n²) worst case from the
+ * partition arrays retained by an unbalanced chain of recursive calls.
  *
  * @example
  * quickSort([10, 7, 8, 9, 1, 5])
@@ -333,25 +335,25 @@ export function pivot(
 }
 
 /**
- * In-Place Quick Sort with Pivot Helper
+ * In-Place Three-Way Quick Sort
  *
- * Recursive implementation using Lomuto partition scheme.
- * Unlike the basic quickSort, this modifies the array in-place
- * and uses a pivot helper for partitioning.
+ * Partitions into values below, equal to, and above a median-of-three pivot.
+ * Equal values are finished in one pass, avoiding quadratic duplicate input.
+ * The standalone pivot() above remains a Lomuto partition demonstration.
  *
  * Algorithm:
- * 1. Base case: left >= right
- * 2. Partition array around pivot
- * 3. Recursively sort left partition
- * 4. Recursively sort right partition
+ * 1. Choose the median of the first, middle, and last values
+ * 2. Partition into three regions, skipping the equal region in later work
+ * 3. Recurse only into the smaller region and loop over the larger region
  *
  * Time Complexity:
- * - Best: O(n log n) - balanced partitions
+ * - Best: O(n) - all values equal
  * - Average: O(n log n)
- * - Worst: O(n²) - already sorted array with poor pivot choice
+ * - Worst: O(n²) - adversarial pivot distribution
  *
- * Space Complexity: O(log n) - recursion stack (best/average)
- *                   O(n) - worst case stack depth
+ * Space Complexity: O(log n) worst-case recursion stack. The recursive region
+ * is at most half the current region, even when the pivot is poorly balanced.
+ * Assumes dense arrays of numbers excluding NaN; sorting is not stable.
  *
  * @param arr - Array to sort (modified in-place)
  * @param left - Starting index (default 0)
@@ -368,17 +370,47 @@ export function quickSortInPlace(
 	left: number = 0,
 	right: number = arr.length - 1,
 ): number[] {
-	// Base case: partition size 0 or 1
-	if (left >= right) return arr;
+	let start = left;
+	let end = right;
+	while (start < end) {
+		const middle = start + Math.floor((end - start) / 2);
+		const first = arr[start]!;
+		const mid = arr[middle]!;
+		const last = arr[end]!;
+		const pivotValue =
+			first < mid
+				? mid < last
+					? mid
+					: Math.max(first, last)
+				: first < last
+					? first
+					: Math.max(mid, last);
 
-	// Partition array and get pivot's final position
-	const pivotIndex = pivot(arr, left, right);
+		let lower = start;
+		let current = start;
+		let upper = end;
+		// [start, lower) < pivot; [lower, current) = pivot; (upper, end] > pivot.
+		while (current <= upper) {
+			if (arr[current]! < pivotValue) {
+				[arr[lower], arr[current]] = [arr[current]!, arr[lower]!];
+				lower++;
+				current++;
+			} else if (arr[current]! > pivotValue) {
+				[arr[current], arr[upper]] = [arr[upper]!, arr[current]!];
+				upper--;
+			} else {
+				current++;
+			}
+		}
 
-	// Recursively sort left partition (elements < pivot)
-	quickSortInPlace(arr, left, pivotIndex - 1);
-
-	// Recursively sort right partition (elements > pivot)
-	quickSortInPlace(arr, pivotIndex + 1, right);
+		if (lower - start < end - upper) {
+			quickSortInPlace(arr, start, lower - 1);
+			start = upper + 1;
+		} else {
+			quickSortInPlace(arr, upper + 1, end);
+			end = lower - 1;
+		}
+	}
 
 	return arr;
 }

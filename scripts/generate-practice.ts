@@ -15,18 +15,27 @@
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { execPath, stdin as input, stdout as output } from "node:process";
 import { createInterface } from "node:readline/promises";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
+import {
+	isReviewGrade,
+	planReviews,
+	readReviewHistory,
+	recordReview,
+	reviewKey,
+	type ReviewGrade,
+} from "./practice-review";
 
 const SRC_DIR = join(process.cwd(), "src");
 const PRACTICE_DIR = join(process.cwd(), "practice");
 const PRACTICE_SESSION_FILE = join(PRACTICE_DIR, ".practice-session.json");
+const REVIEW_HISTORY_FILE = join(PRACTICE_DIR, ".review-history.json");
 
 const EXCLUDE_PATTERNS = [
 	/\.test\.ts$/,
-	/tests?/,
+	/(?:^|[\\/])tests?(?:[\\/]|$)/,
 	/index\.ts$/,
 	/node_modules/,
 ];
@@ -40,6 +49,9 @@ type CliOptions = {
 	help: boolean;
 	listQuery: string | null;
 	manifest: boolean;
+	nextQuery: string | null;
+	review: boolean;
+	grade: ReviewGrade | null;
 	problemQuery: string | null;
 	randomQuery: string | null;
 	run: boolean;
@@ -58,6 +70,7 @@ type PracticeSession = {
 	implementationPaths: string[];
 	testPath: string;
 	startedAt: string;
+	reviewKey?: string;
 };
 
 type ImportSymbol = {
@@ -128,10 +141,12 @@ type PracticePattern =
 	| "sliding window"
 	| "tree"
 	| "two pointers"
-	| "prefix sum";
+	| "prefix sum"
+	| "range query";
 
 type PracticeManifestEntry = {
 	id: number;
+	reviewKey: string;
 	title: string;
 	slug: string;
 	topic: string;
@@ -188,6 +203,9 @@ export function parseArgs(args: string[]): CliOptions {
 		help: false,
 		listQuery: null,
 		manifest: false,
+		nextQuery: null,
+		review: false,
+		grade: null,
 		problemQuery: null,
 		randomQuery: null,
 		run: false,
@@ -216,6 +234,20 @@ export function parseArgs(args: string[]): CliOptions {
 			options.dashboard = true;
 		} else if (arg === "--manifest") {
 			options.manifest = true;
+		} else if (arg === "--review") {
+			options.review = true;
+		} else if (arg === "--next") {
+			const query = consumeQueryArgs(args, index + 1);
+			options.nextQuery = query.value;
+			index = query.lastIndex;
+		} else if (arg.startsWith("--next=")) {
+			options.nextQuery = arg.slice("--next=".length).trim();
+		} else if (arg === "--grade" || arg.startsWith("--grade=")) {
+			const grade =
+				arg === "--grade" ? args[++index] : arg.slice("--grade=".length);
+			if (!isReviewGrade(grade))
+				throw new Error("--grade requires again, hard, good, or easy");
+			options.grade = grade;
 		} else if (arg === "--clean") {
 			options.clean = true;
 		} else if (arg === "--force") {
@@ -275,7 +307,8 @@ export function parseArgs(args: string[]): CliOptions {
 		if (
 			options.problemQuery !== null ||
 			options.listQuery !== null ||
-			options.randomQuery !== null
+			options.randomQuery !== null ||
+			options.nextQuery !== null
 		) {
 			throw new Error(
 				`Unexpected positional search term: ${positionalQuery.join(" ")}`,
@@ -316,6 +349,9 @@ function validateCliModes(options: CliOptions): void {
 		options.dashboard && "--dashboard",
 		options.listQuery !== null && "--list",
 		options.manifest && "--manifest",
+		options.nextQuery !== null && "--next",
+		options.review && "--review",
+		options.grade !== null && "--grade",
 		options.problemQuery !== null && "--problem",
 		options.randomQuery !== null && "--random",
 		options.run && "--run",
@@ -336,12 +372,18 @@ function validateCliModes(options: CliOptions): void {
 	const isFocusedGeneration =
 		selectedModes.length === 0 ||
 		options.problemQuery !== null ||
-		options.randomQuery !== null;
+		options.randomQuery !== null ||
+		options.nextQuery !== null;
 	if (options.force && !isFocusedGeneration) {
 		throw new Error("--force can only be used when generating one problem");
 	}
 	if (options.clean && !isFocusedGeneration && !options.all) {
 		throw new Error("--clean can only be used when generating practice files");
+	}
+	if (options.clean && options.nextQuery !== null) {
+		throw new Error(
+			"--clean cannot be used with --next because it would erase review history",
+		);
 	}
 }
 
@@ -357,6 +399,9 @@ Usage:
   bun run practice --run
   bun run practice --watch
   bun run practice --status
+  bun run practice --grade good
+  bun run practice --review
+  bun run practice --next [search]
   bun run practice --manifest
   bun run practice --dashboard
   bun run practice --all --clean
@@ -375,6 +420,9 @@ Options:
   --run, --test        Run the active problem once.
   --watch              Re-run the active problem whenever its files change.
   --status             Show the active problem and exact test command.
+  --grade <rating>     Record self-assessment: again, hard, good, or easy.
+  --review             List due reviews and counts of unseen/scheduled items.
+  --next [search]      Generate the oldest due review, then an unseen target.
   --manifest           Write practice/practice-manifest.json for dashboards.
   --dashboard          Write practice/learning-dashboard.md for study planning.
   --all                Generate every template and every test file.
@@ -406,8 +454,7 @@ function extractFunctionInfo(content: string): Array<{
 		isExported: boolean;
 	}> = [];
 
-	const functionRegex =
-		/(?:export\s+)?(?:async\s+)?function\s+(\w+)\b/g;
+	const functionRegex = /(?:export\s+)?(?:async\s+)?function\s+(\w+)\b/g;
 
 	let match;
 	while ((match = functionRegex.exec(content)) !== null) {
@@ -545,7 +592,9 @@ function extractClassInfo(content: string): Array<{
 		const classCommentMatch = beforeClass.match(
 			/\/\*\*(?:(?!\/\*\*)[\s\S])*?\*\/\s*$/,
 		);
-		const classComment = classCommentMatch ? classCommentMatch[0].trimEnd() : "";
+		const classComment = classCommentMatch
+			? classCommentMatch[0].trimEnd()
+			: "";
 		const classSignature = match[0].slice(0, -1).trim();
 		const className = getClassName(classSignature);
 		const classBody = content.slice(openBraceIndex + 1, closeBraceIndex);
@@ -848,7 +897,10 @@ function isClassMemberBoundary(classBody: string, start: number): boolean {
 	);
 }
 
-function isClassBodyTopLevelAt(classBody: string, targetIndex: number): boolean {
+function isClassBodyTopLevelAt(
+	classBody: string,
+	targetIndex: number,
+): boolean {
 	let depth = 0;
 	let state: "code" | "line-comment" | "block-comment" | "string" = "code";
 	let quote = "";
@@ -977,7 +1029,9 @@ function findExportInfo(
 	localName: string,
 	allowedExports?: Set<string>,
 ): ExportInfo | null {
-	const matches = exports.filter((exportInfo) => exportInfo.localName === localName);
+	const matches = exports.filter(
+		(exportInfo) => exportInfo.localName === localName,
+	);
 	if (matches.length === 0) return null;
 
 	if (allowedExports) {
@@ -1224,7 +1278,11 @@ function makeExportedConstStub(
 		return `const ${name} = ${initializer};\nexport default ${name};`;
 	}
 
-	if (isDirectExport || exportInfo === null || exportInfo.exportedName === name) {
+	if (
+		isDirectExport ||
+		exportInfo === null ||
+		exportInfo.exportedName === name
+	) {
 		return `export const ${name} = ${initializer};`;
 	}
 
@@ -1515,7 +1573,9 @@ function generatePracticeTemplate(
 			template += `\t${sanitizeClassFieldForStub(field)}\n`;
 		}
 		if (cls.fields.length > 0) template += "\n";
-		if (!cls.methods.some((method) => method.signature.startsWith("constructor"))) {
+		if (
+			!cls.methods.some((method) => method.signature.startsWith("constructor"))
+		) {
 			template += `\tconstructor(..._args: unknown[]) {\n`;
 			template += `\t\tthrow new Error("Not implemented");\n`;
 			template += `\t}\n\n`;
@@ -1697,10 +1757,7 @@ function parseLocalImports(
 	while ((match = importRegex.exec(content)) !== null) {
 		const statement = match[0];
 		const specifier = match[1]!.trim();
-		const importPath = resolveSourceImportPath(
-			match[2]!,
-			containingFilePath,
-		);
+		const importPath = resolveSourceImportPath(match[2]!, containingFilePath);
 		if (!importPath) continue;
 
 		imports.push({
@@ -1722,7 +1779,10 @@ function resolveSourceImportPath(
 	}
 	if (!importSpecifier.startsWith(".")) return null;
 
-	const absoluteImportPath = resolve(dirname(containingFilePath), importSpecifier);
+	const absoluteImportPath = resolve(
+		dirname(containingFilePath),
+		importSpecifier,
+	);
 	const relativeImportPath = relative(SRC_DIR, absoluteImportPath);
 	if (
 		relativeImportPath === ".." ||
@@ -1737,7 +1797,10 @@ function resolveSourceImportPath(
 		.replace(/\.(?:[cm]?[jt]sx?)$/, "");
 }
 
-function parseImportSymbols(specifier: string, importPath: string): ImportSymbol[] {
+function parseImportSymbols(
+	specifier: string,
+	importPath: string,
+): ImportSymbol[] {
 	const symbols: ImportSymbol[] = [];
 	const isTypeOnly = /^type\s+/.test(specifier.trim());
 	let remaining = specifier.replace(/^type\s+/, "").trim();
@@ -1789,7 +1852,9 @@ function parseImportSymbols(specifier: string, importPath: string): ImportSymbol
 		const localName = (aliasParts[1] ?? aliasParts[0])!.trim();
 
 		symbols.push({
-			localName, importedName, importPath,
+			localName,
+			importedName,
+			importPath,
 			isTypeOnly: isTypeOnly || /^type\s+/.test(rawPart.trim()),
 		});
 	}
@@ -2115,12 +2180,16 @@ function addPracticeTarget(
 	testBlocks: DescribeBlock[],
 	targetSymbols: ImportSymbol[],
 ): void {
-	const targetImportPaths = unique(targetSymbols.map((symbol) => symbol.importPath));
+	const targetImportPaths = unique(
+		targetSymbols.map((symbol) => symbol.importPath),
+	);
 	if (targetImportPaths.length === 0) return;
 
 	const sourceFiles = targetImportPaths
 		.map((importPath) => join(SRC_DIR, `${importPath}.ts`))
-		.filter((sourceFile) => existsSync(sourceFile) && shouldProcess(sourceFile));
+		.filter(
+			(sourceFile) => existsSync(sourceFile) && shouldProcess(sourceFile),
+		);
 
 	if (sourceFiles.length === 0) return;
 
@@ -2151,7 +2220,10 @@ function addPracticeTarget(
 
 function symbolGroupKey(symbols: ImportSymbol[]): string {
 	return uniqueSymbols(symbols)
-		.map((symbol) => `${symbol.importPath}:${symbol.importedName}:${symbol.localName}`)
+		.map(
+			(symbol) =>
+				`${symbol.importPath}:${symbol.importedName}:${symbol.localName}`,
+		)
 		.sort()
 		.join("|");
 }
@@ -2170,7 +2242,8 @@ function inferTopic(sourceRelativePaths: string[]): string {
 		return `data-structures/${parts[1] ?? "general"}`;
 	}
 	if (parts[0] === "javascript-concepts") return "javascript-concepts";
-	if (parts[0] === "node-concepts") return `node-concepts/${parts[1] ?? "general"}`;
+	if (parts[0] === "node-concepts")
+		return `node-concepts/${parts[1] ?? "general"}`;
 
 	return parts[0] || "general";
 }
@@ -2181,10 +2254,14 @@ function inferPattern(
 ): PracticePattern {
 	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
 	const rules: Array<[RegExp, PracticePattern]> = [
+		[/fenwick|segmenttree/, "range query"],
 		[/maxscheduledprofit/, "dynamic programming"],
 		[/shortestsubarrayatleastk/, "prefix sum"],
 		[/singleflight/, "async backend"],
-		[/dailytemperatures|largestrectangle|monotonicstack|nextgreater/, "monotonic stack"],
+		[
+			/dailytemperatures|largestrectangle|monotonicstack|nextgreater/,
+			"monotonic stack",
+		],
 		[/meeting|interval|overlap|mergeinterval|sweepline/, "intervals"],
 		[
 			/twopointers|threenumber|smallestdifference|squared|palindrome|container|water/,
@@ -2201,7 +2278,10 @@ function inferPattern(
 			"graph",
 		],
 		[/heap|topk|median|kthlargestelement|mergeksorted/, "heap"],
-		[/binarysearch(?!tree)|lowerbound|rotatedsorted|sortedmatrix|koko/, "binary search"],
+		[
+			/binarysearch(?!tree)|lowerbound|rotatedsorted|sortedmatrix|koko/,
+			"binary search",
+		],
 		[/stack|parentheses/, "stack"],
 		[/dynamic|ways|knapsack|coin|editdistance/, "dynamic programming"],
 		[/backtracking|permutation|combination|subset|nqueen/, "backtracking"],
@@ -2222,7 +2302,7 @@ function inferDifficulty(
 	const text = normalizeForSearch(`${title} ${sourceRelativePaths.join(" ")}`);
 
 	if (
-		/shortestsubarrayatleastk|maxscheduledprofit|dynamicprogramming|backtracking|graph|heap|systemdesign|consistenthash|bloom|snowflake|circuit|median|largestrectangle|wordsearch|hard/.test(
+		/shortestsubarrayatleastk|maxscheduledprofit|fenwick|segmenttree|dynamicprogramming|backtracking|graph|heap|systemdesign|consistenthash|bloom|snowflake|circuit|median|largestrectangle|wordsearch|hard/.test(
 			text,
 		)
 	) {
@@ -2266,7 +2346,10 @@ function chooseTargetSymbols(
 	testFile: string,
 ): ImportSymbol[] {
 	const usedSymbols = imports.flatMap((localImport) =>
-		localImport.symbols.filter((symbol) => !symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text)),
+		localImport.symbols.filter(
+			(symbol) =>
+				!symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text),
+		),
 	);
 
 	const titleKey = normalizeForSearch(block.title);
@@ -2299,7 +2382,9 @@ function chooseTargetSymbols(
 	);
 	if (matchingTestBase.length > 0) {
 		return uniqueSymbols(
-			usedSymbols.filter((symbol) => matchingTestBase.includes(symbol.importPath)),
+			usedSymbols.filter((symbol) =>
+				matchingTestBase.includes(symbol.importPath),
+			),
 		);
 	}
 
@@ -2320,10 +2405,7 @@ function auditPracticeTargets(targets: PracticeTarget[]): void {
 			);
 		});
 
-		if (
-			!symbolMatchesTitle &&
-			!isAcceptedBroadPracticeTitle(target.title)
-		) {
+		if (!symbolMatchesTitle && !isAcceptedBroadPracticeTitle(target.title)) {
 			warnings.push(
 				`${target.id}. "${target.title}" selects ${symbols.join(", ")} from ${target.sourceRelativePaths.join(", ")}`,
 			);
@@ -2409,8 +2491,9 @@ export function auditPracticeCatalogCompleteness(
 
 			const usedLocalSymbols = uniqueSymbols(
 				imports.flatMap((localImport) =>
-					localImport.symbols.filter((symbol) =>
-						!symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text),
+					localImport.symbols.filter(
+						(symbol) =>
+							!symbol.isTypeOnly && isSymbolUsed(symbol.localName, block.text),
 					),
 				),
 			);
@@ -2463,7 +2546,8 @@ export function auditPracticeCatalogCompleteness(
 
 	const ids = new Set(targets.map((target) => target.id));
 	const slugs = new Set(targets.map((target) => target.slug));
-	if (ids.size !== targets.length) issues.push("Practice target IDs are not unique.");
+	if (ids.size !== targets.length)
+		issues.push("Practice target IDs are not unique.");
 	if (slugs.size !== targets.length) {
 		issues.push("Practice target slugs are not unique.");
 	}
@@ -2616,9 +2700,11 @@ function buildSearchFields(target: PracticeTarget): SearchField[] {
 		...target.sourceRelativePaths.map(
 			(path): [SearchFieldName, string, number] => ["path", path, 2],
 		),
-		...target.testBlocks.map(
-			(block): [SearchFieldName, string, number] => ["title", block.title, 4],
-		),
+		...target.testBlocks.map((block): [SearchFieldName, string, number] => [
+			"title",
+			block.title,
+			4,
+		]),
 	];
 
 	return fields.map(([name, value, weight]) => ({
@@ -2635,7 +2721,10 @@ function parseSearchTerms(query: string): ParsedSearchTerm[] {
 		.split(/\s+/)
 		.map((rawToken): ParsedSearchTerm | null => {
 			const separatorIndex = rawToken.indexOf(":");
-			const possibleField = rawToken.slice(0, separatorIndex) as SearchFieldName;
+			const possibleField = rawToken.slice(
+				0,
+				separatorIndex,
+			) as SearchFieldName;
 			const field =
 				separatorIndex > 0 && SEARCH_FIELD_NAMES.has(possibleField)
 					? possibleField
@@ -2651,7 +2740,10 @@ function parseSearchTerms(query: string): ParsedSearchTerm[] {
 		.filter((term): term is ParsedSearchTerm => term !== null);
 }
 
-function searchTermScore(term: ParsedSearchTerm, fields: SearchField[]): number {
+function searchTermScore(
+	term: ParsedSearchTerm,
+	fields: SearchField[],
+): number {
 	let bestScore = 0;
 	for (const field of fields) {
 		if (term.field !== null && field.name !== term.field) continue;
@@ -2681,11 +2773,16 @@ function searchTermScore(term: ParsedSearchTerm, fields: SearchField[]): number 
 			// in a title should be recoverable; a coincidental path/test-title typo
 			// should not flood the result set.
 			if (field.weight < 10) continue;
-			const maximumDistance = alternative.length >= 7 ? 2 : alternative.length >= 3 ? 1 : 0;
+			const maximumDistance =
+				alternative.length >= 7 ? 2 : alternative.length >= 3 ? 1 : 0;
 			if (maximumDistance === 0) continue;
 			for (const token of field.tokens) {
 				if (token.length < 3) continue;
-				const distance = editDistanceWithin(alternative, token, maximumDistance);
+				const distance = editDistanceWithin(
+					alternative,
+					token,
+					maximumDistance,
+				);
 				if (distance <= maximumDistance) {
 					bestScore = Math.max(bestScore, field.weight * (8 - distance * 2));
 				}
@@ -2695,7 +2792,11 @@ function searchTermScore(term: ParsedSearchTerm, fields: SearchField[]): number 
 	return bestScore;
 }
 
-function editDistanceWithin(left: string, right: string, limit: number): number {
+function editDistanceWithin(
+	left: string,
+	right: string,
+	limit: number,
+): number {
 	if (Math.abs(left.length - right.length) > limit) return limit + 1;
 	let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
 	let previousPrevious: number[] | null = null;
@@ -2704,7 +2805,8 @@ function editDistanceWithin(left: string, right: string, limit: number): number 
 		const current = [leftIndex];
 		let rowMinimum = leftIndex;
 		for (let rightIndex = 1; rightIndex <= right.length; rightIndex++) {
-			const substitutionCost = left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1;
+			const substitutionCost =
+				left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1;
 			let distance = Math.min(
 				(previous[rightIndex] ?? limit + 1) + 1,
 				(current[rightIndex - 1] ?? limit + 1) + 1,
@@ -2784,7 +2886,10 @@ export function searchTargets(
 			};
 		})
 		.filter((result) => result.score > 0)
-		.sort((left, right) => right.score - left.score || left.target.id - right.target.id)
+		.sort(
+			(left, right) =>
+				right.score - left.score || left.target.id - right.target.id,
+		)
 		.map((result) => result.target);
 }
 
@@ -2794,9 +2899,7 @@ export function findBestTarget(
 ): PracticeTarget | null {
 	const trimmedQuery = query.trim();
 	if (/^\d+$/.test(trimmedQuery)) {
-		return (
-			targets.find((target) => target.id === Number(trimmedQuery)) ?? null
-		);
+		return targets.find((target) => target.id === Number(trimmedQuery)) ?? null;
 	}
 
 	const matches = searchTargets(targets, query);
@@ -2850,13 +2953,20 @@ async function writePracticeSession(
 		title: target.title,
 		slug: target.slug,
 		implementationPaths: target.targetImportPaths.map((importPath) =>
-			getFocusedImplementationPath(importPath, target.slug).replaceAll("\\", "/"),
+			getFocusedImplementationPath(importPath, target.slug).replaceAll(
+				"\\",
+				"/",
+			),
 		),
 		testPath: testPath.replaceAll("\\", "/"),
 		startedAt: new Date().toISOString(),
+		reviewKey: reviewKey(target),
 	};
 
-	await Bun.write(PRACTICE_SESSION_FILE, `${JSON.stringify(session, null, 2)}\n`);
+	await Bun.write(
+		PRACTICE_SESSION_FILE,
+		`${JSON.stringify(session, null, 2)}\n`,
+	);
 }
 
 async function readPracticeSession(): Promise<PracticeSession> {
@@ -2898,7 +3008,10 @@ function isPracticeSession(value: unknown): value is PracticeSession {
 		typeof session["testPath"] === "string" &&
 		isSafePracticeRelativePath(session["testPath"]) &&
 		session["testPath"].endsWith(".test.ts") &&
-		typeof session["startedAt"] === "string"
+		typeof session["startedAt"] === "string" &&
+		(session["reviewKey"] === undefined ||
+			(typeof session["reviewKey"] === "string" &&
+				/^[a-f0-9]{64}$/.test(session["reviewKey"])))
 	);
 }
 
@@ -2915,8 +3028,7 @@ function isSafePracticeRelativePath(value: unknown): value is string {
 async function printPracticeStatus(): Promise<void> {
 	const session = await readPracticeSession();
 	const missingImplementations = session.implementationPaths.filter(
-		(implementationPath) =>
-			!existsSync(join(PRACTICE_DIR, implementationPath)),
+		(implementationPath) => !existsSync(join(PRACTICE_DIR, implementationPath)),
 	);
 	const testExists = existsSync(join(PRACTICE_DIR, session.testPath));
 	const ready = missingImplementations.length === 0 && testExists;
@@ -2938,6 +3050,70 @@ Watch: ${formatFocusedTestCommand(session.testPath, true)}`);
 		];
 		console.log(`Missing: ${missing.join(", ")}`);
 	}
+}
+
+async function gradeActivePractice(
+	targets: PracticeTarget[],
+	grade: ReviewGrade,
+): Promise<void> {
+	const session = await readPracticeSession();
+	const target = targets.find(
+		(candidate) => reviewKey(candidate) === session.reviewKey,
+	);
+	if (!target)
+		throw new Error(
+			"Generate the target again before grading: its review identity is missing or the reference tests have changed.",
+		);
+	const result = await recordReview(
+		REVIEW_HISTORY_FILE,
+		reviewKey(target),
+		grade,
+	);
+	console.log(
+		`Recorded ${grade}: ${target.title}\nNext review: ${result.dueAt}\nUse bun run practice:next to choose a due or unseen problem.`,
+	);
+}
+
+async function printReviewQueue(targets: PracticeTarget[]): Promise<void> {
+	const history = await readReviewHistory(REVIEW_HISTORY_FILE);
+	const { due, unseen } = planReviews(targets, history);
+	console.log(
+		`${due.length} due · ${unseen.length} unseen · ${targets.length - due.length - unseen.length} scheduled`,
+	);
+	for (const target of due) {
+		console.log(
+			`${history.entries[reviewKey(target)]!.dueAt} · ${formatTarget(target)}`,
+		);
+	}
+	console.log(
+		"Next: bun run practice:next. Grade after an honest attempt with bun run practice:grade good.",
+	);
+}
+
+async function nextPractice(
+	targets: PracticeTarget[],
+	query: string,
+	force: boolean,
+): Promise<void> {
+	const matches = searchTargets(targets, query);
+	if (matches.length === 0)
+		throw new Error(`No practice target matched "${query}".`);
+	const history = await readReviewHistory(REVIEW_HISTORY_FILE);
+	const { due, unseen } = planReviews(matches, history);
+	const target = due[0] ?? unseen[0];
+	if (!target) {
+		const nextDue = matches
+			.map((candidate) => history.entries[reviewKey(candidate)]!.dueAt)
+			.sort((a, b) => Date.parse(a) - Date.parse(b))[0];
+		console.log(`All matching targets are scheduled. Next review: ${nextDue}`);
+		return;
+	}
+	console.log(
+		due.length
+			? "Returning to the oldest due review."
+			: "Starting an unseen target.",
+	);
+	await generateFocusedPractice(target, force);
 }
 
 async function runActivePractice(watch: boolean): Promise<number> {
@@ -2972,6 +3148,7 @@ async function runActivePractice(watch: boolean): Promise<number> {
 export function toManifestEntry(target: PracticeTarget): PracticeManifestEntry {
 	return {
 		id: target.id,
+		reviewKey: reviewKey(target),
 		title: target.title,
 		slug: target.slug,
 		topic: target.topic,
@@ -3046,6 +3223,10 @@ function estimateTargetMinutes(target: PracticeTarget): number {
 
 function inferLearningObjectives(target: PracticeTarget): string[] {
 	const objectivesByPattern: Record<PracticePattern, string[]> = {
+		"range query": [
+			"explain the interval owned by each internal node",
+			"preserve half-open boundaries, aggregate identity, and combination order",
+		],
 		"async backend": [
 			"model failure modes before coding the happy path",
 			"separate concurrency, timeout, retry, and state ownership concerns",
@@ -3160,7 +3341,9 @@ function buildReadinessRubric(target: PracticeTarget): string[] {
 	];
 
 	if (target.difficulty !== "easy") {
-		rubric.push("Handle at least one follow-up without changing the public API.");
+		rubric.push(
+			"Handle at least one follow-up without changing the public API.",
+		);
 	}
 
 	if (mode === "runtime") {
@@ -3232,9 +3415,7 @@ function formatCountRows<T extends string>(
 	counts: Record<T, number>,
 	order: readonly T[],
 ): string {
-	return order
-		.map((key) => `| ${key} | ${counts[key] ?? 0} |`)
-		.join("\n");
+	return order.map((key) => `| ${key} | ${counts[key] ?? 0} |`).join("\n");
 }
 
 async function writePracticeManifest(targets: PracticeTarget[]): Promise<void> {
@@ -3257,11 +3438,19 @@ async function writePracticeManifest(targets: PracticeTarget[]): Promise<void> {
 		`${JSON.stringify(manifest, null, 2)}\n`,
 	);
 
-	console.log(`Wrote practice/practice-manifest.json with ${targets.length} target(s).`);
+	console.log(
+		`Wrote practice/practice-manifest.json with ${targets.length} target(s).`,
+	);
 }
 
-async function writeLearningDashboard(targets: PracticeTarget[]): Promise<void> {
+async function writeLearningDashboard(
+	targets: PracticeTarget[],
+): Promise<void> {
 	await mkdir(PRACTICE_DIR, { recursive: true });
+	const { due, unseen } = planReviews(
+		targets,
+		await readReviewHistory(REVIEW_HISTORY_FILE),
+	);
 
 	const levels = ["beginner", "intermediate", "advanced", "expert"] as const;
 	const difficulties = ["easy", "medium", "hard"] as const;
@@ -3288,6 +3477,14 @@ async function writeLearningDashboard(targets: PracticeTarget[]): Promise<void> 
 	const dashboard = `# Learning Dashboard
 
 Generated by \`bun run practice:dashboard\`.
+
+## Your Review Queue
+
+${due.length} due · ${unseen.length} unseen · ${targets.length - due.length - unseen.length} scheduled.
+This snapshot reflects local history when the dashboard was generated.
+Use \`bun run practice:next\` to select due work before a new target, then
+\`bun run practice:grade good\` (or again/hard/easy) after your attempt.
+\`bun run practice:review\` prints the current queue.
 
 ## Coverage Snapshot
 
@@ -3369,7 +3566,9 @@ The richer JSON version lives in \`practice/practice-manifest.json\` and include
 	);
 }
 
-async function promptForTarget(targets: PracticeTarget[]): Promise<PracticeTarget> {
+async function promptForTarget(
+	targets: PracticeTarget[],
+): Promise<PracticeTarget> {
 	const readline = createInterface({ input, output });
 
 	try {
@@ -3405,7 +3604,10 @@ async function promptForTarget(targets: PracticeTarget[]): Promise<PracticeTarge
 	}
 }
 
-function getFocusedImplementationPath(importPath: string, slug: string): string {
+function getFocusedImplementationPath(
+	importPath: string,
+	slug: string,
+): string {
 	const parts = importPath.split("/");
 	parts[parts.length - 1] = slug;
 	return `${parts.join("/")}.ts`;
@@ -3420,8 +3622,10 @@ function toRelativeImport(
 		outputRoot,
 		toRelativePracticePath.replace(/\.ts$/, ""),
 	);
-	let relativeImport = relative(dirname(fromFilePath), targetPathWithoutExtension)
-		.replaceAll("\\", "/");
+	let relativeImport = relative(
+		dirname(fromFilePath),
+		targetPathWithoutExtension,
+	).replaceAll("\\", "/");
 
 	if (!relativeImport.startsWith(".")) {
 		relativeImport = `./${relativeImport}`;
@@ -3431,9 +3635,12 @@ function toRelativeImport(
 }
 
 function buildImportSpecifier(symbols: ImportSymbol[]): string {
-	const defaultSymbol = symbols.find((symbol) => symbol.importedName === "default");
+	const defaultSymbol = symbols.find(
+		(symbol) => symbol.importedName === "default",
+	);
 	const namedSymbols = symbols.filter(
-		(symbol) => symbol.importedName !== "default" && symbol.importedName !== "*",
+		(symbol) =>
+			symbol.importedName !== "default" && symbol.importedName !== "*",
 	);
 	const namespaceSymbol = symbols.find((symbol) => symbol.importedName === "*");
 
@@ -3442,14 +3649,20 @@ function buildImportSpecifier(symbols: ImportSymbol[]): string {
 	}
 
 	const parts: string[] = [];
-	if (defaultSymbol) parts.push(`${defaultSymbol.isTypeOnly ? "type " : ""}${defaultSymbol.localName}`);
+	if (defaultSymbol)
+		parts.push(
+			`${defaultSymbol.isTypeOnly ? "type " : ""}${defaultSymbol.localName}`,
+		);
 
 	if (namedSymbols.length > 0) {
 		const named = namedSymbols
-			.map((symbol) => `${symbol.isTypeOnly ? "type " : ""}${
-				symbol.importedName === symbol.localName
-					? symbol.importedName
-					: `${symbol.importedName} as ${symbol.localName}`}`,
+			.map(
+				(symbol) =>
+					`${symbol.isTypeOnly ? "type " : ""}${
+						symbol.importedName === symbol.localName
+							? symbol.importedName
+							: `${symbol.importedName} as ${symbol.localName}`
+					}`,
 			)
 			.join(", ");
 		parts.push(`{ ${named} }`);
@@ -3495,7 +3708,9 @@ function rewriteFocusedTestImports(
 				practiceRelativePath,
 				outputRoot,
 			);
-			const replacements = [`import ${importSpecifier} from "${relativeImport}";`];
+			const replacements = [
+				`import ${importSpecifier} from "${relativeImport}";`,
+			];
 
 			if (helperSymbols.length > 0) {
 				const helperRelativeImport = toRelativeSourceImport(
@@ -3535,8 +3750,10 @@ function toRelativeSourceImport(
 	sourceImportPath: string,
 ): string {
 	const targetPathWithoutExtension = join(SRC_DIR, sourceImportPath);
-	let relativeImport = relative(dirname(fromFilePath), targetPathWithoutExtension)
-		.replaceAll("\\", "/");
+	let relativeImport = relative(
+		dirname(fromFilePath),
+		targetPathWithoutExtension,
+	).replaceAll("\\", "/");
 
 	if (!relativeImport.startsWith(".")) {
 		relativeImport = `./${relativeImport}`;
@@ -3596,7 +3813,9 @@ export async function writeFocusedPractice(
 		);
 		const selectedExports = new Set(
 			selectedSymbols.map((symbol) =>
-				symbol.importedName === "default" ? symbol.localName : symbol.importedName,
+				symbol.importedName === "default"
+					? symbol.localName
+					: symbol.importedName,
 			),
 		);
 		const outputRelativePath = getFocusedImplementationPath(
@@ -3646,14 +3865,21 @@ export async function writeFocusedPractice(
 	);
 
 	await mkdir(dirname(practiceTestPath), { recursive: true });
-	await Bun.write(practiceTestPath, focusedTestContent);
+	const testExists = await Bun.file(practiceTestPath).exists();
+	if (!testExists || force) {
+		await Bun.write(practiceTestPath, focusedTestContent);
+	}
 	await createReadme(outputRoot);
 
 	if (printSummary) {
-		console.log(`Generated focused test: ${testOutputRelativePath}`);
+		console.log(
+			`${testExists && !force ? "Kept" : "Generated"} focused test: ${testOutputRelativePath}`,
+		);
 		console.log("\nPractice ready.");
 		console.log(`Target: ${formatTarget(target)}`);
-		console.log(`Implement: practice/${generatedImplementationPaths.join(", practice/")}`);
+		console.log(
+			`Implement: practice/${generatedImplementationPaths.join(", practice/")}`,
+		);
 		console.log(`Run: ${formatFocusedTestCommand(testOutputRelativePath)}`);
 		console.log(`Complexity prompt: ${buildComplexityPrompt(target)}`);
 		console.log(
@@ -3684,7 +3910,9 @@ function assertGeneratedTestMatchesTarget(
 	}
 
 	for (const block of target.testBlocks) {
-		if (!normalizedTestContent.includes(normalizeGeneratedTestText(block.text))) {
+		if (
+			!normalizedTestContent.includes(normalizeGeneratedTestText(block.text))
+		) {
 			throw new Error(
 				`Focused test does not contain selected ${block.kind} block: ${block.title}`,
 			);
@@ -3693,17 +3921,47 @@ function assertGeneratedTestMatchesTarget(
 }
 
 function normalizeGeneratedTestText(value: string): string {
-	return value.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+	return value
+		.replace(/\r\n/g, "\n")
+		.replace(/\n{3,}/g, "\n\n")
+		.trim();
 }
 
 export function runPracticeSmokeTests(targets: PracticeTarget[]): void {
-	const typeImports = parseImportSymbols("type { Shape as Alias }", "synthetic");
-	assertSmoke(typeImports[0]?.isTypeOnly === true, "lost import type declaration");
-	assertSmoke(buildImportSpecifier(typeImports) === "{ type Shape as Alias }", "lost type-only alias when rewriting imports");
+	const typeImports = parseImportSymbols(
+		"type { Shape as Alias }",
+		"synthetic",
+	);
+	assertSmoke(
+		typeImports[0]?.isTypeOnly === true,
+		"lost import type declaration",
+	);
+	assertSmoke(
+		buildImportSpecifier(typeImports) === "{ type Shape as Alias }",
+		"lost type-only alias when rewriting imports",
+	);
 	const mixedImports = parseImportSymbols("{ value, type Shape }", "synthetic");
-	assertSmoke(mixedImports[0]?.isTypeOnly === false && mixedImports[1]?.isTypeOnly === true, "lost mixed import type information");
-	const typeBlock = { title: "Shape", text: "const item: Shape = {};", start: 0, end: 1, kind: "describe", modifier: null } as DescribeBlock;
-	assertSmoke(chooseTargetSymbols(typeBlock, [{ importPath: "synthetic", statement: "", symbols: mixedImports }], "synthetic.test.ts").length === 0, "selected a type as an executable practice target");
+	assertSmoke(
+		mixedImports[0]?.isTypeOnly === false &&
+			mixedImports[1]?.isTypeOnly === true,
+		"lost mixed import type information",
+	);
+	const typeBlock = {
+		title: "Shape",
+		text: "const item: Shape = {};",
+		start: 0,
+		end: 1,
+		kind: "describe",
+		modifier: null,
+	} as DescribeBlock;
+	assertSmoke(
+		chooseTargetSymbols(
+			typeBlock,
+			[{ importPath: "synthetic", statement: "", symbols: mixedImports }],
+			"synthetic.test.ts",
+		).length === 0,
+		"selected a type as an executable practice target",
+	);
 	const syntheticTest = `
 import { describe, expect, it, test } from "bun:test";
 import { alpha as renamedAlpha, beta, gamma } from '@/fake/source';
@@ -3766,25 +4024,21 @@ describe("duplicate", () => {
 		`expected 12 top-level blocks in synthetic smoke test, got ${blocks.length}`,
 	);
 	assertSmoke(
-		blocks.some(
-			(block) => block.kind === "test" && block.modifier === "skip",
-		),
+		blocks.some((block) => block.kind === "test" && block.modifier === "skip"),
 		"did not parse test.skip as a removable top-level block",
 	);
 	assertSmoke(
-		blocks.some(
-			(block) => block.kind === "test" && block.modifier === "todo",
-		),
+		blocks.some((block) => block.kind === "test" && block.modifier === "todo"),
 		"did not parse test.todo as a removable top-level block",
 	);
 	assertSmoke(
-		blocks.some(
-			(block) => block.kind === "test" && block.modifier === "only",
-		),
+		blocks.some((block) => block.kind === "test" && block.modifier === "only"),
 		"did not parse test.only as a selectable top-level block",
 	);
 	assertSmoke(
-		blocks.some((block) => block.kind === "it" && block.title === "loose beta %i"),
+		blocks.some(
+			(block) => block.kind === "it" && block.title === "loose beta %i",
+		),
 		"did not parse it.each(...) as a top-level block",
 	);
 	assertSmoke(
@@ -3798,8 +4052,7 @@ describe("duplicate", () => {
 	);
 	assertSmoke(
 		blocks.some(
-			(block) =>
-				block.title === "concurrent beta" && block.modifier === null,
+			(block) => block.title === "concurrent beta" && block.modifier === null,
 		),
 		"did not parse test.concurrent as selectable",
 	);
@@ -3850,8 +4103,13 @@ describe("duplicate", () => {
 	);
 
 	const duplicateBlocks = blocks.filter((block) => block.title === "duplicate");
-	assertSmoke(duplicateBlocks.length === 2, "duplicate title blocks were not parsed");
-	const filteredDuplicate = filterToTestBlocks(syntheticTest, [duplicateBlocks[1]!]);
+	assertSmoke(
+		duplicateBlocks.length === 2,
+		"duplicate title blocks were not parsed",
+	);
+	const filteredDuplicate = filterToTestBlocks(syntheticTest, [
+		duplicateBlocks[1]!,
+	]);
 	assertSmoke(
 		filteredDuplicate.includes("gamma();") &&
 			!filteredDuplicate.includes("renamedAlpha();"),
@@ -3876,7 +4134,10 @@ describe("duplicate", () => {
 	);
 
 	const monotonicTarget = findBestTarget(targets, "monotonicArray");
-	assertSmoke(monotonicTarget !== null, "monotonicArray target was not discovered");
+	assertSmoke(
+		monotonicTarget !== null,
+		"monotonicArray target was not discovered",
+	);
 	const monotonicSourceTest = readFileSync(monotonicTarget.testFile, "utf8");
 	const monotonicFocusedTest = filterToTestBlocks(
 		monotonicSourceTest,
@@ -3892,9 +4153,10 @@ describe("duplicate", () => {
 		"monotonicArray focused test has extra top-level runnable blocks",
 	);
 
-	const duplicateAddTwoNumberTargets = searchTargets(targets, "addTwoNumbers").filter(
-		(target) => target.title === "addTwoNumbers",
-	);
+	const duplicateAddTwoNumberTargets = searchTargets(
+		targets,
+		"addTwoNumbers",
+	).filter((target) => target.title === "addTwoNumbers");
 	assertSmoke(
 		duplicateAddTwoNumberTargets.length >= 2 &&
 			duplicateAddTwoNumberTargets[0]?.testBlocks[0]?.start !==
@@ -3911,10 +4173,7 @@ function getSmokeBlock(blocks: DescribeBlock[], title: string): DescribeBlock {
 	return block;
 }
 
-function assertSmoke(
-	condition: unknown,
-	message: string,
-): asserts condition {
+function assertSmoke(condition: unknown, message: string): asserts condition {
 	if (!condition) {
 		throw new Error(`Smoke test failed: ${message}`);
 	}
@@ -3925,15 +4184,10 @@ async function assertGeneratedFocusedTestLoads(
 	testPath: string,
 	target: PracticeTarget,
 ): Promise<void> {
-	const subprocess = Bun.spawn([execPath, "test", "--cwd", outputRoot, testPath], {
-		stdout: "pipe",
-		stderr: "pipe",
-	});
-	const [stdoutText, stderrText, exitCode] = await Promise.all([
-		readSubprocessText(subprocess.stdout),
-		readSubprocessText(subprocess.stderr),
-		subprocess.exited,
-	]);
+	const { stdoutText, stderrText, exitCode } = await runFocusedValidationTest(
+		outputRoot,
+		testPath,
+	);
 	const outputText = `${stdoutText}\n${stderrText}`;
 
 	if (exitCode === 0) {
@@ -3973,20 +4227,57 @@ async function assertFocusedReferenceScenariosPass(
 	);
 	await Bun.write(testFilePath, focusedReferenceTest);
 
-	const subprocess = Bun.spawn([execPath, "test", "--cwd", outputRoot, testPath], {
-		stdout: "pipe",
-		stderr: "pipe",
-	});
-	const [stdoutText, stderrText, exitCode] = await Promise.all([
-		readSubprocessText(subprocess.stdout),
-		readSubprocessText(subprocess.stderr),
-		subprocess.exited,
-	]);
+	const { stdoutText, stderrText, exitCode } = await runFocusedValidationTest(
+		outputRoot,
+		testPath,
+	);
 
 	if (exitCode !== 0) {
 		throw new Error(
 			`Focused reference scenarios failed for ${target.title}:\n${trimSubprocessOutput(`${stdoutText}\n${stderrText}`)}`,
 		);
+	}
+}
+
+/** A hanging module or leaked handle must not stall the entire catalog audit.
+ * Drain both pipes concurrently, terminate on deadline, and reap the child
+ * before callers remove its temporary workspace (including on Windows).
+ */
+export async function runFocusedValidationTest(
+	outputRoot: string,
+	testPath: string,
+	timeoutMs = 30_000,
+): Promise<{ stdoutText: string; stderrText: string; exitCode: number }> {
+	if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647)
+		throw new RangeError("Validation timeout must be a positive 32-bit integer.");
+	const subprocess = Bun.spawn(
+		[execPath, "test", "--cwd", outputRoot, testPath],
+		{ stdout: "pipe", stderr: "pipe", windowsHide: true },
+	);
+	let timedOut = false;
+	const deadline = setTimeout(() => {
+		timedOut = true;
+		subprocess.kill("SIGKILL");
+	}, timeoutMs);
+	try {
+		const [stdoutText, stderrText, exitCode] = await Promise.all([
+			readSubprocessText(subprocess.stdout),
+			readSubprocessText(subprocess.stderr),
+			subprocess.exited,
+		]);
+		if (timedOut)
+			throw new Error(
+				`Focused validation timed out after ${timeoutMs}ms: ${testPath}`,
+			);
+		if (subprocess.signalCode !== null)
+			throw new Error(
+				`Focused validation terminated by ${subprocess.signalCode}: ${testPath}`,
+			);
+		return { stdoutText, stderrText, exitCode };
+	} finally {
+		clearTimeout(deadline);
+		if (subprocess.exitCode === null) subprocess.kill("SIGKILL");
+		await subprocess.exited;
 	}
 }
 
@@ -4024,6 +4315,9 @@ bun run practice --random graph --seed cohort-a
 bun run practice:run
 bun run practice:watch
 bun run practice:status
+bun run practice:next
+bun run practice:grade good
+bun run practice:review
 bun run practice --manifest
 bun run practice --dashboard
 \`\`\`
@@ -4035,8 +4329,21 @@ The generator creates:
 - Supporting imports still point at \`src/\`, so you only implement the chosen problem
 - An active-session file that powers \`practice:run\`, \`practice:watch\`, and \`practice:status\`
 
-Generating the same target again preserves your implementation. Pass \`--force\`
-only when you intentionally want to reset the starter file.
+Generating the same target again preserves your implementation and added tests.
+Pass \`--force\` only when you intentionally want to reset both files.
+
+## Review From Memory
+
+\`bun run practice:next\` selects the oldest due review, then an unseen target.
+Optional search works too: \`bun run practice:next "pattern:range query"\`.
+After an attempt, record \`bun run practice:grade again|hard|good|easy\` (choose one).
+Use \`bun run practice:review\` to see what is due. Grades are self-assessments;
+passing tests does not automatically certify recall or interview readiness.
+
+History lives in \`practice/.review-history.json\`. Back it up before using
+\`--clean\`, which explicitly removes the whole practice directory, including
+your solutions, tests, and history. See \`docs/PRACTICE_REVIEW.md\` in the repo
+for the scheduling rules and research.
 
 ## Run The Focused Test
 
@@ -4124,14 +4431,15 @@ against the canonical source so missing hooks, cases, or imports fail the gate.
 	await Bun.write(join(outputRoot, "README.md"), readme);
 }
 
-async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<void> {
-	const validationRoot = join(PRACTICE_DIR, "__focused-validation__");
-
-	if (existsSync(validationRoot)) {
-		await rm(validationRoot, { recursive: true, force: true });
-	}
-
-	await mkdir(validationRoot, { recursive: true });
+async function validateAllFocusedTargets(
+	targets: PracticeTarget[],
+): Promise<void> {
+	await mkdir(PRACTICE_DIR, { recursive: true });
+	// Concurrent validations own separate directories. Never clear a shared
+	// path that might contain another run's files or a learner's saved work.
+	const validationRoot = await mkdtemp(
+		join(PRACTICE_DIR, "__focused-validation__-"),
+	);
 
 	const failures: string[] = [];
 
@@ -4145,7 +4453,9 @@ async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<voi
 				const testContent = await Bun.file(testFilePath).text();
 
 				if (/from\s+["']@\//.test(testContent)) {
-					throw new Error("Focused test still contains an unresolved src alias");
+					throw new Error(
+						"Focused test still contains an unresolved src alias",
+					);
 				}
 
 				assertGeneratedTestMatchesTarget(testContent, target);
@@ -4175,13 +4485,11 @@ async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<voi
 				}
 
 				await assertGeneratedFocusedTestLoads(targetRoot, testPath, target);
-				await assertFocusedReferenceScenariosPass(
-					targetRoot,
-					testPath,
-					target,
-				);
+				await assertFocusedReferenceScenariosPass(targetRoot, testPath, target);
 
-				console.log(`Validated ${target.id}/${targets.length}: ${target.title}`);
+				console.log(
+					`Validated ${target.id}/${targets.length}: ${target.title}`,
+				);
 			} catch (error) {
 				failures.push(
 					`${target.id}. ${target.title}: ${
@@ -4200,6 +4508,14 @@ async function validateAllFocusedTargets(targets: PracticeTarget[]): Promise<voi
 
 		console.log(`Validated ${targets.length} focused practice target(s).`);
 	} finally {
+		const ownedPath = relative(resolve(PRACTICE_DIR), resolve(validationRoot));
+		if (
+			!ownedPath.startsWith("__focused-validation__-") ||
+			ownedPath.includes(sep)
+		)
+			throw new Error(
+				`Refusing to remove an unexpected validation directory: ${validationRoot}`,
+			);
 		await rm(validationRoot, { recursive: true, force: true });
 	}
 }
@@ -4250,6 +4566,21 @@ async function main() {
 	}
 
 	const targets = discoverPracticeTargets();
+
+	if (options.grade !== null) {
+		await gradeActivePractice(targets, options.grade);
+		return;
+	}
+
+	if (options.review) {
+		await printReviewQueue(targets);
+		return;
+	}
+
+	if (options.nextQuery !== null) {
+		await nextPractice(targets, options.nextQuery, options.force);
+		return;
+	}
 
 	if (options.manifest) {
 		await writePracticeManifest(targets);

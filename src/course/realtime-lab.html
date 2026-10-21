@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Systems in motion · Real-time lab</title>
+  <style>
+    :root { color-scheme: light; --paper:#f5f3ec; --card:#fffef9; --ink:#242822; --muted:#60675b; --line:#d5d9cb; --accent:#364b26; --highlight:#e9ee91; --mono:Consolas,monospace; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 system-ui,sans-serif; }
+    a { color:inherit; } button,input { font:inherit; } button { cursor:pointer; }
+    button:disabled { opacity:.5; cursor:default; }
+    :focus-visible { outline:3px solid var(--accent); outline-offset:4px; }
+    .skip { position:absolute; top:-100px; } .skip:focus { top:10px; background:white; padding:10px; z-index:2; }
+    .shell { max-width:1240px; margin:auto; padding:0 36px 60px; }
+    header { display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--ink); padding:24px 0; font:12px var(--mono); letter-spacing:.09em; text-transform:uppercase; }
+    .brand { font-weight:bold; } .edition { color:var(--muted); }
+    .hero { padding:52px 0 32px; display:grid; grid-template-columns:1.4fr 1fr; gap:48px; align-items:end; }
+    .eyebrow { font:12px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+    h1 { font-size:clamp(40px,6vw,76px); line-height:1.02; letter-spacing:-.06em; margin:16px 0 0; font-weight:600; }
+    h1 em { font-family:Georgia,serif; font-weight:normal; } .intro { color:var(--muted); max-width:400px; margin-bottom:4px; }
+    .flow { display:flex; flex-wrap:wrap; align-items:center; gap:12px; border-block:1px solid var(--line); padding:18px 0; font:12px var(--mono); }
+    .flow span { background:var(--card); padding:7px 12px; border:1px solid var(--line); } .flow b { font-weight:normal; color:var(--muted); }
+    .workspace { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:24px; margin-top:28px; }
+    .panel { border:1px solid var(--line); background:var(--card); padding:24px; }
+    .panel-top { display:flex; justify-content:space-between; gap:12px; align-items:center; border-bottom:1px solid var(--line); padding-bottom:16px; }
+    h2 { font-size:18px; letter-spacing:-.02em; margin:0; } .status { font:12px var(--mono); background:var(--highlight); padding:5px 10px; }
+    .room-form { display:flex; gap:8px; margin:20px 0; align-items:end; }
+    label { display:block; font:12px var(--mono); color:var(--muted); margin-bottom:6px; }
+    input { background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:0; padding:10px 12px; width:100%; min-width:0; }
+    .field { flex:1; } button { border:1px solid var(--line); background:transparent; padding:10px 14px; color:var(--ink); border-radius:0; }
+    button:hover:enabled { background:var(--paper); } .primary { background:var(--accent); color:white; border-color:var(--accent); } .primary:hover:enabled { background:#293d1b; }
+    aside ol { padding-left:20px; color:var(--muted); font-size:14px; } aside ol li { margin-bottom:14px; } aside ol strong { color:var(--ink); }
+    .events { list-style:none; padding:0; margin:0; height:300px; overflow:auto; border-block:1px solid var(--line); }
+    .events li { padding:12px 0; border-bottom:1px solid var(--line); display:grid; grid-template-columns:56px 1fr; gap:10px; }
+    .seq { font:12px var(--mono); color:var(--muted); padding-top:4px; } .event-text { overflow-wrap:anywhere; }
+    .meta { display:block; font:11px var(--mono); color:var(--muted); margin-top:4px; } .empty { color:var(--muted); padding:22px 0; }
+    .publish { margin-top:20px; } .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    #feedback { font:12px/1.6 var(--mono); min-height:40px; margin:12px 0 0; overflow-wrap:anywhere; }
+    aside .panel { margin-bottom:20px; } .stats { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; }
+    .stat strong { display:block; font:32px/1.2 var(--mono); letter-spacing:-.06em; } .stat span { font-size:12px; color:var(--muted); }
+    .note { color:var(--muted); font-size:12px; margin:20px 0 0; } .lesson { border-top:1px solid var(--ink); margin-top:36px; padding-top:20px; display:grid; grid-template-columns:1fr 2fr; gap:24px; }
+    .lesson p { margin:0; color:var(--muted); font-size:14px; } code { font-family:var(--mono); font-size:.9em; }
+    @media(max-width:850px) { .hero,.workspace,.lesson { grid-template-columns:1fr; gap:24px; } .hero { padding-top:32px; } aside { display:grid; grid-template-columns:1fr 1fr; gap:16px; } .shell { padding-inline:20px; } }
+    @media(max-width:560px) { aside { display:block; } .edition { display:none; } .panel { padding:16px; } .room-form { flex-wrap:wrap; } .flow { gap:6px; } .flow span { padding:5px; font-size:11px; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#lab">Skip to lab</a>
+  <div class="shell">
+    <header><span class="brand">Structures → Systems</span><span class="edition">Field lab 01 / Bun + SQLite</span></header>
+    <section class="hero" aria-labelledby="title">
+      <div><span class="eyebrow">Learn by breaking things</span><h1 id="title">Systems<br>in <em>motion.</em></h1></div>
+      <p class="intro">A message is easy to send. Keeping it through a retry, a lost connection, and a restart is the interesting part. Watch the guarantees work.</p>
+    </section>
+    <section class="flow" aria-label="Event delivery path"><span>01 · Validate</span><b>→</b><span>02 · Commit</span><b>→</b><span>03 · Broadcast</span><b>→</b><span>04 · Replay</span></section>
+    <main id="lab" class="workspace">
+      <section class="panel" aria-labelledby="stream-title">
+        <div class="panel-top"><h2 id="stream-title">The event stream</h2><span id="status" class="status" role="status">Connecting</span></div>
+        <form id="room-form" class="room-form"><div class="field"><label for="room">Room · open the same room in two tabs</label><input id="room" value="delivery-demo" pattern="[a-z0-9-]{1,48}" maxlength="48" required></div><button type="submit">Join room</button><button id="connection" type="button">Disconnect</button></form>
+        <p id="empty" class="empty">No events yet. Publish your first delivery update.</p>
+        <section aria-label="Scrollable committed events">
+          <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable history needs keyboard focus so arrow keys can scroll it. -->
+          <ol id="events" class="events" aria-label="Committed room events" tabindex="0"></ol>
+        </section>
+        <form id="publish" class="publish"><label for="text">Delivery update</label><input id="text" value="Order packed · Bengaluru hub" maxlength="500" required><div class="actions"><button class="primary" id="send" type="submit">Publish event ↗</button><button id="retry" type="button" disabled>Retry same event</button></div></form>
+        <p id="feedback" role="status" aria-live="polite">Every new event gets a stable ID. Retrying keeps that ID.</p>
+      </section>
+      <aside>
+        <section class="panel" aria-labelledby="metrics-title"><h2 id="metrics-title">Process counters</h2><div class="stats"><div class="stat"><strong id="commits">0</strong><span>new commits</span></div><div class="stat"><strong id="duplicates">0</strong><span>safe retries</span></div><div class="stat"><strong id="replayed">0</strong><span>socket replayed events</span></div><div class="stat"><strong id="cursor">0</strong><span>your latest cursor</span></div></div><p class="note">Counters reset on restart. The database keeps its events. HTTP catch-up is visible in each event's label.</p></section>
+        <section class="panel" aria-labelledby="experiments-title"><h2 id="experiments-title">Try three experiments</h2><ol><li><strong>Retry a write.</strong> Publish, then retry. Commits stay the same; safe retries increase.</li><li><strong>Lose the connection.</strong> Disconnect this tab. Publish in another, then reconnect here.</li><li><strong>Restart the server.</strong> Keep both tabs open. Stop and restart the lab; committed history survives.</li></ol><p class="note">Local learning environment. Rooms are public to local clients. Read docs/REALTIME_SYSTEMS_LAB.md for the failure model and production upgrades.</p></section>
+      </aside>
+    </main>
+    <footer class="lesson"><span class="eyebrow">The invariant to remember</span><p>Persistence owns the truth. WebSockets carry notifications. A stable event ID prevents duplicate writes; an ordered cursor recovers missed delivery. These are separate guarantees.</p></footer>
+  </div>
+  <script type="module">
+    const $ = (id) => document.getElementById(id);
+    let room = "delivery-demo", cursor = 0, socket, generation = 0, online = true, suspended = false, timer, lastWrite;
+    const feedback = (text) => { $("feedback").textContent = text; };
+
+    function show(event, source) {
+      // The single server emits ordered room events. Replay may overlap the
+      // last delivered event, so a cursor suppresses duplicates in this view.
+      if (event.sequence <= cursor) return;
+      cursor = event.sequence;
+      $("cursor").textContent = cursor;
+      $("empty").hidden = true;
+      const row = document.createElement("li"), seq = document.createElement("span"), content = document.createElement("div"), meta = document.createElement("small");
+      seq.className = "seq"; seq.textContent = `#${event.sequence}`;
+      content.className = "event-text"; content.textContent = event.text;
+      meta.className = "meta"; meta.textContent = `${source} · ${event.eventId.slice(0, 12)}`;
+      content.append(meta); row.append(seq, content); $("events").append(row);
+      // Bound the DOM independently of retained database history.
+      if ($("events").children.length > 200) $("events").firstElementChild.remove();
+      $("events").scrollTop = $("events").scrollHeight;
+    }
+
+    async function connect() {
+      const attempt = ++generation;
+      clearTimeout(timer);
+      socket?.close();
+      if (!online) return;
+      $("status").textContent = "Catching up";
+      try {
+        let more;
+        do {
+          const response = await fetch(`/api/rooms/${room}/events?after=${cursor}&limit=100`);
+          if (!response.ok) throw new Error("History temporarily unavailable");
+          const page = await response.json();
+          if (attempt !== generation) return;
+          for (const event of page.events) show(event, "HTTP replay");
+          more = page.hasMore;
+        } while (more);
+        if (attempt !== generation || !online) return;
+        socket = new WebSocket(`${location.origin.replace(/^http/, "ws")}/live/${room}?after=${cursor}`);
+        socket.onopen = () => { if (attempt === generation) $("status").textContent = "Live"; };
+        socket.onmessage = ({ data }) => {
+          if (attempt !== generation) return;
+          const message = JSON.parse(data);
+          if (message.type === "snapshot") { for (const event of message.events) show(event, "Socket replay"); }
+          if (message.type === "event") show(message.event, "Live");
+          if (message.type === "resync_required") feedback("Replay batch exceeded; catching up over HTTP.");
+        };
+        socket.onclose = () => { if (attempt === generation && online) retryConnection(); };
+      } catch (error) {
+        if (attempt === generation && online) { feedback(error.message); retryConnection(); }
+      }
+    }
+
+    function retryConnection() {
+      $("status").textContent = "Reconnecting";
+      // Jitter spreads reconnects after a server restart. One timer per tab.
+      timer = setTimeout(connect, 1500 + Math.random() * 1500);
+    }
+
+    async function publish(payload) {
+      $("send").disabled = true; $("retry").disabled = true;
+      try {
+        const response = await fetch(`/api/rooms/${room}/events`, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(`${response.status}: ${result.error}`);
+        // Do not advance the delivery cursor from a POST response: doing so
+        // could skip earlier messages still in flight on the subscription.
+        feedback(`${response.status} · ${result.created ? "Committed" : "Existing event returned; no second write"} · sequence ${result.event.sequence}`);
+      } catch (error) { feedback(`${error.message}. Retry keeps the original event ID.`); }
+      finally { $("send").disabled = false; $("retry").disabled = !lastWrite; }
+      await metrics();
+    }
+
+    $("publish").onsubmit = (event) => { event.preventDefault(); lastWrite = { eventId:crypto.randomUUID(), text:$("text").value }; void publish(lastWrite); };
+    $("retry").onclick = () => { if (lastWrite) void publish(lastWrite); };
+    $("connection").onclick = () => {
+      online = !online;
+      $("connection").textContent = online ? "Disconnect" : "Reconnect";
+      if (online) void connect();
+      else { generation++; clearTimeout(timer); socket?.close(); $("status").textContent = "Disconnected"; }
+    };
+    $("room-form").onsubmit = (event) => {
+      event.preventDefault(); room = $("room").value; cursor = 0; lastWrite = undefined;
+      $("retry").disabled = true; $("events").replaceChildren(); $("empty").hidden = false; $("cursor").textContent = "0";
+      online = true; $("connection").textContent = "Disconnect"; void connect();
+    };
+    async function metrics() {
+      try { const response = await fetch("/api/metrics"); if (!response.ok) return; const data = await response.json(); for (const key of ["commits", "duplicates", "replayed"]) $(key).textContent = data[key]; }
+      catch { /* Reconnection status already explains a stopped server. */ }
+    }
+    let metricsTimer = setInterval(metrics, 2000);
+    addEventListener("pagehide", () => { suspended = true; generation++; clearTimeout(timer); clearInterval(metricsTimer); socket?.close(); });
+    addEventListener("pageshow", () => {
+      if (!suspended) return;
+      suspended = false;
+      metricsTimer = setInterval(metrics, 2000);
+      if (online) void connect();
+      void metrics();
+    });
+    void connect(); void metrics();
+  </script>
+</body>
+</html>

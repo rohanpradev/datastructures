@@ -44,8 +44,8 @@ export class AtLeastOnceQueue<T> {
 	private readonly idFactory: () => string;
 
 	constructor(private readonly options: AtLeastOnceQueueOptions) {
-		if (!Number.isInteger(options.maxAttempts) || options.maxAttempts < 1) {
-			throw new Error("maxAttempts must be a positive integer");
+		if (!Number.isSafeInteger(options.maxAttempts) || options.maxAttempts < 1) {
+			throw new RangeError("maxAttempts must be a positive safe integer");
 		}
 		if (
 			!Number.isFinite(options.visibilityTimeoutMs) ||
@@ -55,12 +55,14 @@ export class AtLeastOnceQueue<T> {
 		}
 
 		this.idFactory = options.idFactory ?? Bun.randomUUIDv7;
+		this.options = { ...options };
 	}
 
 	enqueue(value: T, nowMs = Date.now(), delayMs = 0): string {
 		if (!Number.isFinite(delayMs) || delayMs < 0) {
 			throw new Error("delayMs must be non-negative");
 		}
+		const availableAtMs = this.deadline(nowMs, delayMs);
 
 		const id = this.idFactory();
 		if (id.trim().length === 0)
@@ -73,7 +75,7 @@ export class AtLeastOnceQueue<T> {
 		this.seenIds.add(id);
 		this.records.push({
 			attempts: 0,
-			availableAtMs: nowMs + delayMs,
+			availableAtMs,
 			id,
 			value,
 		});
@@ -86,6 +88,10 @@ export class AtLeastOnceQueue<T> {
 	 * Time: O(n) in this educational implementation. Space: O(1) per call.
 	 */
 	receive(nowMs = Date.now()): QueueDelivery<T> | undefined {
+		const availableAtMs = this.deadline(
+			nowMs,
+			this.options.visibilityTimeoutMs,
+		);
 		for (let index = 0; index < this.records.length; ) {
 			const record = this.records[index]!;
 			if (record.availableAtMs > nowMs) {
@@ -104,7 +110,7 @@ export class AtLeastOnceQueue<T> {
 			}
 
 			record.attempts++;
-			record.availableAtMs = nowMs + this.options.visibilityTimeoutMs;
+			record.availableAtMs = availableAtMs;
 			record.currentReceipt = `${record.id}:${record.attempts}`;
 
 			return {
@@ -141,13 +147,14 @@ export class AtLeastOnceQueue<T> {
 		if (!Number.isFinite(delayMs) || delayMs < 0) {
 			throw new Error("delayMs must be non-negative");
 		}
+		const availableAtMs = this.deadline(nowMs, delayMs);
 
 		const record = this.records.find(
 			(candidate) => candidate.currentReceipt === receipt,
 		);
 		if (!record) return false;
 
-		record.availableAtMs = nowMs + delayMs;
+		record.availableAtMs = availableAtMs;
 		delete record.currentReceipt;
 		return true;
 	}
@@ -161,6 +168,7 @@ export class AtLeastOnceQueue<T> {
 		inFlight: number;
 		queued: number;
 	} {
+		this.validateTime(nowMs);
 		let inFlight = 0;
 		for (const record of this.records) {
 			if (record.currentReceipt && record.availableAtMs > nowMs) inFlight++;
@@ -171,5 +179,20 @@ export class AtLeastOnceQueue<T> {
 			inFlight,
 			queued: this.records.length - inFlight,
 		};
+	}
+
+	private validateTime(nowMs: number): void {
+		if (!Number.isFinite(nowMs)) {
+			throw new RangeError("nowMs must be finite");
+		}
+	}
+
+	private deadline(nowMs: number, delayMs: number): number {
+		this.validateTime(nowMs);
+		const deadlineMs = nowMs + delayMs;
+		if (!Number.isFinite(deadlineMs)) {
+			throw new RangeError("scheduled deadline must be finite");
+		}
+		return deadlineMs;
 	}
 }

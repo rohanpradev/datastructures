@@ -1,0 +1,1 @@
+ALTER TABLE `graph_writes` ADD `task_path` text DEFAULT '' NOT NULL;

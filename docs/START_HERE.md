@@ -6,7 +6,14 @@ readiness, system design, and current AI-era interview formats.
 
 ## Best Entry Route
 
-For the newest material, use the
+For a broad view of interview rounds beyond algorithms and design, start with
+the [Software Engineering Interview Guide](./SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md).
+For the newest additions, use the
+[October 20 quality upgrade](./UPGRADE_2026_10_20.md): current dependencies,
+deterministic checkpoint recovery, safer runtime primitives, and robust practice
+validation. The
+[October 19 research upgrade](./UPGRADE_2026_10_19.md): persistent reviews,
+segment-tree range queries, and a real-time failure lab. The
 [September 22 interview refresh](./INTERVIEW_UPGRADE_2026_09.md): five runnable
 problems, six design mocks, current employer sources, and a two-week route.
 
@@ -27,9 +34,12 @@ problems, six design mocks, current employer sources, and a two-week route.
 7. Use
    [ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md](./ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md)
    for detailed senior/staff scenario walkthroughs.
-8. Use [BUN_2026_CURRICULUM.md](./BUN_2026_CURRICULUM.md) to cover the current
-   Bun release, production boundaries, and modern test workflows.
-9. Generate a dashboard:
+8. Use [SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md](./SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md)
+   to add SQL, OS/networking, low-level design, debugging, project, and
+   behavioral preparation.
+9. Use [BUN_2026_CURRICULUM.md](./BUN_2026_CURRICULUM.md) for the pinned Bun
+   runtime, production boundaries, and test workflows.
+10. Generate a dashboard:
 
 ```bash
 bun run practice:dashboard
@@ -107,7 +117,21 @@ bun run practice -- --problem kthLargestElement
 After generating a problem, implement only the file under `practice/`, then use
 `bun run practice:run` for one test pass or `bun run practice:watch` for feedback
 on every save. `bun run practice:status` restores the active paths and commands.
-Generating the same target preserves your code; `--force` is the explicit reset.
+Generating the same target preserves your code and added tests; `--force`
+explicitly resets both.
+
+To return to due problems before starting new ones:
+
+```bash
+bun run practice:next
+bun run practice:grade good
+bun run practice:review
+```
+
+Choose a grade after solving and explaining the problem. The
+[review guide](./PRACTICE_REVIEW.md) explains the schedule, local history, and
+grading rubric. For a visual systems lesson, run `bun run course:lab` and follow
+[the real-time lab experiments](./REALTIME_SYSTEMS_LAB.md).
 
 ## Study Order
 
@@ -118,8 +142,10 @@ Generating the same target preserves your code; `--force` is the explicit reset.
 5. Trees, BSTs, tries, heaps, graphs.
 6. Recursion, backtracking, dynamic programming, bit manipulation.
 7. Mixed interview patterns and AI-era interview drills.
-8. Bun runtime and current Bun 1.3 APIs.
-9. Distributed-system primitives, the system-design handbook, and enterprise scenarios.
+8. SQL and database reasoning, OS/networking, low-level design, debugging,
+   and project/behavioral practice using the software engineering interview guide.
+9. Bun runtime and current Bun 1.4 APIs.
+10. Distributed-system primitives, the system-design handbook, and enterprise scenarios.
 
 ## End-To-End Checks
 

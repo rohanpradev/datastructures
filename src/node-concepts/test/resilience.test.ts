@@ -20,6 +20,10 @@ function delayedResolve<T>(value: T, delayMs: number) {
 }
 
 describe("withTimeout", () => {
+	test.each([-1, NaN, Infinity, 2_147_483_648])("rejects invalid timeout %s", async (timeoutMs) => {
+		await expect(withTimeout(Promise.resolve("ok"), timeoutMs)).rejects.toThrow(RangeError);
+	});
+
 	test("returns the operation result before timeout", async () => {
 		await expect(withTimeout(Promise.resolve("ok"), 20)).resolves.toBe("ok");
 	});
@@ -65,6 +69,19 @@ describe("retry", () => {
 		await Promise.resolve();
 		controller.abort();
 		await expect(pending).rejects.toBeInstanceOf(DOMException);
+		expect(calls).toBe(1);
+	});
+
+	test("preserves a caller's abort reason during retry backoff", async () => {
+		const controller = new AbortController();
+		const reason = new Error("request deadline exceeded");
+		let calls = 0;
+		const pending = retry(async () => { calls++; throw new Error("temporary"); }, {
+			retries: 2, baseDelayMs: 30_000, signal: controller.signal,
+		});
+		await Promise.resolve();
+		controller.abort(reason);
+		await expect(pending).rejects.toBe(reason);
 		expect(calls).toBe(1);
 	});
 
@@ -116,6 +133,16 @@ describe("retry", () => {
 });
 
 describe("abortableDelay", () => {
+	test.each([-1, NaN, Infinity, 2_147_483_648])("rejects invalid delay %s with and without cancellation", async (delayMs) => {
+		await expect(abortableDelay(delayMs)).rejects.toThrow(RangeError);
+		await expect(abortableDelay(delayMs, new AbortController().signal)).rejects.toThrow(RangeError);
+	});
+
+	test("preserves an already aborted signal's reason", async () => {
+		const reason = new Error("caller cancelled");
+		await expect(abortableDelay(30_000, AbortSignal.abort(reason))).rejects.toBe(reason);
+	});
+
 	test("resolves after the delay", async () => {
 		await expect(abortableDelay(0)).resolves.toBeUndefined();
 	});
@@ -148,6 +175,6 @@ describe("abortableDelay", () => {
 
 		controller.abort();
 
-		await expect(delay).rejects.toThrow("Aborted");
+		await expect(delay).rejects.toBe(controller.signal.reason);
 	});
 });

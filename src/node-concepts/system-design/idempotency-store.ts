@@ -84,6 +84,12 @@ export class IdempotencyKeyStore<TResponse> {
 		if (record.claimToken !== claimToken) {
 			throw new Error("idempotency claim is stale");
 		}
+		// Expiry ends ownership even if no retry has reclaimed the key yet.
+		// A late worker cannot turn an expired lease into a replayable success.
+		if (record.expiresAtMs <= nowMs) {
+			this.records.delete(key);
+			throw new Error("idempotency claim is stale");
+		}
 
 		this.records.set(key, {
 			expiresAtMs: nowMs + this.options.replayTtlMs,

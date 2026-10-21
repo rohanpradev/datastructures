@@ -9,6 +9,14 @@ export interface RetryOptions {
 	shouldRetry?: (error: unknown, attempt: number) => boolean;
 }
 
+function validateDelay(delayMs: number, name: string): void {
+	if (!Number.isFinite(delayMs) || delayMs < 0 || delayMs > 2_147_483_647) {
+		throw new RangeError(
+			`${name} must be between 0 and 2147483647 milliseconds`,
+		);
+	}
+}
+
 /**
  * Resolves after delayMs unless the AbortSignal is aborted.
  *
@@ -16,33 +24,32 @@ export interface RetryOptions {
  * AbortController is the standard cancellation primitive for modern Node,
  * Bun, fetch, timers, and many web APIs.
  */
-export function abortableDelay(
+export async function abortableDelay(
 	delayMs: number,
 	signal?: AbortSignal,
 ): Promise<void> {
+	validateDelay(delayMs, "delayMs");
 	if (!signal) {
 		return Bun.sleep(delayMs);
 	}
 
-	if (signal?.aborted) {
-		return Promise.reject(new DOMException("Aborted", "AbortError"));
-	}
+	signal.throwIfAborted();
 
 	return new Promise((resolve, reject) => {
 		const abort = () => {
 			cleanup();
-			reject(new DOMException("Aborted", "AbortError"));
+			reject(signal.reason);
 		};
 		const cleanup = () => {
 			clearTimeout(timer);
-			signal?.removeEventListener("abort", abort);
+			signal.removeEventListener("abort", abort);
 		};
 		const timer = setTimeout(() => {
 			cleanup();
 			resolve();
 		}, delayMs);
 
-		signal?.addEventListener("abort", abort, { once: true });
+		signal.addEventListener("abort", abort, { once: true });
 	});
 }
 
@@ -50,13 +57,15 @@ export function abortableDelay(
  * Wraps a promise-producing operation with a timeout.
  *
  * Interview concept:
- * Timeouts prevent a dependency from consuming resources forever.
+ * This bounds the caller's wait, but cannot cancel an already-started promise.
+ * Pass an AbortSignal to the underlying operation when its work must also stop.
  */
 export async function withTimeout<T>(
 	operation: Promise<T>,
 	timeoutMs: number,
 	message = "Operation timed out",
 ): Promise<T> {
+	validateDelay(timeoutMs, "timeoutMs");
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
 	const timeout = new Promise<never>((_, reject) => {
@@ -89,11 +98,7 @@ export async function retry<T>(
 		throw new RangeError("retries must be a non-negative safe integer");
 	}
 	for (const [name, value] of Object.entries({ baseDelayMs, maxDelayMs })) {
-		if (!Number.isFinite(value) || value < 0 || value > 2_147_483_647) {
-			throw new RangeError(
-				`${name} must be between 0 and 2147483647 milliseconds`,
-			);
-		}
+		validateDelay(value, name);
 	}
 
 	for (let attempt = 1; ; attempt++) {

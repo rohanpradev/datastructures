@@ -111,6 +111,7 @@ export const graphWrites = sqliteTable(
 		data: blob("data", { mode: "buffer" }).notNull(),
 		index: integer("write_index").notNull(),
 		taskId: text("task_id").notNull(),
+		taskPath: text("task_path").notNull().default(""),
 		threadId: text("thread_id").notNull(),
 		type: text("type").notNull(),
 	},

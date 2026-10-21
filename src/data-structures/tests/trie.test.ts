@@ -194,6 +194,24 @@ describe("Trie", () => {
   });
 
   describe("edge cases", () => {
+    test("enumerates and prunes long Unicode paths without recursion limits", () => {
+      const trie = new Trie();
+      const prefix = "😀".repeat(20_000);
+      trie.insert(prefix);
+      trie.insert(`${prefix}a`);
+      trie.insert(`${prefix}b`);
+      trie.insert("last");
+
+      expect(trie.getAllWords()).toEqual([prefix, `${prefix}a`, `${prefix}b`, "last"]);
+      expect(trie.delete(prefix)).toBe(true);
+      expect(trie.search(`${prefix}a`)).toBe(true);
+      expect(trie.delete(`${prefix}a`)).toBe(true);
+      expect(trie.startsWith(prefix)).toBe(true);
+      expect(trie.delete(`${prefix}b`)).toBe(true);
+      expect(trie.startsWith("😀")).toBe(false);
+      expect(trie.getAllWords()).toEqual(["last"]);
+    });
+
     test("should handle long words", () => {
       const trie = new Trie();
       const longWord = "a".repeat(1000);

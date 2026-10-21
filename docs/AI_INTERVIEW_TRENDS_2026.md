@@ -1,6 +1,6 @@
 # 2026 Interview Trends Learning Lab
 
-Last checked: 2026-08-09.
+Last checked: 2026-10-07.
 
 This guide turns current interview trends into concrete practice. It is based on
 the research links in `docs/RESEARCH_BRIEF_2026.md`, including Karat's 2026
@@ -8,6 +8,12 @@ interview-trends analysis, HackerRank's April and June 2026 AI-native interview
 updates, Amazon's current SDE prep pages, LeetCode's maintained interview plan,
 GitHub's 2026 agent-workflow and MCP updates, and current enterprise guidance
 around observability, cloud-native operations, and LLM application risk.
+
+These sources do not establish a universal interview format. Some cited trend
+reports and hiring-platform announcements come from vendors; use them as
+signals to practice adaptability, not evidence that a target employer permits
+AI or uses a specific round. Confirm the actual format and tool policy with the
+recruiter. The broader route is in the [software engineering interview guide](./SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md).
 
 ## What Changed
 

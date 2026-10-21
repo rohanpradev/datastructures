@@ -46,14 +46,22 @@ jobs:
       - name: Lint and format check
         run: bun run lint
 
-      - name: TypeScript 7 typecheck
+      - name: Bun TypeScript typecheck
         run: bun run typecheck
+
+      - name: TypeScript compiler compatibility
+        run: bun run typecheck:tsc
 
       - name: Documentation integrity
         run: bun run docs:check
 
       - name: Practice catalog integrity
         run: bun run practice:audit
+
+      - name: Validate every generated practice exercise
+        if: matrix.os == 'ubuntu-latest'
+        timeout-minutes: 5
+        run: bun run practice:validate
 
       - name: Run tests
         run: bun run test:ci

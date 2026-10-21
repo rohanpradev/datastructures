@@ -138,6 +138,25 @@ No application data path contains a hand-written raw SQL query. `src/ai/sqlite-c
 
 The project pins both `drizzle-orm` and `drizzle-kit` to `1.0.0-rc.4`, as requested, so their migration and runtime behavior stay aligned.
 
+## Checkpoint write ordering and atomicity
+
+Pending writes persist LangGraph's optional `taskPath`. Both checkpoint lookup
+and history listing return them using the installed checkpoint package's
+`writesSortKey` and `compareWritesSortKeys` helpers. Ordering by task ID alone
+can change the result of order-sensitive reducers after recovery.
+
+Each `putWrites` call serializes its complete batch before starting a synchronous
+SQLite transaction. Serialization failures leave no new rows, and a later SQL
+failure rolls back earlier inserts and reserved-channel updates in that batch.
+Reserved channel detection uses own properties so names such as `constructor`
+remain ordinary channel names.
+
+The `20261020041513_checkpoint-write-ordering` migration adds a non-null
+`task_path` column with an empty-string default. Existing writes remain readable;
+their historical task paths cannot be reconstructed. Normal writes keep their
+first persisted value on retry; reserved writes can be replaced. Test these
+guarantees with `bun test src/ai/test/sqlite-checkpoint.spec.ts`.
+
 ## File map
 
 | File | Responsibility |

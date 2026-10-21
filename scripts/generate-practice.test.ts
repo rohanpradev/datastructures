@@ -9,6 +9,7 @@ import {
 	formatFocusedTestCommand,
 	parseArgs,
 	pickRandomTarget,
+	runFocusedValidationTest,
 	runPracticeSmokeTests,
 	searchTargets,
 	toManifestEntry,
@@ -30,6 +31,28 @@ afterAll(async () => {
 });
 
 describe("generate-practice CLI model", () => {
+	test("bounds hanging validation modules and still reports ordinary test failures", async () => {
+		const outputRoot = join(TEST_ROOT, "subprocess");
+		await Bun.write(join(outputRoot, "hang.test.ts"), 'console.error("Not implemented");\nawait Bun.sleep(60_000);\n');
+		await expect(runFocusedValidationTest(outputRoot, "./hang.test.ts", 250))
+			.rejects.toThrow("Focused validation timed out");
+		await Bun.write(join(outputRoot, "failure.test.ts"),
+			'import { test } from "bun:test";\ntest("stub", () => { throw new Error("Not implemented: example"); });\n');
+		const result = await runFocusedValidationTest(outputRoot, "./failure.test.ts");
+		expect(result.exitCode).toBe(1);
+		expect(result.stderrText).toContain("Not implemented: example");
+	});
+
+	test("keeps shortest-path implementations discoverable when filtering test directories", () => {
+		for (const name of ["shortestPath", "FenwickTree", "DurableEventLog"]) {
+			const target = findBestTarget(targets, `export:${name}`)!;
+			expect(target).toBeDefined();
+			expect(
+				target.sourceFiles.every((path) => !/[\\/]tests?[\\/]/.test(path)),
+			).toBe(true);
+		}
+	});
+
 	test("classifies advanced algorithms and executable failure labs correctly", () => {
 		for (const [name, pattern] of [
 			["shortestSubarrayAtLeastK", "prefix sum"],
@@ -37,16 +60,41 @@ describe("generate-practice CLI model", () => {
 		]) {
 			const target = findBestTarget(targets, `export:${name}`)!;
 			expect(target).toBeDefined();
-			expect(toManifestEntry(target)).toMatchObject({ difficulty: "hard", pattern, interviewMode: "coding" });
+			expect(toManifestEntry(target)).toMatchObject({
+				difficulty: "hard",
+				pattern,
+				interviewMode: "coding",
+			});
 		}
-		for (const name of ["SingleFlight", "FencedRegister", "TransactionalOutbox"]) {
+		for (const name of [
+			"SingleFlight",
+			"FencedRegister",
+			"TransactionalOutbox",
+		]) {
 			const target = findBestTarget(targets, `export:${name}`)!;
 			expect(target).toBeDefined();
-			expect(toManifestEntry(target)).toMatchObject({ difficulty: "hard", interviewMode: "system design", level: "expert" });
+			expect(toManifestEntry(target)).toMatchObject({
+				difficulty: "hard",
+				interviewMode: "system design",
+				level: "expert",
+			});
 		}
 	});
 
 	test("parses every supported noninteractive mode", () => {
+		expect(parseArgs(["--review"]).review).toBe(true);
+		expect(parseArgs(["--next", "pattern:range query"]).nextQuery).toBe(
+			"pattern:range query",
+		);
+		expect(parseArgs(["--next"]).nextQuery).toBe("");
+		expect(parseArgs(["--grade", "good"]).grade).toBe("good");
+		expect(parseArgs(["--grade=again"]).grade).toBe("again");
+		expect(() => parseArgs(["--grade", "perfect"])).toThrow("--grade requires");
+		expect(() => parseArgs(["--grade"])).toThrow("--grade requires");
+		expect(() => parseArgs(["--next", "--review"])).toThrow("Choose one mode");
+		expect(() => parseArgs(["--next", "--clean"])).toThrow(
+			"erase review history",
+		);
 		expect(parseArgs(["--all", "--clean"]).all).toBe(true);
 		expect(parseArgs(["--dashboard"]).dashboard).toBe(true);
 		expect(parseArgs(["--manifest"]).manifest).toBe(true);
@@ -67,9 +115,7 @@ describe("generate-practice CLI model", () => {
 		expect(() => parseArgs(["--problem"])).toThrow(
 			"--problem requires a search term",
 		);
-		expect(() => parseArgs(["--unknown"])).toThrow(
-			"Unknown option: --unknown",
-		);
+		expect(() => parseArgs(["--unknown"])).toThrow("Unknown option: --unknown");
 		expect(() => parseArgs(["--run", "--watch"])).toThrow(
 			"Choose one mode at a time",
 		);
@@ -146,15 +192,19 @@ describe("generate-practice CLI model", () => {
 
 		expect(entries.length).toBe(targets.length);
 		expect(entries.some((entry) => entry.level === "expert")).toBe(true);
-		expect(entries.some((entry) => entry.interviewMode === "system design")).toBe(
+		expect(
+			entries.some((entry) => entry.interviewMode === "system design"),
+		).toBe(true);
+		expect(entries.some((entry) => entry.interviewMode === "runtime")).toBe(
 			true,
 		);
-		expect(entries.some((entry) => entry.interviewMode === "runtime")).toBe(true);
 		expect(findBestTarget(targets, "accountsMerge")?.pattern).toBe("graph");
-		expect(toManifestEntry(findBestTarget(targets, "accountsMerge")!).level).toBe(
-			"intermediate",
+		expect(
+			toManifestEntry(findBestTarget(targets, "accountsMerge")!).level,
+		).toBe("intermediate");
+		expect(findBestTarget(targets, "insertInterval")?.pattern).toBe(
+			"intervals",
 		);
-		expect(findBestTarget(targets, "insertInterval")?.pattern).toBe("intervals");
 
 		for (const entry of entries) {
 			expect(entry.id).toBeGreaterThan(0);
@@ -183,13 +233,22 @@ describe("generate-practice CLI model", () => {
 
 describe("generate-practice focused output", () => {
 	test("AI exercises select implementations and preserve helper type imports", async () => {
-		for (const name of ["selectReviewChanges", "createStatelessToolEndpoint", "AgentCheckpointStore", "retrieveAuthorizedDocuments", "runEvaluation"]) {
+		for (const name of [
+			"selectReviewChanges",
+			"createStatelessToolEndpoint",
+			"AgentCheckpointStore",
+			"retrieveAuthorizedDocuments",
+			"runEvaluation",
+		]) {
 			const target = findBestTarget(targets, name);
-			expect(target?.targetSymbols.map((symbol) => symbol.importedName)).toEqual([name]);
+			expect(
+				target?.targetSymbols.map((symbol) => symbol.importedName),
+			).toEqual([name]);
 			const outputRoot = join(TEST_ROOT, `ai-${name}`);
 			const testPath = await writeFocusedPractice(target!, outputRoot, false);
 			const generated = await Bun.file(join(outputRoot, testPath)).text();
-			if (name === "AgentCheckpointStore") expect(generated).toContain("type AgentAction");
+			if (name === "AgentCheckpointStore")
+				expect(generated).toContain("type AgentAction");
 			if (name === "createStatelessToolEndpoint") {
 				expect(generated).toContain("type ToolPrincipal");
 				expect(generated).toContain("type ToolResultEnvelope");
@@ -203,12 +262,10 @@ describe("generate-practice focused output", () => {
 		);
 		expect(
 			formatFocusedTestCommand("algorithms\\tests\\two-sum.test.ts", true),
-		).toBe(
-			"bun --watch test --cwd practice algorithms/tests/two-sum.test.ts",
-		);
+		).toBe("bun --watch test --cwd practice algorithms/tests/two-sum.test.ts");
 	});
 
-	test("preserves learner code unless reset is explicit", async () => {
+	test("preserves learner code and edge-case tests unless reset is explicit", async () => {
 		const target = findBestTarget(targets, "twoSum");
 		expect(target).not.toBeNull();
 
@@ -220,18 +277,53 @@ describe("generate-practice focused output", () => {
 			"two-sum.ts",
 		);
 		await rm(outputRoot, { recursive: true, force: true });
-		await writeFocusedPractice(target!, outputRoot, false);
+		const testPath = await writeFocusedPractice(target!, outputRoot, false);
+		const originalTest = await Bun.file(join(outputRoot, testPath)).text();
+		const learnerTest = `${originalTest}\n// learner edge-case regression\n`;
+		await Bun.write(join(outputRoot, testPath), learnerTest);
 		await Bun.write(implementationPath, "// learner solution\n");
 
 		await writeFocusedPractice(target!, outputRoot, false);
 		expect(await Bun.file(implementationPath).text()).toBe(
 			"// learner solution\n",
 		);
+		expect(await Bun.file(join(outputRoot, testPath)).text()).toBe(learnerTest);
 
 		await writeFocusedPractice(target!, outputRoot, false, true);
 		expect(await Bun.file(implementationPath).text()).toContain(
 			"Not implemented: twoSum",
 		);
+		expect(await Bun.file(join(outputRoot, testPath)).text()).toBe(
+			originalTest,
+		);
+	});
+
+	test("teaches range-query structures with appropriate metadata and generic starters", async () => {
+		for (const name of ["FenwickTree", "SegmentTree"]) {
+			const target = findBestTarget(targets, `export:${name}`)!;
+			expect(toManifestEntry(target)).toMatchObject({
+				pattern: "range query",
+				difficulty: "hard",
+				level: "advanced",
+				interviewMode: "coding",
+			});
+			const root = join(TEST_ROOT, name);
+			const testPath = await writeFocusedPractice(target, root, false);
+			const child = Bun.spawn(
+				[process.execPath, "test", "--cwd", root, testPath],
+				{ stdout: "pipe", stderr: "pipe" },
+			);
+			const [stdout, stderr, code] = await Promise.all([
+				readSubprocessText(child.stdout),
+				readSubprocessText(child.stderr),
+				child.exited,
+			]);
+			expect(code).not.toBe(0);
+			expect(`${stdout}\n${stderr}`).toContain("Not implemented");
+			expect(`${stdout}\n${stderr}`).not.toMatch(
+				/SyntaxError|Could not resolve|Cannot find module/,
+			);
+		}
 	});
 
 	test("discovers and rewrites relative source imports", async () => {
@@ -256,7 +348,12 @@ describe("generate-practice focused output", () => {
 
 		await rm(TEST_ROOT, { recursive: true, force: true });
 		const testPath = await writeFocusedPractice(target!, TEST_ROOT, false);
-		const implementationPath = join(TEST_ROOT, "algorithms", "arrays", "two-sum.ts");
+		const implementationPath = join(
+			TEST_ROOT,
+			"algorithms",
+			"arrays",
+			"two-sum.ts",
+		);
 		const generatedTestPath = join(TEST_ROOT, testPath);
 
 		expect(existsSync(implementationPath)).toBe(true);
@@ -264,7 +361,9 @@ describe("generate-practice focused output", () => {
 
 		const implementation = await Bun.file(implementationPath).text();
 		expect(implementation).toContain("Learning loop:");
-		expect(implementation).toContain("Trace one sample, then implement twoSum.");
+		expect(implementation).toContain(
+			"Trace one sample, then implement twoSum.",
+		);
 
 		const generatedTest = await Bun.file(generatedTestPath).text();
 		expect(generatedTest).toContain('from "../arrays/two-sum"');
@@ -374,7 +473,10 @@ describe("generate-practice focused output", () => {
 
 	test("handles object and template-literal return types in class methods", async () => {
 		const bloomTarget = findBestTarget(targets, "BloomFilter");
-		const typeScriptTarget = findBestTarget(targets, "modern TypeScript concepts");
+		const typeScriptTarget = findBestTarget(
+			targets,
+			"modern TypeScript concepts",
+		);
 		expect(bloomTarget).not.toBeNull();
 		expect(typeScriptTarget).not.toBeNull();
 
@@ -387,11 +489,7 @@ describe("generate-practice focused output", () => {
 			join(outputRoot, "node-concepts", "system-design", "bloom-filter.ts"),
 		).text();
 		const typeScriptImplementation = await Bun.file(
-			join(
-				outputRoot,
-				"typescript-concepts",
-				"modern-type-script-concepts.ts",
-			),
+			join(outputRoot, "typescript-concepts", "modern-type-script-concepts.ts"),
 		).text();
 
 		expect(bloomImplementation).toContain(

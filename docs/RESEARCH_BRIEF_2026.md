@@ -1,10 +1,23 @@
 # 2026 Interview And Enterprise Learning Research Brief
 
-Last checked: 2026-08-09.
+Last checked: 2026-10-07.
+
+October 19 addendum: [research upgrade and verification](./UPGRADE_2026_10_19.md)
+adds the persistent review workflow, a segment-tree lesson, lab reliability
+fixes, and a live dependency refresh. The sources and dates below retain their
+original scope.
 
 September 22 addendum: [current employer guidance and executable additions](./INTERVIEW_UPGRADE_2026_09.md)
 separates verified hiring guidance from our original practice recommendations.
-The older research below retains its original check date.
+The trend comparisons in the original table were assembled on August 9; this
+October 7 refresh updates changed facts and records newly covered interview
+areas. Treat release and trend claims as date-specific.
+
+The repo's broader interview route is now collected in the
+[Software Engineering Interview Guide](./SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md):
+SQL/databases, operating systems, networking, low-level design, debugging,
+project deep dives, and behavioral preparation complement the existing coding
+and system-design tracks.
 
 This repo should be treated as a living interview-prep platform: executable
 practice first, then concise guides, then enterprise discussion prompts. The
@@ -16,10 +29,8 @@ research below explains the priorities used for the current upgrade.
   releases, and tool recommendations.
 - Use evergreen official documentation for APIs and search techniques, because
   the maintained page is the authority even when it has no publication year.
-- Do not present a previous year's popularity survey as an August 2026 trend.
-  The Stack Overflow 2026 survey was still collecting responses when this brief
-  was checked, so its results are not yet available and no 2025 rankings are
-  used below.
+- Treat developer surveys as descriptive self-reports, not hiring rubrics or
+  evidence that a particular technology is more likely to be interviewed.
 - Keep an older numbered standard only while its publisher still identifies it
   as the current edition; label it as a standard, not as fresh trend evidence.
 
@@ -35,9 +46,9 @@ research below explains the priorities used for the current upgrade.
 | [LeetCode coding practice](https://support.leetcode.com/hc/en-us/articles/360012016874-Start-your-Coding-Practice) | The core platform loop combines searchable/random problem picking, starter code, editable test cases, run feedback, submission, and progress history. | Keep generation non-destructive, remember the active target, and expose one-command run, watch, and status actions. |
 | [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) | LeetCode's maintained interview plan emphasizes broad, durable coverage rather than company-frequency folklore. | Keep the repo pattern-first across arrays, hash maps, two pointers, windows, stacks, trees, graphs, heaps, binary search, backtracking, and DP. |
 | [TechInterview 2026 pattern comparison](https://www.techinterview.org/post/3233474682/leetcode-patterns-by-frequency/) | Current pattern prep emphasizes around 20 reusable patterns, including two pointers, sliding window, heaps, graph traversal, union-find, DP, trie, and monotonic stack/deque. | Add worked examples and reinforce pattern search in the generator instead of treating problem lists as memorization goals. |
-| [Node.js 26.5.0, July 2026](https://nodejs.org/en/blog/release/v26.5.0) and [release table](https://nodejs.org/en/about/previous-releases) | Node 26.5.0 is the checked Current release, while Node 24 is LTS; production guidance remains LTS-first. | Teach Node 26 awareness without recommending Current over LTS for production. |
+| [Node.js release table](https://nodejs.org/en/about/previous-releases), checked October 7 | Node.js 26.10.0 is Current and 24.21.0 is LTS at this check; support lines move over time. | Teach transferable runtime concepts and direct learners to the live release schedule before making deployment choices. |
 | [Bun docs](https://bun.com/docs) | Bun positions itself as a cohesive JavaScript/TypeScript toolkit: runtime, package manager, transpiler, bundler, script runner, and test runner. | Keep Bun as the single local execution platform and avoid extra framework overhead. |
-| [Bun 1.3.14](https://bun.com/blog/bun-v1.3.14) and [Bun 1.3.13](https://bun.com/blog/bun-v1.3.13) | The current release adds Bun Image and platform/runtime improvements; the preceding release added isolated, parallel, sharded, and changed-file test execution. | Pin 1.3.14, add current runtime labs, and expose modern correctness/CI test modes as explicit scripts. |
+| [Bun 1.4](https://bun.com/blog/bun-v1.4) and [Bun 1.4.3 release notes](https://bun.com/blog/bun-v1.4.3), checked October 15 | Bun 1.4 added backpressure, compatibility, and built-in runtime APIs; 1.4.3 adds built-in type checking and was the latest stable release on this check. | Pin 1.4.3, use `bun --check` for types, teach portable boundaries, and verify APIs against the current documentation. |
 | [Bun Image docs](https://bun.com/docs/runtime/image) | Bun documents `Bun.Image` as a native chainable image pipeline for metadata, resizing, rotating, and re-encoding common image formats without npm packages or native addon setup. | Use `Bun.Image` for realistic worker and server examples instead of fake CPU loops. |
 | [Bun child process docs](https://bun.com/docs/runtime/child-process) | Bun documents `Bun.spawn` and `Bun.spawnSync` for subprocess execution with command arrays, stdin/stdout/stderr configuration, exit handling, resource usage, AbortSignal, timeouts, kill signals, and buffer limits. | Add CI-safe subprocess examples for command arrays, scoped environment variables, piped output, and sync startup checks. |
 | [Bun watch mode](https://bun.com/docs/runtime/watch-mode) and [test runner](https://bun.com/docs/test) | Bun's native watch mode reruns imported tests on file changes, while its test CLI provides focused path/name filtering and deterministic seeds. | Use Bun's test process directly for the active practice target instead of adding a watcher dependency. |
@@ -46,11 +57,11 @@ research below explains the priorities used for the current upgrade.
 | [Bun install docs](https://bun.com/docs/pm/cli/install) | Bun documents `minimumReleaseAge` and security scanner hooks for package-install supply-chain controls. | Keep `bunfig.toml` supply-chain controls visible in tooling guidance. |
 | [Bun Shell docs](https://bun.com/docs/runtime/shell) | Bun Shell treats interpolated values as literal strings rather than shell syntax, reducing command-injection risk. | Teach Bun Shell as safer automation, with validation still required for command choice and permissions. |
 | [Bun coverage docs](https://bun.com/docs/test/code-coverage) | Bun supports built-in coverage configuration, including test-file skipping and path ignores. | Keep coverage behavior centralized in `bunfig.toml` and exclude generated practice from coverage signal. |
-| [TypeScript 7.0 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) | TypeScript 7 is now the stable native Go-based compiler/tooling release with major typecheck and language-service performance work. | Replace the native-preview nightly with stable `typescript@7.0.2` and use `tsc` as the type gate. |
+| [TypeScript 7.0 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) | TypeScript 7 is now the stable native Go-based compiler/tooling release with major typecheck and language-service performance work. | Keep stable `typescript@7.0.2` for editors and compiler comparisons; use Bun 1.4.3's `bun --check` as the type gate. |
 | [Biome v2.5](https://biomejs.dev/blog/biome-v2-5/) | Biome 2.5 crosses 500 lint rules and adds cross-file linting, watcher mode, plugin fixes, a concise reporter, and many stabilized rules. | Pin the current 2.5 patch line and keep Biome as the fast formatting/lint gate. |
 | [GitHub MCP Server update, July 2026](https://github.blog/changelog/2026-07-23-github-mcp-server-supports-the-next-mcp-specification/) | GitHub's MCP Server adopted the next stateless MCP specification ahead of its July 28 release, showing fast-moving standardization around agent-to-tool integration. | Add tool contracts, authentication, permissions, stateless execution, auditability, and untrusted-output handling to AI-system discussions. |
 | [GitHub Agentic Workflows, February 2026](https://github.blog/changelog/2026-02-13-github-agentic-workflows-are-now-in-technical-preview/) | Repository-native agents now operate across issues, pull requests, Actions, and MCP-connected tools. | Practice repository comprehension, scoped permissions, review gates, workflow verification, and rollback—not prompt writing alone. |
-| [Stack Overflow 2026 survey status, June 2026](https://stackoverflow.blog/2026/06/23/the-2026-developer-survey-is-now-open-for-human-developers-only/) | The 2026 survey was still open when checked, so current technology rankings were not yet published. | Do not use 2025 popularity tables as 2026 recommendations; rely on current releases, maintained standards, executable fit, and revisit after results publish. |
+| [Stack Overflow 2026 Developer Survey](https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/), published October 6 | Results are now public. The survey is descriptive and self-reported; it does not establish interview frequency or job requirements. | Use only as ecosystem context; keep curriculum choices grounded in role requirements, maintained standards, and executable fit. |
 | [PostgreSQL full-text search](https://www.postgresql.org/docs/current/textsearch-controls.html) | Production full-text search separates parsing, structured-field weighting, ranking, and result presentation. | Rank practice titles and exported symbols above metadata and paths instead of returning discovery order. |
 | [PostgreSQL trigram matching](https://www.postgresql.org/docs/current/pgtrgm.html) | Trigram similarity supports fast approximate string matching and indexed typo-tolerant search at database scale. | Add bounded typo tolerance locally; recommend trigram indexes when a future persistent catalog outgrows memory. |
 | [SQLite FTS5](https://www.sqlite.org/fts5.html) | FTS5 provides tokenizers, prefix and phrase queries, column filters, BM25 field weights, highlighting, and ranking. | Mirror the useful behavior with dependency-free in-memory ranking for the current small catalog; move to FTS5 only when persistence or catalog scale justifies it. |

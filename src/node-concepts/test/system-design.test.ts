@@ -398,6 +398,14 @@ describe("WeightedFairQueue", () => {
 });
 
 describe("IdempotencyKeyStore", () => {
+	test("rejects completion at the expiry boundary before another caller reclaims the key", () => {
+		const store = new IdempotencyKeyStore<string>({ inFlightTtlMs: 10, replayTtlMs: 100 });
+		const claim = store.claim("payment:expired", 0);
+		if (claim.status !== "started") throw new Error("expected a new claim");
+		expect(() => store.complete("payment:expired", claim.claimToken, "late", 10)).toThrow("idempotency claim is stale");
+		expect(store.claim("payment:expired", 10).status).toBe("started");
+	});
+
 	test("rejects invalid TTLs and isolates its configuration from caller mutation", () => {
 		for (const ttl of [0, -1, NaN, Infinity]) {
 			expect(() => new IdempotencyKeyStore({ inFlightTtlMs: ttl, replayTtlMs: 10 })).toThrow();
@@ -621,6 +629,46 @@ describe("AtLeastOnceQueue", () => {
 			visibilityTimeoutMs: 100,
 		});
 	}
+
+	test("invalid clocks cannot enqueue or redeliver work, erase a receipt, or corrupt stats", () => {
+		for (const now of [NaN, Infinity, -Infinity]) {
+			const queue = createQueue();
+			expect(() => queue.enqueue("invalid", now)).toThrow(RangeError);
+			expect(queue.enqueue("valid", 0)).toBe("job-1");
+			expect(() => queue.receive(now)).toThrow(RangeError);
+			const delivery = queue.receive(0)!;
+			expect(delivery.attempt).toBe(1);
+			expect(() => queue.nack(delivery.receipt, now)).toThrow(RangeError);
+			expect(() => queue.stats(now)).toThrow(RangeError);
+			expect(queue.stats(0)).toEqual({ deadLettered: 0, inFlight: 1, queued: 0 });
+			expect(queue.ack(delivery.receipt)).toBe(true);
+		}
+	});
+
+	test("rejects deadline overflow before changing message state", () => {
+		const queue = new AtLeastOnceQueue<string>({ maxAttempts: 2, visibilityTimeoutMs: Number.MAX_VALUE });
+		expect(() => queue.enqueue("invalid", Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(RangeError);
+		queue.enqueue("valid", 0);
+		expect(() => queue.receive(Number.MAX_VALUE)).toThrow(RangeError);
+		const delivery = queue.receive(0)!;
+		expect(delivery.attempt).toBe(1);
+		expect(() => queue.nack(delivery.receipt, Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(RangeError);
+		expect(queue.ack(delivery.receipt)).toBe(true);
+	});
+
+	test("keeps retry and visibility configuration stable after construction", () => {
+		const options = { maxAttempts: 2, visibilityTimeoutMs: 100 };
+		const queue = new AtLeastOnceQueue<string>(options);
+		options.maxAttempts = 0;
+		options.visibilityTimeoutMs = 0;
+		queue.enqueue("work", 0);
+		expect(queue.receive(0)?.attempt).toBe(1);
+		expect(queue.receive(0)).toBeUndefined();
+		expect(queue.receive(100)?.attempt).toBe(2);
+		for (const maxAttempts of [NaN, Infinity, 1.5, 2 ** 53]) {
+			expect(() => new AtLeastOnceQueue({ maxAttempts, visibilityTimeoutMs: 1 })).toThrow(RangeError);
+		}
+	});
 
 		test("hides delivered work until it is acknowledged", () => {
 		const queue = createQueue();

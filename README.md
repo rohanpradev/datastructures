@@ -23,6 +23,9 @@ TypeScript 7 + Bun interview-prep workspace with reference implementations, test
 This repo is organized by topic so you can learn a pattern, implement it in `practice/`, run the matching tests, and compare against the reference in `src/`.
 
 Start with [docs/START_HERE.md](./docs/START_HERE.md), then use
+[docs/SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md](./docs/SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md)
+as the all-round interview map for SQL, operating systems, networking, low-level
+design, debugging, project deep dives, and behavioral preparation. Use
 [docs/LEARNER_NOTE_STANDARDS.md](./docs/LEARNER_NOTE_STANDARDS.md) to understand
 how the notes, comments, and generated practice prompts are meant to teach,
 [docs/WORKED_EXAMPLES.md](./docs/WORKED_EXAMPLES.md) for concrete lessons,
@@ -42,10 +45,16 @@ The five executable AI engineering review, tool-safety, checkpoint, retrieval,
 and evaluation exercises are in
 [docs/AI_EXECUTABLE_PROBLEMS.md](./docs/AI_EXECUTABLE_PROBLEMS.md).
 
+The [October 20 quality upgrade](./docs/UPGRADE_2026_10_20.md) refreshes dependencies,
+fixes checkpoint replay and atomic writes, strengthens sorting and trie behavior,
+and makes runtime examples and practice validation more reliable.
+The [October 19 research upgrade](./docs/UPGRADE_2026_10_19.md) adds persistent
+practice reviews, generic segment trees, and reliability fixes for the local
+systems lab. Run `bun run practice:next` to begin a practice session.
 The [September 22 interview refresh](./docs/INTERVIEW_UPGRADE_2026_09.md)
 adds five executable advanced problems, six system-design mock interviews,
 failure timelines, sizing exercises, and a two-week practice route grounded
-in current employer guidance. Start there for the latest additions.
+in current employer guidance.
 
 Generate a learner dashboard any time:
 
@@ -97,7 +106,7 @@ The repo already includes broad DS&A coverage, so new work should fill gaps inst
 - Algorithms: arrays, strings, sorting, recursion, backtracking, dynamic programming, bit manipulation, math/geometry, and interview patterns.
 - Runtime/backend: promises, event loop, generators, concurrent operations, circuit breaker, pub/sub, resilience, Bun file I/O, Bun Image processing, Bun process execution, Bun Shell, Bun security, SQLite, current JSON5/JSONL/Markdown/Archive/CSRF/Cron APIs, and system-design blocks.
 - System design: load balancing, rate limits, caches, IDs, consistent hashing, Bloom filters, fair scheduling, idempotency, replication quorums, and at-least-once queues with visibility/DLQ semantics.
-- Verification: Bun tests across each topic, stable TypeScript 7 checking via `tsc`, Biome lint/format checks, local Markdown-link validation, generated practice validation, and Linux/Windows GitHub CI.
+- Verification: Bun tests across each topic, Bun's built-in TypeScript checking with a standalone TypeScript 7 comparison, Biome lint/format checks, local Markdown-link validation, generated practice validation, and Linux/Windows GitHub CI.
 
 ## Advanced Topics To Master
 
@@ -125,13 +134,11 @@ These are the topics that turn the repo into a senior-level TypeScript prep cour
 
 ## Why This Exists
 
-FAANG interviews and strong engineering screens reward pattern recognition,
-clear reasoning, edge-case handling, and code that you can explain under time
-pressure. The problem set here is aligned with common public prep tracks such
-as LeetCode's maintained Top Interview 150 and August 2026 interview signals
-that emphasize data structures, algorithms, Big-O, maps, trees, graphs, binary
-search, recursion, dynamic programming, repository comprehension, debugging,
-AI-code review, and interview communication.
+Strong engineering screens reward pattern recognition, clear reasoning,
+edge-case handling, and code you can explain under time pressure. This repo's
+interview coverage is organized around durable skills and the target role's
+requirements; it does not treat survey rankings or online frequency lists as
+predictions of a company's questions.
 
 Current signals and maintained/foundational references:
 
@@ -142,7 +149,6 @@ Current signals and maintained/foundational references:
 - [HackerRank April 2026 interview release](https://support.hackerrank.com/articles/4368819843-april-2026-release-notes)
 - [GitHub MCP Server July 2026 update](https://github.blog/changelog/2026-07-23-github-mcp-server-supports-the-next-mcp-specification/)
 - [MDN JavaScript reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference)
-- [Node.js 26.5.0 release](https://nodejs.org/en/blog/release/v26.5.0)
 - [Node.js release schedule](https://nodejs.org/en/about/previous-releases)
 - [Bun documentation](https://bun.com/docs)
 - [Bun Image docs](https://bun.com/docs/runtime/image)
@@ -156,14 +162,18 @@ Current signals and maintained/foundational references:
 - [TypeScript 5.0: decorators and const type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html)
 - [TypeScript 5.2: `using` declarations and explicit resource management](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html)
 
-Documentation refresh note: as of July 8, 2026, the Node.js release page lists Node.js 24 as LTS and Node.js 26 as Current. This repo targets interview learning, so production-facing Node examples should favor LTS behavior unless a Current-only feature is explicitly being studied.
+Documentation refresh note: on October 7, 2026, Node.js 26.10.0 was Current
+and Node.js 24.21.0 was LTS. Check the [release schedule](https://nodejs.org/en/about/previous-releases)
+for later changes. For production, choose a supported LTS line unless a
+Current-only feature is an explicit requirement.
 
 ## Quick Start
 
-Use Bun **1.4.2**, matching `packageManager` and CI. The September dependency
+Use Bun **1.4.3**, matching `packageManager` and CI. The October dependency
 refresh keeps Drizzle ORM and Kit on the matched **v1.0.0-rc.4** release.
-See [the September 30 upgrade notes](./docs/UPGRADE_2026_09.md) for current
-package versions, stricter TypeScript checks, security fixes, and CI updates.
+See [the October 15 upgrade notes](./docs/UPGRADE_2026_10.md) for Bun's built-in
+type checker and [the October 19 upgrade](./docs/UPGRADE_2026_10_19.md) for the
+latest verified dependency refresh and verification.
 
 ```bash
 bun install --frozen-lockfile
@@ -177,7 +187,8 @@ bun run check                 # Lint, types, docs, practice catalog, and tests
 bun run fix                   # Apply Biome fixes and formatting
 bun run format                # Format supported files
 bun run lint                  # Non-mutating Biome check for CI
-bun run typecheck             # Stable TypeScript 7 via tsc
+bun run typecheck             # Bun's built-in TypeScript checker
+bun run typecheck:tsc         # Compare with stable TypeScript 7
 bun run docs:check            # Validate every local Markdown link
 bun run test:algorithms       # Algorithm tests only
 bun run test:ai               # Tutor API, persistence, orchestration and exercises
@@ -251,7 +262,7 @@ That command runs:
 
 CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`, with the Bun version pinned by `packageManager` in `package.json`.
 
-Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, test-file coverage exclusion, and a 60% per-file line/function/statement floor. The current global result is above 96%, while the per-file floor prevents a well-tested algorithm catalog from hiding a completely untested module. Focused scripts also expose Bun 1.3.13+'s changed-file, isolation, and worker-parallel modes without making parallel execution an implicit correctness assumption. Package installation uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
+Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, test-file coverage exclusion, and a 60% per-file line/function/statement floor. The current global result is above 96%, while the per-file floor prevents a well-tested algorithm catalog from hiding a completely untested module. Focused scripts also expose Bun's changed-file, isolation, and worker-parallel modes without making parallel execution an implicit correctness assumption. Package installation uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
 
 ## How To Solve A Problem You Do Not Know
 

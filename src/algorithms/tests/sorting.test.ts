@@ -128,6 +128,12 @@ describe("insertionSort", () => {
 });
 
 describe("merge", () => {
+	test("preserves left-to-right order for equal signed zeros", () => {
+		const merged = merge([0], [-0]);
+		expect(Object.is(merged[0], 0)).toBe(true);
+		expect(Object.is(merged[1], -0)).toBe(true);
+	});
+
 	test("should merge two sorted arrays", () => {
 		expect(merge([1, 3, 5], [2, 4, 6])).toEqual([1, 2, 3, 4, 5, 6]);
 	});
@@ -165,6 +171,16 @@ describe("merge", () => {
 });
 
 describe("mergeSort", () => {
+	test("preserves the original order of equal signed zeros", () => {
+		const sorted = mergeSort([0, -0, 0, -0]);
+		expect(sorted.map((value) => Object.is(value, -0))).toEqual([
+			false,
+			true,
+			false,
+			true,
+		]);
+	});
+
 	test("should sort array in ascending order", () => {
 		expect(mergeSort([38, 27, 43, 3, 9, 82, 10])).toEqual([
 			3, 9, 10, 27, 38, 43, 82,
@@ -360,6 +376,22 @@ describe("Pivot Helper Function", () => {
 });
 
 describe("In-Place Quick Sort", () => {
+	test("sorts long ordered and duplicate inputs without exhausting the stack", () => {
+		const ordered = Array.from({ length: 20_000 }, (_, index) => index);
+		const reversed = [...ordered].reverse();
+		const duplicates = Array<number>(20_000).fill(7);
+
+		expect(quickSortInPlace([...ordered])).toEqual(ordered);
+		expect(quickSortInPlace(reversed)).toEqual(ordered);
+		expect(quickSortInPlace(duplicates)).toEqual(Array<number>(20_000).fill(7));
+	});
+
+	test("sorts only the requested inclusive subarray", () => {
+		const values = [99, 8, 3, 8, -2, 8, -99];
+		expect(quickSortInPlace(values, 1, 5)).toBe(values);
+		expect(values).toEqual([99, -2, 3, 8, 8, 8, -99]);
+	});
+
 	test("should sort array in-place", () => {
 		const arr = [4, 6, 1, 7, 3, 2, 5];
 		const result = quickSortInPlace(arr);
