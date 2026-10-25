@@ -38,6 +38,10 @@ The outer LangGraph owns workflow order, checkpoints, retries, and thread identi
 
 4. Open `http://127.0.0.1:3001/docs` for the self-hosted Scalar reference. The OpenAPI 3.1 document is available at `http://127.0.0.1:3001/openapi.json`.
 
+`ai:dev` checks TypeScript before startup and every watch restart; `ai:start`
+checks before starting once. Drizzle commands use the installed, locked CLI
+with `bunx --no-install`, so missing dependencies require an explicit install.
+
 The service deliberately binds to loopback. Put authentication, authorization, request limits, and TLS at a trusted gateway before exposing it beyond the local machine.
 
 ## Interfaces

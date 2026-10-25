@@ -9,6 +9,11 @@ cursor replay in two browser tabs. It uses the reference implementations in
 bun run course:lab
 ```
 
+The command checks TypeScript before startup and before each watch restart.
+WebSocket handler failures close only the affected connection. Failures during
+the opening handshake may appear as abnormal close 1006; established
+connections receive the internal-error close code 1011 when delivery succeeds.
+
 Open [the local lab](http://127.0.0.1:3002/) twice and join the same room.
 The command stores events in `data/realtime-lab.sqlite`. It needs no external
 service or model credentials. Stop with Ctrl+C and restart the same command

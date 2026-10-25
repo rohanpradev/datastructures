@@ -198,6 +198,42 @@ Problem: "Run a trusted executable, feed it input, capture output, and fail clea
 
 Reference code: [process-execution.ts](./process-execution.ts)
 
+### WebSocket Work And Connection Failures
+
+Problem: "Process messages asynchronously without reordering replies or letting
+one client's failure disconnect everyone."
+
+1. Keep one FIFO per socket; concurrent async handlers can otherwise reply out of order.
+2. Call `socket.pause()` while work is pending and `socket.resume()` when the
+   queue empties. `socket.isPaused` exposes the current read state.
+3. Bound pending work separately because frames already buffered can still arrive.
+   Set payload and outbound buffering limits as well.
+4. Use Bun 1.4.4's `error(error, socket)` callback for synchronous handler throws.
+   Catch rejected work promises explicitly; the callback does not catch those.
+5. Close the affected established connection with 1011 for an internal failure.
+   A failed handshake instead emits `error`, then an unclean close with 1006.
+   An empty completed closing handshake reports 1005, not a fabricated 1000.
+6. Await server shutdown in tests. Test a healthy peer after a neighboring failure.
+
+Reference: [websocket-flow.ts](./websocket-flow.ts) and
+[the real-time lab](../../course/realtime-lab.ts). The lab's replay can fail
+during `open`, before the handshake completes; its close attempt may therefore
+appear to the client as 1006 rather than 1011.
+
+### Strict Code-Generation Policy
+
+Problem: "Prevent generated JavaScript while still loading structured data."
+
+Run trusted code with `--disallow-code-generation-from-strings=strict`.
+The executable [code-generation probes](./code-generation.ts) show that `eval`,
+`Function`, and JavaScript data URLs fail, while JSON data URLs still load.
+Source execution permits TypeScript files on disk. In a compiled executable,
+strict mode accepts only the embedded program's code, so newly written disk
+modules are rejected too.
+
+This controls code generation, not filesystem, network, or process access.
+The lesson accepts fixed probe names rather than arbitrary source text.
+
 ### Local SQL State
 
 Problem: "Track interview problems, attempts, and weak patterns without a hosted database."
@@ -313,10 +349,11 @@ Interview follow-ups:
 ## Test Command
 
 ```bash
-bun test src/node-concepts/test/bun-runtime.test.ts
+bun run test:bun # File, security, process, SQLite, WebSocket, strict-mode lessons
 # server route and worker-backed image processing
 bun test src/node-concepts/test/blocking-delay.test.ts
 bun test src/node-concepts/test/sqlite.test.ts
 bun test src/node-concepts/test/sqlite-functions.test.ts
 bun run test:coverage
+bun run test:checked # Check test types and imports before running
 ```

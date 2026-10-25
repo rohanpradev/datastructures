@@ -259,6 +259,13 @@ export const server = Bun.serve({
 		maxPayloadLength: 1024 * 1024,
 		perMessageDeflate: true,
 
+		error(error, ws) {
+			// Bun 1.4.4 identifies the failed connection so one handler error
+			// can be contained without disconnecting healthy subscribers.
+			console.error("WebSocket handler failed:", error);
+			ws.close(1011, "WebSocket handler failed");
+		},
+
 		close(ws) {
 			const { channel, username } = ws.data;
 

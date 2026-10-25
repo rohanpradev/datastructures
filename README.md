@@ -47,6 +47,9 @@ and evaluation exercises are in
 
 The [October 24 Bun upgrade](./docs/UPGRADE_2026_10_24.md) updates dependencies,
 adopts Bun's built-in formatter, and adds executable Bun 1.4.4 runtime lessons.
+The [October 25 release follow-through](./docs/UPGRADE_2026_10_25.md) adds
+checked startup, offline installs, WebSocket flow control, and strict execution
+lessons after reviewing the latest stable release again.
 The [practice review guide](./docs/PRACTICE_REVIEW.md) covers persistent reviews,
 and the [real-time systems lab](./docs/REALTIME_SYSTEMS_LAB.md) connects the data
 structures to a running backend. Run `bun run practice:next` to begin a session.
@@ -182,6 +185,7 @@ Useful commands:
 
 ```bash
 bun run check                 # Format check, lint, types, docs, practice, tests
+bun run check:static          # Independent static checks in parallel
 bun run fix                   # Apply Biome fixes, then Bun formatting
 bun run format                # Bun's built-in formatter (bun fmt)
 bun run format:check          # Non-mutating Bun formatting check for CI
@@ -192,6 +196,7 @@ bun run docs:check            # Validate every local Markdown link
 bun run test:algorithms       # Algorithm tests only
 bun run test:ai               # Tutor API, persistence, orchestration and exercises
 bun run test:bun              # Bun runtime concept tests only
+bun run test:checked          # Type-check tests and imports before executing
 bun run test:data-structures  # Data structure tests only
 bun run test:js               # JavaScript core concept tests only
 bun run test:node             # Node/Bun concept tests only
@@ -218,6 +223,8 @@ bun dev                       # Run Bun server examples
 bun run ai:dev                # Run the TypeScript AI tutor on 127.0.0.1:3001
 bun run db:generate           # Generate a Drizzle 1.0 RC migration
 bun run db:migrate            # Apply AI tutor migrations
+bun run deps:fetch            # Prefetch locked dependencies without installing
+bun run deps:offline          # Frozen install using only the populated cache
 bun test src/ai/test/ai-service.spec.ts # Focused orchestration/API/MCP persistence tests
 ```
 
@@ -254,14 +261,18 @@ bun run check
 
 That command runs:
 
-1. `bun run lint`
-2. `bun run typecheck`
-3. `bun run docs:check`
-4. `bun run test:ci`
+1. `bun run check:static` runs format checking, lint, both TypeScript checkers,
+   documentation validation, and the practice catalog audit in parallel.
+2. `bun run test:ci` runs the full test suite with coverage after those checks pass.
 
-CI runs the same gates on every push and pull request. The CI workflow uses current GitHub Actions majors (`actions/checkout@v6`, `actions/cache@v5`) and `oven-sh/setup-bun@v2`, with the Bun version pinned by `packageManager` in `package.json`.
+CI runs the same gates on Linux and Windows for every push and pull request.
+Action revisions are pinned in the workflow, and `packageManager` selects Bun.
+It prefetches locked dependencies with `bun pm fetch`, then installs with
+`--offline --frozen-lockfile`. Local development servers use `bun run --check`;
+watch commands check again before restarting. `bun run test:checked` offers the
+same integrated type gate for tests.
 
-Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, test-file coverage exclusion, and a 60% per-file line/function/statement floor. The current global result is above 96%, while the per-file floor prevents a well-tested algorithm catalog from hiding a completely untested module. Focused scripts also expose Bun's changed-file, isolation, and worker-parallel modes without making parallel execution an implicit correctness assumption. Package installation uses a minimum release age to avoid adopting freshly published packages immediately, while excluding the small toolchain packages that are intentionally kept current.
+Bun test behavior is centralized in `bunfig.toml`: test preloading, text/lcov coverage reporters, coverage output directory, test-file coverage exclusion, and a 60% per-file line/function/statement floor. The current global result is above 96%, while the per-file floor prevents a well-tested algorithm catalog from hiding a completely untested module. Focused scripts also expose Bun's changed-file, isolation, and worker-parallel modes without making parallel execution an implicit correctness assumption. Package installation uses a one-day minimum release age; exceptions apply only to explicitly listed toolchain versions.
 
 ## How To Solve A Problem You Do Not Know
 

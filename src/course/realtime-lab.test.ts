@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 import { createRealtimeLab } from "./realtime-lab";
 import type { RoomEvent } from "@/node-concepts/system-design/durable-event-log";
 
@@ -20,6 +20,21 @@ function nextMessage(socket: WebSocket): Promise<any> {
 		}
 		socket.addEventListener("message", onMessage);
 		socket.addEventListener("error", onError);
+	});
+}
+
+function nextClose(socket: WebSocket): Promise<CloseEvent> {
+	return new Promise((resolve, reject) => {
+		const timeout = setTimeout(() => {
+			socket.removeEventListener("close", onClose);
+			reject(new Error("socket close deadline"));
+		}, 2000);
+		function onClose(event: CloseEvent) {
+			clearTimeout(timeout);
+			socket.removeEventListener("close", onClose);
+			resolve(event);
+		}
+		socket.addEventListener("close", onClose);
 	});
 }
 
@@ -122,6 +137,62 @@ describe("createRealtimeLab", () => {
 			expect(page.hasMore).toBe(true);
 		} finally {
 			socket.close();
+			await lab.stop();
+		}
+	});
+
+	test("contains a replay failure to its socket and keeps healthy room subscribers live", async () => {
+		const lab = createRealtimeLab({ port: 0 });
+		const address = `${lab.server.url.toString().replace(/^http/, "ws")}live/orders`;
+		const healthy = new WebSocket(address);
+		let failed: WebSocket | undefined;
+		const storageFailure = new Error("replay storage unavailable");
+		const read = lab.log.read.bind(lab.log);
+		const readSpy = spyOn(lab.log, "read");
+		const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+		try {
+			expect(await nextMessage(healthy)).toMatchObject({ type: "snapshot" });
+			readSpy.mockImplementation((room, after, limit) => {
+				// The HTTP preflight reads one row. Fail only the replay after
+				// Bun upgrades this new connection and subscribes it to the room.
+				if (limit === 25) throw storageFailure;
+				return read(room, after, limit);
+			});
+			failed = new WebSocket(address);
+			const closed = await nextClose(failed);
+			expect(errorSpy).toHaveBeenCalledWith(
+				"Real-time lab WebSocket failed",
+				storageFailure,
+			);
+			// A throw during open can abort the upgrade before the close frame
+			// is delivered. Both outcomes must isolate the failed connection.
+			expect([1006, 1011]).toContain(closed.code);
+			expect(failed.readyState).toBe(WebSocket.CLOSED);
+			expect(healthy.readyState).toBe(WebSocket.OPEN);
+			expect(lab.server.subscriberCount("room:orders")).toBe(1);
+
+			const delivery = nextMessage(healthy);
+			const response = await fetch(
+				new URL("api/rooms/orders/events", lab.server.url),
+				{
+					method: "POST",
+					body: JSON.stringify({
+						eventId: "after-failure",
+						text: "still live",
+					}),
+				},
+			);
+			expect(response.status).toBe(201);
+			await response.text();
+			expect(await delivery).toMatchObject({
+				type: "event",
+				event: { eventId: "after-failure", room: "orders" },
+			});
+		} finally {
+			readSpy.mockRestore();
+			errorSpy.mockRestore();
+			healthy.close();
+			failed?.close();
 			await lab.stop();
 		}
 	});

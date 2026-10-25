@@ -130,6 +130,15 @@ export function createRealtimeLab(
 			maxPayloadLength: 1024,
 			backpressureLimit: 64 * 1024,
 			closeOnBackpressureLimit: true,
+			error(error, socket) {
+				// Bun 1.4.4 supplies the socket whose handler failed. A replay
+				// error after upgrade belongs to this connection, not the HTTP
+				// fetch error boundary or every subscriber in the room.
+				console.error("Real-time lab WebSocket failed", error);
+				// A failure during open may abort before the peer sees this frame;
+				// clients must also recover from an abnormal (1006) disconnect.
+				socket.close(1011, "connection failed; reconnect with cursor");
+			},
 			open(socket) {
 				const { room, after } = socket.data;
 				// No await between subscribe and replay: other JS handlers cannot
