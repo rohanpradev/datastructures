@@ -4,26 +4,26 @@ This folder contains high-frequency coding interview patterns that were not yet 
 
 ## Patterns Covered
 
-| Pattern | Functions | Interview signal |
-| --- | --- | --- |
-| Binary search | `binarySearch`, `lowerBound`, `searchRotatedSortedArray` | Boundary handling, sorted invariants |
-| Binary search on answer | `kokoEatingBananas` | Feasibility predicates and search space narrowing |
-| Hash set / frequency bucket | `longestConsecutiveRun`, `topKFrequentElements` | O(1) lookup, frequency counting, top-k selection |
-| Two pointers | `threeSum`, `containerWithMostWater`, `trapRainWater` | Sorted scans, duplicate skipping, opposite-end invariants |
-| Sliding window | `lengthOfLongestSubstring`, `minWindowSubstring`, `slidingWindowMaximum` | Window expansion/contraction and monotonic deque |
-| Prefix sums | `subarraySumEqualsK` | Convert repeated range sums into hash lookups |
-| Prefix/suffix | `productExceptSelf` | Avoid division and extra space |
-| Greedy | `maxProfit` | Maintain best-so-far invariant |
-| Stack / monotonic stack | `validParentheses`, `dailyTemperatures`, `largestRectangleArea` | Deferred decisions, next greater values, histogram boundaries |
-| Intervals | `canAttendMeetings`, `insertInterval`, `mergeOverlappingIntervals`, `minMeetingRooms`, `eraseOverlapIntervals` | Sorting by start/end, sweep line events, overlap logic |
-| Backtracking | `subsets`, `combinationSum`, `permutations` | Choice tree, pruning, copy-on-output |
-| Matrix DFS/BFS | `numIslands`, `shortestPathBinaryMatrix`, `rottingOranges` | Graph traversal on grids and multi-source BFS |
-| Topological sort | `canFinishCourses` | Dependency ordering and cycle detection |
-| Graph coloring | `isBipartite` | BFS/DFS with state |
-| Dynamic programming | `coinChange`, `wordBreak`, `longestIncreasingSubsequence` | State definitions and transitions |
-| Union-find | `UnionFind`, `countComponents`, `accountsMerge` | Connectivity, cycle detection, components |
-| Prefix sums + monotonic deque | `shortestSubarrayAtLeastK` | Negative values, candidate dominance, amortized linear time |
-| Weighted scheduling DP + binary search | `maxScheduledProfit` | Compatible prefixes, half-open intervals, why greedy fails |
+| Pattern                                | Functions                                                                                                      | Interview signal                                              |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Binary search                          | `binarySearch`, `lowerBound`, `searchRotatedSortedArray`                                                       | Boundary handling, sorted invariants                          |
+| Binary search on answer                | `kokoEatingBananas`                                                                                            | Feasibility predicates and search space narrowing             |
+| Hash set / frequency bucket            | `longestConsecutiveRun`, `topKFrequentElements`                                                                | O(1) lookup, frequency counting, top-k selection              |
+| Two pointers                           | `threeSum`, `containerWithMostWater`, `trapRainWater`                                                          | Sorted scans, duplicate skipping, opposite-end invariants     |
+| Sliding window                         | `lengthOfLongestSubstring`, `minWindowSubstring`, `slidingWindowMaximum`                                       | Window expansion/contraction and monotonic deque              |
+| Prefix sums                            | `subarraySumEqualsK`                                                                                           | Convert repeated range sums into hash lookups                 |
+| Prefix/suffix                          | `productExceptSelf`                                                                                            | Avoid division and extra space                                |
+| Greedy                                 | `maxProfit`                                                                                                    | Maintain best-so-far invariant                                |
+| Stack / monotonic stack                | `validParentheses`, `dailyTemperatures`, `largestRectangleArea`                                                | Deferred decisions, next greater values, histogram boundaries |
+| Intervals                              | `canAttendMeetings`, `insertInterval`, `mergeOverlappingIntervals`, `minMeetingRooms`, `eraseOverlapIntervals` | Sorting by start/end, sweep line events, overlap logic        |
+| Backtracking                           | `subsets`, `combinationSum`, `permutations`                                                                    | Choice tree, pruning, copy-on-output                          |
+| Matrix DFS/BFS                         | `numIslands`, `shortestPathBinaryMatrix`, `rottingOranges`                                                     | Graph traversal on grids and multi-source BFS                 |
+| Topological sort                       | `canFinishCourses`                                                                                             | Dependency ordering and cycle detection                       |
+| Graph coloring                         | `isBipartite`                                                                                                  | BFS/DFS with state                                            |
+| Dynamic programming                    | `coinChange`, `wordBreak`, `longestIncreasingSubsequence`                                                      | State definitions and transitions                             |
+| Union-find                             | `UnionFind`, `countComponents`, `accountsMerge`                                                                | Connectivity, cycle detection, components                     |
+| Prefix sums + monotonic deque          | `shortestSubarrayAtLeastK`                                                                                     | Negative values, candidate dominance, amortized linear time   |
+| Weighted scheduling DP + binary search | `maxScheduledProfit`                                                                                           | Compatible prefixes, half-open intervals, why greedy fails    |
 
 The last two problems live in `advanced-interview-patterns.ts`. Their
 [worked lessons](../../../docs/INTERVIEW_UPGRADE_2026_09.md) include invariants,

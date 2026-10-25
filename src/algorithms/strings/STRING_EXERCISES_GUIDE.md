@@ -63,22 +63,22 @@ Step 4: All characters in 'document' can be formed, return true.
  * @returns {boolean} - Returns `true` if the document can be generated, otherwise `false`.
  */
 export function generateDocument(
-  characters: string,
-  document: string,
+	characters: string,
+	document: string,
 ): boolean {
-  // TODO: If the length of 'characters' is smaller than the length of 'document', return false.
+	// TODO: If the length of 'characters' is smaller than the length of 'document', return false.
 
-  // TODO: Create a map (charMap) to store the frequency of each character in 'characters'.
+	// TODO: Create a map (charMap) to store the frequency of each character in 'characters'.
 
-  // TODO: Populate the charMap with frequencies of characters from the 'characters' string.
+	// TODO: Populate the charMap with frequencies of characters from the 'characters' string.
 
-  // TODO: Loop through each character in 'document':
-  //        - If the character isn't in charMap or its count is 0, return false.
-  //        - Otherwise, decrement the count of the character in charMap.
+	// TODO: Loop through each character in 'document':
+	//        - If the character isn't in charMap or its count is 0, return false.
+	//        - Otherwise, decrement the count of the character in charMap.
 
-  // TODO: If all characters in the document have been successfully accounted for, return true.
+	// TODO: If all characters in the document have been successfully accounted for, return true.
 
-  return false; // Placeholder return statement.
+	return false; // Placeholder return statement.
 }
 ```
 
@@ -187,18 +187,18 @@ b ✅ (appears once) → return "b"
  * @returns The first non-repeating character or null
  */
 export function firstNonRepeatingCharacter(str: string): string | null {
-  // TODO: Return null if the string is empty or falsy
+	// TODO: Return null if the string is empty or falsy
 
-  // TODO: Create a map to store the frequency of each character
+	// TODO: Create a map to store the frequency of each character
 
-  // TODO: Loop through the string and count occurrences of each character
+	// TODO: Loop through the string and count occurrences of each character
 
-  // TODO: Loop through the string again and return the first character
-  //       whose frequency is exactly 1
+	// TODO: Loop through the string again and return the first character
+	//       whose frequency is exactly 1
 
-  // TODO: If no non-repeating character exists, return null
+	// TODO: If no non-repeating character exists, return null
 
-  return null; // placeholder
+	return null; // placeholder
 }
 ```
 
@@ -324,18 +324,18 @@ Step 2: Collect matched pairs:
  * @returns Array of semordnilap pairs
  */
 export function semordNilap(words: string[]): [string, string][] {
-  // TODO: Create a map to track words available for pairing
+	// TODO: Create a map to track words available for pairing
 
-  // TODO: Create an array to store result pairs
+	// TODO: Create an array to store result pairs
 
-  // TODO: For each word:
-  //   1. Reverse the word
-  //   2. If reversed exists in map, add pair and remove from map
-  //   3. Otherwise, add the current word to the map
+	// TODO: For each word:
+	//   1. Reverse the word
+	//   2. If reversed exists in map, add pair and remove from map
+	//   3. Otherwise, add the current word to the map
 
-  // TODO: Return the array of pairs
+	// TODO: Return the array of pairs
 
-  return []; // placeholder
+	return []; // placeholder
 }
 ```
 

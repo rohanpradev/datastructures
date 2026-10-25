@@ -9,9 +9,11 @@ This guide covers fundamental sorting algorithms with visual explanations, compl
 ## 1. Bubble Sort
 
 ### Concept
+
 Repeatedly swap adjacent elements if they're in wrong order. Largest elements "bubble up" to the end.
 
 ### Visual Explanation
+
 ```
 Array: [5, 3, 8, 4, 2]
 
@@ -49,6 +51,7 @@ Pass 4:
 ```
 
 ### Algorithm
+
 ```
 for i from 0 to n-1:
 	for j from 0 to n-i-2:
@@ -57,6 +60,7 @@ for i from 0 to n-1:
 ```
 
 ### Implementation
+
 ```typescript
 function bubbleSort(arr: number[]): number[] {
 	// TODO: Outer loop (n passes)
@@ -67,7 +71,8 @@ function bubbleSort(arr: number[]): number[] {
 ```
 
 ### Complexity
-- **Time:** 
+
+- **Time:**
   - Best: O(n) - already sorted
   - Average: O(n²)
   - Worst: O(n²) - reverse sorted
@@ -79,9 +84,11 @@ function bubbleSort(arr: number[]): number[] {
 ## 2. Selection Sort
 
 ### Concept
+
 Find minimum element and swap with first unsorted position.
 
 ### Visual Explanation
+
 ```
 Array: [5, 3, 8, 4, 2]
 
@@ -111,6 +118,7 @@ Pass 4: Find min in [8, 5]
 ```
 
 ### Algorithm
+
 ```
 for i from 0 to n-1:
 	minIndex = i
@@ -121,6 +129,7 @@ for i from 0 to n-1:
 ```
 
 ### Implementation
+
 ```typescript
 function selectionSort(arr: number[]): number[] {
 	// TODO: Outer loop (each position)
@@ -130,6 +139,7 @@ function selectionSort(arr: number[]): number[] {
 ```
 
 ### Complexity
+
 - **Time:** O(n²) - always
 - **Space:** O(1) - in-place
 - **Stable:** No (can be made stable)
@@ -139,9 +149,11 @@ function selectionSort(arr: number[]): number[] {
 ## 3. Insertion Sort
 
 ### Concept
+
 Build sorted array one element at a time by inserting each element into its correct position.
 
 ### Visual Explanation
+
 ```
 Array: [5, 3, 8, 4, 2]
 
@@ -173,6 +185,7 @@ Insert 2:
 ```
 
 ### Algorithm
+
 ```
 for i from 1 to n:
 	key = arr[i]
@@ -184,6 +197,7 @@ for i from 1 to n:
 ```
 
 ### Implementation
+
 ```typescript
 function insertionSort(arr: number[]): number[] {
 	// TODO: Start from second element
@@ -194,6 +208,7 @@ function insertionSort(arr: number[]): number[] {
 ```
 
 ### Complexity
+
 - **Time:**
   - Best: O(n) - already sorted
   - Average: O(n²)
@@ -206,9 +221,11 @@ function insertionSort(arr: number[]): number[] {
 ## 4. Merge Sort
 
 ### Concept
+
 Divide array in half, recursively sort each half, then merge sorted halves.
 
 ### Visual Explanation
+
 ```
 Array: [5, 3, 8, 4, 2, 7, 1, 6]
 
@@ -230,6 +247,7 @@ Merge:
 ```
 
 ### Merge Process
+
 ```
 Merge [3, 5] and [4, 8]:
 
@@ -263,6 +281,7 @@ Result: [3, 4, 5, 8]
 ```
 
 ### Algorithm
+
 ```
 function mergeSort(arr, left, right):
 	if left >= right:
@@ -279,14 +298,12 @@ function merge(arr, left, mid, right):
 ```
 
 ### Implementation
+
 ```typescript
 function mergeSort(arr: number[]): number[] {
 	// TODO: Base case - array size <= 1
-	
 	// TODO: Find middle
-	
 	// TODO: Recursively sort left and right
-	
 	// TODO: Merge sorted halves
 }
 
@@ -299,6 +316,7 @@ function merge(left: number[], right: number[]): number[] {
 ```
 
 ### Complexity
+
 - **Time:** O(n log n) - always
 - **Space:** O(n) - temp arrays
 - **Stable:** Yes
@@ -308,9 +326,11 @@ function merge(left: number[], right: number[]): number[] {
 ## 5. Quick Sort
 
 ### Concept
+
 Choose pivot, partition array so elements < pivot are left, > pivot are right. Recursively sort partitions.
 
 ### Visual Explanation
+
 ```
 Array: [5, 3, 8, 4, 2, 7, 1, 6]
 
@@ -336,6 +356,7 @@ Final: [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 
 ### Partition Process
+
 ```
 Array: [5, 3, 8, 4, 2, 7, 1, 6]
 Pivot: 6
@@ -381,6 +402,7 @@ Place pivot:
 ```
 
 ### Algorithm
+
 ```
 function quickSort(arr, low, high):
 	if low < high:
@@ -402,25 +424,23 @@ function partition(arr, low, high):
 ```
 
 ### Implementation
+
 ```typescript
 function quickSort(arr: number[], low: number, high: number): void {
 	// TODO: Base case
-	
 	// TODO: Partition array
-	
 	// TODO: Recursively sort left and right
 }
 
 function partition(arr: number[], low: number, high: number): number {
 	// TODO: Choose pivot (last element)
-	
 	// TODO: Partition array around pivot
-	
 	// TODO: Return pivot position
 }
 ```
 
 ### Complexity
+
 - **Time:**
   - Best: O(n log n)
   - Average: O(n log n)
@@ -443,6 +463,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ## Comparison of Sorting Algorithms
 
 ### Complexity Table
+
 ```
 ┌──────────────┬──────────┬──────────┬──────────┬────────┬─────────┐
 │  Algorithm   │   Best   │ Average  │  Worst   │ Space  │ Stable  │
@@ -459,6 +480,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ### When to Use Each Algorithm
 
 #### Bubble Sort
+
 ```
 ✅ Educational purposes
 ✅ Nearly sorted data (optimized version)
@@ -467,6 +489,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ```
 
 #### Selection Sort
+
 ```
 ✅ Memory constrained (O(1) space)
 ✅ Small datasets
@@ -475,6 +498,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ```
 
 #### Insertion Sort
+
 ```
 ✅ Small datasets (< 50 elements)
 ✅ Nearly sorted data
@@ -483,6 +507,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ```
 
 #### Merge Sort
+
 ```
 ✅ Guaranteed O(n log n)
 ✅ Stable sort required
@@ -492,6 +517,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ```
 
 #### Quick Sort
+
 ```
 ✅ Average case matters most
 ✅ In-place sorting needed
@@ -505,6 +531,7 @@ References: [Princeton's three-way quicksort explanation](https://algs4.cs.princ
 ## Stability in Sorting
 
 ### What is Stability?
+
 ```
 Stable sort preserves relative order of equal elements.
 
@@ -521,6 +548,7 @@ Unstable sort: [2E, 3D, 3B, 4C, 4A]
 ```
 
 ### Why Stability Matters
+
 ```
 Example: Sort students by grade, then by name
 
@@ -540,6 +568,7 @@ Relative order of same-grade students preserved!
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** Bubble, Selection, Insertion (understand basics)
 2. **Then:** Merge Sort (divide and conquer)
 3. **Finally:** Quick Sort (partitioning, optimization)
@@ -547,6 +576,7 @@ Relative order of same-grade students preserved!
 ### Optimizations
 
 #### Bubble Sort
+
 ```
 // Stop if no swaps made
 boolean swapped = true;
@@ -557,12 +587,14 @@ while (swapped) {
 ```
 
 #### Insertion Sort
+
 ```
 // Binary search for insert position
 // Still O(n²) due to shifting, but fewer comparisons
 ```
 
 #### Quick Sort
+
 ```
 // Choose better pivot (median of three)
 // Switch to insertion sort for small subarrays
@@ -570,6 +602,7 @@ while (swapped) {
 ```
 
 ### Common Mistakes
+
 1. ❌ Off-by-one errors in loop bounds
 2. ❌ Not handling empty/single element arrays
 3. ❌ Incorrect pivot selection in quick sort
@@ -577,6 +610,7 @@ while (swapped) {
 5. ❌ Not maintaining stability when required
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty array []
 ✓ Single element [5]
@@ -593,6 +627,7 @@ while (swapped) {
 ## Visualization Tips
 
 ### Drawing Arrays
+
 ```
 Always visualize:
 [5, 3, 8, 4, 2]
@@ -607,6 +642,7 @@ Use markers:
 ```
 
 ### Step-by-Step
+
 ```
 1. Draw initial state
 2. Mark current operation
@@ -619,16 +655,19 @@ Use markers:
 ## Real-World Applications
 
 ### Merge Sort
+
 - External sorting (files too large for memory)
 - Sorting linked lists
 - Parallel sorting
 
 ### Quick Sort
+
 - Standard library sort (with optimizations)
 - Database query optimization
 - Numerical computations
 
 ### Insertion Sort
+
 - Hybrid sorting algorithms (for small subarrays)
 - Online sorting (continuous data)
 - Nearly sorted data

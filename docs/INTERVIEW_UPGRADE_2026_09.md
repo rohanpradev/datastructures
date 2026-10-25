@@ -170,14 +170,14 @@ All quantities below are synthetic practice assumptions, not company workloads.
 Spend 5 minutes on requirements, 5 on sizing, 10 on API/data/architecture,
 15 on a failure deep dive, and 10 on operations, security and trade-offs.
 
-| Scenario and starting load | API and data decisions | Failure injection and required evidence |
-|---|---|---|
-| Inventory reservation: 5k writes/s, 15-minute holds | Reserve/confirm/release APIs; inventory version, reservation ID, expiry, order event | Payment succeeds after reservation expiry. State the no-oversell invariant, atomic conditional update, reconciliation, and outbox boundary. |
-| Webhook delivery: 20k events/s, 24-hour retry budget | Event ID, endpoint version, attempts, next attempt, tenant partition | Receiver succeeds but ACK is lost. Show dedupe, bounded retries with jitter, DLQ replay, per-tenant quotas and oldest-event-age metrics. |
-| Flash-sale product cache: 200k reads/s, 100 hot keys | Cache key includes tenant/version; define stale data allowance | Entire cache expires together. Estimate database fallback load, coalesce requests, bound refresh concurrency, and degrade optional fields. |
-| Durable job scheduler: 50k tenants, 1M due jobs/hour | Job state machine, due-time index, attempt ID, lease token | Worker resumes after takeover. Enforce fencing at the sink, explain cancellation races, noisy-neighbor fairness and queue-age SLOs. |
-| Collaborative document: 10k active documents, 20 editors each | Document ID, operation ID, revision, reconnect cursor; choose OT or CRDT with a reason | Disconnect during edit, duplicate replay, permission revoked mid-session. Separate durable document state from ephemeral presence; define convergence and snapshot recovery. |
-| AI retrieval gateway: 1k requests/s, 8-second deadline | Tenant-scoped retrieval, document ACL/version, model and tool budgets, trace ID | Model times out after a tool side effect; document is deleted after indexing. Enforce authorization before retrieval/tool execution, bounded retries, dedupe and deletion propagation; measure quality alongside latency/cost. |
+| Scenario and starting load                                    | API and data decisions                                                                 | Failure injection and required evidence                                                                                                                                                                                        |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Inventory reservation: 5k writes/s, 15-minute holds           | Reserve/confirm/release APIs; inventory version, reservation ID, expiry, order event   | Payment succeeds after reservation expiry. State the no-oversell invariant, atomic conditional update, reconciliation, and outbox boundary.                                                                                    |
+| Webhook delivery: 20k events/s, 24-hour retry budget          | Event ID, endpoint version, attempts, next attempt, tenant partition                   | Receiver succeeds but ACK is lost. Show dedupe, bounded retries with jitter, DLQ replay, per-tenant quotas and oldest-event-age metrics.                                                                                       |
+| Flash-sale product cache: 200k reads/s, 100 hot keys          | Cache key includes tenant/version; define stale data allowance                         | Entire cache expires together. Estimate database fallback load, coalesce requests, bound refresh concurrency, and degrade optional fields.                                                                                     |
+| Durable job scheduler: 50k tenants, 1M due jobs/hour          | Job state machine, due-time index, attempt ID, lease token                             | Worker resumes after takeover. Enforce fencing at the sink, explain cancellation races, noisy-neighbor fairness and queue-age SLOs.                                                                                            |
+| Collaborative document: 10k active documents, 20 editors each | Document ID, operation ID, revision, reconnect cursor; choose OT or CRDT with a reason | Disconnect during edit, duplicate replay, permission revoked mid-session. Separate durable document state from ephemeral presence; define convergence and snapshot recovery.                                                   |
+| AI retrieval gateway: 1k requests/s, 8-second deadline        | Tenant-scoped retrieval, document ACL/version, model and tool budgets, trace ID        | Model times out after a tool side effect; document is deleted after indexing. Enforce authorization before retrieval/tool execution, bounded retries, dedupe and deletion propagation; measure quality alongside latency/cost. |
 
 For the webhook exercise: 20,000 events/s × 1 KB = approximately 20 MB/s,
 or 1.728 TB/day before indexes, replicas and retries (decimal units). At 10%
@@ -192,15 +192,15 @@ boundaries. Prefer justified components over a longer technology list.
 
 ## Two-week deliberate-practice route
 
-| Days | Work | Observable exit condition |
-|---|---|---|
-| 1–2 | Baseline: binary search, minimum window, course scheduling; one design mock | Record actual solve time, missing edge cases and a rubric score. |
-| 3–4 | Signed windows and weighted scheduling | Rebuild both; explain dominance and the DP recurrence without source. |
-| 5–6 | SingleFlight and flash-sale cache mock | Reproduce failure cleanup; quantify database fallback under a cache outage. |
-| 7–8 | FencedRegister and scheduler mock | Draw the paused-worker timeline and identify the enforcing storage boundary. |
-| 9–10 | TransactionalOutbox and inventory/webhook mock | Demonstrate rollback, reopen, duplicate delivery and consumer idempotency. |
-| 11–12 | Collaborative document and AI gateway mocks | Explain convergence, authorization, deadlines and the hardest consistency trade-off. |
-| 13–14 | Unseen mixed coding, design and debugging mocks; one behavioral story | Re-solve missed targets, compare scores, choose the next review by weakest skill. |
+| Days  | Work                                                                        | Observable exit condition                                                            |
+| ----- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 1–2   | Baseline: binary search, minimum window, course scheduling; one design mock | Record actual solve time, missing edge cases and a rubric score.                     |
+| 3–4   | Signed windows and weighted scheduling                                      | Rebuild both; explain dominance and the DP recurrence without source.                |
+| 5–6   | SingleFlight and flash-sale cache mock                                      | Reproduce failure cleanup; quantify database fallback under a cache outage.          |
+| 7–8   | FencedRegister and scheduler mock                                           | Draw the paused-worker timeline and identify the enforcing storage boundary.         |
+| 9–10  | TransactionalOutbox and inventory/webhook mock                              | Demonstrate rollback, reopen, duplicate delivery and consumer idempotency.           |
+| 11–12 | Collaborative document and AI gateway mocks                                 | Explain convergence, authorization, deadlines and the hardest consistency trade-off. |
+| 13–14 | Unseen mixed coding, design and debugging mocks; one behavioral story       | Re-solve missed targets, compare scores, choose the next review by weakest skill.    |
 
 Use the [interview playbook](./INTERVIEW_PLAYBOOK.md) for the coding loop and
 the [system design handbook](./SYSTEM_DESIGN_HANDBOOK.md) for fundamentals.

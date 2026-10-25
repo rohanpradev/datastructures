@@ -40,10 +40,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-bun-
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - name: Prefetch locked dependencies
+        run: bun run deps:fetch
+        env:
+          BUN_CONFIG_HTTP_RETRY_BACKOFF: "250"
 
-      - name: Lint and format check
+      - name: Install dependencies from cache
+        run: bun run deps:offline
+
+      - name: Bun format check
+        run: bun run format:check
+
+      - name: Biome lint check
         run: bun run lint
 
       - name: Bun TypeScript typecheck

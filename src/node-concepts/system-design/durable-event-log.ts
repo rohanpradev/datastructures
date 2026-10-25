@@ -82,10 +82,12 @@ export class DurableEventLog {
 		return this.db
 			.transaction(() => {
 				const existing = this.db
-					.query<RoomEvent, [string, string]>(`
+					.query<RoomEvent, [string, string]>(
+						`
 				SELECT sequence, room, event_id AS eventId, text, created_at AS createdAt
 				FROM room_events WHERE room = ? AND event_id = ?
-			`)
+			`,
+					)
 					.get(room, eventId);
 				if (existing) {
 					if (existing.text !== text) {
@@ -98,9 +100,11 @@ export class DurableEventLog {
 				}
 				const createdAt = Date.now();
 				const result = this.db
-					.query(`
+					.query(
+						`
 				INSERT INTO room_events(room, event_id, text, created_at) VALUES (?, ?, ?, ?)
-			`)
+			`,
+					)
 					.run(room, eventId, text, createdAt);
 				return {
 					created: true,
@@ -134,10 +138,12 @@ export class DurableEventLog {
 		}
 		// Seek pagination uses the index; OFFSET would rescan older history.
 		const rows = this.db
-			.query<RoomEvent, [string, number, number]>(`
+			.query<RoomEvent, [string, number, number]>(
+				`
 			SELECT sequence, room, event_id AS eventId, text, created_at AS createdAt
 			FROM room_events WHERE room = ? AND sequence > ? ORDER BY sequence LIMIT ?
-		`)
+		`,
+			)
 			.all(room, after, limit + 1);
 		const events = rows.slice(0, limit);
 		return {

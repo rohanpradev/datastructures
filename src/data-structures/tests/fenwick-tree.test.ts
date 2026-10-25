@@ -21,8 +21,10 @@ describe("FenwickTree", () => {
 			values[index] += delta;
 			tree.add(index, delta);
 			for (let start = 0; start <= values.length; start++) {
-				const end = Math.min(values.length, start + step % 11);
-				expect(tree.rangeSum(start, end)).toBe(values.slice(start, end).reduce((a, b) => a + b, 0));
+				const end = Math.min(values.length, start + (step % 11));
+				expect(tree.rangeSum(start, end)).toBe(
+					values.slice(start, end).reduce((a, b) => a + b, 0),
+				);
 			}
 		}
 	});

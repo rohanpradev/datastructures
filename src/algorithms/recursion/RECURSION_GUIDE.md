@@ -4,19 +4,19 @@
 
 This guide explains **recursion as a problem-solving technique**, not just through Fibonacci, but through multiple recursive problem types:
 
-* Linear recursion (Fibonacci)
-* Tree recursion (subset / branching problems)
-* Depth-based recursion (Product Sum)
-* Grid / flood-fill recursion (Minesweeper-style problems)
+- Linear recursion (Fibonacci)
+- Tree recursion (subset / branching problems)
+- Depth-based recursion (Product Sum)
+- Grid / flood-fill recursion (Minesweeper-style problems)
 
 The goal is to understand:
 
-* ✅ Base cases
-* ✅ Recursive cases
-* ✅ Recursion trees
-* ✅ Stack behavior
-* ✅ When to use memoization
-* ✅ When to convert to iteration
+- ✅ Base cases
+- ✅ Recursive cases
+- ✅ Recursion trees
+- ✅ Stack behavior
+- ✅ When to use memoization
+- ✅ When to convert to iteration
 
 ---
 
@@ -67,9 +67,9 @@ fib(4)
 
 ### What This Teaches
 
-* Recursion tree growth
-* Overlapping subproblems
-* Why memoization helps
+- Recursion tree growth
+- Overlapping subproblems
+- Why memoization helps
 
 ### Complexity
 
@@ -105,9 +105,9 @@ At each level:
 
 ### What This Teaches
 
-* Managing state per depth
-* Avoiding shared mutable state
-* Clean return-based aggregation
+- Managing state per depth
+- Avoiding shared mutable state
+- Clean return-based aggregation
 
 ### Complexity
 
@@ -146,10 +146,10 @@ Recursion spreads until boundary of numbers.
 
 ### What This Teaches
 
-* Boundary checking
-* Preventing infinite recursion
-* Marking visited nodes
-* 8-direction traversal
+- Boundary checking
+- Preventing infinite recursion
+- Marking visited nodes
+- 8-direction traversal
 
 ### Complexity
 
@@ -169,10 +169,10 @@ Explore all possible paths.
 
 ### Example Problems
 
-* Subsets
-* Permutations
-* Combination sum
-* N-Queens
+- Subsets
+- Permutations
+- Combination sum
+- N-Queens
 
 ### Structure
 
@@ -190,9 +190,9 @@ function backtrack(state):
 
 ### What This Teaches
 
-* Decision trees
-* Exploring search space
-* Undoing state (backtracking step)
+- Decision trees
+- Exploring search space
+- Undoing state (backtracking step)
 
 ---
 
@@ -202,9 +202,9 @@ function backtrack(state):
 
 Every recursive function forms a tree:
 
-* Nodes = function calls
-* Edges = recursive calls
-* Leaves = base cases
+- Nodes = function calls
+- Edges = recursive calls
+- Leaves = base cases
 
 Understanding the tree helps you analyze complexity.
 
@@ -241,9 +241,9 @@ Use memoization.
 
 ## 4️⃣ When NOT to Use Recursion
 
-* Extremely deep recursion (stack overflow risk)
-* When iterative solution is clearer
-* When constant space is required
+- Extremely deep recursion (stack overflow risk)
+- When iterative solution is clearer
+- When constant space is required
 
 ---
 
@@ -269,9 +269,9 @@ for i from n down to base:
 
 Many recursive problems can be rewritten using:
 
-* Stack
-* Queue
-* Loop
+- Stack
+- Queue
+- Loop
 
 ---
 
@@ -341,10 +341,10 @@ Can cause infinite loops.
 
 ## If each call makes:
 
-* 1 call → O(n)
-* 2 calls → O(2^n)
-* Branching factor b → O(b^n)
-* Divide by 2 each time → O(log n)
+- 1 call → O(n)
+- 2 calls → O(2^n)
+- Branching factor b → O(b^n)
+- Divide by 2 each time → O(log n)
 
 ---
 
@@ -352,36 +352,36 @@ Can cause infinite loops.
 
 ### 🔹 Linear Recursion
 
-* Factorial
-* Fibonacci
-* Sum of array
+- Factorial
+- Fibonacci
+- Sum of array
 
 ### 🔹 Tree Recursion
 
-* Subsets
-* Permutations
-* Combination Sum
+- Subsets
+- Permutations
+- Combination Sum
 
 ### 🔹 Depth-Based
 
-* Product Sum
-* Nested JSON traversal
+- Product Sum
+- Nested JSON traversal
 
 ### 🔹 Grid / Graph
 
-* Minesweeper reveal
-* Flood fill
-* Number of islands
+- Minesweeper reveal
+- Flood fill
+- Number of islands
 
 ---
 
 # Advanced Topics
 
-* Tail recursion
-* Memoization patterns
-* Dynamic Programming (top-down vs bottom-up)
-* Matrix exponentiation
-* Backtracking pruning
+- Tail recursion
+- Memoization patterns
+- Dynamic Programming (top-down vs bottom-up)
+- Matrix exponentiation
+- Backtracking pruning
 
 ---
 

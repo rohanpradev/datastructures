@@ -124,22 +124,22 @@ the next redesign. Strong answers expose their own limits.
 
 ## Master Concept Map
 
-| Area | You should be able to explain | Executable material |
-| --- | --- | --- |
-| Traffic | DNS, CDN, L4/L7 proxies, round robin, least connections, health checks, stickiness, load shedding | `load-balancer.ts`, `rate-limiter.ts` |
-| API contracts | REST/RPC/GraphQL trade-offs, pagination, idempotency, versioning, auth, quotas | `idempotency-store.ts` |
-| Caching | cache-aside, read/write-through, TTL, invalidation, stampedes, hot keys, negative cache, CDN | `lru-cache.ts`, `bloom-filter.ts` |
-| Storage | relational, document, key-value, wide-column, graph, search, time series, object storage, vector indexes | `sqlite.ts`, SQL discussion in Bun guide |
-| Partitioning | range/hash/directory sharding, consistent hashing, resharding, skew, tenant placement | `consistent-hash.ts` |
-| Replication | leader/follower, multi-leader, leaderless, quorum, lag, repair, conflicts | `replication-quorum.ts` |
-| Identity | UUID, UUIDv7, Base62, Snowflake, collision and enumeration risks | `id-generation.ts` |
-| Messaging | queue vs log vs pub/sub, delivery semantics, ordering, visibility, retries, DLQ, replay | `at-least-once-queue.ts`, `pub-sub.ts` |
-| Scheduling | delay queues, cron, leases, fairness, retries, heartbeats, work stealing | `weighted-fair-queue.ts`, `modern-apis.ts` |
-| Resilience | timeout budgets, retry classification, jitter, circuit breakers, bulkheads, fallback | `resilience.ts`, `circuit-breaker.ts` |
-| Consistency | linearizable, serializable, causal, read-your-writes, monotonic reads, eventual | quorum and idempotency labs |
-| Observability | user-centered SLIs, SLOs, error budgets, trace context, RED/USE, cardinality | server metrics and curriculum prompts |
-| Security | threat modeling, least privilege, tenant isolation, supply chain, CSRF, SSRF, abuse | `security.ts`, `modern-apis.ts` |
-| AI systems | RAG, inference gateways, batching, semantic cache, evaluation, guardrails, tool permissions | AI scenario and question bank below |
+| Area          | You should be able to explain                                                                            | Executable material                        |
+| ------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Traffic       | DNS, CDN, L4/L7 proxies, round robin, least connections, health checks, stickiness, load shedding        | `load-balancer.ts`, `rate-limiter.ts`      |
+| API contracts | REST/RPC/GraphQL trade-offs, pagination, idempotency, versioning, auth, quotas                           | `idempotency-store.ts`                     |
+| Caching       | cache-aside, read/write-through, TTL, invalidation, stampedes, hot keys, negative cache, CDN             | `lru-cache.ts`, `bloom-filter.ts`          |
+| Storage       | relational, document, key-value, wide-column, graph, search, time series, object storage, vector indexes | `sqlite.ts`, SQL discussion in Bun guide   |
+| Partitioning  | range/hash/directory sharding, consistent hashing, resharding, skew, tenant placement                    | `consistent-hash.ts`                       |
+| Replication   | leader/follower, multi-leader, leaderless, quorum, lag, repair, conflicts                                | `replication-quorum.ts`                    |
+| Identity      | UUID, UUIDv7, Base62, Snowflake, collision and enumeration risks                                         | `id-generation.ts`                         |
+| Messaging     | queue vs log vs pub/sub, delivery semantics, ordering, visibility, retries, DLQ, replay                  | `at-least-once-queue.ts`, `pub-sub.ts`     |
+| Scheduling    | delay queues, cron, leases, fairness, retries, heartbeats, work stealing                                 | `weighted-fair-queue.ts`, `modern-apis.ts` |
+| Resilience    | timeout budgets, retry classification, jitter, circuit breakers, bulkheads, fallback                     | `resilience.ts`, `circuit-breaker.ts`      |
+| Consistency   | linearizable, serializable, causal, read-your-writes, monotonic reads, eventual                          | quorum and idempotency labs                |
+| Observability | user-centered SLIs, SLOs, error budgets, trace context, RED/USE, cardinality                             | server metrics and curriculum prompts      |
+| Security      | threat modeling, least privilege, tenant isolation, supply chain, CSRF, SSRF, abuse                      | `security.ts`, `modern-apis.ts`            |
+| AI systems    | RAG, inference gateways, batching, semantic cache, evaluation, guardrails, tool permissions              | AI scenario and question bank below        |
 
 ## Networking And The Edge
 
@@ -169,13 +169,13 @@ Know the boundaries:
 
 Choose real-time transport by contract:
 
-| Transport | Best fit | Main trade-off |
-| --- | --- | --- |
-| Polling | Simple, infrequent updates | Repeated empty requests and freshness interval |
-| Long polling | Broad compatibility with fewer empty polls | Connection churn and retry coordination |
-| Server-Sent Events | One-way server stream over HTTP | No native bidirectional channel |
-| WebSocket | Low-latency bidirectional messages | Connection state, routing, backpressure, reconnect |
-| WebTransport/QUIC | Advanced multiplexed bidirectional transport | Ecosystem, proxy, and operational maturity |
+| Transport          | Best fit                                     | Main trade-off                                     |
+| ------------------ | -------------------------------------------- | -------------------------------------------------- |
+| Polling            | Simple, infrequent updates                   | Repeated empty requests and freshness interval     |
+| Long polling       | Broad compatibility with fewer empty polls   | Connection churn and retry coordination            |
+| Server-Sent Events | One-way server stream over HTTP              | No native bidirectional channel                    |
+| WebSocket          | Low-latency bidirectional messages           | Connection state, routing, backpressure, reconnect |
+| WebTransport/QUIC  | Advanced multiplexed bidirectional transport | Ecosystem, proxy, and operational maturity         |
 
 Always cover maximum request/header/body sizes, idle/request timeouts, slow
 clients, connection drain, proxy trust, forwarded-header validation, and DDoS
@@ -185,17 +185,17 @@ or bot controls.
 
 ### Choose By Access Pattern
 
-| Need | Good starting model | Questions that can reverse the choice |
-| --- | --- | --- |
-| Transactions, constraints, joins | Relational database | Is write throughput dominated by one partition? Are cross-region writes required? |
-| Primary-key lookup at very high scale | Key-value store | Are range scans, secondary indexes, or multi-record transactions central? |
-| Flexible aggregates/documents | Document store | Which invariants are now enforced only in application code? |
-| Huge ordered sparse datasets | Wide-column store | What partition key prevents hot tablets and unbounded rows? |
-| Text relevance and faceting | Search index | What is the source of truth and how is the index rebuilt? |
-| Relationship traversal | Graph store | Can adjacency lists in a relational/key-value model satisfy the real depth and scale? |
-| Metrics and time windows | Time-series store | What are retention, downsampling, label-cardinality, and late-data rules? |
-| Large immutable blobs | Object storage | Where do metadata, authorization, multipart state, and lifecycle policies live? |
-| Semantic nearest-neighbor lookup | Vector index | How are tenant filters, freshness, recall, evaluation, and deletion handled? |
+| Need                                  | Good starting model | Questions that can reverse the choice                                                 |
+| ------------------------------------- | ------------------- | ------------------------------------------------------------------------------------- |
+| Transactions, constraints, joins      | Relational database | Is write throughput dominated by one partition? Are cross-region writes required?     |
+| Primary-key lookup at very high scale | Key-value store     | Are range scans, secondary indexes, or multi-record transactions central?             |
+| Flexible aggregates/documents         | Document store      | Which invariants are now enforced only in application code?                           |
+| Huge ordered sparse datasets          | Wide-column store   | What partition key prevents hot tablets and unbounded rows?                           |
+| Text relevance and faceting           | Search index        | What is the source of truth and how is the index rebuilt?                             |
+| Relationship traversal                | Graph store         | Can adjacency lists in a relational/key-value model satisfy the real depth and scale? |
+| Metrics and time windows              | Time-series store   | What are retention, downsampling, label-cardinality, and late-data rules?             |
+| Large immutable blobs                 | Object storage      | Where do metadata, authorization, multipart state, and lifecycle policies live?       |
+| Semantic nearest-neighbor lookup      | Vector index        | How are tenant filters, freshness, recall, evaluation, and deletion handled?          |
 
 ### Index Checklist
 
@@ -219,15 +219,15 @@ or bot controls.
 
 ### Consistency Is A Product Requirement
 
-| Guarantee | Meaning | Typical use |
-| --- | --- | --- |
-| Linearizability | Each operation appears atomic and respects real-time order | Locks, leader election, balances, critical configuration |
-| Serializability | Concurrent transactions behave like some serial order | Multi-row business invariants |
-| Snapshot isolation | A transaction sees a consistent snapshot; write skew may remain | Many relational workloads |
-| Causal consistency | Cause is observed before effect | Collaboration, conversations, social interactions |
-| Read-your-writes | A user sees their own accepted changes | Profiles, settings, created content |
-| Monotonic reads | A client does not move backward in observed versions | Replicated user sessions |
-| Eventual consistency | Replicas converge if writes stop | Feeds, counters, caches where staleness is acceptable |
+| Guarantee            | Meaning                                                         | Typical use                                              |
+| -------------------- | --------------------------------------------------------------- | -------------------------------------------------------- |
+| Linearizability      | Each operation appears atomic and respects real-time order      | Locks, leader election, balances, critical configuration |
+| Serializability      | Concurrent transactions behave like some serial order           | Multi-row business invariants                            |
+| Snapshot isolation   | A transaction sees a consistent snapshot; write skew may remain | Many relational workloads                                |
+| Causal consistency   | Cause is observed before effect                                 | Collaboration, conversations, social interactions        |
+| Read-your-writes     | A user sees their own accepted changes                          | Profiles, settings, created content                      |
+| Monotonic reads      | A client does not move backward in observed versions            | Replicated user sessions                                 |
+| Eventual consistency | Replicas converge if writes stop                                | Feeds, counters, caches where staleness is acceptable    |
 
 CAP applies when a network partition exists: the system must choose whether a
 given operation preserves consistency or availability. PACELC adds the normal
@@ -271,17 +271,17 @@ Never infer authorization, tenancy, or secrecy from an unguessable-looking ID.
 
 ## Architecture And Data-Change Patterns
 
-| Pattern | Use it when | Failure or misuse to discuss |
-| --- | --- | --- |
-| Modular monolith | One deployable can preserve clear internal ownership | Hidden coupling and one shared database schema |
-| Microservices | Independent ownership/scale/release justify distribution | Network failure, data duplication, tracing, testing, operational cost |
-| Saga | A business workflow spans services without one ACID transaction | Compensation is not rollback; steps and retries must be idempotent |
-| Transactional outbox | Database state and an event must not diverge | Relay duplication, ordering, cleanup, lag, and schema evolution |
-| CQRS | Read and write models have genuinely different needs | Projection lag, duplicated models, repair and backfill complexity |
-| Event sourcing | Event history is the authoritative model and replay is valuable | Schema evolution, privacy deletion, snapshotting, debugging projections |
-| Change data capture | Existing database changes must feed downstream systems | DDL changes, ordering, offsets, initial snapshot, reprocessing |
-| Strangler migration | A legacy system must be replaced incrementally | Routing ambiguity, dual behavior, data ownership, rollback |
-| Cell architecture | Blast radius and tenant scale need isolated copies | Placement, capacity fragmentation, cross-cell features, migrations |
+| Pattern              | Use it when                                                     | Failure or misuse to discuss                                            |
+| -------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Modular monolith     | One deployable can preserve clear internal ownership            | Hidden coupling and one shared database schema                          |
+| Microservices        | Independent ownership/scale/release justify distribution        | Network failure, data duplication, tracing, testing, operational cost   |
+| Saga                 | A business workflow spans services without one ACID transaction | Compensation is not rollback; steps and retries must be idempotent      |
+| Transactional outbox | Database state and an event must not diverge                    | Relay duplication, ordering, cleanup, lag, and schema evolution         |
+| CQRS                 | Read and write models have genuinely different needs            | Projection lag, duplicated models, repair and backfill complexity       |
+| Event sourcing       | Event history is the authoritative model and replay is valuable | Schema evolution, privacy deletion, snapshotting, debugging projections |
+| Change data capture  | Existing database changes must feed downstream systems          | DDL changes, ordering, offsets, initial snapshot, reprocessing          |
+| Strangler migration  | A legacy system must be replaced incrementally                  | Routing ambiguity, dual behavior, data ownership, rollback              |
+| Cell architecture    | Blast radius and tenant scale need isolated copies              | Placement, capacity fragmentation, cross-cell features, migrations      |
 
 For zero-downtime data changes, use expand/migrate/contract:
 
@@ -323,13 +323,13 @@ to the database and cause a second outage.
 
 ### Pick The Right Primitive
 
-| Primitive | Best fit | Central question |
-| --- | --- | --- |
-| Work queue | One consumer should process each job | Visibility, redelivery, ack, retries, DLQ |
-| Pub/sub | Live fanout where subscribers receive new events | What happens to offline or slow subscribers? |
-| Durable log/stream | Replay, multiple consumer groups, ordered partition history | Partition key, offsets, retention, reprocessing |
-| Delay queue | Work becomes eligible later | Clock, precision, cancellation, duplicate timers |
-| Scheduler | Recurring or one-time orchestration | Single ownership, misfires, overlap, history, fairness |
+| Primitive          | Best fit                                                    | Central question                                       |
+| ------------------ | ----------------------------------------------------------- | ------------------------------------------------------ |
+| Work queue         | One consumer should process each job                        | Visibility, redelivery, ack, retries, DLQ              |
+| Pub/sub            | Live fanout where subscribers receive new events            | What happens to offline or slow subscribers?           |
+| Durable log/stream | Replay, multiple consumer groups, ordered partition history | Partition key, offsets, retention, reprocessing        |
+| Delay queue        | Work becomes eligible later                                 | Clock, precision, cancellation, duplicate timers       |
+| Scheduler          | Recurring or one-time orchestration                         | Single ownership, misfires, overlap, history, fairness |
 
 ### Delivery Semantics
 
@@ -482,59 +482,59 @@ service, object metadata, feed fanout, RAG, job scheduling, and checkout.
 
 ### Product And Consumer Systems
 
-| Prompt | Hard focus |
-| --- | --- |
-| Design a URL shortener | key generation, redirect latency, cache, abuse, analytics |
-| Design a social feed | fanout-on-write/read hybrid, celebrity skew, ranking, freshness |
-| Design chat/messaging | connection routing, message order, offline sync, receipts, presence |
-| Design notifications | preferences, channel routing, dedupe, provider failure, quiet hours |
-| Design video streaming | upload/transcode pipeline, manifests, CDN, adaptive bitrate |
-| Design photo sharing | object storage, thumbnails, metadata, privacy, CDN invalidation |
-| Design collaborative documents | operation order, conflict resolution/CRDT, snapshots, presence |
-| Design a ticketing system | hot inventory, fairness, reservations, idempotent payment |
-| Design ride sharing | geospatial index, matching, live location, surge, trip state |
-| Design food delivery | marketplace matching, ETA, state machine, compensation |
-| Design a calendar | recurrence, time zones, conflict rules, fanout, reminders |
-| Design an e-commerce checkout | inventory, payment, saga, idempotency, reconciliation |
+| Prompt                         | Hard focus                                                          |
+| ------------------------------ | ------------------------------------------------------------------- |
+| Design a URL shortener         | key generation, redirect latency, cache, abuse, analytics           |
+| Design a social feed           | fanout-on-write/read hybrid, celebrity skew, ranking, freshness     |
+| Design chat/messaging          | connection routing, message order, offline sync, receipts, presence |
+| Design notifications           | preferences, channel routing, dedupe, provider failure, quiet hours |
+| Design video streaming         | upload/transcode pipeline, manifests, CDN, adaptive bitrate         |
+| Design photo sharing           | object storage, thumbnails, metadata, privacy, CDN invalidation     |
+| Design collaborative documents | operation order, conflict resolution/CRDT, snapshots, presence      |
+| Design a ticketing system      | hot inventory, fairness, reservations, idempotent payment           |
+| Design ride sharing            | geospatial index, matching, live location, surge, trip state        |
+| Design food delivery           | marketplace matching, ETA, state machine, compensation              |
+| Design a calendar              | recurrence, time zones, conflict rules, fanout, reminders           |
+| Design an e-commerce checkout  | inventory, payment, saga, idempotency, reconciliation               |
 
 ### Infrastructure And Data Systems
 
-| Prompt | Hard focus |
-| --- | --- |
-| Design an API gateway | routing, auth, quotas, retries, observability, config rollout |
-| Design a rate limiter | algorithm, atomic distributed state, hot keys, fail-open/closed |
-| Design a distributed cache | partitioning, replication, TTL, eviction, consistency |
-| Design a CDN | placement, cache keys, invalidation, origin protection, purge |
-| Design object storage | metadata/data split, multipart upload, erasure coding, durability |
-| Design a distributed queue | visibility, ordering, partitioning, DLQ, consumer groups |
-| Design pub/sub | subscription state, fanout, replay, slow consumers, retention |
-| Design a stream-processing system | partitions, checkpoints, watermarks, late events, state |
-| Design a task scheduler | leases, delay, fairness, retries, history, exactly-one owner |
-| Design a unique ID service | UUIDv7/Snowflake/sequence, availability, clock failure |
-| Design service discovery | health, leases, watches, stale config, control-plane quorum |
-| Design a feature-flag service | low-latency reads, streaming updates, audit, kill switch |
-| Design configuration management | versioning, validation, staged rollout, secret boundary |
-| Design distributed locks | leases, fencing tokens, clock assumptions, client pauses |
-| Design a metrics system | ingestion, label cardinality, time-series storage, downsampling |
-| Design distributed tracing | sampling, context propagation, storage, tail-based decisions |
-| Design log aggregation | buffering, parsing, indexing, retention, tenant isolation |
-| Design a web crawler | frontier, politeness, dedupe, content change, retries |
-| Design search/autocomplete | indexing, ranking, prefix/top-k, freshness, typo tolerance |
+| Prompt                            | Hard focus                                                        |
+| --------------------------------- | ----------------------------------------------------------------- |
+| Design an API gateway             | routing, auth, quotas, retries, observability, config rollout     |
+| Design a rate limiter             | algorithm, atomic distributed state, hot keys, fail-open/closed   |
+| Design a distributed cache        | partitioning, replication, TTL, eviction, consistency             |
+| Design a CDN                      | placement, cache keys, invalidation, origin protection, purge     |
+| Design object storage             | metadata/data split, multipart upload, erasure coding, durability |
+| Design a distributed queue        | visibility, ordering, partitioning, DLQ, consumer groups          |
+| Design pub/sub                    | subscription state, fanout, replay, slow consumers, retention     |
+| Design a stream-processing system | partitions, checkpoints, watermarks, late events, state           |
+| Design a task scheduler           | leases, delay, fairness, retries, history, exactly-one owner      |
+| Design a unique ID service        | UUIDv7/Snowflake/sequence, availability, clock failure            |
+| Design service discovery          | health, leases, watches, stale config, control-plane quorum       |
+| Design a feature-flag service     | low-latency reads, streaming updates, audit, kill switch          |
+| Design configuration management   | versioning, validation, staged rollout, secret boundary           |
+| Design distributed locks          | leases, fencing tokens, clock assumptions, client pauses          |
+| Design a metrics system           | ingestion, label cardinality, time-series storage, downsampling   |
+| Design distributed tracing        | sampling, context propagation, storage, tail-based decisions      |
+| Design log aggregation            | buffering, parsing, indexing, retention, tenant isolation         |
+| Design a web crawler              | frontier, politeness, dedupe, content change, retries             |
+| Design search/autocomplete        | indexing, ranking, prefix/top-k, freshness, typo tolerance        |
 
 ### Enterprise And Platform Systems
 
-| Prompt | Hard focus |
-| --- | --- |
-| Design a multi-tenant SaaS platform | isolation, quotas, placement, noisy neighbors, audit |
-| Design an internal developer platform | paved paths, self-service, policy, golden signals, adoption |
-| Design CI/CD | build isolation, cache, artifact provenance, rollout, rollback |
-| Design a webhook platform | signatures, retries, ordering, dedupe, endpoint isolation |
-| Design audit logging | tamper evidence, access, retention, search, privacy |
-| Design secrets management | envelope encryption, identity, rotation, audit, break glass |
-| Design cross-region failover | RPO/RTO, replication, DNS/traffic, failback, drills |
-| Design data export/deletion | ownership graph, async orchestration, evidence, retries |
-| Design billing/metering | event accuracy, dedupe, aggregation, corrections, reconciliation |
-| Design fraud/risk evaluation | online latency, feature freshness, rules/models, feedback |
+| Prompt                                | Hard focus                                                       |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| Design a multi-tenant SaaS platform   | isolation, quotas, placement, noisy neighbors, audit             |
+| Design an internal developer platform | paved paths, self-service, policy, golden signals, adoption      |
+| Design CI/CD                          | build isolation, cache, artifact provenance, rollout, rollback   |
+| Design a webhook platform             | signatures, retries, ordering, dedupe, endpoint isolation        |
+| Design audit logging                  | tamper evidence, access, retention, search, privacy              |
+| Design secrets management             | envelope encryption, identity, rotation, audit, break glass      |
+| Design cross-region failover          | RPO/RTO, replication, DNS/traffic, failback, drills              |
+| Design data export/deletion           | ownership graph, async orchestration, evidence, retries          |
+| Design billing/metering               | event accuracy, dedupe, aggregation, corrections, reconciliation |
+| Design fraud/risk evaluation          | online latency, feature freshness, rules/models, feedback        |
 
 ### Low-Level Design And Machine Coding
 
@@ -542,23 +542,23 @@ These prompts test object boundaries, state machines, extensibility, concurrency
 and executable correctness. Do not force design patterns by name; make the
 invariant and change points visible.
 
-| Prompt | Hard focus |
-| --- | --- |
-| Design a parking lot | spot allocation, vehicle rules, tickets, pricing, concurrency |
-| Design an elevator controller | requests, scheduling policy, direction/state, safety |
-| Design a vending machine | explicit state machine, inventory, payment/change, cancellation |
-| Design a library system | copy vs title, loans, holds, fines, search, notifications |
-| Design Splitwise/expense sharing | split strategies, precision, balances, settlement |
-| Design chess or cards | rules, turns, valid moves, state/history, clock |
-| Design a filesystem | tree, paths, permissions, links, storage metadata, locking |
-| Design a logger | levels, sinks, formatting, buffering, rotation, backpressure |
-| Design an in-memory cache | eviction, TTL, concurrency, loading, metrics |
-| Design pub/sub | subscription lifecycle, delivery, errors, slow listeners |
-| Design a task executor | queue, worker limit, cancellation, retries, shutdown |
-| Design a meeting-room scheduler | intervals, recurrence, conflicts, time zones |
-| Design a payment state machine | allowed transitions, idempotency, reconciliation |
-| Design an API client SDK | retries, deadlines, pagination, auth refresh, telemetry |
-| Design a feature-rule evaluator | typed rules, precedence, context, deterministic results |
+| Prompt                           | Hard focus                                                      |
+| -------------------------------- | --------------------------------------------------------------- |
+| Design a parking lot             | spot allocation, vehicle rules, tickets, pricing, concurrency   |
+| Design an elevator controller    | requests, scheduling policy, direction/state, safety            |
+| Design a vending machine         | explicit state machine, inventory, payment/change, cancellation |
+| Design a library system          | copy vs title, loans, holds, fines, search, notifications       |
+| Design Splitwise/expense sharing | split strategies, precision, balances, settlement               |
+| Design chess or cards            | rules, turns, valid moves, state/history, clock                 |
+| Design a filesystem              | tree, paths, permissions, links, storage metadata, locking      |
+| Design a logger                  | levels, sinks, formatting, buffering, rotation, backpressure    |
+| Design an in-memory cache        | eviction, TTL, concurrency, loading, metrics                    |
+| Design pub/sub                   | subscription lifecycle, delivery, errors, slow listeners        |
+| Design a task executor           | queue, worker limit, cancellation, retries, shutdown            |
+| Design a meeting-room scheduler  | intervals, recurrence, conflicts, time zones                    |
+| Design a payment state machine   | allowed transitions, idempotency, reconciliation                |
+| Design an API client SDK         | retries, deadlines, pagination, auth refresh, telemetry         |
+| Design a feature-rule evaluator  | typed rules, precedence, context, deterministic results         |
 
 LLD answer checklist:
 
@@ -573,16 +573,16 @@ LLD answer checklist:
 
 ### AI Systems
 
-| Prompt | Hard focus |
-| --- | --- |
-| Design a RAG assistant | ACL-aware retrieval, freshness, evaluation, injection, citations |
-| Design an inference gateway | routing, batching, quotas, streaming, fallback, cost |
-| Design semantic search | embeddings, hybrid retrieval, filters, recall, reindexing |
-| Design an agent platform | tool permissions, sandboxing, budgets, checkpoints, approval |
-| Design model evaluation | datasets, graders, drift, slices, human review, release gates |
-| Design prompt/model registry | versioning, lineage, rollout, rollback, access, audit |
-| Design GPU job scheduling | bin packing, fairness, preemption, topology, checkpoints |
-| Design AI observability | traces, tokens/cost, quality, safety, privacy, sampling |
+| Prompt                       | Hard focus                                                       |
+| ---------------------------- | ---------------------------------------------------------------- |
+| Design a RAG assistant       | ACL-aware retrieval, freshness, evaluation, injection, citations |
+| Design an inference gateway  | routing, batching, quotas, streaming, fallback, cost             |
+| Design semantic search       | embeddings, hybrid retrieval, filters, recall, reindexing        |
+| Design an agent platform     | tool permissions, sandboxing, budgets, checkpoints, approval     |
+| Design model evaluation      | datasets, graders, drift, slices, human review, release gates    |
+| Design prompt/model registry | versioning, lineage, rollout, rollback, access, audit            |
+| Design GPU job scheduling    | bin packing, fairness, preemption, topology, checkpoints         |
+| Design AI observability      | traces, tokens/cost, quality, safety, privacy, sampling          |
 
 ## Rapid Follow-Up Questions
 
@@ -628,18 +628,18 @@ Before calling a design complete, name:
 
 Score each category 0-4:
 
-| Category | A score of 4 means |
-| --- | --- |
-| Requirements | Critical journey, scope, guarantees, scale, and SLOs are explicit |
-| Estimation | Numbers are plausible and drive partition/capacity choices |
-| API/data | Contracts, keys, indexes, pagination, auth, and idempotency are clear |
-| Architecture | Read/write paths are coherent and every component has ownership |
-| Distributed reasoning | Consistency, partitions, ordering, retries, and duplicates are precise |
-| Reliability | Deadlines, overload, degradation, DR, and recovery are credible |
-| Security/privacy | Trust boundaries, tenant isolation, abuse, retention, and audit are covered |
-| Observability | User SLIs, SLO, trace/metric/log signals, alerts, and runbooks are named |
-| Trade-offs | Alternatives and redesign triggers are stated without hand-waving |
-| Communication | The answer is structured, corrected openly, and finishes on time |
+| Category              | A score of 4 means                                                          |
+| --------------------- | --------------------------------------------------------------------------- |
+| Requirements          | Critical journey, scope, guarantees, scale, and SLOs are explicit           |
+| Estimation            | Numbers are plausible and drive partition/capacity choices                  |
+| API/data              | Contracts, keys, indexes, pagination, auth, and idempotency are clear       |
+| Architecture          | Read/write paths are coherent and every component has ownership             |
+| Distributed reasoning | Consistency, partitions, ordering, retries, and duplicates are precise      |
+| Reliability           | Deadlines, overload, degradation, DR, and recovery are credible             |
+| Security/privacy      | Trust boundaries, tenant isolation, abuse, retention, and audit are covered |
+| Observability         | User SLIs, SLO, trace/metric/log signals, alerts, and runbooks are named    |
+| Trade-offs            | Alternatives and redesign triggers are stated without hand-waving           |
+| Communication         | The answer is structured, corrected openly, and finishes on time            |
 
 Readiness target: no category below 2, at least 30/40 overall, and every safety
 invariant explained without notes.

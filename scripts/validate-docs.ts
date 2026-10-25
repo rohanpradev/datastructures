@@ -70,7 +70,10 @@ export async function validateMarkdownLinks(
 		"src/**/*.md",
 	]) {
 		const glob = new Glob(sourcePattern);
-		for await (const relativeFile of glob.scan({ cwd: root, onlyFiles: true })) {
+		for await (const relativeFile of glob.scan({
+			cwd: root,
+			onlyFiles: true,
+		})) {
 			markdownFiles.add(relativeFile);
 		}
 	}

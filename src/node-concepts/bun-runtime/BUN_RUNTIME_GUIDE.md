@@ -14,6 +14,7 @@ Official references:
 - [Bun Shell](https://bun.com/docs/runtime/shell)
 - [Bun child processes](https://bun.com/docs/runtime/child-process)
 - [Bun SQLite](https://bun.com/docs/runtime/sqlite)
+- [Bun 1.4.4 release notes](https://bun.com/blog/bun-v1.4.4)
 - [Bun test runner](https://bun.com/docs/test)
 - [Bun SQL](https://bun.com/docs/runtime/sql)
 - [Bun Redis](https://bun.com/docs/runtime/redis)
@@ -129,6 +130,19 @@ Problem: "Find every TypeScript file under a folder."
 3. Normalize paths before comparing in tests.
 4. Sort output so CI is deterministic.
 
+Bun 1.4.4 also supports extglobs and brace ranges:
+
+```ts
+await scanFiles(root, "**/!(*.test).ts"); // Source files excluding *.test.ts
+await scanFiles(root, "shard-{01..03}.json"); // 01, 02, 03, preserving padding
+matchesGlob("src/@(app|lib)/**/*.ts", "src/lib/index.ts"); // true
+```
+
+Patterns that previously treated extglobs or ranges literally now have meaning.
+To match `copy(1).txt`, use `*[(]1).txt` rather than `*(1).txt`; to match the literal
+`shard-{1..3}.json`, use `shard-[{]1..3[}].json`. Parentheses without an extglob
+prefix remain literal, so `app/(marketing)/**` still matches route-group paths.
+
 Reference code: [file-system.ts](./file-system.ts)
 
 ### Image Processing
@@ -184,6 +198,42 @@ Problem: "Run a trusted executable, feed it input, capture output, and fail clea
 
 Reference code: [process-execution.ts](./process-execution.ts)
 
+### WebSocket Work And Connection Failures
+
+Problem: "Process messages asynchronously without reordering replies or letting
+one client's failure disconnect everyone."
+
+1. Keep one FIFO per socket; concurrent async handlers can otherwise reply out of order.
+2. Call `socket.pause()` while work is pending and `socket.resume()` when the
+   queue empties. `socket.isPaused` exposes the current read state.
+3. Bound pending work separately because frames already buffered can still arrive.
+   Set payload and outbound buffering limits as well.
+4. Use Bun 1.4.4's `error(error, socket)` callback for synchronous handler throws.
+   Catch rejected work promises explicitly; the callback does not catch those.
+5. Close the affected established connection with 1011 for an internal failure.
+   A failed handshake instead emits `error`, then an unclean close with 1006.
+   An empty completed closing handshake reports 1005, not a fabricated 1000.
+6. Await server shutdown in tests. Test a healthy peer after a neighboring failure.
+
+Reference: [websocket-flow.ts](./websocket-flow.ts) and
+[the real-time lab](../../course/realtime-lab.ts). The lab's replay can fail
+during `open`, before the handshake completes; its close attempt may therefore
+appear to the client as 1006 rather than 1011.
+
+### Strict Code-Generation Policy
+
+Problem: "Prevent generated JavaScript while still loading structured data."
+
+Run trusted code with `--disallow-code-generation-from-strings=strict`.
+The executable [code-generation probes](./code-generation.ts) show that `eval`,
+`Function`, and JavaScript data URLs fail, while JSON data URLs still load.
+Source execution permits TypeScript files on disk. In a compiled executable,
+strict mode accepts only the embedded program's code, so newly written disk
+modules are rejected too.
+
+This controls code generation, not filesystem, network, or process access.
+The lesson accepts fixed probe names rather than arbitrary source text.
+
 ### Local SQL State
 
 Problem: "Track interview problems, attempts, and weak patterns without a hosted database."
@@ -196,6 +246,27 @@ Problem: "Track interview problems, attempts, and weak patterns without a hosted
 6. Query review candidates with ordered SQL instead of sorting everything in JavaScript.
 
 Reference code: [sqlite.ts](./sqlite.ts)
+
+### SQLite Functions And Aggregates
+
+Problem: "Summarize practice scores with a domain rule and a custom statistic."
+
+1. Register a deterministic scalar rule with `db.function()`: this lab marks
+   scores of 80 percent or higher as mastered.
+2. Register `db.aggregate()` with a fresh accumulator per group. Welford's
+   algorithm computes population variance with constant aggregate state.
+3. Validate scores and cap the batch before running synchronous SQLite work.
+4. Insert through a prepared statement inside one transaction, then combine
+   the functions with ordinary `COUNT`, `SUM`, and `AVG` in a query.
+5. Return `null` for an empty batch's average and variance, finalize statements,
+   and close the in-memory database even when an operation throws.
+
+These Bun 1.4.4 APIs run JavaScript callbacks synchronously during SQL execution.
+Keep callbacks short. SQLite update hooks also fire before commit and can report
+changes later rolled back, so they do not provide durable event delivery.
+
+Reference code: [sqlite-functions.ts](./sqlite-functions.ts). This isolated
+analytics lab leaves the existing practice tracker unchanged.
 
 ### Production SQL Client Discussion
 
@@ -278,9 +349,11 @@ Interview follow-ups:
 ## Test Command
 
 ```bash
-bun test src/node-concepts/test/bun-runtime.test.ts
+bun run test:bun # File, security, process, SQLite, WebSocket, strict-mode lessons
 # server route and worker-backed image processing
 bun test src/node-concepts/test/blocking-delay.test.ts
 bun test src/node-concepts/test/sqlite.test.ts
+bun test src/node-concepts/test/sqlite-functions.test.ts
 bun run test:coverage
+bun run test:checked # Check test types and imports before running
 ```

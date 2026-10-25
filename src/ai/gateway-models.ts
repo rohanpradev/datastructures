@@ -30,8 +30,7 @@ export function createGatewayModelCatalog(
 	now: () => number = Date.now,
 ): () => Promise<GatewayModelOption[]> {
 	let cachedCatalog:
-		| { expiresAt: number; models: GatewayModelOption[] }
-		| undefined;
+		{ expiresAt: number; models: GatewayModelOption[] } | undefined;
 	let catalogRequest: Promise<GatewayModelOption[]> | undefined;
 	let retryAt = 0;
 	const unavailable = () =>

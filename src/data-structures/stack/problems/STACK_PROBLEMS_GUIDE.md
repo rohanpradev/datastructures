@@ -53,10 +53,10 @@ Result: "olleh"
 
 ```typescript
 export function reverseString(str: string): string {
-  // TODO: Create stack (array)
-  // TODO: Push each character
-  // TODO: Pop all characters to build result
-  // TODO: Return reversed string
+	// TODO: Create stack (array)
+	// TODO: Push each character
+	// TODO: Pop all characters to build result
+	// TODO: Return reversed string
 }
 ```
 
@@ -150,12 +150,12 @@ Step 3: )
 
 ```typescript
 export function isBalanced(str: string): boolean {
-  // TODO: Create stack
-  // TODO: Create map of closing → opening pairs
-  // TODO: Loop through characters
-  // TODO: Handle opening brackets
-  // TODO: Handle closing brackets (check match)
-  // TODO: Return true if stack empty
+	// TODO: Create stack
+	// TODO: Create map of closing → opening pairs
+	// TODO: Loop through characters
+	// TODO: Handle opening brackets
+	// TODO: Handle closing brackets (check match)
+	// TODO: Return true if stack empty
 }
 ```
 
@@ -249,12 +249,12 @@ Final:
 
 ```typescript
 export function sortStack(stack: number[]): void {
-  // TODO: Create temp stack
-  // TODO: While original stack not empty
-  // TODO: Pop element, find correct position in temp
-  // TODO: Move elements back if needed
-  // TODO: Push element to temp
-  // TODO: Move all from temp back to original
+	// TODO: Create temp stack
+	// TODO: While original stack not empty
+	// TODO: Pop element, find correct position in temp
+	// TODO: Move elements back if needed
+	// TODO: Push element to temp
+	// TODO: Move all from temp back to original
 }
 ```
 
@@ -353,26 +353,26 @@ class QueueWithStacks:
 
 ```typescript
 class QueueUsingStacks<T> {
-  private stack1: T[] = [];
-  private stack2: T[] = [];
+	private stack1: T[] = [];
+	private stack2: T[] = [];
 
-  enqueue(value: T): void {
-    // TODO: Push to stack1
-  }
+	enqueue(value: T): void {
+		// TODO: Push to stack1
+	}
 
-  dequeue(): T | undefined {
-    // TODO: If stack2 empty, move all from stack1
-    // TODO: Pop from stack2
-  }
+	dequeue(): T | undefined {
+		// TODO: If stack2 empty, move all from stack1
+		// TODO: Pop from stack2
+	}
 
-  peek(): T | undefined {
-    // TODO: If stack2 empty, move all from stack1
-    // TODO: Return top of stack2
-  }
+	peek(): T | undefined {
+		// TODO: If stack2 empty, move all from stack1
+		// TODO: Return top of stack2
+	}
 
-  isEmpty(): boolean {
-    // TODO: Check if both stacks empty
-  }
+	isEmpty(): boolean {
+		// TODO: Check if both stacks empty
+	}
 }
 ```
 
@@ -463,25 +463,25 @@ class MinStack:
 
 ```typescript
 class MinStack {
-  private stack: number[] = [];
-  private minStack: number[] = [];
+	private stack: number[] = [];
+	private minStack: number[] = [];
 
-  push(value: number): void {
-    // TODO: Push to main stack
-    // TODO: Update min stack
-  }
+	push(value: number): void {
+		// TODO: Push to main stack
+		// TODO: Update min stack
+	}
 
-  pop(): number | undefined {
-    // TODO: Pop from both stacks
-  }
+	pop(): number | undefined {
+		// TODO: Pop from both stacks
+	}
 
-  top(): number | undefined {
-    // TODO: Return top of main stack
-  }
+	top(): number | undefined {
+		// TODO: Return top of main stack
+	}
 
-  getMin(): number | undefined {
-    // TODO: Return top of min stack
-  }
+	getMin(): number | undefined {
+		// TODO: Return top of min stack
+	}
 }
 ```
 
@@ -657,9 +657,9 @@ const ops: string[] = [];
 
 ```ts
 function precedence(op: string): number {
-  if (op === "+" || op === "-") return 1;
-  if (op === "*" || op === "/") return 2;
-  return 0;
+	if (op === "+" || op === "-") return 1;
+	if (op === "*" || op === "/") return 2;
+	return 0;
 }
 ```
 
@@ -676,18 +676,18 @@ Used later when deciding whether an operator on the stack should be applied befo
 
 ```ts
 function applyOp(op: string, b: number, a: number): number {
-  switch (op) {
-    case "+":
-      return a + b;
-    case "-":
-      return a - b;
-    case "*":
-      return a * b;
-    case "/":
-      return a / b;
-    default:
-      throw new Error("Unknown operator: " + op);
-  }
+	switch (op) {
+		case "+":
+			return a + b;
+		case "-":
+			return a - b;
+		case "*":
+			return a * b;
+		case "/":
+			return a / b;
+		default:
+			throw new Error("Unknown operator: " + op);
+	}
 }
 ```
 
@@ -726,16 +726,16 @@ Spaces are meaningless in math expressions.
 
 ```ts
 if (!isNaN(Number(c))) {
-  let num = 0;
+	let num = 0;
 
-  while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
-    num = num * 10 + Number(expr[i]);
-    i++;
-  }
+	while (i < expr.length && !isNaN(Number(expr[i])) && expr[i] !== " ") {
+		num = num * 10 + Number(expr[i]);
+		i++;
+	}
 
-  i--;
-  values.push(num);
-  continue;
+	i--;
+	values.push(num);
+	continue;
 }
 ```
 
@@ -755,8 +755,8 @@ Expression: `"123 + 4"`
 
 ```ts
 if (c === "(") {
-  ops.push(c);
-  continue;
+	ops.push(c);
+	continue;
 }
 ```
 
@@ -768,15 +768,15 @@ Just push it onto the operator stack.
 
 ```ts
 if (c === ")") {
-  while (ops.length && ops[ops.length - 1] !== "(") {
-    const op = ops.pop()!;
-    const b = values.pop()!;
-    const a = values.pop()!;
-    values.push(applyOp(op, b, a));
-  }
+	while (ops.length && ops[ops.length - 1] !== "(") {
+		const op = ops.pop()!;
+		const b = values.pop()!;
+		const a = values.pop()!;
+		values.push(applyOp(op, b, a));
+	}
 
-  ops.pop(); // remove '('
-  continue;
+	ops.pop(); // remove '('
+	continue;
 }
 ```
 
@@ -793,14 +793,14 @@ This handles sub-expressions like `(2 + 3)`.
 
 ```ts
 if (["+", "-", "*", "/"].includes(c!)) {
-  while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
-    const op = ops.pop()!;
-    const b = values.pop()!;
-    const a = values.pop()!;
-    values.push(applyOp(op, b, a));
-  }
+	while (ops.length && precedence(ops[ops.length - 1]!) >= precedence(c!)) {
+		const op = ops.pop()!;
+		const b = values.pop()!;
+		const a = values.pop()!;
+		values.push(applyOp(op, b, a));
+	}
 
-  ops.push(c!);
+	ops.push(c!);
 }
 ```
 
@@ -822,10 +822,10 @@ Expression: `3 + 5 * 2`
 
 ```ts
 while (ops.length) {
-  const op = ops.pop()!;
-  const b = values.pop()!;
-  const a = values.pop()!;
-  values.push(applyOp(op, b, a));
+	const op = ops.pop()!;
+	const b = values.pop()!;
+	const a = values.pop()!;
+	values.push(applyOp(op, b, a));
 }
 ```
 
@@ -972,28 +972,28 @@ function nodeDepths(root):
  * Calculates the sum of depths of all nodes in a binary tree.
  */
 export function nodeDepths(root: TreeNode<number>): number {
-  const stack = [{ node: root, depth: 0 }];
-  let sumOfDepths = 0;
+	const stack = [{ node: root, depth: 0 }];
+	let sumOfDepths = 0;
 
-  while (stack.length > 0) {
-    const current = stack.pop();
-    if (!current) continue;
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (!current) continue;
 
-    const { node, depth } = current;
-    sumOfDepths += depth;
+		const { node, depth } = current;
+		sumOfDepths += depth;
 
-    const nextDepth = depth + 1;
+		const nextDepth = depth + 1;
 
-    if (node.left) {
-      stack.push({ node: node.left, depth: nextDepth });
-    }
+		if (node.left) {
+			stack.push({ node: node.left, depth: nextDepth });
+		}
 
-    if (node.right) {
-      stack.push({ node: node.right, depth: nextDepth });
-    }
-  }
+		if (node.right) {
+			stack.push({ node: node.right, depth: nextDepth });
+		}
+	}
 
-  return sumOfDepths;
+	return sumOfDepths;
 }
 ```
 

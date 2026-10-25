@@ -25,12 +25,12 @@ Use this structure for every system design prompt:
 
 ## Rubric
 
-| Level | What the answer sounds like |
-| --- | --- |
-| Beginner | Draws boxes and explains the happy path. |
-| Intermediate | Adds API, data model, cache, queue, and bottlenecks. |
-| Advanced | Quantifies scale, explains consistency, failure handling, and trade-offs. |
-| Expert | Connects design to SLOs, operations, security, cost, migrations, and incident response. |
+| Level        | What the answer sounds like                                                             |
+| ------------ | --------------------------------------------------------------------------------------- |
+| Beginner     | Draws boxes and explains the happy path.                                                |
+| Intermediate | Adds API, data model, cache, queue, and bottlenecks.                                    |
+| Advanced     | Quantifies scale, explains consistency, failure handling, and trade-offs.               |
+| Expert       | Connects design to SLOs, operations, security, cost, migrations, and incident response. |
 
 ## Scenario 1: API Rate Limiter
 
@@ -142,11 +142,11 @@ Design an ID generator for orders, events, and public links.
 
 Compare three options:
 
-| Option | Use when | Risk |
-| --- | --- | --- |
-| Database sequence | Strong central ordering is acceptable. | Central bottleneck and regional dependency. |
-| UUID v7 | Standard sortable IDs are enough. | Larger ID string, no custom worker fields. |
-| Snowflake-style | Need compact sortable IDs with worker and sequence fields. | Clock rollback and worker ID assignment. |
+| Option            | Use when                                                   | Risk                                        |
+| ----------------- | ---------------------------------------------------------- | ------------------------------------------- |
+| Database sequence | Strong central ordering is acceptable.                     | Central bottleneck and regional dependency. |
+| UUID v7           | Standard sortable IDs are enough.                          | Larger ID string, no custom worker fields.  |
+| Snowflake-style   | Need compact sortable IDs with worker and sequence fields. | Clock rollback and worker ID assignment.    |
 
 ### Sample Deep Dive
 
@@ -228,10 +228,10 @@ Design a social feed delivery service.
 
 Two common strategies:
 
-| Strategy | Best for | Trade-off |
-| --- | --- | --- |
-| Fanout on write | Normal users with moderate follower count. | More writes, faster reads. |
-| Fanout on read | Celebrity accounts and huge fanout. | Slower reads, lower write explosion. |
+| Strategy        | Best for                                   | Trade-off                            |
+| --------------- | ------------------------------------------ | ------------------------------------ |
+| Fanout on write | Normal users with moderate follower count. | More writes, faster reads.           |
+| Fanout on read  | Celebrity accounts and huge fanout.        | Slower reads, lower write explosion. |
 
 Hybrid:
 

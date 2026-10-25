@@ -1,10 +1,11 @@
-# Bun 1.4.3 Learning Curriculum
+# Bun 1.4.4 Learning Curriculum
 
 This track maps the repository's pinned Bun version to backend, tooling,
-testing, and system-design practice. The repository pins `bun@1.4.3`, released
-October 10, 2026 and verified as the latest stable release on October 15, 2026.
-See the [October upgrade notes](./UPGRADE_2026_10.md) and
-[Bun blog](https://bun.com/blog) for release details.
+testing, and system-design practice. The repository pins `bun@1.4.4`, released
+October 22, 2026 and checked against the release notes on October 25, 2026.
+See the [October 24 upgrade notes](./UPGRADE_2026_10_24.md) and
+[October 25 follow-through](./UPGRADE_2026_10_25.md), and the
+[Bun 1.4.4 release notes](https://bun.com/blog/bun-v1.4.4) for release details.
 
 Read [BUN_RUNTIME_GUIDE.md](../src/node-concepts/bun-runtime/BUN_RUNTIME_GUIDE.md)
 for step-by-step examples and use this document as the coverage and interview
@@ -27,7 +28,23 @@ project should adopt runtime-specific APIs:
 - Bun 1.4.3 adds a built-in TypeScript checker. `bun run typecheck` uses
   `bun --check` because this project's `check` script shadows `bun check`.
   Keep `typescript` for editor support and `bun run typecheck:tsc` comparisons.
-- The repository's `bun@1.4.3` pin and lockfile are the reproducible baseline.
+- Bun 1.4.4 adds `bun fmt`, the built-in formatter. `bun run format` writes
+  formatting, `bun run format:check` checks it without writing, and Biome
+  remains the lint gate. Formatting settings live in `[fmt]` in `bunfig.toml`.
+- Bun 1.4.4 accepts release-age units, so `minimumReleaseAge = "1d"` preserves
+  the existing one-day dependency policy. Exceptions now use `name@version` to
+  cover only pinned tool versions. CI prefetches with `bun pm fetch` before an
+  offline frozen install; retry backoff applies to prefetching.
+- Checked startup and watch restarts use `bun run --check`; `test:checked` uses
+  `bun test --check`. Type errors prevent execution. `check:static` uses Bun's
+  parallel script runner for independent read-only gates before coverage tests.
+- The WebSocket flow lab uses `pause`, `resume`, and `isPaused`, a bounded FIFO,
+  and the new `error(error, socket)` callback. It catches rejected asynchronous
+  work separately and tests both clean closes and failed handshakes.
+- Strict execution probes distinguish code from JSON data and trusted disk
+  modules. Source execution still permits disk code; a compiled executable's
+  strict mode limits code to embedded files. This flag does not isolate I/O.
+- The repository's `bun@1.4.4` pin and lockfile are the reproducible baseline.
   Compare Bun-specific choices with portable Node.js APIs when portability
   matters.
 
@@ -39,26 +56,29 @@ Official release reference: [Bun blog](https://bun.com/blog).
 
 ## Coverage Matrix
 
-| Capability | Learn | Repository lab | Production question |
-| --- | --- | --- | --- |
-| Runtime and TypeScript | direct TS execution, module resolution, environment, Node compatibility | `tsconfig.json`, concept tests | Which static checks still run separately? |
-| Files and binary data | lazy `Bun.file`, `Bun.write`, streams, MIME, Blob/typed arrays | `file-system.ts` | Can the path or payload exhaust memory/disk? |
-| Glob and tooling | scan, match, stable output | file lab, docs validator | How are ignores and symlinks handled? |
-| HTTP server | routes, params, methods, errors, lifecycle, metrics | `server.ts` | What owns TLS, graceful drain, timeouts, limits? |
-| WebSocket | upgrade, shared handlers, pub/sub, backpressure | `pub-sub.ts` | What happens across instances and to slow clients? |
-| Image | metadata, resize, encode, worker isolation | `image-processing.ts` | What are pixel, format, CPU, path, and timeout limits? |
-| Security | password hashing, crypto hash, cookies, CSRF, secrets | `security.ts`, `modern-apis.ts` | What is the threat model and key/secret lifecycle? |
-| SQL and SQLite | pooling, tagged templates, transactions, local state | `sqlite.ts`, SQL notes | What is source of truth, retry, migration, pool policy? |
-| Redis | cache, counters, pub/sub, distributed primitives | guide discussion | What happens on eviction, reconnect, failover, hot keys? |
-| JSON5/JSONL | human config, streaming records, partial parse semantics | `modern-apis.ts` | Where is runtime validation and malformed-input policy? |
-| Markdown | HTML/ANSI/custom/React rendering | `modern-apis.ts` | Is input trusted, sanitized, and URL-filtered? |
-| Archive | in-memory/write/extract/filter tar data | `modern-apis.ts` | Are paths trusted; should extraction be sandboxed? |
-| Cron | preview, in-process job, OS registration | `modern-apis.ts` | Who prevents overlap/duplicates and owns retry/history? |
-| Shell and spawn | escaped shell interpolation vs direct argv/process control | shell/process labs | Which input chooses executable, env, path, or permissions? |
-| Package manager | lockfile, workspaces, isolated linker, minimum age, audit | `bunfig.toml` | How are lifecycle scripts, provenance, and scanners controlled? |
-| Test runner | mocks, fake time, snapshots, coverage, randomization, isolation, parallel/shard/changed | package scripts and tests | Which state leaks across files and how is CI partitioned? |
-| Bundler/compile | plugins, bytecode, metafile, standalone executables/HTML | guided extension | What remains dynamic and platform-specific? |
-| Diagnostics | debugger, CPU/heap profiles, async stacks | guided extension | Can an incident be reproduced with symbols and context? |
+| Capability             | Learn                                                                                   | Repository lab                                   | Production question                                                     |
+| ---------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| Runtime and TypeScript | direct TS execution, module resolution, environment, Node compatibility                 | `tsconfig.json`, concept tests                   | Which static checks still run separately?                               |
+| Formatting and linting | `bun fmt`, non-mutating format checks, separate lint rules                              | `[fmt]` in `bunfig.toml`, package scripts, Biome | Do local commands and CI enforce the same settings?                     |
+| Files and binary data  | lazy `Bun.file`, `Bun.write`, streams, MIME, Blob/typed arrays                          | `file-system.ts`                                 | Can the path or payload exhaust memory/disk?                            |
+| Glob and tooling       | scan, match, stable output                                                              | file lab, docs validator                         | How are ignores and symlinks handled?                                   |
+| HTTP server            | routes, params, methods, errors, lifecycle, metrics                                     | `server.ts`                                      | What owns TLS, graceful drain, timeouts, limits?                        |
+| WebSocket              | upgrade, shared handlers, pub/sub, backpressure                                         | `pub-sub.ts`                                     | What happens across instances and to slow clients?                      |
+| WebSocket flow control | pause/resume reads, bounded work, per-client errors, close semantics                    | `websocket-flow.ts`, real-time lab               | Which queues remain bounded when transport reads pause?                 |
+| Code-generation policy | strict execution, disk modules, generated JS, JSON data                                 | `code-generation.ts`                             | How does the compiled executable boundary differ from source execution? |
+| Image                  | metadata, resize, encode, worker isolation                                              | `image-processing.ts`                            | What are pixel, format, CPU, path, and timeout limits?                  |
+| Security               | password hashing, crypto hash, cookies, CSRF, secrets                                   | `security.ts`, `modern-apis.ts`                  | What is the threat model and key/secret lifecycle?                      |
+| SQL and SQLite         | pooling, tagged templates, transactions, local state                                    | `sqlite.ts`, SQL notes                           | What is source of truth, retry, migration, pool policy?                 |
+| Redis                  | cache, counters, pub/sub, distributed primitives                                        | guide discussion                                 | What happens on eviction, reconnect, failover, hot keys?                |
+| JSON5/JSONL            | human config, streaming records, partial parse semantics                                | `modern-apis.ts`                                 | Where is runtime validation and malformed-input policy?                 |
+| Markdown               | HTML/ANSI/custom/React rendering                                                        | `modern-apis.ts`                                 | Is input trusted, sanitized, and URL-filtered?                          |
+| Archive                | in-memory/write/extract/filter tar data                                                 | `modern-apis.ts`                                 | Are paths trusted; should extraction be sandboxed?                      |
+| Cron                   | preview, in-process job, OS registration                                                | `modern-apis.ts`                                 | Who prevents overlap/duplicates and owns retry/history?                 |
+| Shell and spawn        | escaped shell interpolation vs direct argv/process control                              | shell/process labs                               | Which input chooses executable, env, path, or permissions?              |
+| Package manager        | lockfile, workspaces, isolated linker, minimum age, audit                               | `bunfig.toml`                                    | How are lifecycle scripts, provenance, and scanners controlled?         |
+| Test runner            | mocks, fake time, snapshots, coverage, randomization, isolation, parallel/shard/changed | package scripts and tests                        | Which state leaks across files and how is CI partitioned?               |
+| Bundler/compile        | plugins, bytecode, metafile, standalone executables/HTML                                | guided extension                                 | What remains dynamic and platform-specific?                             |
+| Diagnostics            | debugger, CPU/heap profiles, async stacks                                               | guided extension                                 | Can an incident be reproduced with symbols and context?                 |
 
 ## Four-Stage Track
 
@@ -114,7 +134,9 @@ transformation, response, deletion, and audit.
 Study:
 
 - lockfile and frozen installs;
-- lifecycle-script trust and minimum release age;
+- lifecycle-script trust and `minimumReleaseAge = "1d"`;
+- per-version release-age exceptions, `bun pm fetch`, and offline frozen installs;
+- `bun fmt`, `bun fmt --check`, and Biome linting as separate quality gates;
 - isolated linker/global store and monorepo catalogs;
 - `bun test --randomize`, `--rerun-each`, `--isolate`, `--parallel`, `--shard`,
   and `--changed`;
@@ -125,14 +147,27 @@ Study:
 Useful commands:
 
 ```bash
+bun run format
+bun run check:static
+bun run format:check
+bun run lint
 bun run docs:check
 bun run test:changed
+bun run test:checked
+bun run test:bun
+bun run deps:fetch
+bun run deps:offline
 bun run test:isolated
 bun run test:parallel
 bun test --shard=1/2
 bun test --shard=2/2
 bun run test:concepts:smoke
 ```
+
+`bun run fix` applies Biome fixes followed by Bun formatting. For a focused
+formatting pass, `bun fmt --changed` selects changes from the default branch;
+`bun fmt --staged` formats and re-stages the files selected for a commit.
+CI uses the full non-mutating format check before the remaining checks.
 
 Do not add retries to make deterministic failing tests green. Use retry and
 rerun features to classify external/transient failures and expose flakiness;
@@ -257,6 +292,7 @@ Add these only after the current focused tests are mastered:
 - [Bun documentation](https://bun.com/docs)
 - [Bun 1.4 release](https://bun.com/blog/bun-v1.4)
 - [Bun 1.4.3 release notes](https://bun.com/blog/bun-v1.4.3)
+- [Bun 1.4.4 release notes](https://bun.com/blog/bun-v1.4.4)
 - [Bun type checking](https://bun.com/docs/runtime/check)
 - [HTTP server](https://bun.com/docs/runtime/http/server)
 - [WebSockets](https://bun.com/docs/runtime/http/websockets)

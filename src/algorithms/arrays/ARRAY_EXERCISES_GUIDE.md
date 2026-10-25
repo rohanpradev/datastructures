@@ -64,10 +64,10 @@ Result: k = 2, first 2 elements are [2, 2]
 
 ```typescript
 export function removeElement(nums: number[], val: number): number {
-  // TODO: Initialize k to track valid elements position
-  // TODO: Loop through each element
-  // TODO: If element is not val, place it at position k and increment k
-  // TODO: Return k
+	// TODO: Initialize k to track valid elements position
+	// TODO: Loop through each element
+	// TODO: If element is not val, place it at position k and increment k
+	// TODO: Return k
 }
 ```
 
@@ -141,12 +141,12 @@ Final: [9, 1]
 
 ```typescript
 export function findMaxMin(arr: number[]): [number, number] {
-  // TODO: Check if array is empty and throw error
-  // TODO: Initialize max and min to first element
-  // TODO: Loop through remaining elements
-  // TODO: Update max if current is larger
-  // TODO: Update min if current is smaller
-  // TODO: Return [max, min]
+	// TODO: Check if array is empty and throw error
+	// TODO: Initialize max and min to first element
+	// TODO: Loop through remaining elements
+	// TODO: Update max if current is larger
+	// TODO: Update min if current is smaller
+	// TODO: Return [max, min]
 }
 ```
 
@@ -206,11 +206,11 @@ Result: "banana"
 
 ```typescript
 export function findLongestString(strings: string[]): string {
-  // TODO: Check if array is empty and throw error
-  // TODO: Initialize longest to first string
-  // TODO: Loop through remaining strings
-  // TODO: Update longest if current is longer
-  // TODO: Return longest
+	// TODO: Check if array is empty and throw error
+	// TODO: Initialize longest to first string
+	// TODO: Loop through remaining strings
+	// TODO: Update longest if current is longer
+	// TODO: Return longest
 }
 ```
 
@@ -285,11 +285,11 @@ Result: k + 1 = 3 unique elements
 
 ```typescript
 export function removeDuplicates(nums: number[]): number {
-  // TODO: Handle empty array
-  // TODO: Initialize k = 0
-  // TODO: Loop from i = 1 to end
-  // TODO: If nums[i] different from nums[k], increment k and copy
-  // TODO: Return k + 1
+	// TODO: Handle empty array
+	// TODO: Initialize k = 0
+	// TODO: Loop from i = 1 to end
+	// TODO: If nums[i] different from nums[k], increment k and copy
+	// TODO: Return k + 1
 }
 ```
 
@@ -374,13 +374,13 @@ Best: Buy at 1, Sell at 6 → Profit = 5
 
 ```typescript
 export function maxProfit(prices: number[]): number {
-  // TODO: Handle empty array
-  // TODO: Initialize minPrice and maxProfit
-  // TODO: Loop through prices starting from index 1
-  // TODO: Update minPrice if current price is lower
-  // TODO: Calculate potential profit
-  // TODO: Update maxProfit if current profit is higher
-  // TODO: Return maxProfit
+	// TODO: Handle empty array
+	// TODO: Initialize minPrice and maxProfit
+	// TODO: Loop through prices starting from index 1
+	// TODO: Update minPrice if current price is lower
+	// TODO: Calculate potential profit
+	// TODO: Update maxProfit if current profit is higher
+	// TODO: Return maxProfit
 }
 ```
 
@@ -452,12 +452,12 @@ Reverse last 3:  [D, E, A, B, C] ✓
 
 ```typescript
 export function rotate(nums: number[], k: number): void {
-  // TODO: Get array length
-  // TODO: Normalize k (k = k % n)
-  // TODO: Create helper function to reverse array segment
-  // TODO: Reverse entire array
-  // TODO: Reverse first k elements
-  // TODO: Reverse remaining n-k elements
+	// TODO: Get array length
+	// TODO: Normalize k (k = k % n)
+	// TODO: Create helper function to reverse array segment
+	// TODO: Reverse entire array
+	// TODO: Reverse first k elements
+	// TODO: Reverse remaining n-k elements
 }
 ```
 
@@ -562,12 +562,12 @@ We choose whichever gives larger sum.
 
 ```typescript
 export function maxSubArray(nums: number[]): number {
-  // TODO: Handle empty array
-  // TODO: Initialize currentSum and maxSum to first element
-  // TODO: Loop from index 1 to end
-  // TODO: Update currentSum (either extend or restart)
-  // TODO: Update maxSum if currentSum is larger
-  // TODO: Return maxSum
+	// TODO: Handle empty array
+	// TODO: Initialize currentSum and maxSum to first element
+	// TODO: Loop from index 1 to end
+	// TODO: Update currentSum (either extend or restart)
+	// TODO: Update maxSum if currentSum is larger
+	// TODO: Return maxSum
 }
 ```
 
@@ -723,15 +723,15 @@ Because array order matters for indices, we must check **before** inserting the 
 
 ```ts
 export function twoSum(
-  arr: number[],
-  target: number,
+	arr: number[],
+	target: number,
 ): [number, number] | undefined {
-  // TODO: Create a hash map to store seen values and their indices
-  // TODO: Loop through the array
-  //   - Compute complement = target - current
-  //   - If complement exists → return indices
-  //   - Otherwise store current value
-  // TODO: Return undefined if no solution exists
+	// TODO: Create a hash map to store seen values and their indices
+	// TODO: Loop through the array
+	//   - Compute complement = target - current
+	//   - If complement exists → return indices
+	//   - Otherwise store current value
+	// TODO: Return undefined if no solution exists
 }
 ```
 
@@ -942,14 +942,14 @@ This avoids unnecessary comparisons and backtracking.
 
 ```ts
 export function validateSubsequence(
-  array: number[],
-  sequence: number[],
+	array: number[],
+	sequence: number[],
 ): boolean {
-  // TODO: Initialize two pointers
-  // TODO: Traverse the main array
-  //   - If elements match, advance sequence pointer
-  //   - Always advance array pointer
-  // TODO: Return true if all sequence elements were matched
+	// TODO: Initialize two pointers
+	// TODO: Traverse the main array
+	//   - If elements match, advance sequence pointer
+	//   - Always advance array pointer
+	// TODO: Return true if all sequence elements were matched
 }
 ```
 
@@ -1033,13 +1033,13 @@ By comparing absolute values at both ends, we can:
 
 ```ts
 export function sortedSquaredArray(nums: number[]): number[] {
-  // TODO: Initialize left and right pointers
-  // TODO: Create a result array
-  // TODO: Fill result from right to left
-  //   - Compare absolute values at both pointers
-  //   - Square the larger value and insert
-  // TODO: Move pointers inward
-  // TODO: Return the result array
+	// TODO: Initialize left and right pointers
+	// TODO: Create a result array
+	// TODO: Fill result from right to left
+	//   - Compare absolute values at both pointers
+	//   - Square the larger value and insert
+	// TODO: Move pointers inward
+	// TODO: Return the result array
 }
 ```
 
@@ -1332,49 +1332,49 @@ Processing:
  * @returns True if both strings are equal after applying backspaces
  */
 function backspaceStringCompare(s: string, t: string): boolean {
-  let i = s.length - 1;
-  let j = t.length - 1;
+	let i = s.length - 1;
+	let j = t.length - 1;
 
-  let skipS = 0;
-  let skipT = 0;
+	let skipS = 0;
+	let skipT = 0;
 
-  while (i >= 0 || j >= 0) {
-    // Find next valid character in s
-    while (i >= 0) {
-      if (s[i] === "#") {
-        skipS++;
-        i--;
-      } else if (skipS > 0) {
-        skipS--;
-        i--;
-      } else {
-        break;
-      }
-    }
+	while (i >= 0 || j >= 0) {
+		// Find next valid character in s
+		while (i >= 0) {
+			if (s[i] === "#") {
+				skipS++;
+				i--;
+			} else if (skipS > 0) {
+				skipS--;
+				i--;
+			} else {
+				break;
+			}
+		}
 
-    // Find next valid character in t
-    while (j >= 0) {
-      if (t[j] === "#") {
-        skipT++;
-        j--;
-      } else if (skipT > 0) {
-        skipT--;
-        j--;
-      } else {
-        break;
-      }
-    }
+		// Find next valid character in t
+		while (j >= 0) {
+			if (t[j] === "#") {
+				skipT++;
+				j--;
+			} else if (skipT > 0) {
+				skipT--;
+				j--;
+			} else {
+				break;
+			}
+		}
 
-    const charS = i >= 0 ? s[i] : null;
-    const charT = j >= 0 ? t[j] : null;
+		const charS = i >= 0 ? s[i] : null;
+		const charT = j >= 0 ? t[j] : null;
 
-    if (charS !== charT) return false;
+		if (charS !== charT) return false;
 
-    i--;
-    j--;
-  }
+		i--;
+		j--;
+	}
 
-  return true;
+	return true;
 }
 ```
 
@@ -1449,9 +1449,9 @@ If `matrix[i][j] = x`, then in the transposed matrix: `transposed[j][i] = x`.
 
 ```ts
 matrix = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
+	[1, 2, 3],
+	[4, 5, 6],
+	[7, 8, 9],
 ];
 ```
 
@@ -1471,9 +1471,9 @@ Transpose:
 
 ```ts
 matrix = [
-  [1, 2],
-  [3, 4],
-  [5, 6],
+	[1, 2],
+	[3, 4],
+	[5, 6],
 ];
 ```
 
@@ -1642,13 +1642,13 @@ function maxPlanesStopped(initialDistance, landingSpeed):
 
 ```typescript
 function maxPlanesStopped(
-  initialDistance: number[],
-  landingSpeed: number[],
+	initialDistance: number[],
+	landingSpeed: number[],
 ): number {
-  // 1. Compute landing time for each plane
-  // 2. Sort landing times
-  // 3. Greedily stop planes before deadlines
-  // 4. Return count of planes stopped
+	// 1. Compute landing time for each plane
+	// 2. Sort landing times
+	// 3. Greedily stop planes before deadlines
+	// 4. Return count of planes stopped
 }
 ```
 
@@ -1752,14 +1752,14 @@ Total waiting time = 0 + 1 + 3 + 5 + 8 = 17
  * @returns Minimum total waiting time
  */
 function minimumWaitingTime(nums: number[]): number {
-  nums.sort((a, b) => a - b);
-  let total = 0;
+	nums.sort((a, b) => a - b);
+	let total = 0;
 
-  for (let i = 0; i < nums.length; i++) {
-    total += nums[i] * (nums.length - i - 1);
-  }
+	for (let i = 0; i < nums.length; i++) {
+		total += nums[i] * (nums.length - i - 1);
+	}
 
-  return total;
+	return total;
 }
 
 // Example
@@ -1886,29 +1886,29 @@ All pairs satisfy the height condition → Valid photo
  * @returns True if a valid class photo arrangement exists, otherwise false
  */
 export function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
-  // If the groups are not the same size, a valid photo is impossible
-  if (redShirts.length !== blueShirts.length) return false;
+	// If the groups are not the same size, a valid photo is impossible
+	if (redShirts.length !== blueShirts.length) return false;
 
-  // Sort both arrays from tallest to shortest
-  redShirts.sort((a, b) => b - a);
-  blueShirts.sort((a, b) => b - a);
+	// Sort both arrays from tallest to shortest
+	redShirts.sort((a, b) => b - a);
+	blueShirts.sort((a, b) => b - a);
 
-  // If the tallest students are the same height, no valid back row exists
-  if (redShirts[0] === blueShirts[0]) return false;
+	// If the tallest students are the same height, no valid back row exists
+	if (redShirts[0] === blueShirts[0]) return false;
 
-  // Determine which color must be in the back row
-  const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
+	// Determine which color must be in the back row
+	const backRow = redShirts[0] > blueShirts[0] ? "red" : "blue";
 
-  // Compare each pair of students by height
-  for (let i = 0; i < redShirts.length; i++) {
-    if (backRow === "red") {
-      if (redShirts[i] <= blueShirts[i]) return false;
-    } else {
-      if (blueShirts[i] <= redShirts[i]) return false;
-    }
-  }
+	// Compare each pair of students by height
+	for (let i = 0; i < redShirts.length; i++) {
+		if (backRow === "red") {
+			if (redShirts[i] <= blueShirts[i]) return false;
+		} else {
+			if (blueShirts[i] <= redShirts[i]) return false;
+		}
+	}
 
-  return true;
+	return true;
 }
 ```
 
@@ -2015,12 +2015,12 @@ Comparison:
 
 ```ts
 function classPhoto(redShirts: number[], blueShirts: number[]): boolean {
-  // 1. If the arrays have different lengths, return false
-  // 2. Sort both arrays in descending order
-  // 3. Compare the tallest students to determine the back row
-  // 4. For each index:
-  //    - Ensure the back-row student is strictly taller
-  // 5. Return true if all comparisons pass
+	// 1. If the arrays have different lengths, return false
+	// 2. Sort both arrays in descending order
+	// 3. Compare the tallest students to determine the back row
+	// 4. For each index:
+	//    - Ensure the back-row student is strictly taller
+	// 5. Return true if all comparisons pass
 }
 ```
 
@@ -2160,32 +2160,32 @@ Why?
 
 ```ts
 export function optimalFreelancing(
-  jobs: Array<{ deadline: number; payment: number }>,
+	jobs: Array<{ deadline: number; payment: number }>,
 ): number {
-  const slots: Array<number | undefined> = new Array(7).fill(undefined);
+	const slots: Array<number | undefined> = new Array(7).fill(undefined);
 
-  // Step 1: Sort by highest payment first
-  jobs.sort((a, b) => b.payment - a.payment);
+	// Step 1: Sort by highest payment first
+	jobs.sort((a, b) => b.payment - a.payment);
 
-  let totalMoney = 0;
+	let totalMoney = 0;
 
-  // Step 2: Try to schedule each job
-  for (const job of jobs) {
-    // Convert deadline (1–7) to index (0–6)
-    let idx = Math.min(job.deadline - 1, 6);
+	// Step 2: Try to schedule each job
+	for (const job of jobs) {
+		// Convert deadline (1–7) to index (0–6)
+		let idx = Math.min(job.deadline - 1, 6);
 
-    // Step 3: Find the latest available day
-    while (idx >= 0) {
-      if (slots[idx] === undefined) {
-        slots[idx] = job.payment;
-        totalMoney += job.payment;
-        break;
-      }
-      idx--;
-    }
-  }
+		// Step 3: Find the latest available day
+		while (idx >= 0) {
+			if (slots[idx] === undefined) {
+				slots[idx] = job.payment;
+				totalMoney += job.payment;
+				break;
+			}
+			idx--;
+		}
+	}
 
-  return totalMoney;
+	return totalMoney;
 }
 ```
 
@@ -2302,12 +2302,12 @@ Found target at index 4 ✅
 
 ```typescript
 export function binarySearch(nums: number[], target: number): number | null {
-  // TODO: Initialize left and right pointers
-  // TODO: Loop while left <= right
-  // TODO: Calculate mid index
-  // TODO: Compare nums[mid] with target
-  // TODO: Adjust search range accordingly
-  // TODO: Return index if found, otherwise null
+	// TODO: Initialize left and right pointers
+	// TODO: Loop while left <= right
+	// TODO: Calculate mid index
+	// TODO: Compare nums[mid] with target
+	// TODO: Adjust search range accordingly
+	// TODO: Return index if found, otherwise null
 }
 ```
 
@@ -2470,16 +2470,16 @@ result = [10, 10, 12]
 
 ```typescript
 export function threeLargestNumbers(nums: number[]): number[] {
-  // TODO: Initialize result array to [-Infinity, -Infinity, -Infinity]
-  // TODO: Iterate through each number in nums
-  // TODO: Use conditional logic to determine if num should go in result
-  // TODO: Call shiftAndUpdate to insert at correct index
-  // TODO: Return result
+	// TODO: Initialize result array to [-Infinity, -Infinity, -Infinity]
+	// TODO: Iterate through each number in nums
+	// TODO: Use conditional logic to determine if num should go in result
+	// TODO: Call shiftAndUpdate to insert at correct index
+	// TODO: Return result
 }
 
 function shiftAndUpdate(arr: number[], value: number, index: number) {
-  // TODO: Shift smaller elements left to make room for new value
-  // TODO: Insert value at the specified index
+	// TODO: Shift smaller elements left to make room for new value
+	// TODO: Insert value at the specified index
 }
 ```
 
@@ -2602,22 +2602,22 @@ Output: "Mjqqt, Btwqi! 123"
 
 ```ts
 export function caesarCipherEncryptor(str: string, shift: number): string {
-  // TODO: Define the alphabet size (26)
-  // TODO: Normalize the shift to handle negative and large values
-  // TODO: Initialize an empty string to store the encrypted result
-  // TODO: Loop through each character in the input string
-  // TODO: Get the character code of the current character
-  // TODO: Check if the character is a lowercase letter (a–z)
-  // TODO: Convert character code to a 0–25 range
-  // TODO: Apply the shift and wrap using modulo
-  // TODO: Convert back to a lowercase character and append to result
-  // TODO: Else if the character is an uppercase letter (A–Z)
-  // TODO: Convert character code to a 0–25 range
-  // TODO: Apply the shift and wrap using modulo
-  // TODO: Convert back to an uppercase character and append to result
-  // TODO: Else (non-alphabet character)
-  // TODO: Append the character without modifying it
-  // TODO: Return the final encrypted string
+	// TODO: Define the alphabet size (26)
+	// TODO: Normalize the shift to handle negative and large values
+	// TODO: Initialize an empty string to store the encrypted result
+	// TODO: Loop through each character in the input string
+	// TODO: Get the character code of the current character
+	// TODO: Check if the character is a lowercase letter (a–z)
+	// TODO: Convert character code to a 0–25 range
+	// TODO: Apply the shift and wrap using modulo
+	// TODO: Convert back to a lowercase character and append to result
+	// TODO: Else if the character is an uppercase letter (A–Z)
+	// TODO: Convert character code to a 0–25 range
+	// TODO: Apply the shift and wrap using modulo
+	// TODO: Convert back to an uppercase character and append to result
+	// TODO: Else (non-alphabet character)
+	// TODO: Append the character without modifying it
+	// TODO: Return the final encrypted string
 }
 ```
 
@@ -2727,14 +2727,14 @@ Final Encoded: 9A4A2B4C2D
 
 ```ts
 export function runLengthEncoding(str: string): string {
-  // TODO: Handle empty string case
-  // TODO: Initialize array to store encoded result
-  // TODO: Initialize count = 1 and currentChar = str[0]
-  // TODO: Loop through string from index 1
-  // TODO: If same character and count < 9, increment count
-  // TODO: Else, push count + currentChar to array, reset currentChar and count
-  // TODO: After loop, push final count + currentChar
-  // TODO: Join array into a single string and return
+	// TODO: Handle empty string case
+	// TODO: Initialize array to store encoded result
+	// TODO: Initialize count = 1 and currentChar = str[0]
+	// TODO: Loop through string from index 1
+	// TODO: If same character and count < 9, increment count
+	// TODO: Else, push count + currentChar to array, reset currentChar and count
+	// TODO: After loop, push final count + currentChar
+	// TODO: Join array into a single string and return
 }
 ```
 
@@ -2840,20 +2840,20 @@ Input array: `[1, 2, 3, 4, 5, 6]`, target = 10
  * @returns Array of triplets where each triplet sums to target
  */
 export function threeNumberSum(nums: number[], target: number): number[][] {
-  // TODO: Sort the array in ascending order
+	// TODO: Sort the array in ascending order
 
-  // TODO: Initialize result array
+	// TODO: Initialize result array
 
-  // TODO: Iterate over array (i) for the first element
-  //   - Set left = i + 1, right = nums.length - 1
-  //   - While left < right:
-  //       - Compute sum of three elements
-  //       - If sum === target, store triplet and move both pointers
-  //       - Else if sum < target, move left forward
-  //       - Else move right backward
+	// TODO: Iterate over array (i) for the first element
+	//   - Set left = i + 1, right = nums.length - 1
+	//   - While left < right:
+	//       - Compute sum of three elements
+	//       - If sum === target, store triplet and move both pointers
+	//       - Else if sum < target, move left forward
+	//       - Else move right backward
 
-  // TODO: Return result array
-  return []; // placeholder
+	// TODO: Return result array
+	return []; // placeholder
 }
 ```
 
@@ -2946,20 +2946,20 @@ Output: [14, 13]
  * @returns A pair of numbers, one from each array, with the smallest absolute difference
  */
 export function smallestDifference(
-  arr1: number[],
-  arr2: number[],
+	arr1: number[],
+	arr2: number[],
 ): [number, number] {
-  // TODO: Sort both arrays in ascending order
+	// TODO: Sort both arrays in ascending order
 
-  // TODO: Initialize pointers and variables to track smallest difference
+	// TODO: Initialize pointers and variables to track smallest difference
 
-  // TODO: While pointers are in bounds:
-  //   - Calculate absolute difference of current pair
-  //   - Update smallest pair if difference is smaller
-  //   - Move the pointer of the smaller value
+	// TODO: While pointers are in bounds:
+	//   - Calculate absolute difference of current pair
+	//   - Update smallest pair if difference is smaller
+	//   - Move the pointer of the smaller value
 
-  // TODO: Return the pair with the smallest absolute difference
-  return [arr1[0], arr2[0]]; // placeholder
+	// TODO: Return the pair with the smallest absolute difference
+	return [arr1[0], arr2[0]]; // placeholder
 }
 ```
 
@@ -3054,13 +3054,13 @@ Step 2: Place value at the end:
  * @throws {Error} If the index is out of bounds
  */
 export function moveElementToTheEnd<T>(arr: T[], idx: number): T[] {
-  // TODO: Validate index
-  // TODO: Return array if index is already at the end
-  // TODO: Save element at idx
-  // TODO: Shift elements left to fill the gap
-  // TODO: Place saved element at the end
-  // TODO: Return modified array
-  return arr;
+	// TODO: Validate index
+	// TODO: Return array if index is already at the end
+	// TODO: Save element at idx
+	// TODO: Shift elements left to fill the gap
+	// TODO: Place saved element at the end
+	// TODO: Return modified array
+	return arr;
 }
 ```
 
@@ -3158,11 +3158,11 @@ Result: Monotonic ✅
 
 ```typescript
 export function monotonicArray(nums: number[]): boolean {
-  // TODO: Initialize direction as null
-  // TODO: Loop through the array starting from index 1
-  // TODO: Detect increasing or decreasing direction
-  // TODO: If direction ever changes, return false
-  // TODO: Return true if no conflicts are found
+	// TODO: Initialize direction as null
+	// TODO: Loop through the array starting from index 1
+	// TODO: Detect increasing or decreasing direction
+	// TODO: If direction ever changes, return false
+	// TODO: Return true if no conflicts are found
 }
 ```
 
@@ -3247,14 +3247,14 @@ Final traversal order:
 
 ```typescript
 export function spiralTraverse<T>(arr: T[][]): T[] {
-  // TODO: Initialize boundary pointers
-  // TODO: Loop while rows and columns remain
-  // TODO: Traverse top row
-  // TODO: Traverse right column
-  // TODO: Traverse bottom row (with boundary check)
-  // TODO: Traverse left column (with boundary check)
-  // TODO: Shrink boundaries
-  // TODO: Return result
+	// TODO: Initialize boundary pointers
+	// TODO: Loop while rows and columns remain
+	// TODO: Traverse top row
+	// TODO: Traverse right column
+	// TODO: Traverse bottom row (with boundary check)
+	// TODO: Traverse left column (with boundary check)
+	// TODO: Shrink boundaries
+	// TODO: Return result
 }
 ```
 
@@ -3366,37 +3366,37 @@ Peak length = 6 - 0 + 1 = 7
  * reaches a single maximum, then strictly decreases.
  */
 export function longestPeak(nums: number[]): number {
-  let longest = 0;
-  let i = 1;
+	let longest = 0;
+	let i = 1;
 
-  while (i < nums.length - 1) {
-    const isPeak = nums[i] > nums[i - 1] && nums[i] > nums[i + 1];
+	while (i < nums.length - 1) {
+		const isPeak = nums[i] > nums[i - 1] && nums[i] > nums[i + 1];
 
-    if (!isPeak) {
-      i++;
-      continue;
-    }
+		if (!isPeak) {
+			i++;
+			continue;
+		}
 
-    // Expand left
-    let left = i - 1;
-    while (left > 0 && nums[left - 1] < nums[left]) {
-      left--;
-    }
+		// Expand left
+		let left = i - 1;
+		while (left > 0 && nums[left - 1] < nums[left]) {
+			left--;
+		}
 
-    // Expand right
-    let right = i + 1;
-    while (right < nums.length - 1 && nums[right] > nums[right + 1]) {
-      right++;
-    }
+		// Expand right
+		let right = i + 1;
+		while (right < nums.length - 1 && nums[right] > nums[right + 1]) {
+			right++;
+		}
 
-    const currentPeakLength = right - left + 1;
-    longest = Math.max(longest, currentPeakLength);
+		const currentPeakLength = right - left + 1;
+		longest = Math.max(longest, currentPeakLength);
 
-    // Skip processed elements
-    i = right;
-  }
+		// Skip processed elements
+		i = right;
+	}
 
-  return longest;
+	return longest;
 }
 ```
 
@@ -3486,22 +3486,22 @@ Result: [24, 12, 8, 6]
  * except nums[i], without using division.
  */
 export function arrayOfProducts(nums: number[]): number[] {
-  const n = nums.length;
-  const result: number[] = new Array(n).fill(1);
+	const n = nums.length;
+	const result: number[] = new Array(n).fill(1);
 
-  let prefix = 1;
-  for (let i = 0; i < n; i++) {
-    result[i] = prefix;
-    prefix *= nums[i];
-  }
+	let prefix = 1;
+	for (let i = 0; i < n; i++) {
+		result[i] = prefix;
+		prefix *= nums[i];
+	}
 
-  let suffix = 1;
-  for (let i = n - 1; i >= 0; i--) {
-    result[i] *= suffix;
-    suffix *= nums[i];
-  }
+	let suffix = 1;
+	for (let i = n - 1; i >= 0; i--) {
+		result[i] *= suffix;
+		suffix *= nums[i];
+	}
 
-  return result;
+	return result;
 }
 ```
 
@@ -3683,48 +3683,48 @@ Diagonal movement is not allowed.
 
 ```ts
 export function numberOfIslands(matrix: number[][]): number {
-  if (matrix.length === 0 || matrix[0].length === 0) return 0;
+	if (matrix.length === 0 || matrix[0].length === 0) return 0;
 
-  let islandCount = 0;
-  const rows = matrix.length;
-  const cols = matrix[0].length;
+	let islandCount = 0;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
 
-  const directions: Array<[number, number]> = [
-    [-1, 0], // up
-    [0, 1], // right
-    [1, 0], // down
-    [0, -1], // left
-  ];
+	const directions: Array<[number, number]> = [
+		[-1, 0], // up
+		[0, 1], // right
+		[1, 0], // down
+		[0, -1], // left
+	];
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      if (matrix[row][col] === 0) continue;
+	for (let row = 0; row < rows; row++) {
+		for (let col = 0; col < cols; col++) {
+			if (matrix[row][col] === 0) continue;
 
-      islandCount++;
-      matrix[row][col] = 0;
+			islandCount++;
+			matrix[row][col] = 0;
 
-      const queue: Array<[number, number]> = [[row, col]];
-      let head = 0;
+			const queue: Array<[number, number]> = [[row, col]];
+			let head = 0;
 
-      while (head < queue.length) {
-        const [r, c] = queue[head++]!;
+			while (head < queue.length) {
+				const [r, c] = queue[head++]!;
 
-        for (const [dr, dc] of directions) {
-          const nr = r + dr;
-          const nc = c + dc;
+				for (const [dr, dc] of directions) {
+					const nr = r + dr;
+					const nc = c + dc;
 
-          if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+					if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
 
-          if (matrix[nr][nc] === 1) {
-            matrix[nr][nc] = 0;
-            queue.push([nr, nc]);
-          }
-        }
-      }
-    }
-  }
+					if (matrix[nr][nc] === 1) {
+						matrix[nr][nc] = 0;
+						queue.push([nr, nc]);
+					}
+				}
+			}
+		}
+	}
 
-  return islandCount;
+	return islandCount;
 }
 ```
 
@@ -3888,10 +3888,10 @@ Legend:
 
 ```ts
 export function orangesRotting(grid: number[][]): number {
-  // TODO: Initialize queue with all rotten oranges
-  // TODO: Count fresh oranges
-  // TODO: Perform BFS level by level
-  // TODO: Return minutes or -1 if impossible
+	// TODO: Initialize queue with all rotten oranges
+	// TODO: Count fresh oranges
+	// TODO: Perform BFS level by level
+	// TODO: Return minutes or -1 if impossible
 }
 ```
 
@@ -4031,10 +4031,10 @@ Distance = 1
 
 ```ts
 export function wallsAndGates(matrix: number[][]): number {
-  // TODO: Track shortest distance
-  // TODO: Loop through matrix to find gates
-  // TODO: Run BFS from each gate
-  // TODO: Return shortest distance found
+	// TODO: Track shortest distance
+	// TODO: Loop through matrix to find gates
+	// TODO: Run BFS from each gate
+	// TODO: Return shortest distance found
 }
 ```
 

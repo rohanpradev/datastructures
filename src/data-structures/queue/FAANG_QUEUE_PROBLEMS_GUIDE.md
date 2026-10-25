@@ -5,12 +5,14 @@ This guide covers interview-ready queue problems. Queues (FIFO) are simpler than
 ## Why Queues Matter in Interviews
 
 Queues test:
+
 - **System thinking** (request queues, task scheduling)
 - **Algorithm efficiency** (BFS correctness, level-by-level processing)
 - **Edge case handling** (empty queue, single element)
 - **Real-world patterns** (producer-consumer, throttling)
 
 Research references:
+
 - [CP-Algorithms: Breadth First Search](https://cp-algorithms.com/graph/breadth-first-search.html)
 - [MIT OCW 6.006 Lecture Notes](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/pages/lecture-notes/)
 - [LeetCode Queue Tag](https://leetcode.com/tag/queue/)
@@ -24,6 +26,7 @@ Research references:
 **Interview signal:** "Shortest path" or "Find closest" or "Level order"
 
 **When to use:**
+
 - Shortest path in unweighted graph
 - Nearest element finding
 - Level-order tree traversal
@@ -32,38 +35,37 @@ Research references:
 **Key idea:** Visit neighbors in FIFO order. First element found is closest.
 
 ```typescript
-function bfs(
-  startNode: Node,
-  targetValue: number
-): Node | null {
-  const queue: Node[] = [startNode];
-  const visited = new Set<Node>([startNode]);
-  let queueIndex = 0;
-  
-  while (queueIndex < queue.length) {
-    const node = queue[queueIndex++];
-    
-    if (node.value === targetValue) {
-      return node; // Found! BFS guarantees it's closest
-    }
-    
-    for (const neighbor of node.neighbors) {
-      if (!visited.has(neighbor)) {
-        visited.add(neighbor);
-        queue.push(neighbor);
-      }
-    }
-  }
-  
-  return null; // Not found
+function bfs(startNode: Node, targetValue: number): Node | null {
+	const queue: Node[] = [startNode];
+	const visited = new Set<Node>([startNode]);
+	let queueIndex = 0;
+
+	while (queueIndex < queue.length) {
+		const node = queue[queueIndex++];
+
+		if (node.value === targetValue) {
+			return node; // Found! BFS guarantees it's closest
+		}
+
+		for (const neighbor of node.neighbors) {
+			if (!visited.has(neighbor)) {
+				visited.add(neighbor);
+				queue.push(neighbor);
+			}
+		}
+	}
+
+	return null; // Not found
 }
 ```
 
 **Complexity:**
+
 - Time: O(V + E) — visit vertices and edges (all connections)
 - Space: O(V) — queue and visited set in worst case
 
 **Interview talking points:**
+
 - "BFS guarantees finding closest/shortest path in unweighted graph"
 - "Visited set prevents cycles and duplicate processing"
 - "Using array with index instead of shift() keeps O(1) operations"
@@ -75,6 +77,7 @@ function bfs(
 **Interview signal:** "Process level by level" or "Groups"
 
 **When to use:**
+
 - Process all nodes at current level before moving to next
 - Collect output grouped by distance/level
 - Multi-source BFS (start from multiple sources)
@@ -83,32 +86,33 @@ function bfs(
 
 ```typescript
 function levelOrderGroups(startNode: Node): number[][] {
-  const result: number[][] = [];
-  const queue: Node[] = [startNode];
-  let queueIndex = 0;
-  
-  while (queueIndex < queue.length) {
-    // All items currently in queue are one level
-    const levelSize = queue.length - queueIndex;
-    const levelValues: number[] = [];
-    
-    for (let i = 0; i < levelSize; i++) {
-      const node = queue[queueIndex++];
-      levelValues.push(node.value);
-      
-      for (const neighbor of node.neighbors) {
-        queue.push(neighbor);
-      }
-    }
-    
-    result.push(levelValues);
-  }
-  
-  return result;
+	const result: number[][] = [];
+	const queue: Node[] = [startNode];
+	let queueIndex = 0;
+
+	while (queueIndex < queue.length) {
+		// All items currently in queue are one level
+		const levelSize = queue.length - queueIndex;
+		const levelValues: number[] = [];
+
+		for (let i = 0; i < levelSize; i++) {
+			const node = queue[queueIndex++];
+			levelValues.push(node.value);
+
+			for (const neighbor of node.neighbors) {
+				queue.push(neighbor);
+			}
+		}
+
+		result.push(levelValues);
+	}
+
+	return result;
 }
 ```
 
 **Complexity:**
+
 - Time: O(V + E)
 - Space: O(V)
 
@@ -121,6 +125,7 @@ function levelOrderGroups(startNode: Node): number[][] {
 **Interview signal:** "Remove from front and back" or "Sliding window"
 
 **When to use:**
+
 - Sliding window problems (add right, remove left)
 - Monotonic deque (maintain decreasing/increasing order)
 - Moving window max/min
@@ -129,71 +134,69 @@ function levelOrderGroups(startNode: Node): number[][] {
 
 ```typescript
 class Deque<T> {
-  private items: T[] = [];
-  
-  addFirst(value: T): void {
-    this.items.unshift(value);
-  }
-  
-  addLast(value: T): void {
-    this.items.push(value);
-  }
-  
-  removeFirst(): T | undefined {
-    return this.items.shift();
-  }
-  
-  removeLast(): T | undefined {
-    return this.items.pop();
-  }
-  
-  peekFirst(): T | undefined {
-    return this.items[0];
-  }
-  
-  peekLast(): T | undefined {
-    return this.items[this.items.length - 1];
-  }
+	private items: T[] = [];
+
+	addFirst(value: T): void {
+		this.items.unshift(value);
+	}
+
+	addLast(value: T): void {
+		this.items.push(value);
+	}
+
+	removeFirst(): T | undefined {
+		return this.items.shift();
+	}
+
+	removeLast(): T | undefined {
+		return this.items.pop();
+	}
+
+	peekFirst(): T | undefined {
+		return this.items[0];
+	}
+
+	peekLast(): T | undefined {
+		return this.items[this.items.length - 1];
+	}
 }
 
 // Sliding window maximum using deque
-function maxSlidingWindow(
-  nums: number[],
-  windowSize: number
-): number[] {
-  const deque: Deque<number> = new Deque();
-  const result: number[] = [];
-  
-  for (let i = 0; i < nums.length; i++) {
-    // Remove indices outside window
-    while (
-      deque.peekFirst() !== undefined &&
-      deque.peekFirst()! < i - windowSize + 1
-    ) {
-      deque.removeFirst();
-    }
-    
-    // Remove smaller elements (monotonic decreasing)
-    while (
-      deque.peekLast() !== undefined &&
-      nums[deque.peekLast()!] < nums[i]
-    ) {
-      deque.removeLast();
-    }
-    
-    deque.addLast(i);
-    
-    // First valid max at window size
-    if (i >= windowSize - 1) {
-      result.push(nums[deque.peekFirst()!]);
-    }
-  }
-  
-  return result;
+function maxSlidingWindow(nums: number[], windowSize: number): number[] {
+	const deque: Deque<number> = new Deque();
+	const result: number[] = [];
+
+	for (let i = 0; i < nums.length; i++) {
+		// Remove indices outside window
+		while (
+			deque.peekFirst() !== undefined &&
+			deque.peekFirst()! < i - windowSize + 1
+		) {
+			deque.removeFirst();
+		}
+
+		// Remove smaller elements (monotonic decreasing)
+		while (
+			deque.peekLast() !== undefined &&
+			nums[deque.peekLast()!] < nums[i]
+		) {
+			deque.removeLast();
+		}
+
+		deque.addLast(i);
+
+		// First valid max at window size
+		if (i >= windowSize - 1) {
+			result.push(nums[deque.peekFirst()!]);
+		}
+	}
+
+	return result;
 }
 ```
 
 **Complexity:**
+
 - Time: O(n) — each element added/removed once
 - Space: O(k) — k is window size
 
@@ -204,6 +207,7 @@ function maxSlidingWindow(
 ### Step 1: Clarify
 
 Ask your interviewer:
+
 - "Is it a single-source or multi-source BFS?"
 - "Do I need the path itself or just distance?"
 - "Can nodes be visited multiple times?"
@@ -211,37 +215,37 @@ Ask your interviewer:
 
 ### Step 2: Identify Pattern
 
-| Problem Type | Pattern | Data Structure |
-|---|---|---|
-| Shortest path, unweighted | BFS | Queue |
-| Level-order processing | Group-level BFS | Queue with level tracking |
-| Sliding window min/max | Monotonic deque | Deque |
-| State exploration | Multi-queue BFS | Multiple queues (one per state) |
+| Problem Type              | Pattern         | Data Structure                  |
+| ------------------------- | --------------- | ------------------------------- |
+| Shortest path, unweighted | BFS             | Queue                           |
+| Level-order processing    | Group-level BFS | Queue with level tracking       |
+| Sliding window min/max    | Monotonic deque | Deque                           |
+| State exploration         | Multi-queue BFS | Multiple queues (one per state) |
 
 ### Step 3: Code Template
 
 ```typescript
 function solve(startNode: Node): ReturnType {
-  const queue: Node[] = [startNode];
-  const visited = new Set<Node>([startNode]);
-  let queueIndex = 0;
-  
-  while (queueIndex < queue.length) {
-    const node = queue[queueIndex++];
-    
-    // Process node
-    // Check exit condition
-    
-    // Explore neighbors
-    for (const neighbor of node.neighbors) {
-      if (!visited.has(neighbor)) {
-        visited.add(neighbor);
-        queue.push(neighbor);
-      }
-    }
-  }
-  
-  return result;
+	const queue: Node[] = [startNode];
+	const visited = new Set<Node>([startNode]);
+	let queueIndex = 0;
+
+	while (queueIndex < queue.length) {
+		const node = queue[queueIndex++];
+
+		// Process node
+		// Check exit condition
+
+		// Explore neighbors
+		for (const neighbor of node.neighbors) {
+			if (!visited.has(neighbor)) {
+				visited.add(neighbor);
+				queue.push(neighbor);
+			}
+		}
+	}
+
+	return result;
 }
 ```
 
@@ -275,6 +279,7 @@ function solve(startNode: Node): ReturnType {
 5. **Very large graph** → Space complexity becomes critical
 
 Example voice-through:
+
 > "For single node: add to queue, process, no neighbors, done. For cycle: mark visited before adding neighbors, so we don't re-add same node. For empty input: check before starting loop."
 
 ---
@@ -282,10 +287,12 @@ Example voice-through:
 ## Complexity Always
 
 Queue problems are usually:
+
 - **Time:** O(V + E) — visit all nodes and edges
 - **Space:** O(V) — queue in worst case holds all nodes
 
 Make sure to state this clearly:
+
 > "Time complexity is O(V + E) because we visit each vertex once and examine each edge once. Space is O(V) for the queue and visited set, which in worst case can hold all vertices."
 
 ---
@@ -293,6 +300,7 @@ Make sure to state this clearly:
 ## Quick Reference: Queue Problem Checklist
 
 Before submitting:
+
 - [ ] Checked if input is empty/single node
 - [ ] Used visited set (prevents cycles)
 - [ ] Used index pointer, not shift()

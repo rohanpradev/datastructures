@@ -4,21 +4,21 @@ This folder contains small executable versions of common system design component
 
 ## Folder Structure
 
-| File | Concept | What to practice |
-|---|---|---|
-| `rate-limiter.ts` | Token bucket and sliding window limiters | API gateway throttling, fairness, Redis atomic updates |
-| `lru-cache.ts` | LRU cache | Cache eviction, recency tracking, hit/miss metrics |
-| `id-generation.ts` | Bun UUID v7, Base62, and Snowflake-style IDs | URL shorteners, sortable distributed IDs, clock rollback |
-| `consistent-hash.ts` | Consistent hashing with virtual nodes | Sharding, cache rings, partial rebalancing |
-| `bloom-filter.ts` | Bloom filter | Negative cache, memory/probability trade-offs |
-| `weighted-fair-queue.ts` | Weighted fair queuing | Multi-tenant fairness, noisy-neighbor control, work cost |
-| `idempotency-store.ts` | Idempotency-key state machine | Retry-safe writes, duplicate suppression, TTL trade-offs |
-| `load-balancer.ts` | Round robin and least connections | Backend selection, lifecycle accounting, health and retry discussion |
-| `replication-quorum.ts` | N/R/W quorum analysis | Replica overlap, stale reads, failure tolerance, consistency limits |
-| `at-least-once-queue.ts` | Visibility-timeout work queue | Redelivery, acknowledgements, idempotent effects, delayed retry, DLQ |
-| `single-flight.ts` | Request coalescing | Stampedes, shared failures, cleanup, per-process boundaries |
-| `fenced-register.ts` | Lease and protected storage | Stale worker rejection, exclusive expiry, monotonic tokens |
-| `transactional-outbox.ts` | Atomic state and event writes in SQLite | Rollback, recovery, publish/ack gap, consumer dedupe |
+| File                      | Concept                                      | What to practice                                                     |
+| ------------------------- | -------------------------------------------- | -------------------------------------------------------------------- |
+| `rate-limiter.ts`         | Token bucket and sliding window limiters     | API gateway throttling, fairness, Redis atomic updates               |
+| `lru-cache.ts`            | LRU cache                                    | Cache eviction, recency tracking, hit/miss metrics                   |
+| `id-generation.ts`        | Bun UUID v7, Base62, and Snowflake-style IDs | URL shorteners, sortable distributed IDs, clock rollback             |
+| `consistent-hash.ts`      | Consistent hashing with virtual nodes        | Sharding, cache rings, partial rebalancing                           |
+| `bloom-filter.ts`         | Bloom filter                                 | Negative cache, memory/probability trade-offs                        |
+| `weighted-fair-queue.ts`  | Weighted fair queuing                        | Multi-tenant fairness, noisy-neighbor control, work cost             |
+| `idempotency-store.ts`    | Idempotency-key state machine                | Retry-safe writes, duplicate suppression, TTL trade-offs             |
+| `load-balancer.ts`        | Round robin and least connections            | Backend selection, lifecycle accounting, health and retry discussion |
+| `replication-quorum.ts`   | N/R/W quorum analysis                        | Replica overlap, stale reads, failure tolerance, consistency limits  |
+| `at-least-once-queue.ts`  | Visibility-timeout work queue                | Redelivery, acknowledgements, idempotent effects, delayed retry, DLQ |
+| `single-flight.ts`        | Request coalescing                           | Stampedes, shared failures, cleanup, per-process boundaries          |
+| `fenced-register.ts`      | Lease and protected storage                  | Stale worker rejection, exclusive expiry, monotonic tokens           |
+| `transactional-outbox.ts` | Atomic state and event writes in SQLite      | Rollback, recovery, publish/ack gap, consumer dedupe                 |
 
 For worked failure timelines, original mock prompts, and practice commands,
 see the [September interview refresh](../../../docs/INTERVIEW_UPGRADE_2026_09.md).
@@ -27,21 +27,21 @@ see the [September interview refresh](../../../docs/INTERVIEW_UPGRADE_2026_09.md
 
 Use these prompts after you can explain the basic implementation.
 
-| Problem | Required building block | Follow-up |
-|---|---|---|
-| Design a URL shortener | Base62, cache, rate limiter | Prevent enumeration and abuse. |
-| Design a distributed cache | LRU, consistent hashing | Add node health, replication, and hot-key handling. |
-| Design API rate limiting | Token bucket, sliding window | Make it work across multiple app servers with Redis. |
-| Design a feed fan-out service | pub/sub, queues, cache | Handle celebrity users and retry storms. |
-| Design an object metadata service | Bloom filter, cache, SQL | Avoid database hits for missing objects. |
-| Design a globally unique ID service | Snowflake-style IDs | Handle worker assignment and clock rollback. |
-| Design a multi-tenant job scheduler | Weighted fair queue | Prevent noisy neighbors without starving low-volume tenants. |
-| Design a payment or checkout API | Idempotency key store | Replay completed writes and handle stuck in-flight attempts. |
-| Design an AI inference gateway | Rate limiter, weighted queue, idempotency | Separate admission control, fair scheduling, and duplicate request handling. |
-| Design a webhook delivery service | Idempotency, queues, circuit breaker | Retry safely, dedupe provider events, and isolate bad receivers. |
-| Design a distributed work queue | At-least-once queue, idempotency | Partition ordering, durable leases, redelivery, poison work, and replay. |
-| Design a global read/write store | Replication quorums, consistent hashing | Explain stale reads, conflicts, repair, failover, and regional latency. |
-| Design an L7 service proxy | Load balancing, rate limiter, circuit breaker | Add health, draining, locality, outlier ejection, and retry budgets. |
+| Problem                             | Required building block                       | Follow-up                                                                    |
+| ----------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------- |
+| Design a URL shortener              | Base62, cache, rate limiter                   | Prevent enumeration and abuse.                                               |
+| Design a distributed cache          | LRU, consistent hashing                       | Add node health, replication, and hot-key handling.                          |
+| Design API rate limiting            | Token bucket, sliding window                  | Make it work across multiple app servers with Redis.                         |
+| Design a feed fan-out service       | pub/sub, queues, cache                        | Handle celebrity users and retry storms.                                     |
+| Design an object metadata service   | Bloom filter, cache, SQL                      | Avoid database hits for missing objects.                                     |
+| Design a globally unique ID service | Snowflake-style IDs                           | Handle worker assignment and clock rollback.                                 |
+| Design a multi-tenant job scheduler | Weighted fair queue                           | Prevent noisy neighbors without starving low-volume tenants.                 |
+| Design a payment or checkout API    | Idempotency key store                         | Replay completed writes and handle stuck in-flight attempts.                 |
+| Design an AI inference gateway      | Rate limiter, weighted queue, idempotency     | Separate admission control, fair scheduling, and duplicate request handling. |
+| Design a webhook delivery service   | Idempotency, queues, circuit breaker          | Retry safely, dedupe provider events, and isolate bad receivers.             |
+| Design a distributed work queue     | At-least-once queue, idempotency              | Partition ordering, durable leases, redelivery, poison work, and replay.     |
+| Design a global read/write store    | Replication quorums, consistent hashing       | Explain stale reads, conflicts, repair, failover, and regional latency.      |
+| Design an L7 service proxy          | Load balancing, rate limiter, circuit breaker | Add health, draining, locality, outlier ejection, and retry budgets.         |
 
 ## Bun Runtime Tie-In
 

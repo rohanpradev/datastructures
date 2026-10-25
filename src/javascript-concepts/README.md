@@ -11,16 +11,16 @@ Official references:
 
 ## Topics Covered
 
-| Topic | Function | Interview signal |
-| --- | --- | --- |
-| Equality semantics | `sameValueZero` | Explains `NaN`, `-0`, `Map`, `Set`, and `includes` behavior |
-| Hash-map grouping | `groupBy` | Builds anagrams, frequency buckets, graph adjacency lists, and indexes |
-| Closures | `createCounter` | Shows private state and lexical scope |
-| Iterables | `range` | Explains `Symbol.iterator`, `for...of`, spread, generators, maps, and sets |
-| Structured cloning | `cloneStructured` | Avoids JSON clone limitations |
-| Promise state | `createDeferred` | Useful for adapting callback/event APIs and tests |
-| Memoization | `memoizeByKey` | Trades memory for repeated-work savings |
-| Concurrency scheduling | `runWithConcurrency` | Shows why promise factories matter |
+| Topic                  | Function             | Interview signal                                                           |
+| ---------------------- | -------------------- | -------------------------------------------------------------------------- |
+| Equality semantics     | `sameValueZero`      | Explains `NaN`, `-0`, `Map`, `Set`, and `includes` behavior                |
+| Hash-map grouping      | `groupBy`            | Builds anagrams, frequency buckets, graph adjacency lists, and indexes     |
+| Closures               | `createCounter`      | Shows private state and lexical scope                                      |
+| Iterables              | `range`              | Explains `Symbol.iterator`, `for...of`, spread, generators, maps, and sets |
+| Structured cloning     | `cloneStructured`    | Avoids JSON clone limitations                                              |
+| Promise state          | `createDeferred`     | Useful for adapting callback/event APIs and tests                          |
+| Memoization            | `memoizeByKey`       | Trades memory for repeated-work savings                                    |
+| Concurrency scheduling | `runWithConcurrency` | Shows why promise factories matter                                         |
 
 ## Study Order
 

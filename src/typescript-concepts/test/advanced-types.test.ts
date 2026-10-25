@@ -118,12 +118,9 @@ describe("modern TypeScript concepts", () => {
 		const completed: string[] = [];
 
 		{
-			using _subscription = bus.on(
-				"problem.completed",
-				(slug, durationMs) => {
-					completed.push(`${slug}:${durationMs}`);
-				},
-			);
+			using _subscription = bus.on("problem.completed", (slug, durationMs) => {
+				completed.push(`${slug}:${durationMs}`);
+			});
 
 			expect(bus.emit("problem.completed", "two-sum", 12)).toBe(1);
 			expect(bus.listenerCount("problem.completed")).toBe(1);

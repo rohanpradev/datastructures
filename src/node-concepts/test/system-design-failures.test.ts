@@ -11,7 +11,9 @@ describe("SingleFlight", () => {
 		const flight = new SingleFlight<number>();
 		let calls = 0;
 		const load = () => ++calls;
-		const requests = Array.from({ length: 100 }, () => flight.run("tenant:a", load));
+		const requests = Array.from({ length: 100 }, () =>
+			flight.run("tenant:a", load),
+		);
 		expect(new Set(requests).size).toBe(1);
 		expect(flight.size()).toBe(1);
 		expect(await Promise.all(requests)).toEqual(Array(100).fill(1));
@@ -22,7 +24,13 @@ describe("SingleFlight", () => {
 	test("keeps different keys independent while loads are pending", async () => {
 		const flight = new SingleFlight<number>();
 		let finish!: (value: number) => void;
-		const slow = flight.run("a", () => new Promise<number>((resolve) => { finish = resolve; }));
+		const slow = flight.run(
+			"a",
+			() =>
+				new Promise<number>((resolve) => {
+					finish = resolve;
+				}),
+		);
 		expect(await flight.run("b", () => 9)).toBe(9);
 		expect(flight.size()).toBe(1);
 		finish(4);
@@ -31,18 +39,27 @@ describe("SingleFlight", () => {
 
 	test("shares synchronous failures and allows a retry", async () => {
 		const flight = new SingleFlight<number>();
-		const first = flight.run("a", () => { throw new Error("offline"); });
+		const first = flight.run("a", () => {
+			throw new Error("offline");
+		});
 		const second = flight.run("a", () => 99);
 		expect(first).toBe(second);
 		const results = await Promise.allSettled([first, second]);
-		expect(results.map((result) => result.status)).toEqual(["rejected", "rejected"]);
+		expect(results.map((result) => result.status)).toEqual([
+			"rejected",
+			"rejected",
+		]);
 		expect(flight.size()).toBe(0);
 		expect(await flight.run("a", () => 3)).toBe(3);
 	});
 
 	test("cleans up asynchronous rejection", async () => {
 		const flight = new SingleFlight<number>();
-		await expect(flight.run("a", async () => { throw new Error("timeout"); })).rejects.toThrow("timeout");
+		await expect(
+			flight.run("a", async () => {
+				throw new Error("timeout");
+			}),
+		).rejects.toThrow("timeout");
 		expect(flight.size()).toBe(0);
 		expect(await flight.run("a", () => 5)).toBe(5);
 	});
@@ -96,7 +113,9 @@ describe("FencedRegister", () => {
 		for (const ttl of [0, -1, 0.5, NaN, Infinity]) {
 			expect(() => register.acquire(ttl, 0)).toThrow(RangeError);
 		}
-		expect(() => register.acquire(1, Number.MAX_SAFE_INTEGER)).toThrow(RangeError);
+		expect(() => register.acquire(1, Number.MAX_SAFE_INTEGER)).toThrow(
+			RangeError,
+		);
 		for (const now of [-1, 0.5, NaN, Infinity]) {
 			expect(() => register.acquire(1, now)).toThrow(RangeError);
 		}
@@ -114,11 +133,16 @@ describe("TransactionalOutbox", () => {
 			outbox.setWithEvent("order:1", "created", "e1");
 			outbox.setWithEvent("order:1", "paid", "e2");
 			expect(outbox.get("order:1")).toBe("paid");
-			expect(outbox.pending().map(({ eventId, value }) => [eventId, value])).toEqual([
-				["e1", "created"], ["e2", "paid"],
+			expect(
+				outbox.pending().map(({ eventId, value }) => [eventId, value]),
+			).toEqual([
+				["e1", "created"],
+				["e2", "paid"],
 			]);
 			expect(outbox.pending(1)).toHaveLength(1);
-		} finally { outbox.close(); }
+		} finally {
+			outbox.close();
+		}
 	});
 
 	test("rolls back both an update and an insert when the event ID conflicts", () => {
@@ -130,7 +154,9 @@ describe("TransactionalOutbox", () => {
 			expect(outbox.get("a")).toBe("original");
 			expect(outbox.get("b")).toBeUndefined();
 			expect(outbox.pending()).toHaveLength(1);
-		} finally { outbox.close(); }
+		} finally {
+			outbox.close();
+		}
 	});
 
 	test("redelivers until publish is acknowledged and retains ID uniqueness", () => {
@@ -146,7 +172,9 @@ describe("TransactionalOutbox", () => {
 			expect(outbox.pending()).toEqual([]);
 			expect(() => outbox.setWithEvent("a", "2", "e1")).toThrow();
 			expect(outbox.get("a")).toBe("1");
-		} finally { outbox.close(); }
+		} finally {
+			outbox.close();
+		}
 	});
 
 	test("keeps pending events and publication status across database reopen", () => {
@@ -176,6 +204,8 @@ describe("TransactionalOutbox", () => {
 			expect(() => outbox.setWithEvent(" ", "1", "e1")).toThrow();
 			expect(() => outbox.setWithEvent("a", "1", " ")).toThrow();
 			expect(outbox.pending()).toEqual([]);
-		} finally { outbox.close(); }
+		} finally {
+			outbox.close();
+		}
 	});
 });

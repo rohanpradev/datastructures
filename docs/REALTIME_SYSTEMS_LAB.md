@@ -9,6 +9,11 @@ cursor replay in two browser tabs. It uses the reference implementations in
 bun run course:lab
 ```
 
+The command checks TypeScript before startup and before each watch restart.
+WebSocket handler failures close only the affected connection. Failures during
+the opening handshake may appear as abnormal close 1006; established
+connections receive the internal-error close code 1011 when delivery succeeds.
+
 Open [the local lab](http://127.0.0.1:3002/) twice and join the same room.
 The command stores events in `data/realtime-lab.sqlite`. It needs no external
 service or model credentials. Stop with Ctrl+C and restart the same command
@@ -16,12 +21,12 @@ to reuse the database. Tests use separate temporary or in-memory stores.
 
 ## Four experiments
 
-| Experiment | Action | Expected evidence |
-| --- | --- | --- |
-| Safe retry | Publish once, then choose **Retry same event** | Same sequence; commits stay unchanged; safe retries increase |
-| Reconnect | Disconnect one tab; publish in the other; reconnect | Missing events return through HTTP catch-up or socket replay |
-| Restart | Stop the server, then restart with the same database | Committed history survives; process counters restart at zero |
-| Bounded replay | While disconnected, publish more than 25 events | HTTP pagination catches up; a socket with a large backlog is asked to resync |
+| Experiment     | Action                                               | Expected evidence                                                            |
+| -------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Safe retry     | Publish once, then choose **Retry same event**       | Same sequence; commits stay unchanged; safe retries increase                 |
+| Reconnect      | Disconnect one tab; publish in the other; reconnect  | Missing events return through HTTP catch-up or socket replay                 |
+| Restart        | Stop the server, then restart with the same database | Committed history survives; process counters restart at zero                 |
+| Bounded replay | While disconnected, publish more than 25 events      | HTTP pagination catches up; a socket with a large backlog is asked to resync |
 
 The stream keeps at most 200 visible rows per tab. That is a presentation bound;
 older committed records remain in SQLite. Browsers restored from their page

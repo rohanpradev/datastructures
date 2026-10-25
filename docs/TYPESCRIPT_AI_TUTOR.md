@@ -38,23 +38,27 @@ The outer LangGraph owns workflow order, checkpoints, retries, and thread identi
 
 4. Open `http://127.0.0.1:3001/docs` for the self-hosted Scalar reference. The OpenAPI 3.1 document is available at `http://127.0.0.1:3001/openapi.json`.
 
+`ai:dev` checks TypeScript before startup and every watch restart; `ai:start`
+checks before starting once. Drizzle commands use the installed, locked CLI
+with `bunx --no-install`, so missing dependencies require an explicit install.
+
 The service deliberately binds to loopback. Put authentication, authorization, request limits, and TLS at a trusted gateway before exposing it beyond the local machine.
 
 ## Interfaces
 
-| Interface | Endpoint | Purpose |
-|---|---|---|
-| Health | `GET /health` | Runtime status and component generations |
-| Models | `GET /v1/models` | Current tool-capable language models from Vercel AI Gateway, for a model selector |
-| Tutor | `POST /v1/tutor/runs` | Run and persist one selected orchestration turn |
-| Orchestration | `GET /v1/orchestration/patterns` | Inspect modes, tradeoffs, and specialist profiles |
-| Thread | `GET /v1/threads/{threadId}` | Read persisted UI message parts |
-| Conversations | `GET /v1/threads?limit=20&offset=0` | Browse saved conversations, newest activity first |
-| Run status | `GET /v1/threads/{threadId}/runs/{runId}` | Inspect persisted status, timings, and aggregate token usage |
-| Resources | `POST /v1/resources/search` | Deterministic trusted-source search |
-| OpenAPI | `GET /openapi.json` | OpenAPI 3.1 source |
-| Scalar | `GET /docs` | Interactive API reference |
-| MCP | `POST /mcp` | MCP v2 Streamable HTTP exchange |
+| Interface     | Endpoint                                  | Purpose                                                                           |
+| ------------- | ----------------------------------------- | --------------------------------------------------------------------------------- |
+| Health        | `GET /health`                             | Runtime status and component generations                                          |
+| Models        | `GET /v1/models`                          | Current tool-capable language models from Vercel AI Gateway, for a model selector |
+| Tutor         | `POST /v1/tutor/runs`                     | Run and persist one selected orchestration turn                                   |
+| Orchestration | `GET /v1/orchestration/patterns`          | Inspect modes, tradeoffs, and specialist profiles                                 |
+| Thread        | `GET /v1/threads/{threadId}`              | Read persisted UI message parts                                                   |
+| Conversations | `GET /v1/threads?limit=20&offset=0`       | Browse saved conversations, newest activity first                                 |
+| Run status    | `GET /v1/threads/{threadId}/runs/{runId}` | Inspect persisted status, timings, and aggregate token usage                      |
+| Resources     | `POST /v1/resources/search`               | Deterministic trusted-source search                                               |
+| OpenAPI       | `GET /openapi.json`                       | OpenAPI 3.1 source                                                                |
+| Scalar        | `GET /docs`                               | Interactive API reference                                                         |
+| MCP           | `POST /mcp`                               | MCP v2 Streamable HTTP exchange                                                   |
 
 Use each model option's `id` as the optional `model` value in `POST /v1/tutor/runs`. The catalog is refreshed hourly and only includes language models tagged by Gateway as supporting tool use, which the tutor agent needs.
 
@@ -70,8 +74,8 @@ Pass the returned `threadId` in a later request to continue the durable conversa
 
 ```json
 {
-  "orchestration": "supervisor",
-  "prompt": "Design a durable LangGraph agent with bounded MCP tools"
+	"orchestration": "supervisor",
+	"prompt": "Design a durable LangGraph agent with bounded MCP tools"
 }
 ```
 
@@ -159,22 +163,22 @@ guarantees with `bun test src/ai/test/sqlite-checkpoint.spec.ts`.
 
 ## File map
 
-| File | Responsibility |
-|---|---|
-| `src/ai/api.ts` | Web-standard JSON, Scalar, OpenAPI, and MCP routing |
-| `src/ai/json.ts` | Bounded JSON parsing and safe error responses |
-| `src/ai/model.ts` | AI SDK 7 bounded `ToolLoopAgent` and model boundary |
-| `src/ai/orchestration.ts` | Mode catalog, specialist registry, deterministic routing, and runner dispatch |
-| `src/ai/persistence.ts` | Typed Drizzle repository and migration bootstrap |
-| `src/ai/registry.ts` | Model validation and curated authoritative resources |
-| `src/ai/schema.ts` | Drizzle tables, indexes, constraints, and inferred types |
-| `src/ai/sqlite-checkpoint.ts` | Drizzle-backed LangGraph checkpointer |
-| `src/ai/state.ts` | Zod request, response, resource, metrics, and graph state schemas |
-| `src/ai/graphs/typescript-tutor.ts` | Explicit durable graph and service facade |
-| `src/ai/graphs/functional-tutor.ts` | LangGraph Functional API entrypoint and replayable tasks |
-| `src/ai/mcp.ts` | MCP v2 tools, resources, prompts, transport, and validation |
-| `src/ai/openapi.ts` | OpenAPI 3.1 and Scalar HTML configuration |
-| `src/ai/server.ts` | Composition root and graceful shutdown |
+| File                                | Responsibility                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| `src/ai/api.ts`                     | Web-standard JSON, Scalar, OpenAPI, and MCP routing                           |
+| `src/ai/json.ts`                    | Bounded JSON parsing and safe error responses                                 |
+| `src/ai/model.ts`                   | AI SDK 7 bounded `ToolLoopAgent` and model boundary                           |
+| `src/ai/orchestration.ts`           | Mode catalog, specialist registry, deterministic routing, and runner dispatch |
+| `src/ai/persistence.ts`             | Typed Drizzle repository and migration bootstrap                              |
+| `src/ai/registry.ts`                | Model validation and curated authoritative resources                          |
+| `src/ai/schema.ts`                  | Drizzle tables, indexes, constraints, and inferred types                      |
+| `src/ai/sqlite-checkpoint.ts`       | Drizzle-backed LangGraph checkpointer                                         |
+| `src/ai/state.ts`                   | Zod request, response, resource, metrics, and graph state schemas             |
+| `src/ai/graphs/typescript-tutor.ts` | Explicit durable graph and service facade                                     |
+| `src/ai/graphs/functional-tutor.ts` | LangGraph Functional API entrypoint and replayable tasks                      |
+| `src/ai/mcp.ts`                     | MCP v2 tools, resources, prompts, transport, and validation                   |
+| `src/ai/openapi.ts`                 | OpenAPI 3.1 and Scalar HTML configuration                                     |
+| `src/ai/server.ts`                  | Composition root and graceful shutdown                                        |
 
 The file is named `persistence.ts` (correct spelling) rather than the requested `persistance.ts` typo.
 

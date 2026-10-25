@@ -453,7 +453,9 @@ describe("HashTable - Different Data Types", () => {
 		const key = { toString: () => "before" };
 		const bare = Object.create(null) as object;
 		ht.set(key, "object").set(bare, "bare");
-		key.toString = () => { throw new Error("must not coerce keys"); };
+		key.toString = () => {
+			throw new Error("must not coerce keys");
+		};
 		ht.set({}, "other");
 		expect(ht.get(key)).toBe("object");
 		expect(ht.get(bare)).toBe("bare");

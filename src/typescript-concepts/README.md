@@ -4,20 +4,20 @@ This folder demonstrates TypeScript features that improve real code quality in t
 
 ## Topics Covered
 
-| Topic | File | Why it matters |
-|---|---|---|
-| `unknown` over `any` | `advanced-types.ts` | Keeps unsafe values explicit until narrowed. |
-| Generics | `advanced-types.ts` | Preserves caller-specific types across reusable helpers. |
+| Topic                   | File                | Why it matters                                                                      |
+| ----------------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| `unknown` over `any`    | `advanced-types.ts` | Keeps unsafe values explicit until narrowed.                                        |
+| Generics                | `advanced-types.ts` | Preserves caller-specific types across reusable helpers.                            |
 | `const` type parameters | `advanced-types.ts` | Captures literal tuple/object shapes without requiring callers to write `as const`. |
-| `satisfies` | `advanced-types.ts` | Validates object shape while preserving precise inferred properties. |
-| Branded domain types | `advanced-types.ts` | Prevents mixing plain strings with validated tenant/user/order IDs. |
-| `NoInfer` | `advanced-types.ts` | Keeps fallback/default values from widening caller-owned literal unions. |
-| Template literal types | `advanced-types.ts` | Turns route strings and naming conventions into checked APIs. |
-| Exhaustive unions | `advanced-types.ts` | Forces every discriminated-union variant to be handled when the model evolves. |
-| Typed event maps | `advanced-types.ts` | Keeps event names and payload tuple types synchronized. |
-| Typed decorators | `advanced-types.ts` | Demonstrates method wrapping without losing `this`, argument, or return types. |
-| `using` declarations | `advanced-types.ts` | Guarantees cleanup through `Symbol.dispose` when a scope exits. |
-| Result unions | `advanced-types.ts` | Makes success and failure states explicit without throwing. |
+| `satisfies`             | `advanced-types.ts` | Validates object shape while preserving precise inferred properties.                |
+| Branded domain types    | `advanced-types.ts` | Prevents mixing plain strings with validated tenant/user/order IDs.                 |
+| `NoInfer`               | `advanced-types.ts` | Keeps fallback/default values from widening caller-owned literal unions.            |
+| Template literal types  | `advanced-types.ts` | Turns route strings and naming conventions into checked APIs.                       |
+| Exhaustive unions       | `advanced-types.ts` | Forces every discriminated-union variant to be handled when the model evolves.      |
+| Typed event maps        | `advanced-types.ts` | Keeps event names and payload tuple types synchronized.                             |
+| Typed decorators        | `advanced-types.ts` | Demonstrates method wrapping without losing `this`, argument, or return types.      |
+| `using` declarations    | `advanced-types.ts` | Guarantees cleanup through `Symbol.dispose` when a scope exits.                     |
+| Result unions           | `advanced-types.ts` | Makes success and failure states explicit without throwing.                         |
 
 ## Best Practices Used Here
 

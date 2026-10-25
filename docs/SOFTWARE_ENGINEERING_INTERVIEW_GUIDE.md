@@ -31,16 +31,16 @@ practice time management.
 
 ## Choose A Preparation Route
 
-| Role or round | Prioritize | Repo route |
-|---|---|---|
-| New-grad or general SWE | Language fluency, core structures, algorithms, testing, project stories | [Learning path](../LEARNING_PATH.md), [mastery matrix](./MASTERY_MATRIX.md), topic guides in `src/` |
-| Mid-level product/backend | Mixed coding, APIs and data models, SQL, debugging, service design, ownership stories | This guide, [worked examples](./WORKED_EXAMPLES.md), [system design handbook](./SYSTEM_DESIGN_HANDBOOK.md) |
-| Senior or staff SWE | Architecture, operational judgment, cross-team influence, failure analysis, migrations, mentoring, trade-offs | [Enterprise design curriculum](./ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md), [interview playbook](./INTERVIEW_PLAYBOOK.md) |
-| Backend or platform | Transactions, concurrency, networks, reliability, security, capacity, observability | `src/node-concepts/`, [system design handbook](./SYSTEM_DESIGN_HANDBOOK.md) |
-| Frontend or full stack | JavaScript/TypeScript, browser behavior, accessibility, UI state, performance, API boundaries, product reasoning | `src/javascript-concepts/`, `src/typescript-concepts/`, plus role-specific references below |
-| Infrastructure or systems | Processes, memory, concurrency, networking, storage, distributed systems, incidents | [MIT OS course](https://ocw.mit.edu/courses/6-1810-operating-system-engineering-fall-2023/), system design handbook |
-| Data engineering | SQL, data modeling, batch/stream processing, idempotency, quality, orchestration, cost | This guide's database section, [CMU Database Systems](https://15445.courses.cs.cmu.edu/) |
-| ML or AI engineering | Role-required statistics/modeling plus data pipelines, evaluation, deployment, retrieval, privacy, failure behavior | [AI interview labs](./AI_INTERVIEW_TRENDS_2026.md), [AI exercises](./AI_EXECUTABLE_PROBLEMS.md) |
+| Role or round             | Prioritize                                                                                                          | Repo route                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| New-grad or general SWE   | Language fluency, core structures, algorithms, testing, project stories                                             | [Learning path](../LEARNING_PATH.md), [mastery matrix](./MASTERY_MATRIX.md), topic guides in `src/`                     |
+| Mid-level product/backend | Mixed coding, APIs and data models, SQL, debugging, service design, ownership stories                               | This guide, [worked examples](./WORKED_EXAMPLES.md), [system design handbook](./SYSTEM_DESIGN_HANDBOOK.md)              |
+| Senior or staff SWE       | Architecture, operational judgment, cross-team influence, failure analysis, migrations, mentoring, trade-offs       | [Enterprise design curriculum](./ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md), [interview playbook](./INTERVIEW_PLAYBOOK.md) |
+| Backend or platform       | Transactions, concurrency, networks, reliability, security, capacity, observability                                 | `src/node-concepts/`, [system design handbook](./SYSTEM_DESIGN_HANDBOOK.md)                                             |
+| Frontend or full stack    | JavaScript/TypeScript, browser behavior, accessibility, UI state, performance, API boundaries, product reasoning    | `src/javascript-concepts/`, `src/typescript-concepts/`, plus role-specific references below                             |
+| Infrastructure or systems | Processes, memory, concurrency, networking, storage, distributed systems, incidents                                 | [MIT OS course](https://ocw.mit.edu/courses/6-1810-operating-system-engineering-fall-2023/), system design handbook     |
+| Data engineering          | SQL, data modeling, batch/stream processing, idempotency, quality, orchestration, cost                              | This guide's database section, [CMU Database Systems](https://15445.courses.cs.cmu.edu/)                                |
+| ML or AI engineering      | Role-required statistics/modeling plus data pipelines, evaluation, deployment, retrieval, privacy, failure behavior | [AI interview labs](./AI_INTERVIEW_TRENDS_2026.md), [AI exercises](./AI_EXECUTABLE_PROBLEMS.md)                         |
 
 This repository is strongest for TypeScript/JavaScript, algorithms, backend
 runtime, and distributed-system interviews. Frontend frameworks, mobile,
@@ -142,14 +142,14 @@ These are common follow-ups in backend, platform, and senior interviews. Explain
 the chain from request arrival to completion; do not memorize terms without a
 failure scenario.
 
-| Area | Be ready to explain | Drill |
-|---|---|---|
+| Area                  | Be ready to explain                                                                                                                      | Drill                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Processes and threads | Address-space isolation, shared memory, scheduling, context switches, worker pools, and why CPU-bound JavaScript can block an event loop | Compare CPU-heavy work inline versus a bounded worker pool; discuss saturation and cancellation |
-| Memory | Stack/heap conceptually, garbage collection, retained-reference leaks, memory pressure, and streaming versus buffering | Estimate memory for 50,000 retained 64 KiB chunks; explain backpressure |
-| Synchronization | Race conditions, atomic transitions, deadlock conditions, lock scope, and safe ownership | Two workers update inventory; define the invariant and atomic write boundary |
-| DNS and connections | Name resolution, connection reuse, TLS handshake, certificates, DNS/connect/TLS/request timeouts | Trace a slow HTTPS request and identify useful telemetry |
-| HTTP | Methods, status, headers, caching, idempotent semantics, streaming, proxy boundaries | Choose retries when a write may have committed before timeout |
-| Reliability | Queueing, bounded concurrency, backpressure, retries with jitter, deadlines, circuit breakers, overload | Explain how unlimited concurrency/retries can turn partial failure into total failure |
+| Memory                | Stack/heap conceptually, garbage collection, retained-reference leaks, memory pressure, and streaming versus buffering                   | Estimate memory for 50,000 retained 64 KiB chunks; explain backpressure                         |
+| Synchronization       | Race conditions, atomic transitions, deadlock conditions, lock scope, and safe ownership                                                 | Two workers update inventory; define the invariant and atomic write boundary                    |
+| DNS and connections   | Name resolution, connection reuse, TLS handshake, certificates, DNS/connect/TLS/request timeouts                                         | Trace a slow HTTPS request and identify useful telemetry                                        |
+| HTTP                  | Methods, status, headers, caching, idempotent semantics, streaming, proxy boundaries                                                     | Choose retries when a write may have committed before timeout                                   |
+| Reliability           | Queueing, bounded concurrency, backpressure, retries with jitter, deadlines, circuit breakers, overload                                  | Explain how unlimited concurrency/retries can turn partial failure into total failure           |
 
 For JavaScript, synchronous work occupies its isolate; asynchronous I/O does not
 make CPU-heavy callbacks parallel. Workers add parallel execution but also
@@ -288,16 +288,16 @@ role-related scenarios may be discussed. Other employers use different rubrics.
 
 Prepare six to eight stories that can answer several prompts:
 
-| Story area | Evidence to include |
-|---|---|
-| Ambiguous problem | What you clarified, chose, and changed |
-| Technical disagreement | Alternatives, evidence, how you handled disagreement, outcome |
-| Failure or mistake | Your part, impact, recovery, prevention, learning |
-| Delivery under constraints | Scope, trade-offs, sequencing, quality safeguards |
-| Ownership or incident | Detection, communication, mitigation, cause, follow-up |
-| Influence or mentoring | Who needed alignment, how you adapted, observable outcome |
-| User impact | User problem, evidence, and resulting decision |
-| Learning quickly | Approach, validation, limits, reusable outcome |
+| Story area                 | Evidence to include                                           |
+| -------------------------- | ------------------------------------------------------------- |
+| Ambiguous problem          | What you clarified, chose, and changed                        |
+| Technical disagreement     | Alternatives, evidence, how you handled disagreement, outcome |
+| Failure or mistake         | Your part, impact, recovery, prevention, learning             |
+| Delivery under constraints | Scope, trade-offs, sequencing, quality safeguards             |
+| Ownership or incident      | Detection, communication, mitigation, cause, follow-up        |
+| Influence or mentoring     | Who needed alignment, how you adapted, observable outcome     |
+| User impact                | User problem, evidence, and resulting decision                |
+| Learning quickly           | Approach, validation, limits, reusable outcome                |
 
 Use **STAR plus reflection**:
 
@@ -317,16 +317,16 @@ invent metrics or expose confidential details. Practice follow-ups, not only a
 Adapt this to available time. Keep a miss log and revisit missed skills; a
 completed checklist is not proof of readiness.
 
-| Week | Focus | Evidence of progress |
-|---|---|---|
-| 1 | Baseline: coding mock, project story, SQL query; map role and rounds | Timed baseline and three concrete gaps |
-| 2 | Language fundamentals, arrays/strings, hash maps, complexity | Explain and implement common collection patterns without notes |
-| 3 | Linked structures, stacks/queues, trees, heaps, binary search | Mixed easy/medium solutions with edge-case tests |
-| 4 | Graphs, recursion, backtracking, DP | State invariant/recurrence before coding; revisit misses after 1 and 3 days |
-| 5 | SQL, schemas, transactions, OS/network basics, debugging | Complete SQL drill and explain one request path/failure timeline |
-| 6 | LLD and system design | Timed machine-coding exercise and 45-minute design with feedback |
-| 7 | Behavioral stories, project deep dives, role-specific topics | Six evidence-backed stories; defend every resume bullet |
-| 8 | Full mock loop and weakest-area repair | Two complete mocks, no-AI coding round, follow-up review |
+| Week | Focus                                                                | Evidence of progress                                                        |
+| ---- | -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1    | Baseline: coding mock, project story, SQL query; map role and rounds | Timed baseline and three concrete gaps                                      |
+| 2    | Language fundamentals, arrays/strings, hash maps, complexity         | Explain and implement common collection patterns without notes              |
+| 3    | Linked structures, stacks/queues, trees, heaps, binary search        | Mixed easy/medium solutions with edge-case tests                            |
+| 4    | Graphs, recursion, backtracking, DP                                  | State invariant/recurrence before coding; revisit misses after 1 and 3 days |
+| 5    | SQL, schemas, transactions, OS/network basics, debugging             | Complete SQL drill and explain one request path/failure timeline            |
+| 6    | LLD and system design                                                | Timed machine-coding exercise and 45-minute design with feedback            |
+| 7    | Behavioral stories, project deep dives, role-specific topics         | Six evidence-backed stories; defend every resume bullet                     |
+| 8    | Full mock loop and weakest-area repair                               | Two complete mocks, no-AI coding round, follow-up review                    |
 
 Use a 60–90 minute session as: 10 minutes recall, 30–45 minutes deliberate
 practice, 10 minutes verification, 10 minutes explaining aloud, and 5 minutes
@@ -339,14 +339,14 @@ senior preparation, use the [12-week extension](../LEARNING_PATH.md#12-week-expe
 Score each dimension 0–3: 0 absent, 1 needed repeated prompts, 2 independently
 correct, 3 clear and defended. Record evidence, not just a number.
 
-| Dimension | Evidence to record |
-|---|---|
-| Problem framing | Did I clarify ambiguity and define a contract? |
-| Correctness | Did I state and preserve an invariant? |
-| Testing | Did I choose useful edge cases and verify the result? |
-| Complexity/trade-offs | Were estimates correct and assumptions visible? |
-| Communication | Could the interviewer follow my reasoning and decisions? |
-| Ownership | Did I explain my work, uncertainty, and learning honestly? |
+| Dimension             | Evidence to record                                         |
+| --------------------- | ---------------------------------------------------------- |
+| Problem framing       | Did I clarify ambiguity and define a contract?             |
+| Correctness           | Did I state and preserve an invariant?                     |
+| Testing               | Did I choose useful edge cases and verify the result?      |
+| Complexity/trade-offs | Were estimates correct and assumptions visible?            |
+| Communication         | Could the interviewer follow my reasoning and decisions?   |
+| Ownership             | Did I explain my work, uncertainty, and learning honestly? |
 
 Choose the lowest-scoring dimension for the next practice session. A mock
 score is a coaching tool, not a prediction of a hiring decision.
@@ -357,19 +357,19 @@ Prefer primary documentation, course material, standards, and employer-authored
 guidance. Use commercial prep sites for extra exercises; frequency rankings and
 predictions are not authoritative evidence about a particular interview.
 
-| Resource | Use it for |
-|---|---|
-| [Microsoft technical interview guidance](https://careers.microsoft.com/v2/global/en/hiring-tips/technical-interviewing.html) | Problem solving, design, coding, testing, and technical discussion |
-| [Amazon SDE III preparation](https://amazon.jobs/content/en-gb/how-we-hire/sde-iii-interview-prep) | One employer's senior coding, design, and behavioral guidance; do not generalize its loop |
-| [MIT OCW 6.006 Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/) | Algorithms with lectures, notes, and exercises |
-| [CMU 15-445 Database Systems](https://15445.courses.cs.cmu.edu/) | Database internals and behavior beyond query syntax |
-| PostgreSQL [transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html), [indexes](https://www.postgresql.org/docs/current/indexes.html), [EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html) | Relational constraints, transaction semantics, index trade-offs, plan inspection |
-| [MIT OCW 6.1810 Operating Systems](https://ocw.mit.edu/courses/6-1810-operating-system-engineering-fall-2023/) | Processes, virtual memory, threads, filesystems, IPC |
-| [RFC 9110 HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110) and [MDN HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview) | Normative HTTP semantics and an approachable overview |
-| [Google SRE book](https://sre.google/sre-book/table-of-contents/) | SLOs, incidents, monitoring, reliability trade-offs |
-| [Google Engineering Practices: review](https://google.github.io/eng-practices/review/reviewer/) | Review quality and actionable feedback |
-| [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) | Broad maintained exercise set |
-| [Amazon SDE III preparation](https://amazon.jobs/content/en-gb/how-we-hire/sde-iii-interview-prep) | Employer-specific senior coding, design, and behavioral guidance |
+| Resource                                                                                                                                                                                                                              | Use it for                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Microsoft technical interview guidance](https://careers.microsoft.com/v2/global/en/hiring-tips/technical-interviewing.html)                                                                                                          | Problem solving, design, coding, testing, and technical discussion                        |
+| [Amazon SDE III preparation](https://amazon.jobs/content/en-gb/how-we-hire/sde-iii-interview-prep)                                                                                                                                    | One employer's senior coding, design, and behavioral guidance; do not generalize its loop |
+| [MIT OCW 6.006 Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/)                                                                                                                                 | Algorithms with lectures, notes, and exercises                                            |
+| [CMU 15-445 Database Systems](https://15445.courses.cs.cmu.edu/)                                                                                                                                                                      | Database internals and behavior beyond query syntax                                       |
+| PostgreSQL [transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html), [indexes](https://www.postgresql.org/docs/current/indexes.html), [EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html) | Relational constraints, transaction semantics, index trade-offs, plan inspection          |
+| [MIT OCW 6.1810 Operating Systems](https://ocw.mit.edu/courses/6-1810-operating-system-engineering-fall-2023/)                                                                                                                        | Processes, virtual memory, threads, filesystems, IPC                                      |
+| [RFC 9110 HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110) and [MDN HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)                                                                                 | Normative HTTP semantics and an approachable overview                                     |
+| [Google SRE book](https://sre.google/sre-book/table-of-contents/)                                                                                                                                                                     | SLOs, incidents, monitoring, reliability trade-offs                                       |
+| [Google Engineering Practices: review](https://google.github.io/eng-practices/review/reviewer/)                                                                                                                                       | Review quality and actionable feedback                                                    |
+| [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/)                                                                                                                                                       | Broad maintained exercise set                                                             |
+| [Amazon SDE III preparation](https://amazon.jobs/content/en-gb/how-we-hire/sde-iii-interview-prep)                                                                                                                                    | Employer-specific senior coding, design, and behavioral guidance                          |
 
 For repository topic sources, see [learner note standards](./LEARNER_NOTE_STANDARDS.md),
 [research brief](./RESEARCH_BRIEF_2026.md), and references in each topic guide.

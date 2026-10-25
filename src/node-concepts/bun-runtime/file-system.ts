@@ -88,7 +88,9 @@ export async function summarizeFile(
  *
  * Interview angle:
  * Glob scanning is common in CLIs, build tools, test runners, and static-site
- * generators. Sorting makes tests and CI deterministic.
+ * generators. Bun 1.4.4 supports extglobs such as `!(*.test).ts` to exclude
+ * tests and `shard-{01..03}.json` for numbered files. Sorting makes tests and
+ * CI deterministic.
  *
  * Time: O(n log n), where n is the number of matched files.
  * Space: O(n), for the returned file list.

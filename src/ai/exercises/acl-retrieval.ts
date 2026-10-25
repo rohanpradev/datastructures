@@ -27,8 +27,7 @@ export interface AuthorizedRetrievalResult {
 export interface AclRetrievalOptions {
 	limit?: number | undefined;
 	scoreDocument?:
-		| ((query: string, document: RetrievalDocument) => number)
-		| undefined;
+		((query: string, document: RetrievalDocument) => number) | undefined;
 }
 
 function tokens(value: string): Set<string> {

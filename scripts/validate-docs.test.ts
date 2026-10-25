@@ -25,12 +25,15 @@ describe("Markdown course link validation", () => {
 
 	test("reports missing local files while ignoring URLs and anchors", async () => {
 		testRoot = await mkdtemp(join(tmpdir(), "docs-check-"));
-		await Bun.write(join(testRoot, "README.md"), [
-			"[good](./docs/topic.md)",
-			"[missing](./docs/missing.md#section)",
-			"[anchor](#local)",
-			"[web](https://bun.com/docs)",
-		].join("\n"));
+		await Bun.write(
+			join(testRoot, "README.md"),
+			[
+				"[good](./docs/topic.md)",
+				"[missing](./docs/missing.md#section)",
+				"[anchor](#local)",
+				"[web](https://bun.com/docs)",
+			].join("\n"),
+		);
 		await Bun.write(join(testRoot, "docs", "topic.md"), "# Topic\n");
 
 		const broken = await validateMarkdownLinks(testRoot);

@@ -62,4 +62,3 @@ Each bar is pushed once and popped once. When it is popped, we know the first sm
 
 - Time: `O(n)`
 - Space: `O(n)`
-

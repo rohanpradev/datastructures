@@ -116,4 +116,3 @@ The arrays are sorted, so each partition tells us whether we took too many or to
 
 - Time: `O(log(min(m, n)))`
 - Space: `O(1)`
-

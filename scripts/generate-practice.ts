@@ -88,12 +88,7 @@ type LocalImport = {
 
 type RunnableBlockKind = "describe" | "test" | "it";
 type RunnableBlockModifier =
-	| "conditional"
-	| "failing"
-	| "only"
-	| "skip"
-	| "todo"
-	| null;
+	"conditional" | "failing" | "only" | "skip" | "todo" | null;
 
 type DescribeBlock = {
 	kind: RunnableBlockKind;
@@ -4248,8 +4243,14 @@ export async function runFocusedValidationTest(
 	testPath: string,
 	timeoutMs = 30_000,
 ): Promise<{ stdoutText: string; stderrText: string; exitCode: number }> {
-	if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647)
-		throw new RangeError("Validation timeout must be a positive 32-bit integer.");
+	if (
+		!Number.isInteger(timeoutMs) ||
+		timeoutMs < 1 ||
+		timeoutMs > 2_147_483_647
+	)
+		throw new RangeError(
+			"Validation timeout must be a positive 32-bit integer.",
+		);
 	const subprocess = Bun.spawn(
 		[execPath, "test", "--cwd", outputRoot, testPath],
 		{ stdout: "pipe", stderr: "pipe", windowsHide: true },

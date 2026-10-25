@@ -17,13 +17,13 @@ recruiter. The broader route is in the [software engineering interview guide](./
 
 ## What Changed
 
-| Trend | What it means for candidates | How to practice here |
-| --- | --- | --- |
-| Pattern-based coding is still required. | You still need arrays, strings, graphs, DP, heaps, trees, and clean Big-O reasoning. | Use `bun run practice:random`, `practice:medium`, and `practice:hard`; read `docs/WORKED_EXAMPLES.md`. |
-| AI-assisted interview workflows are now productized. | The signal shifts from "can AI produce code" to "can you guide, review, test, iterate, and explain code." | Use the AI-assisted drills below, then solve the same target without AI. |
-| Repository comprehension and debugging are explicit formats. | Interviewers may give an existing repo, failing tests, a generated patch, or a buggy implementation. | Generate a practice target, ask AI for a solution, then review it against the checklist before running tests. |
-| System design starts earlier and goes deeper for senior roles. | You must discuss SLOs, data, bottlenecks, queues, caches, consistency, observability, and security. | Use `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md` and `src/node-concepts/system-design`. |
-| Agentic systems are now fair game. | RAG, stateless MCP/tool contracts, prompt injection, permissions, checkpoints, model fallback, evaluation, and cost controls can appear in design discussions. | Run the AI/RAG scenario in the enterprise curriculum and use the OWASP checklist below. |
+| Trend                                                          | What it means for candidates                                                                                                                                   | How to practice here                                                                                          |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Pattern-based coding is still required.                        | You still need arrays, strings, graphs, DP, heaps, trees, and clean Big-O reasoning.                                                                           | Use `bun run practice:random`, `practice:medium`, and `practice:hard`; read `docs/WORKED_EXAMPLES.md`.        |
+| AI-assisted interview workflows are now productized.           | The signal shifts from "can AI produce code" to "can you guide, review, test, iterate, and explain code."                                                      | Use the AI-assisted drills below, then solve the same target without AI.                                      |
+| Repository comprehension and debugging are explicit formats.   | Interviewers may give an existing repo, failing tests, a generated patch, or a buggy implementation.                                                           | Generate a practice target, ask AI for a solution, then review it against the checklist before running tests. |
+| System design starts earlier and goes deeper for senior roles. | You must discuss SLOs, data, bottlenecks, queues, caches, consistency, observability, and security.                                                            | Use `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md` and `src/node-concepts/system-design`.                      |
+| Agentic systems are now fair game.                             | RAG, stateless MCP/tool contracts, prompt injection, permissions, checkpoints, model fallback, evaluation, and cost controls can appear in design discussions. | Run the AI/RAG scenario in the enterprise curriculum and use the OWASP checklist below.                       |
 
 ## AI-Assisted Coding Round Protocol
 

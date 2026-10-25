@@ -12,9 +12,15 @@ coveragePathIgnorePatterns = [
 ]
 
 [install]
-minimumReleaseAge = 86400
+minimumReleaseAge = "1d"
 minimumReleaseAgeExcludes = [
-	"@biomejs/biome",
-	"@types/bun",
-	"typescript",
+	"@biomejs/biome@2.6.2",
+	"@types/bun@1.4.4",
+	"typescript@7.0.2",
 ]
+
+[fmt]
+useTabs = true
+printWidth = 80
+endOfLine = "lf"
+ignorePatterns = [".zed/**", "drizzle/**/snapshot.json"]

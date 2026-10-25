@@ -99,11 +99,16 @@ describe("practice review CLI", () => {
 			]);
 			for (const result of results) {
 				expect(result.code, result.output).toBe(0);
-				expect(result.output).toContain("Validated 2 focused practice target(s).");
+				expect(result.output).toContain(
+					"Validated 2 focused practice target(s).",
+				);
 			}
 			expect(await Bun.file(savedPath).text()).toBe("learner notes");
-			expect((await readdir(fixture.path())).filter((name) =>
-				name.startsWith("__focused-validation__-"))).toEqual([]);
+			expect(
+				(await readdir(fixture.path())).filter((name) =>
+					name.startsWith("__focused-validation__-"),
+				),
+			).toEqual([]);
 		});
 	});
 

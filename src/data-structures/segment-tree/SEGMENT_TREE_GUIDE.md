@@ -17,12 +17,12 @@ Associativity means `combine(combine(a,b),c)` equals `combine(a,combine(b,c))`.
 The identity must work on both sides: combining it with any value returns that
 value. Commutativity is unnecessary; left-to-right order matters.
 
-| Aggregate | Identity | Combine |
-| --- | --- | --- |
-| Sum | `0` | `(a, b) => a + b` |
-| Minimum | `Infinity` | `Math.min` |
-| Maximum | `-Infinity` | `Math.max` |
-| Ordered text | `""` | `(a, b) => a + b` |
+| Aggregate    | Identity    | Combine           |
+| ------------ | ----------- | ----------------- |
+| Sum          | `0`         | `(a, b) => a + b` |
+| Minimum      | `Infinity`  | `Math.min`        |
+| Maximum      | `-Infinity` | `Math.max`        |
+| Ordered text | `""`        | `(a, b) => a + b` |
 
 Use a pure reducer that returns a result without mutating its inputs. Treat
 stored objects and the identity as immutable; the tree copies array slots, not

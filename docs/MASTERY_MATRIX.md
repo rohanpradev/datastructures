@@ -6,22 +6,22 @@ move up.
 
 ## Level Map
 
-| Level | Main objective | Repo focus | Exit criteria |
-| --- | --- | --- | --- |
-| Beginner | Become fluent with the language, tests, and core structures. | `src/javascript-concepts`, `src/typescript-concepts`, stacks, queues, linked lists, hash tables, easy arrays and strings. | You can implement an easy target in 20 minutes, state Big-O, and explain edge cases without reading the reference. |
-| Intermediate | Recognize high-yield interview patterns. | Two pointers, sliding window, prefix sum, binary search, sorting, recursion, trees, BSTs, tries, heaps, graph traversal. | You can solve unseen medium targets in 35 minutes and explain the invariant before coding. |
-| Advanced | Handle mixed problems and backend runtime failure modes. | Dynamic programming, backtracking, union-find, topological sort, monotonic stack/deque, async resilience, circuit breaker, pub/sub, workers, Bun runtime APIs. | You can solve mixed targets under time pressure and explain retries, timeout budgets, cleanup, and data-structure trade-offs. |
-| Expert | Connect runnable primitives to enterprise system design. | `src/node-concepts/system-design`, `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md`, observability, security, platform engineering, multi-region trade-offs, AI/LLM app risks. | You can design a production system with SLOs, APIs, data model, bottlenecks, failure modes, observability, security, and migration steps. |
+| Level        | Main objective                                               | Repo focus                                                                                                                                                                  | Exit criteria                                                                                                                             |
+| ------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Beginner     | Become fluent with the language, tests, and core structures. | `src/javascript-concepts`, `src/typescript-concepts`, stacks, queues, linked lists, hash tables, easy arrays and strings.                                                   | You can implement an easy target in 20 minutes, state Big-O, and explain edge cases without reading the reference.                        |
+| Intermediate | Recognize high-yield interview patterns.                     | Two pointers, sliding window, prefix sum, binary search, sorting, recursion, trees, BSTs, tries, heaps, graph traversal.                                                    | You can solve unseen medium targets in 35 minutes and explain the invariant before coding.                                                |
+| Advanced     | Handle mixed problems and backend runtime failure modes.     | Dynamic programming, backtracking, union-find, topological sort, monotonic stack/deque, async resilience, circuit breaker, pub/sub, workers, Bun runtime APIs.              | You can solve mixed targets under time pressure and explain retries, timeout budgets, cleanup, and data-structure trade-offs.             |
+| Expert       | Connect runnable primitives to enterprise system design.     | `src/node-concepts/system-design`, `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md`, observability, security, platform engineering, multi-region trade-offs, AI/LLM app risks. | You can design a production system with SLOs, APIs, data model, bottlenecks, failure modes, observability, security, and migration steps. |
 
 ## Daily Session Template
 
-| Phase | Time | Action |
-| --- | ---: | --- |
-| Recall | 3 min | Write the pattern, invariant, edge cases, and expected complexity before opening the implementation. |
-| Implement | 20-70 min | Generate one target and implement only the file under `practice/`. |
-| Verify | 5 min | Run the focused Bun test printed by the generator. |
-| Explain | 5 min | Say the solution, complexity, and one follow-up out loud. |
-| Record | 2 min | Mark score 0-5 and schedule the next review from the manifest cadence. |
+| Phase     |      Time | Action                                                                                               |
+| --------- | --------: | ---------------------------------------------------------------------------------------------------- |
+| Recall    |     3 min | Write the pattern, invariant, edge cases, and expected complexity before opening the implementation. |
+| Implement | 20-70 min | Generate one target and implement only the file under `practice/`.                                   |
+| Verify    |     5 min | Run the focused Bun test printed by the generator.                                                   |
+| Explain   |     5 min | Say the solution, complexity, and one follow-up out loud.                                            |
+| Record    |     2 min | Mark score 0-5 and schedule the next review from the manifest cadence.                               |
 
 ## Practice Commands By Level
 
@@ -38,14 +38,14 @@ aligned with the repo as coverage grows.
 
 ## Scorecard
 
-| Score | Meaning | Next action |
-| --- | --- | --- |
-| 0 | Could not identify the pattern or data structure. | Read the guide and solve an easier target in the same topic. |
-| 1 | Recognized the topic but needed heavy hints. | Rebuild the reference solution tomorrow. |
-| 2 | Brute force passed some cases, optimized solution failed. | Write the invariant and add one missing edge-case test. |
-| 3 | Optimized solution passed after debugging. | Review in 3-7 days. |
-| 4 | Passed cleanly and explained complexity. | Do one harder target in the same pattern. |
-| 5 | Passed cleanly, handled follow-ups, and explained production trade-offs. | Move to mixed practice or system-design mode. |
+| Score | Meaning                                                                  | Next action                                                  |
+| ----- | ------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| 0     | Could not identify the pattern or data structure.                        | Read the guide and solve an easier target in the same topic. |
+| 1     | Recognized the topic but needed heavy hints.                             | Rebuild the reference solution tomorrow.                     |
+| 2     | Brute force passed some cases, optimized solution failed.                | Write the invariant and add one missing edge-case test.      |
+| 3     | Optimized solution passed after debugging.                               | Review in 3-7 days.                                          |
+| 4     | Passed cleanly and explained complexity.                                 | Do one harder target in the same pattern.                    |
+| 5     | Passed cleanly, handled follow-ups, and explained production trade-offs. | Move to mixed practice or system-design mode.                |
 
 ## Beginner Track
 

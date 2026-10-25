@@ -102,19 +102,19 @@ Final count: 2
 
 ```typescript
 export function numIslands(grid: string[][]): number {
-  // TODO: Initialize count
+	// TODO: Initialize count
 
-  // TODO: Helper function for DFS
-  function dfs(i: number, j: number) {
-    // TODO: Base cases (bounds, water)
-    // TODO: Mark as visited
-    // TODO: Visit 4 neighbors
-  }
+	// TODO: Helper function for DFS
+	function dfs(i: number, j: number) {
+		// TODO: Base cases (bounds, water)
+		// TODO: Mark as visited
+		// TODO: Visit 4 neighbors
+	}
 
-  // TODO: Iterate through grid
-  // TODO: If land found, increment count and DFS
+	// TODO: Iterate through grid
+	// TODO: If land found, increment count and DFS
 
-  // TODO: Return count
+	// TODO: Return count
 }
 ```
 
@@ -206,26 +206,26 @@ function canFinish(numCourses, prerequisites):
 
 ```typescript
 export function canFinish(
-  numCourses: number,
-  prerequisites: number[][],
+	numCourses: number,
+	prerequisites: number[][],
 ): boolean {
-  // TODO: Build adjacency list
+	// TODO: Build adjacency list
 
-  // TODO: Create state array (0=unvisited, 1=visiting, 2=visited)
+	// TODO: Create state array (0=unvisited, 1=visiting, 2=visited)
 
-  // TODO: DFS helper to detect cycle
-  function hasCycle(course: number): boolean {
-    // TODO: Check if visiting (cycle!)
-    // TODO: Check if already visited
-    // TODO: Mark as visiting
-    // TODO: Check neighbors
-    // TODO: Mark as visited
-    return false;
-  }
+	// TODO: DFS helper to detect cycle
+	function hasCycle(course: number): boolean {
+		// TODO: Check if visiting (cycle!)
+		// TODO: Check if already visited
+		// TODO: Mark as visiting
+		// TODO: Check neighbors
+		// TODO: Mark as visited
+		return false;
+	}
 
-  // TODO: Check each course for cycles
+	// TODO: Check each course for cycles
 
-  // TODO: Return true if no cycles
+	// TODO: Return true if no cycles
 }
 ```
 
@@ -305,20 +305,20 @@ function cloneGraph(node):
 
 ```typescript
 export function cloneGraph(node: Node | null): Node | null {
-  // TODO: Handle null case
+	// TODO: Handle null case
 
-  // TODO: Create map for original → clone
+	// TODO: Create map for original → clone
 
-  // TODO: DFS helper function
-  function dfs(node: Node): Node {
-    // TODO: If already cloned, return clone
-    // TODO: Create new node
-    // TODO: Add to map
-    // TODO: Clone all neighbors recursively
-    // TODO: Return clone
-  }
+	// TODO: DFS helper function
+	function dfs(node: Node): Node {
+		// TODO: If already cloned, return clone
+		// TODO: Create new node
+		// TODO: Add to map
+		// TODO: Clone all neighbors recursively
+		// TODO: Return clone
+	}
 
-  // TODO: Return cloned graph
+	// TODO: Return cloned graph
 }
 ```
 
@@ -412,14 +412,14 @@ function shortestPath(grid):
 
 ```typescript
 export function shortestPathBinaryMatrix(grid: number[][]): number {
-  // TODO: Check if start or end blocked
-  // TODO: Initialize queue with start position
-  // TODO: Create visited set
-  // TODO: 8 directions: up, down, left, right, 4 diagonals
-  // TODO: BFS loop
-  // TODO: Check if reached destination
-  // TODO: Explore 8 neighbors
-  // TODO: Return -1 if no path
+	// TODO: Check if start or end blocked
+	// TODO: Initialize queue with start position
+	// TODO: Create visited set
+	// TODO: 8 directions: up, down, left, right, 4 diagonals
+	// TODO: BFS loop
+	// TODO: Check if reached destination
+	// TODO: Explore 8 neighbors
+	// TODO: Return -1 if no path
 }
 ```
 
@@ -514,20 +514,20 @@ function pacificAtlantic(heights):
 
 ```typescript
 export function pacificAtlantic(heights: number[][]): number[][] {
-  // TODO: Initialize sets for pacific and atlantic
+	// TODO: Initialize sets for pacific and atlantic
 
-  // TODO: DFS helper function
-  function dfs(row: number, col: number, visited: Set<string>) {
-    // TODO: Base cases
-    // TODO: Mark visited
-    // TODO: Visit neighbors with >= height
-  }
+	// TODO: DFS helper function
+	function dfs(row: number, col: number, visited: Set<string>) {
+		// TODO: Base cases
+		// TODO: Mark visited
+		// TODO: Visit neighbors with >= height
+	}
 
-  // TODO: DFS from Pacific borders
+	// TODO: DFS from Pacific borders
 
-  // TODO: DFS from Atlantic borders
+	// TODO: DFS from Atlantic borders
 
-  // TODO: Find and return intersection
+	// TODO: Find and return intersection
 }
 ```
 

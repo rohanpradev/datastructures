@@ -183,9 +183,11 @@ test("migrates existing checkpoint writes with an empty task path and preserves 
 			preserved: true,
 		});
 		database.client
-			.query(`INSERT INTO graph_writes
+			.query(
+				`INSERT INTO graph_writes
 				(channel, checkpoint_id, checkpoint_namespace, data, write_index, task_id, thread_id, type)
-				VALUES (?, ?, '', ?, 0, 'legacy-task', 'legacy-thread', ?)`)
+				VALUES (?, ?, '', ?, 0, 'legacy-task', 'legacy-thread', ?)`,
+			)
 			.run("items", config.configurable?.["checkpoint_id"], value, type);
 
 		migrateDatabase(database.db);
