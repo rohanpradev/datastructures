@@ -1,28 +1,28 @@
 import { describe, expect, test } from "bun:test";
 import {
-  allPromises,
-  allSettledPromises,
-  anyPromise,
-  catchExample,
-  chainedThen,
-  finallyExample,
-  racePromises,
-  rejectedValue,
-  resolvedValue,
+	allPromises,
+	allSettledPromises,
+	anyPromise,
+	catchExample,
+	chainedThen,
+	finallyExample,
+	racePromises,
+	rejectedValue,
+	resolvedValue,
 } from "@/node-concepts/basics/promise-types";
 
 function delayedResolve<T>(value: T, delayMs: number) {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const promise = new Promise<T>((resolve) => {
-    timer = setTimeout(() => resolve(value), delayMs);
-  });
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	const promise = new Promise<T>((resolve) => {
+		timer = setTimeout(() => resolve(value), delayMs);
+	});
 
-  return {
-    promise,
-    clear: () => {
-      if (timer) clearTimeout(timer);
-    },
-  };
+	return {
+		promise,
+		clear: () => {
+			if (timer) clearTimeout(timer);
+		},
+	};
 }
 
 /* -------------------------------------------------- */
@@ -30,14 +30,14 @@ function delayedResolve<T>(value: T, delayMs: number) {
 /* -------------------------------------------------- */
 
 describe("resolvedValue", () => {
-  test("resolves with provided value", async () => {
-    await expect(resolvedValue(42)).resolves.toBe(42);
-  });
+	test("resolves with provided value", async () => {
+		await expect(resolvedValue(42)).resolves.toBe(42);
+	});
 
-  test("resolves objects correctly", async () => {
-    const obj = { name: "Luke" };
-    await expect(resolvedValue(obj)).resolves.toEqual(obj);
-  });
+	test("resolves objects correctly", async () => {
+		const obj = { name: "Luke" };
+		await expect(resolvedValue(obj)).resolves.toEqual(obj);
+	});
 });
 
 /* -------------------------------------------------- */
@@ -45,14 +45,14 @@ describe("resolvedValue", () => {
 /* -------------------------------------------------- */
 
 describe("rejectedValue", () => {
-  test("rejects with provided reason", async () => {
-    await expect(rejectedValue("fail")).rejects.toBe("fail");
-  });
+	test("rejects with provided reason", async () => {
+		await expect(rejectedValue("fail")).rejects.toBe("fail");
+	});
 
-  test("rejects with Error instance", async () => {
-    const err = new Error("boom");
-    await expect(rejectedValue(err)).rejects.toBe(err);
-  });
+	test("rejects with Error instance", async () => {
+		const err = new Error("boom");
+		await expect(rejectedValue(err)).rejects.toBe(err);
+	});
 });
 
 /* -------------------------------------------------- */
@@ -60,17 +60,17 @@ describe("rejectedValue", () => {
 /* -------------------------------------------------- */
 
 describe("allPromises", () => {
-  test("resolves when all succeed", async () => {
-    const result = await allPromises([resolvedValue(1), resolvedValue(2)]);
+	test("resolves when all succeed", async () => {
+		const result = await allPromises([resolvedValue(1), resolvedValue(2)]);
 
-    expect(result).toEqual([1, 2]);
-  });
+		expect(result).toEqual([1, 2]);
+	});
 
-  test("rejects immediately when one fails", async () => {
-    await expect(
-      allPromises([resolvedValue(1), rejectedValue("error"), resolvedValue(3)]),
-    ).rejects.toBe("error");
-  });
+	test("rejects immediately when one fails", async () => {
+		await expect(
+			allPromises([resolvedValue(1), rejectedValue("error"), resolvedValue(3)]),
+		).rejects.toBe("error");
+	});
 });
 
 /* -------------------------------------------------- */
@@ -78,16 +78,16 @@ describe("allPromises", () => {
 /* -------------------------------------------------- */
 
 describe("allSettledPromises", () => {
-  test("returns status for each promise", async () => {
-    const result = await allSettledPromises([
-      resolvedValue("ok"),
-      rejectedValue("fail"),
-    ]);
+	test("returns status for each promise", async () => {
+		const result = await allSettledPromises([
+			resolvedValue("ok"),
+			rejectedValue("fail"),
+		]);
 
-    expect(result).toHaveLength(2);
-    expect(result[0].status).toBe("fulfilled");
-    expect(result[1].status).toBe("rejected");
-  });
+		expect(result).toHaveLength(2);
+		expect(result[0].status).toBe("fulfilled");
+		expect(result[1].status).toBe("rejected");
+	});
 });
 
 /* -------------------------------------------------- */
@@ -95,31 +95,31 @@ describe("allSettledPromises", () => {
 /* -------------------------------------------------- */
 
 describe("racePromises", () => {
-  test("resolves with fastest promise", async () => {
-    const fast = resolvedValue("fast");
-    const slow = delayedResolve("slow", 20);
+	test("resolves with fastest promise", async () => {
+		const fast = resolvedValue("fast");
+		const slow = delayedResolve("slow", 20);
 
-    try {
-      const result = await racePromises([slow.promise, fast]);
+		try {
+			const result = await racePromises([slow.promise, fast]);
 
-      expect(result).toBe("fast");
-    } finally {
-      slow.clear();
-    }
-  });
+			expect(result).toBe("fast");
+		} finally {
+			slow.clear();
+		}
+	});
 
-  test("rejects if first settled promise rejects", async () => {
-    const fastReject = rejectedValue("boom");
-    const slowResolve = delayedResolve("ok", 20);
+	test("rejects if first settled promise rejects", async () => {
+		const fastReject = rejectedValue("boom");
+		const slowResolve = delayedResolve("ok", 20);
 
-    try {
-      await expect(racePromises([fastReject, slowResolve.promise])).rejects.toBe(
-        "boom",
-      );
-    } finally {
-      slowResolve.clear();
-    }
-  });
+		try {
+			await expect(
+				racePromises([fastReject, slowResolve.promise]),
+			).rejects.toBe("boom");
+		} finally {
+			slowResolve.clear();
+		}
+	});
 });
 
 /* -------------------------------------------------- */
@@ -127,20 +127,20 @@ describe("racePromises", () => {
 /* -------------------------------------------------- */
 
 describe("anyPromise", () => {
-  test("resolves with first fulfilled promise", async () => {
-    const result = await anyPromise([
-      rejectedValue("fail"),
-      resolvedValue("success"),
-    ]);
+	test("resolves with first fulfilled promise", async () => {
+		const result = await anyPromise([
+			rejectedValue("fail"),
+			resolvedValue("success"),
+		]);
 
-    expect(result).toBe("success");
-  });
+		expect(result).toBe("success");
+	});
 
-  test("rejects with AggregateError if all fail", async () => {
-    await expect(
-      anyPromise([rejectedValue("a"), rejectedValue("b")]),
-    ).rejects.toThrow(AggregateError);
-  });
+	test("rejects with AggregateError if all fail", async () => {
+		await expect(
+			anyPromise([rejectedValue("a"), rejectedValue("b")]),
+		).rejects.toThrow(AggregateError);
+	});
 });
 
 /* -------------------------------------------------- */
@@ -148,10 +148,10 @@ describe("anyPromise", () => {
 /* -------------------------------------------------- */
 
 describe("chainedThen", () => {
-  test("correctly transforms value", async () => {
-    const result = await chainedThen(5);
-    expect(result).toBe(15); // (5 * 2) + 5
-  });
+	test("correctly transforms value", async () => {
+		const result = await chainedThen(5);
+		expect(result).toBe(15); // (5 * 2) + 5
+	});
 });
 
 /* -------------------------------------------------- */
@@ -159,9 +159,9 @@ describe("chainedThen", () => {
 /* -------------------------------------------------- */
 
 describe("catchExample", () => {
-  test("recovers from rejection", async () => {
-    await expect(catchExample()).resolves.toBe("Recovered");
-  });
+	test("recovers from rejection", async () => {
+		await expect(catchExample()).resolves.toBe("Recovered");
+	});
 });
 
 /* -------------------------------------------------- */
@@ -169,20 +169,20 @@ describe("catchExample", () => {
 /* -------------------------------------------------- */
 
 describe("finallyExample", () => {
-  test("executes callback before resolving", async () => {
-    let executed = false;
+	test("executes callback before resolving", async () => {
+		let executed = false;
 
-    const result = await finallyExample(() => {
-      executed = true;
-    });
+		const result = await finallyExample(() => {
+			executed = true;
+		});
 
-    expect(executed).toBe(true);
-    expect(result).toBe("Done");
-  });
+		expect(executed).toBe(true);
+		expect(result).toBe("Done");
+	});
 
-  test("finally does not swallow errors", async () => {
-    const failing = Promise.reject("boom").finally(() => {});
+	test("finally does not swallow errors", async () => {
+		const failing = Promise.reject("boom").finally(() => {});
 
-    await expect(failing).rejects.toBe("boom");
-  });
+		await expect(failing).rejects.toBe("boom");
+	});
 });

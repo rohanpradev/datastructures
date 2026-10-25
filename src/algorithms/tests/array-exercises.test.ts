@@ -1,2192 +1,2192 @@
 import { describe, expect, test } from "bun:test";
 import {
-  findLongestString,
-  findMaxMin,
-  maxProfit,
-  maxSubArray,
-  removeDuplicates,
-  removeElement,
-  rotate,
-  canFinishPrinting,
-  twoSum,
-  validateSubsequence,
-  sortedSquaredArray,
-  tournamentWinner,
-  nonConstructableChange,
-  transpose,
-  backspaceStringCompare,
-  maxPlanesStopped,
-  minimumWaitingTime,
-  classPhoto,
-  tandemBicycle,
-  optimalFreelancing,
-  binarySearch,
-  threeLargestNumbers,
-  caesarCipherEncryptor,
-  runLengthEncoding,
-  threeNumberSum,
-  smallestDifference,
-  moveElementToTheEnd,
-  monotonicArray,
-  spiralTraverse,
-  longestPeak,
-  arrayOfProducts,
-  numberOfIslands,
-  rottenOranges,
-  wallsAndGates,
+	findLongestString,
+	findMaxMin,
+	maxProfit,
+	maxSubArray,
+	removeDuplicates,
+	removeElement,
+	rotate,
+	canFinishPrinting,
+	twoSum,
+	validateSubsequence,
+	sortedSquaredArray,
+	tournamentWinner,
+	nonConstructableChange,
+	transpose,
+	backspaceStringCompare,
+	maxPlanesStopped,
+	minimumWaitingTime,
+	classPhoto,
+	tandemBicycle,
+	optimalFreelancing,
+	binarySearch,
+	threeLargestNumbers,
+	caesarCipherEncryptor,
+	runLengthEncoding,
+	threeNumberSum,
+	smallestDifference,
+	moveElementToTheEnd,
+	monotonicArray,
+	spiralTraverse,
+	longestPeak,
+	arrayOfProducts,
+	numberOfIslands,
+	rottenOranges,
+	wallsAndGates,
 } from "@/algorithms/arrays/array-exercises";
 
 describe("removeElement", () => {
-  test("should remove all instances of value", () => {
-    const arr = [3, 2, 2, 3];
-    const k = removeElement(arr, 3);
+	test("should remove all instances of value", () => {
+		const arr = [3, 2, 2, 3];
+		const k = removeElement(arr, 3);
 
-    expect(k).toBe(2);
-    // First k elements should not contain val
-    expect(arr.slice(0, k)).toEqual([2, 2]);
-  });
+		expect(k).toBe(2);
+		// First k elements should not contain val
+		expect(arr.slice(0, k)).toEqual([2, 2]);
+	});
 
-  test("should handle no removals", () => {
-    const arr = [1, 2, 3, 4];
-    const k = removeElement(arr, 5);
+	test("should handle no removals", () => {
+		const arr = [1, 2, 3, 4];
+		const k = removeElement(arr, 5);
 
-    expect(k).toBe(4);
-    expect(arr.slice(0, k)).toEqual([1, 2, 3, 4]);
-  });
+		expect(k).toBe(4);
+		expect(arr.slice(0, k)).toEqual([1, 2, 3, 4]);
+	});
 
-  test("should handle all elements removed", () => {
-    const arr = [7, 7, 7, 7];
-    const k = removeElement(arr, 7);
+	test("should handle all elements removed", () => {
+		const arr = [7, 7, 7, 7];
+		const k = removeElement(arr, 7);
 
-    expect(k).toBe(0);
-  });
+		expect(k).toBe(0);
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    const k = removeElement(arr, 5);
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		const k = removeElement(arr, 5);
 
-    expect(k).toBe(0);
-  });
+		expect(k).toBe(0);
+	});
 
-  test("should handle single element kept", () => {
-    const arr = [1];
-    const k = removeElement(arr, 2);
+	test("should handle single element kept", () => {
+		const arr = [1];
+		const k = removeElement(arr, 2);
 
-    expect(k).toBe(1);
-    expect(arr[0]).toBe(1);
-  });
+		expect(k).toBe(1);
+		expect(arr[0]).toBe(1);
+	});
 
-  test("should handle single element removed", () => {
-    const arr = [1];
-    const k = removeElement(arr, 1);
+	test("should handle single element removed", () => {
+		const arr = [1];
+		const k = removeElement(arr, 1);
 
-    expect(k).toBe(0);
-  });
+		expect(k).toBe(0);
+	});
 
-  test("should handle multiple occurrences", () => {
-    const arr = [0, 1, 2, 2, 3, 0, 4, 2];
-    const k = removeElement(arr, 2);
+	test("should handle multiple occurrences", () => {
+		const arr = [0, 1, 2, 2, 3, 0, 4, 2];
+		const k = removeElement(arr, 2);
 
-    expect(k).toBe(5);
-    const result = arr.slice(0, k);
-    expect(result.sort()).toEqual([0, 0, 1, 3, 4]);
-  });
+		expect(k).toBe(5);
+		const result = arr.slice(0, k);
+		expect(result.sort()).toEqual([0, 0, 1, 3, 4]);
+	});
 });
 
 describe("findMaxMin", () => {
-  test("should find max and min in array", () => {
-    const [max, min] = findMaxMin([3, 1, 4, 1, 5, 9, 2, 6]);
-    expect(max).toBe(9);
-    expect(min).toBe(1);
-  });
+	test("should find max and min in array", () => {
+		const [max, min] = findMaxMin([3, 1, 4, 1, 5, 9, 2, 6]);
+		expect(max).toBe(9);
+		expect(min).toBe(1);
+	});
 
-  test("should handle single element", () => {
-    const [max, min] = findMaxMin([42]);
-    expect(max).toBe(42);
-    expect(min).toBe(42);
-  });
+	test("should handle single element", () => {
+		const [max, min] = findMaxMin([42]);
+		expect(max).toBe(42);
+		expect(min).toBe(42);
+	});
 
-  test("should handle negative numbers", () => {
-    const [max, min] = findMaxMin([-5, -1, -10, -3]);
-    expect(max).toBe(-1);
-    expect(min).toBe(-10);
-  });
+	test("should handle negative numbers", () => {
+		const [max, min] = findMaxMin([-5, -1, -10, -3]);
+		expect(max).toBe(-1);
+		expect(min).toBe(-10);
+	});
 
-  test("should handle mixed positive and negative", () => {
-    const [max, min] = findMaxMin([-5, 10, -20, 30]);
-    expect(max).toBe(30);
-    expect(min).toBe(-20);
-  });
+	test("should handle mixed positive and negative", () => {
+		const [max, min] = findMaxMin([-5, 10, -20, 30]);
+		expect(max).toBe(30);
+		expect(min).toBe(-20);
+	});
 
-  test("should handle all same values", () => {
-    const [max, min] = findMaxMin([5, 5, 5, 5]);
-    expect(max).toBe(5);
-    expect(min).toBe(5);
-  });
+	test("should handle all same values", () => {
+		const [max, min] = findMaxMin([5, 5, 5, 5]);
+		expect(max).toBe(5);
+		expect(min).toBe(5);
+	});
 
-  test("should handle two elements", () => {
-    const [max, min] = findMaxMin([1, 2]);
-    expect(max).toBe(2);
-    expect(min).toBe(1);
-  });
+	test("should handle two elements", () => {
+		const [max, min] = findMaxMin([1, 2]);
+		expect(max).toBe(2);
+		expect(min).toBe(1);
+	});
 
-  test("should throw error for empty array", () => {
-    expect(() => findMaxMin([])).toThrow("Array must not be empty");
-  });
+	test("should throw error for empty array", () => {
+		expect(() => findMaxMin([])).toThrow("Array must not be empty");
+	});
 
-  test("should handle zeros", () => {
-    const [max, min] = findMaxMin([0, -1, 1, 0]);
-    expect(max).toBe(1);
-    expect(min).toBe(-1);
-  });
+	test("should handle zeros", () => {
+		const [max, min] = findMaxMin([0, -1, 1, 0]);
+		expect(max).toBe(1);
+		expect(min).toBe(-1);
+	});
 });
 
 describe("findLongestString", () => {
-  test("should find longest string", () => {
-    const result = findLongestString(["apple", "banana", "kiwi"]);
-    expect(result).toBe("banana");
-  });
+	test("should find longest string", () => {
+		const result = findLongestString(["apple", "banana", "kiwi"]);
+		expect(result).toBe("banana");
+	});
 
-  test("should return first when multiple max length", () => {
-    const result = findLongestString(["a", "bb", "cc"]);
-    expect(result).toBe("bb");
-  });
+	test("should return first when multiple max length", () => {
+		const result = findLongestString(["a", "bb", "cc"]);
+		expect(result).toBe("bb");
+	});
 
-  test("should handle single string", () => {
-    const result = findLongestString(["hello"]);
-    expect(result).toBe("hello");
-  });
+	test("should handle single string", () => {
+		const result = findLongestString(["hello"]);
+		expect(result).toBe("hello");
+	});
 
-  test("should handle empty strings", () => {
-    const result = findLongestString(["", "a", ""]);
-    expect(result).toBe("a");
-  });
+	test("should handle empty strings", () => {
+		const result = findLongestString(["", "a", ""]);
+		expect(result).toBe("a");
+	});
 
-  test("should handle all empty strings", () => {
-    const result = findLongestString(["", "", ""]);
-    expect(result).toBe("");
-  });
+	test("should handle all empty strings", () => {
+		const result = findLongestString(["", "", ""]);
+		expect(result).toBe("");
+	});
 
-  test("should throw error for empty array", () => {
-    expect(() => findLongestString([])).toThrow("Array must not be empty");
-  });
+	test("should throw error for empty array", () => {
+		expect(() => findLongestString([])).toThrow("Array must not be empty");
+	});
 
-  test("should handle very long strings", () => {
-    const longString = "a".repeat(1000);
-    const result = findLongestString(["short", longString, "medium"]);
-    expect(result).toBe(longString);
-  });
+	test("should handle very long strings", () => {
+		const longString = "a".repeat(1000);
+		const result = findLongestString(["short", longString, "medium"]);
+		expect(result).toBe(longString);
+	});
 
-  test("should handle unicode characters", () => {
-    const result = findLongestString(["🎉", "hello", "👋"]);
-    expect(result).toBe("hello");
-  });
+	test("should handle unicode characters", () => {
+		const result = findLongestString(["🎉", "hello", "👋"]);
+		expect(result).toBe("hello");
+	});
 });
 
 describe("removeDuplicates", () => {
-  test("should remove duplicates from sorted array", () => {
-    const arr = [1, 1, 2];
-    const k = removeDuplicates(arr);
+	test("should remove duplicates from sorted array", () => {
+		const arr = [1, 1, 2];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(2);
-    expect(arr.slice(0, k)).toEqual([1, 2]);
-  });
+		expect(k).toBe(2);
+		expect(arr.slice(0, k)).toEqual([1, 2]);
+	});
 
-  test("should handle array with many duplicates", () => {
-    const arr = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
-    const k = removeDuplicates(arr);
+	test("should handle array with many duplicates", () => {
+		const arr = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(5);
-    expect(arr.slice(0, k)).toEqual([0, 1, 2, 3, 4]);
-  });
+		expect(k).toBe(5);
+		expect(arr.slice(0, k)).toEqual([0, 1, 2, 3, 4]);
+	});
 
-  test("should handle no duplicates", () => {
-    const arr = [1, 2, 3, 4, 5];
-    const k = removeDuplicates(arr);
+	test("should handle no duplicates", () => {
+		const arr = [1, 2, 3, 4, 5];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(5);
-    expect(arr.slice(0, k)).toEqual([1, 2, 3, 4, 5]);
-  });
+		expect(k).toBe(5);
+		expect(arr.slice(0, k)).toEqual([1, 2, 3, 4, 5]);
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    const k = removeDuplicates(arr);
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(0);
-  });
+		expect(k).toBe(0);
+	});
 
-  test("should handle single element", () => {
-    const arr = [1];
-    const k = removeDuplicates(arr);
+	test("should handle single element", () => {
+		const arr = [1];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(1);
-    expect(arr[0]).toBe(1);
-  });
+		expect(k).toBe(1);
+		expect(arr[0]).toBe(1);
+	});
 
-  test("should handle all same elements", () => {
-    const arr = [1, 1, 1, 1];
-    const k = removeDuplicates(arr);
+	test("should handle all same elements", () => {
+		const arr = [1, 1, 1, 1];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(1);
-    expect(arr[0]).toBe(1);
-  });
+		expect(k).toBe(1);
+		expect(arr[0]).toBe(1);
+	});
 
-  test("should handle two elements same", () => {
-    const arr = [1, 1];
-    const k = removeDuplicates(arr);
+	test("should handle two elements same", () => {
+		const arr = [1, 1];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(1);
-    expect(arr[0]).toBe(1);
-  });
+		expect(k).toBe(1);
+		expect(arr[0]).toBe(1);
+	});
 
-  test("should handle negative numbers", () => {
-    const arr = [-3, -3, -2, -1, -1, 0, 0, 0];
-    const k = removeDuplicates(arr);
+	test("should handle negative numbers", () => {
+		const arr = [-3, -3, -2, -1, -1, 0, 0, 0];
+		const k = removeDuplicates(arr);
 
-    expect(k).toBe(4);
-    expect(arr.slice(0, k)).toEqual([-3, -2, -1, 0]);
-  });
+		expect(k).toBe(4);
+		expect(arr.slice(0, k)).toEqual([-3, -2, -1, 0]);
+	});
 });
 
 describe("maxProfit", () => {
-  test("should find maximum profit", () => {
-    const profit = maxProfit([7, 1, 5, 3, 6, 4]);
-    expect(profit).toBe(5); // Buy at 1, sell at 6
-  });
+	test("should find maximum profit", () => {
+		const profit = maxProfit([7, 1, 5, 3, 6, 4]);
+		expect(profit).toBe(5); // Buy at 1, sell at 6
+	});
 
-  test("should return 0 when no profit possible", () => {
-    const profit = maxProfit([7, 6, 4, 3, 1]);
-    expect(profit).toBe(0);
-  });
+	test("should return 0 when no profit possible", () => {
+		const profit = maxProfit([7, 6, 4, 3, 1]);
+		expect(profit).toBe(0);
+	});
 
-  test("should handle single element", () => {
-    const profit = maxProfit([5]);
-    expect(profit).toBe(0);
-  });
+	test("should handle single element", () => {
+		const profit = maxProfit([5]);
+		expect(profit).toBe(0);
+	});
 
-  test("should handle empty array", () => {
-    const profit = maxProfit([]);
-    expect(profit).toBe(0);
-  });
+	test("should handle empty array", () => {
+		const profit = maxProfit([]);
+		expect(profit).toBe(0);
+	});
 
-  test("should handle two elements ascending", () => {
-    const profit = maxProfit([1, 5]);
-    expect(profit).toBe(4);
-  });
+	test("should handle two elements ascending", () => {
+		const profit = maxProfit([1, 5]);
+		expect(profit).toBe(4);
+	});
 
-  test("should handle two elements descending", () => {
-    const profit = maxProfit([5, 1]);
-    expect(profit).toBe(0);
-  });
+	test("should handle two elements descending", () => {
+		const profit = maxProfit([5, 1]);
+		expect(profit).toBe(0);
+	});
 
-  test("should buy at lowest and sell at peak after", () => {
-    const profit = maxProfit([2, 4, 1, 7, 5]);
-    expect(profit).toBe(6); // Buy at 1, sell at 7
-  });
+	test("should buy at lowest and sell at peak after", () => {
+		const profit = maxProfit([2, 4, 1, 7, 5]);
+		expect(profit).toBe(6); // Buy at 1, sell at 7
+	});
 
-  test("should handle multiple peaks", () => {
-    const profit = maxProfit([3, 2, 6, 5, 0, 3]);
-    expect(profit).toBe(4); // Buy at 2, sell at 6
-  });
+	test("should handle multiple peaks", () => {
+		const profit = maxProfit([3, 2, 6, 5, 0, 3]);
+		expect(profit).toBe(4); // Buy at 2, sell at 6
+	});
 
-  test("should handle all same prices", () => {
-    const profit = maxProfit([5, 5, 5, 5]);
-    expect(profit).toBe(0);
-  });
+	test("should handle all same prices", () => {
+		const profit = maxProfit([5, 5, 5, 5]);
+		expect(profit).toBe(0);
+	});
 });
 
 describe("rotate", () => {
-  test("should rotate array to the right", () => {
-    const arr = [1, 2, 3, 4, 5, 6, 7];
-    rotate(arr, 3);
-    expect(arr).toEqual([5, 6, 7, 1, 2, 3, 4]);
-  });
+	test("should rotate array to the right", () => {
+		const arr = [1, 2, 3, 4, 5, 6, 7];
+		rotate(arr, 3);
+		expect(arr).toEqual([5, 6, 7, 1, 2, 3, 4]);
+	});
 
-  test("should handle k larger than array length", () => {
-    const arr = [1, 2, 3];
-    rotate(arr, 4); // Equivalent to k=1
-    expect(arr).toEqual([3, 1, 2]);
-  });
+	test("should handle k larger than array length", () => {
+		const arr = [1, 2, 3];
+		rotate(arr, 4); // Equivalent to k=1
+		expect(arr).toEqual([3, 1, 2]);
+	});
 
-  test("should handle k = 0", () => {
-    const arr = [1, 2, 3, 4];
-    rotate(arr, 0);
-    expect(arr).toEqual([1, 2, 3, 4]);
-  });
+	test("should handle k = 0", () => {
+		const arr = [1, 2, 3, 4];
+		rotate(arr, 0);
+		expect(arr).toEqual([1, 2, 3, 4]);
+	});
 
-  test("should handle k equal to array length", () => {
-    const arr = [1, 2, 3];
-    rotate(arr, 3);
-    expect(arr).toEqual([1, 2, 3]);
-  });
+	test("should handle k equal to array length", () => {
+		const arr = [1, 2, 3];
+		rotate(arr, 3);
+		expect(arr).toEqual([1, 2, 3]);
+	});
 
-  test("should handle single element", () => {
-    const arr = [1];
-    rotate(arr, 5);
-    expect(arr).toEqual([1]);
-  });
+	test("should handle single element", () => {
+		const arr = [1];
+		rotate(arr, 5);
+		expect(arr).toEqual([1]);
+	});
 
-  test("should handle two elements", () => {
-    const arr = [1, 2];
-    rotate(arr, 1);
-    expect(arr).toEqual([2, 1]);
-  });
+	test("should handle two elements", () => {
+		const arr = [1, 2];
+		rotate(arr, 1);
+		expect(arr).toEqual([2, 1]);
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    rotate(arr, 3);
-    expect(arr).toEqual([]);
-  });
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		rotate(arr, 3);
+		expect(arr).toEqual([]);
+	});
 
-  test("should handle negative numbers", () => {
-    const arr = [-1, -100, 3, 99];
-    rotate(arr, 2);
-    expect(arr).toEqual([3, 99, -1, -100]);
-  });
+	test("should handle negative numbers", () => {
+		const arr = [-1, -100, 3, 99];
+		rotate(arr, 2);
+		expect(arr).toEqual([3, 99, -1, -100]);
+	});
 
-  test("should handle large k", () => {
-    const arr = [1, 2, 3, 4, 5];
-    rotate(arr, 12); // 12 % 5 = 2
-    expect(arr).toEqual([4, 5, 1, 2, 3]);
-  });
+	test("should handle large k", () => {
+		const arr = [1, 2, 3, 4, 5];
+		rotate(arr, 12); // 12 % 5 = 2
+		expect(arr).toEqual([4, 5, 1, 2, 3]);
+	});
 });
 
 describe("maxSubArray", () => {
-  test("should find maximum subarray sum", () => {
-    const sum = maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]);
-    expect(sum).toBe(6); // [4,-1,2,1]
-  });
+	test("should find maximum subarray sum", () => {
+		const sum = maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]);
+		expect(sum).toBe(6); // [4,-1,2,1]
+	});
 
-  test("should handle single element", () => {
-    const sum = maxSubArray([1]);
-    expect(sum).toBe(1);
-  });
+	test("should handle single element", () => {
+		const sum = maxSubArray([1]);
+		expect(sum).toBe(1);
+	});
 
-  test("should handle single negative element", () => {
-    const sum = maxSubArray([-1]);
-    expect(sum).toBe(-1);
-  });
+	test("should handle single negative element", () => {
+		const sum = maxSubArray([-1]);
+		expect(sum).toBe(-1);
+	});
 
-  test("should handle all positive numbers", () => {
-    const sum = maxSubArray([5, 4, -1, 7, 8]);
-    expect(sum).toBe(23); // Entire array
-  });
+	test("should handle all positive numbers", () => {
+		const sum = maxSubArray([5, 4, -1, 7, 8]);
+		expect(sum).toBe(23); // Entire array
+	});
 
-  test("should handle all negative numbers", () => {
-    const sum = maxSubArray([-1, -2, -3, -4]);
-    expect(sum).toBe(-1); // Best single element
-  });
+	test("should handle all negative numbers", () => {
+		const sum = maxSubArray([-1, -2, -3, -4]);
+		expect(sum).toBe(-1); // Best single element
+	});
 
-  test("should handle two elements", () => {
-    const sum = maxSubArray([1, -2]);
-    expect(sum).toBe(1);
-  });
+	test("should handle two elements", () => {
+		const sum = maxSubArray([1, -2]);
+		expect(sum).toBe(1);
+	});
 
-  test("should handle zeros", () => {
-    const sum = maxSubArray([0, -1, 0, 1]);
-    expect(sum).toBe(1);
-  });
+	test("should handle zeros", () => {
+		const sum = maxSubArray([0, -1, 0, 1]);
+		expect(sum).toBe(1);
+	});
 
-  test("should handle alternating positive and negative", () => {
-    const sum = maxSubArray([1, -1, 1, -1, 1]);
-    expect(sum).toBe(1);
-  });
+	test("should handle alternating positive and negative", () => {
+		const sum = maxSubArray([1, -1, 1, -1, 1]);
+		expect(sum).toBe(1);
+	});
 
-  test("should throw error for empty array", () => {
-    expect(() => maxSubArray([])).toThrow("Array must not be empty");
-  });
+	test("should throw error for empty array", () => {
+		expect(() => maxSubArray([])).toThrow("Array must not be empty");
+	});
 
-  test("should handle large positive at end", () => {
-    const sum = maxSubArray([-2, -3, -1, 100]);
-    expect(sum).toBe(100);
-  });
+	test("should handle large positive at end", () => {
+		const sum = maxSubArray([-2, -3, -1, 100]);
+		expect(sum).toBe(100);
+	});
 
-  test("should handle subarray in middle", () => {
-    const sum = maxSubArray([-5, 1, 2, 3, -5]);
-    expect(sum).toBe(6); // [1,2,3]
-  });
+	test("should handle subarray in middle", () => {
+		const sum = maxSubArray([-5, 1, 2, 3, -5]);
+		expect(sum).toBe(6); // [1,2,3]
+	});
 });
 
 describe("Array Exercises Integration", () => {
-  test("should handle removing duplicates then rotating", () => {
-    const arr = [1, 1, 2, 2, 3, 3];
-    const k = removeDuplicates(arr);
-    const unique = arr.slice(0, k); // [1, 2, 3]
-    rotate(unique, 1);
-    expect(unique).toEqual([3, 1, 2]);
-  });
+	test("should handle removing duplicates then rotating", () => {
+		const arr = [1, 1, 2, 2, 3, 3];
+		const k = removeDuplicates(arr);
+		const unique = arr.slice(0, k); // [1, 2, 3]
+		rotate(unique, 1);
+		expect(unique).toEqual([3, 1, 2]);
+	});
 
-  test("should find max profit after removing element", () => {
-    const prices = [7, 1, 5, 3, 6, 4, 6];
-    removeElement(prices, 6); // Remove invalid prices
-    const k = removeElement(prices, 6);
-    const validPrices = prices.slice(0, k);
-    const profit = maxProfit(validPrices);
-    expect(profit).toBeGreaterThan(0);
-  });
+	test("should find max profit after removing element", () => {
+		const prices = [7, 1, 5, 3, 6, 4, 6];
+		removeElement(prices, 6); // Remove invalid prices
+		const k = removeElement(prices, 6);
+		const validPrices = prices.slice(0, k);
+		const profit = maxProfit(validPrices);
+		expect(profit).toBeGreaterThan(0);
+	});
 
-  test("should work with various array operations", () => {
-    // Start with array
-    const arr = [3, 1, 4, 1, 5, 9, 2, 6, 5];
+	test("should work with various array operations", () => {
+		// Start with array
+		const arr = [3, 1, 4, 1, 5, 9, 2, 6, 5];
 
-    // Find max and min
-    const [max, min] = findMaxMin(arr);
-    expect(max).toBe(9);
-    expect(min).toBe(1);
+		// Find max and min
+		const [max, min] = findMaxMin(arr);
+		expect(max).toBe(9);
+		expect(min).toBe(1);
 
-    // Sort (for removeDuplicates)
-    arr.sort((a, b) => a - b);
+		// Sort (for removeDuplicates)
+		arr.sort((a, b) => a - b);
 
-    // Remove duplicates
-    const uniqueLength = removeDuplicates(arr);
-    expect(uniqueLength).toBeLessThan(arr.length);
+		// Remove duplicates
+		const uniqueLength = removeDuplicates(arr);
+		expect(uniqueLength).toBeLessThan(arr.length);
 
-    // Rotate
-    const unique = arr.slice(0, uniqueLength);
-    rotate(unique, 2);
-    expect(unique.length).toBe(uniqueLength);
-  });
+		// Rotate
+		const unique = arr.slice(0, uniqueLength);
+		rotate(unique, 2);
+		expect(unique.length).toBe(uniqueLength);
+	});
 });
 
 describe("canFinishPrinting", () => {
-  test("should return true when batches fit exactly within days", () => {
-    const result = canFinishPrinting([5, 5, 5], 3, 5);
-    expect(result).toBe(true); // Each batch = 1 day
-  });
+	test("should return true when batches fit exactly within days", () => {
+		const result = canFinishPrinting([5, 5, 5], 3, 5);
+		expect(result).toBe(true); // Each batch = 1 day
+	});
 
-  test("should return true when batches fit with leftover space", () => {
-    const result = canFinishPrinting([3, 3, 3], 2, 10);
-    // Day 1: 3+3+3 = 9 → all fit in 1 day but 2 allowed
-    expect(result).toBe(true);
-  });
+	test("should return true when batches fit with leftover space", () => {
+		const result = canFinishPrinting([3, 3, 3], 2, 10);
+		// Day 1: 3+3+3 = 9 → all fit in 1 day but 2 allowed
+		expect(result).toBe(true);
+	});
 
-  test("should return true for typical multi-day scenario", () => {
-    const result = canFinishPrinting([5, 3, 4], 2, 10);
-    // Day1: 5+3 = 8, Day2: 4
-    expect(result).toBe(true);
-  });
+	test("should return true for typical multi-day scenario", () => {
+		const result = canFinishPrinting([5, 3, 4], 2, 10);
+		// Day1: 5+3 = 8, Day2: 4
+		expect(result).toBe(true);
+	});
 
-  test("should return false when batches require more days than allowed", () => {
-    const result = canFinishPrinting([6, 6, 6], 2, 10);
-    // Needs 3 days
-    expect(result).toBe(false);
-  });
+	test("should return false when batches require more days than allowed", () => {
+		const result = canFinishPrinting([6, 6, 6], 2, 10);
+		// Needs 3 days
+		expect(result).toBe(false);
+	});
 
-  test("should return false when a single batch exceeds daily capacity", () => {
-    const result = canFinishPrinting([12], 3, 10);
-    expect(result).toBe(false);
-  });
+	test("should return false when a single batch exceeds daily capacity", () => {
+		const result = canFinishPrinting([12], 3, 10);
+		expect(result).toBe(false);
+	});
 
-  test("should return true for empty batch list", () => {
-    const result = canFinishPrinting([], 5, 10);
-    expect(result).toBe(true); // nothing to print
-  });
+	test("should return true for empty batch list", () => {
+		const result = canFinishPrinting([], 5, 10);
+		expect(result).toBe(true); // nothing to print
+	});
 
-  test("should handle single batch that fits", () => {
-    const result = canFinishPrinting([7], 1, 10);
-    expect(result).toBe(true);
-  });
+	test("should handle single batch that fits", () => {
+		const result = canFinishPrinting([7], 1, 10);
+		expect(result).toBe(true);
+	});
 
-  test("should return false when single batch doesn't fit in 1 day", () => {
-    const result = canFinishPrinting([7], 1, 5);
-    expect(result).toBe(false);
-  });
+	test("should return false when single batch doesn't fit in 1 day", () => {
+		const result = canFinishPrinting([7], 1, 5);
+		expect(result).toBe(false);
+	});
 
-  test("should handle day boundary transitions correctly", () => {
-    const result = canFinishPrinting([4, 4, 4, 4], 2, 8);
-    // Day1: 4+4, Day2: 4+4
-    expect(result).toBe(true);
-  });
+	test("should handle day boundary transitions correctly", () => {
+		const result = canFinishPrinting([4, 4, 4, 4], 2, 8);
+		// Day1: 4+4, Day2: 4+4
+		expect(result).toBe(true);
+	});
 
-  test("should fail when transitions exceed allowed days", () => {
-    const result = canFinishPrinting([4, 4, 4, 4], 1, 8);
-    // Would require 2 days
-    expect(result).toBe(false);
-  });
+	test("should fail when transitions exceed allowed days", () => {
+		const result = canFinishPrinting([4, 4, 4, 4], 1, 8);
+		// Would require 2 days
+		expect(result).toBe(false);
+	});
 
-  test("should handle maxPagesPerDay = 0", () => {
-    const result = canFinishPrinting([1, 2, 3], 5, 0);
-    expect(result).toBe(false); // nothing can be printed
-  });
+	test("should handle maxPagesPerDay = 0", () => {
+		const result = canFinishPrinting([1, 2, 3], 5, 0);
+		expect(result).toBe(false); // nothing can be printed
+	});
 
-  test("should handle very large capacity allowing all in 1 day", () => {
-    const result = canFinishPrinting([5, 10, 20], 1, 100);
-    expect(result).toBe(true);
-  });
+	test("should handle very large capacity allowing all in 1 day", () => {
+		const result = canFinishPrinting([5, 10, 20], 1, 100);
+		expect(result).toBe(true);
+	});
 
-  test("should handle multiple daily resets", () => {
-    const result = canFinishPrinting([3, 8, 2, 7, 5], 3, 10);
-    // Day1: 3+8 exceeds → 3 only, next day
-    // Day2: 8+2 = 10
-    // Day3: 7 (5 cannot be reached → fail)
-    expect(result).toBe(false);
-  });
+	test("should handle multiple daily resets", () => {
+		const result = canFinishPrinting([3, 8, 2, 7, 5], 3, 10);
+		// Day1: 3+8 exceeds → 3 only, next day
+		// Day2: 8+2 = 10
+		// Day3: 7 (5 cannot be reached → fail)
+		expect(result).toBe(false);
+	});
 
-  test("should pass scenario where exact last day is used fully", () => {
-    const result = canFinishPrinting([5, 5, 10], 2, 10);
-    // Day1: 5+5 = 10
-    // Day2: 10
-    expect(result).toBe(true);
-  });
+	test("should pass scenario where exact last day is used fully", () => {
+		const result = canFinishPrinting([5, 5, 10], 2, 10);
+		// Day1: 5+5 = 10
+		// Day2: 10
+		expect(result).toBe(true);
+	});
 
-  test("should fail when exceeding last day by one batch", () => {
-    const result = canFinishPrinting([5, 5, 10, 1], 2, 10);
-    // Day1: 10
-    // Day2: 10
-    // Day3 needed for 1 → fail
-    expect(result).toBe(false);
-  });
+	test("should fail when exceeding last day by one batch", () => {
+		const result = canFinishPrinting([5, 5, 10, 1], 2, 10);
+		// Day1: 10
+		// Day2: 10
+		// Day3 needed for 1 → fail
+		expect(result).toBe(false);
+	});
 });
 
 describe("twoSum", () => {
-  test("should find indices of two numbers that sum to target", () => {
-    const arr = [2, 7, 11, 15];
-    const result = twoSum(arr, 9)!;
+	test("should find indices of two numbers that sum to target", () => {
+		const arr = [2, 7, 11, 15];
+		const result = twoSum(arr, 9)!;
 
-    expect(arr[result[0]] + arr[result[1]]).toBe(9);
-  });
+		expect(arr[result[0]] + arr[result[1]]).toBe(9);
+	});
 
-  test("should handle array with duplicate values", () => {
-    const arr = [3, 3];
-    const result = twoSum(arr, 6)!;
+	test("should handle array with duplicate values", () => {
+		const arr = [3, 3];
+		const result = twoSum(arr, 6)!;
 
-    expect(arr[result[0]] + arr[result[1]]).toBe(6);
-  });
+		expect(arr[result[0]] + arr[result[1]]).toBe(6);
+	});
 
-  test("should return undefined when no solution exists", () => {
-    const arr = [1, 2, 3, 4];
-    const result = twoSum(arr, 10);
+	test("should return undefined when no solution exists", () => {
+		const arr = [1, 2, 3, 4];
+		const result = twoSum(arr, 10);
 
-    expect(result).toBeUndefined();
-  });
+		expect(result).toBeUndefined();
+	});
 
-  test("should handle negative numbers", () => {
-    const arr = [-3, 4, 1, 2];
-    const result = twoSum(arr, -1)!;
+	test("should handle negative numbers", () => {
+		const arr = [-3, 4, 1, 2];
+		const result = twoSum(arr, -1)!;
 
-    expect(arr[result[0]] + arr[result[1]]).toBe(-1);
-  });
+		expect(arr[result[0]] + arr[result[1]]).toBe(-1);
+	});
 
-  test("should not use the same element twice", () => {
-    const arr = [3];
-    const result = twoSum(arr, 6);
+	test("should not use the same element twice", () => {
+		const arr = [3];
+		const result = twoSum(arr, 6);
 
-    expect(result).toBeUndefined();
-  });
+		expect(result).toBeUndefined();
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    const result = twoSum(arr, 5);
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		const result = twoSum(arr, 5);
 
-    expect(result).toBeUndefined();
-  });
+		expect(result).toBeUndefined();
+	});
 
-  test("should return any valid indices when solution appears later", () => {
-    const arr = [1, 5, 3, 7];
-    const result = twoSum(arr, 8)!;
+	test("should return any valid indices when solution appears later", () => {
+		const arr = [1, 5, 3, 7];
+		const result = twoSum(arr, 8)!;
 
-    expect(arr[result[0]] + arr[result[1]]).toBe(8);
-  });
+		expect(arr[result[0]] + arr[result[1]]).toBe(8);
+	});
 
-  test("should handle zero correctly", () => {
-    const arr = [0, 4, 3, 0];
-    const result = twoSum(arr, 0)!;
+	test("should handle zero correctly", () => {
+		const arr = [0, 4, 3, 0];
+		const result = twoSum(arr, 0)!;
 
-    expect(arr[result[0]] + arr[result[1]]).toBe(0);
-  });
+		expect(arr[result[0]] + arr[result[1]]).toBe(0);
+	});
 });
 
 describe("validateSubsequence", () => {
-  test("returns true when sequence is a valid subsequence", () => {
-    const array = [5, 1, 22, 25, 6, -1, 8, 10];
-    const sequence = [1, 6, -1, 10];
+	test("returns true when sequence is a valid subsequence", () => {
+		const array = [5, 1, 22, 25, 6, -1, 8, 10];
+		const sequence = [1, 6, -1, 10];
 
-    expect(validateSubsequence(array, sequence)).toBe(true);
-  });
+		expect(validateSubsequence(array, sequence)).toBe(true);
+	});
 
-  test("returns true when sequence elements are contiguous", () => {
-    expect(validateSubsequence([1, 2, 3, 4], [2, 3])).toBe(true);
-  });
+	test("returns true when sequence elements are contiguous", () => {
+		expect(validateSubsequence([1, 2, 3, 4], [2, 3])).toBe(true);
+	});
 
-  test("returns true when sequence contains a single element", () => {
-    expect(validateSubsequence([1, 2, 3], [2])).toBe(true);
-  });
+	test("returns true when sequence contains a single element", () => {
+		expect(validateSubsequence([1, 2, 3], [2])).toBe(true);
+	});
 
-  test("returns true when sequence is empty", () => {
-    expect(validateSubsequence([1, 2, 3], [])).toBe(true);
-  });
+	test("returns true when sequence is empty", () => {
+		expect(validateSubsequence([1, 2, 3], [])).toBe(true);
+	});
 
-  test("returns false when sequence order is incorrect", () => {
-    expect(validateSubsequence([1, 2, 3], [3, 2])).toBe(false);
-  });
+	test("returns false when sequence order is incorrect", () => {
+		expect(validateSubsequence([1, 2, 3], [3, 2])).toBe(false);
+	});
 
-  test("returns false when sequence contains elements not in array", () => {
-    expect(validateSubsequence([1, 2, 3, 4], [2, 5])).toBe(false);
-  });
+	test("returns false when sequence contains elements not in array", () => {
+		expect(validateSubsequence([1, 2, 3, 4], [2, 5])).toBe(false);
+	});
 
-  test("returns false when sequence is longer than array", () => {
-    expect(validateSubsequence([1, 2], [1, 2, 3])).toBe(false);
-  });
+	test("returns false when sequence is longer than array", () => {
+		expect(validateSubsequence([1, 2], [1, 2, 3])).toBe(false);
+	});
 
-  test("handles duplicate values correctly", () => {
-    const array = [1, 1, 1, 2, 2, 3];
-    const sequence = [1, 2, 3];
+	test("handles duplicate values correctly", () => {
+		const array = [1, 1, 1, 2, 2, 3];
+		const sequence = [1, 2, 3];
 
-    expect(validateSubsequence(array, sequence)).toBe(true);
-  });
+		expect(validateSubsequence(array, sequence)).toBe(true);
+	});
 
-  test("fails when duplicates appear in the wrong order", () => {
-    const array = [1, 2, 1, 2];
-    const sequence = [2, 1];
+	test("fails when duplicates appear in the wrong order", () => {
+		const array = [1, 2, 1, 2];
+		const sequence = [2, 1];
 
-    expect(validateSubsequence(array, sequence)).toBe(true);
-  });
+		expect(validateSubsequence(array, sequence)).toBe(true);
+	});
 
-  test("returns false when array is empty and sequence is not", () => {
-    expect(validateSubsequence([], [1])).toBe(false);
-  });
+	test("returns false when array is empty and sequence is not", () => {
+		expect(validateSubsequence([], [1])).toBe(false);
+	});
 
-  test("returns true when both array and sequence are empty", () => {
-    expect(validateSubsequence([], [])).toBe(true);
-  });
+	test("returns true when both array and sequence are empty", () => {
+		expect(validateSubsequence([], [])).toBe(true);
+	});
 });
 
 describe("sortedSquaredArray", () => {
-  test("should handle mixed negative and positive numbers", () => {
-    const nums = [-4, -1, 0, 3, 10];
-    const result = sortedSquaredArray(nums);
+	test("should handle mixed negative and positive numbers", () => {
+		const nums = [-4, -1, 0, 3, 10];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([0, 1, 9, 16, 100]);
-  });
+		expect(result).toEqual([0, 1, 9, 16, 100]);
+	});
 
-  test("should handle all negative numbers", () => {
-    const nums = [-7, -5, -3, -1];
-    const result = sortedSquaredArray(nums);
+	test("should handle all negative numbers", () => {
+		const nums = [-7, -5, -3, -1];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([1, 9, 25, 49]);
-  });
+		expect(result).toEqual([1, 9, 25, 49]);
+	});
 
-  test("should handle all positive numbers", () => {
-    const nums = [1, 2, 3, 4];
-    const result = sortedSquaredArray(nums);
+	test("should handle all positive numbers", () => {
+		const nums = [1, 2, 3, 4];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([1, 4, 9, 16]);
-  });
+		expect(result).toEqual([1, 4, 9, 16]);
+	});
 
-  test("should handle array with zeros", () => {
-    const nums = [-2, 0, 0, 3];
-    const result = sortedSquaredArray(nums);
+	test("should handle array with zeros", () => {
+		const nums = [-2, 0, 0, 3];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([0, 0, 4, 9]);
-  });
+		expect(result).toEqual([0, 0, 4, 9]);
+	});
 
-  test("should handle single element", () => {
-    const nums = [-5];
-    const result = sortedSquaredArray(nums);
+	test("should handle single element", () => {
+		const nums = [-5];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([25]);
-  });
+		expect(result).toEqual([25]);
+	});
 
-  test("should handle empty array", () => {
-    const nums: number[] = [];
-    const result = sortedSquaredArray(nums);
+	test("should handle empty array", () => {
+		const nums: number[] = [];
+		const result = sortedSquaredArray(nums);
 
-    expect(result).toEqual([]);
-  });
+		expect(result).toEqual([]);
+	});
 
-  test("should not mutate the original array", () => {
-    const nums = [-3, -1, 2];
-    const copy = [...nums];
+	test("should not mutate the original array", () => {
+		const nums = [-3, -1, 2];
+		const copy = [...nums];
 
-    sortedSquaredArray(nums);
+		sortedSquaredArray(nums);
 
-    expect(nums).toEqual(copy);
-  });
+		expect(nums).toEqual(copy);
+	});
 });
 
 describe("tournamentWinner", () => {
-  test("should return the correct winner for a basic tournament", () => {
-    const competitions: Array<[string, string]> = [
-      ["HTML", "C#"],
-      ["C#", "Python"],
-      ["Python", "HTML"],
-    ];
-    const results = [0, 0, 1];
+	test("should return the correct winner for a basic tournament", () => {
+		const competitions: Array<[string, string]> = [
+			["HTML", "C#"],
+			["C#", "Python"],
+			["Python", "HTML"],
+		];
+		const results = [0, 0, 1];
 
-    expect(tournamentWinner(competitions, results)).toBe("Python");
-  });
+		expect(tournamentWinner(competitions, results)).toBe("Python");
+	});
 
-  test("should handle a single match", () => {
-    expect(tournamentWinner([["A", "B"]], [1])).toBe("A");
-  });
+	test("should handle a single match", () => {
+		expect(tournamentWinner([["A", "B"]], [1])).toBe("A");
+	});
 
-  test("should handle all wins by the same team", () => {
-    const competitions: Array<[string, string]> = [
-      ["A", "B"],
-      ["A", "C"],
-      ["A", "D"],
-    ];
-    const results = [1, 1, 1];
+	test("should handle all wins by the same team", () => {
+		const competitions: Array<[string, string]> = [
+			["A", "B"],
+			["A", "C"],
+			["A", "D"],
+		];
+		const results = [1, 1, 1];
 
-    expect(tournamentWinner(competitions, results)).toBe("A");
-  });
+		expect(tournamentWinner(competitions, results)).toBe("A");
+	});
 
-  test("should handle alternating winners", () => {
-    const competitions: Array<[string, string]> = [
-      ["A", "B"],
-      ["B", "C"],
-      ["C", "A"],
-      ["A", "C"],
-    ];
-    const results = [1, 1, 1, 0];
+	test("should handle alternating winners", () => {
+		const competitions: Array<[string, string]> = [
+			["A", "B"],
+			["B", "C"],
+			["C", "A"],
+			["A", "C"],
+		];
+		const results = [1, 1, 1, 0];
 
-    // C ends with the most wins (2)
-    expect(tournamentWinner(competitions, results)).toBe("C");
-  });
+		// C ends with the most wins (2)
+		expect(tournamentWinner(competitions, results)).toBe("C");
+	});
 
-  test("should keep first leader when all teams tie", () => {
-    const competitions: Array<[string, string]> = [
-      ["X", "Y"],
-      ["Y", "Z"],
-      ["Z", "X"],
-    ];
-    const results = [1, 1, 1];
+	test("should keep first leader when all teams tie", () => {
+		const competitions: Array<[string, string]> = [
+			["X", "Y"],
+			["Y", "Z"],
+			["Z", "X"],
+		];
+		const results = [1, 1, 1];
 
-    // All teams have 1 win → first leader remains
-    expect(tournamentWinner(competitions, results)).toBe("X");
-  });
+		// All teams have 1 win → first leader remains
+		expect(tournamentWinner(competitions, results)).toBe("X");
+	});
 
-  test("should return empty string when no competitions are played", () => {
-    expect(tournamentWinner([], [])).toBe("");
-  });
+	test("should return empty string when no competitions are played", () => {
+		expect(tournamentWinner([], [])).toBe("");
+	});
 });
 
 describe("nonConstructableChange", () => {
-  test("should handle basic example", () => {
-    const nums = [1, 2, 5];
-    expect(nonConstructableChange(nums)).toBe(4);
-  });
+	test("should handle basic example", () => {
+		const nums = [1, 2, 5];
+		expect(nonConstructableChange(nums)).toBe(4);
+	});
 
-  test("should handle sequential coins", () => {
-    const nums = [1, 1, 1, 1];
-    expect(nonConstructableChange(nums)).toBe(5);
-  });
+	test("should handle sequential coins", () => {
+		const nums = [1, 1, 1, 1];
+		expect(nonConstructableChange(nums)).toBe(5);
+	});
 
-  test("should return 1 when first coin is greater than 1", () => {
-    const nums = [2, 3, 4];
-    expect(nonConstructableChange(nums)).toBe(1);
-  });
+	test("should return 1 when first coin is greater than 1", () => {
+		const nums = [2, 3, 4];
+		expect(nonConstructableChange(nums)).toBe(1);
+	});
 
-  test("should handle empty array", () => {
-    const nums: number[] = [];
-    expect(nonConstructableChange(nums)).toBe(1);
-  });
+	test("should handle empty array", () => {
+		const nums: number[] = [];
+		expect(nonConstructableChange(nums)).toBe(1);
+	});
 
-  test("should handle single coin equal to 1", () => {
-    const nums = [1];
-    expect(nonConstructableChange(nums)).toBe(2);
-  });
+	test("should handle single coin equal to 1", () => {
+		const nums = [1];
+		expect(nonConstructableChange(nums)).toBe(2);
+	});
 
-  test("should handle single coin greater than 1", () => {
-    const nums = [7];
-    expect(nonConstructableChange(nums)).toBe(1);
-  });
+	test("should handle single coin greater than 1", () => {
+		const nums = [7];
+		expect(nonConstructableChange(nums)).toBe(1);
+	});
 
-  test("should handle larger random set", () => {
-    const nums = [1, 1, 3, 4, 7, 10];
-    expect(nonConstructableChange(nums)).toBe(27);
-  });
+	test("should handle larger random set", () => {
+		const nums = [1, 1, 3, 4, 7, 10];
+		expect(nonConstructableChange(nums)).toBe(27);
+	});
 
-  test("should handle unsorted input array", () => {
-    const nums = [5, 1, 3, 1];
-    expect(nonConstructableChange(nums)).toBe(11);
-  });
+	test("should handle unsorted input array", () => {
+		const nums = [5, 1, 3, 1];
+		expect(nonConstructableChange(nums)).toBe(11);
+	});
 });
 
 describe("transpose", () => {
-  test("transposes a square matrix", () => {
-    const input = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-    ];
+	test("transposes a square matrix", () => {
+		const input = [
+			[1, 2, 3],
+			[4, 5, 6],
+			[7, 8, 9],
+		];
 
-    const output = [
-      [1, 4, 7],
-      [2, 5, 8],
-      [3, 6, 9],
-    ];
+		const output = [
+			[1, 4, 7],
+			[2, 5, 8],
+			[3, 6, 9],
+		];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("transposes a rectangular matrix (more rows than columns)", () => {
-    const input = [
-      [1, 2],
-      [3, 4],
-      [5, 6],
-    ];
+	test("transposes a rectangular matrix (more rows than columns)", () => {
+		const input = [
+			[1, 2],
+			[3, 4],
+			[5, 6],
+		];
 
-    const output = [
-      [1, 3, 5],
-      [2, 4, 6],
-    ];
+		const output = [
+			[1, 3, 5],
+			[2, 4, 6],
+		];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("transposes a rectangular matrix (more columns than rows)", () => {
-    const input = [[1, 2, 3]];
+	test("transposes a rectangular matrix (more columns than rows)", () => {
+		const input = [[1, 2, 3]];
 
-    const output = [[1], [2], [3]];
+		const output = [[1], [2], [3]];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("handles a single-element matrix", () => {
-    const input = [[42]];
-    const output = [[42]];
+	test("handles a single-element matrix", () => {
+		const input = [[42]];
+		const output = [[42]];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("handles a single row matrix", () => {
-    const input = [[1, 2, 3, 4]];
-    const output = [[1], [2], [3], [4]];
+	test("handles a single row matrix", () => {
+		const input = [[1, 2, 3, 4]];
+		const output = [[1], [2], [3], [4]];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("handles a single column matrix", () => {
-    const input = [[1], [2], [3]];
-    const output = [[1, 2, 3]];
+	test("handles a single column matrix", () => {
+		const input = [[1], [2], [3]];
+		const output = [[1, 2, 3]];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("handles negative numbers and zero", () => {
-    const input = [
-      [0, -1],
-      [-2, 3],
-    ];
+	test("handles negative numbers and zero", () => {
+		const input = [
+			[0, -1],
+			[-2, 3],
+		];
 
-    const output = [
-      [0, -2],
-      [-1, 3],
-    ];
+		const output = [
+			[0, -2],
+			[-1, 3],
+		];
 
-    expect(transpose(input)).toEqual(output);
-  });
+		expect(transpose(input)).toEqual(output);
+	});
 
-  test("does not mutate the original matrix", () => {
-    const input = [
-      [1, 2],
-      [3, 4],
-    ];
+	test("does not mutate the original matrix", () => {
+		const input = [
+			[1, 2],
+			[3, 4],
+		];
 
-    const original = structuredClone(input);
-    transpose(input);
+		const original = structuredClone(input);
+		transpose(input);
 
-    expect(input).toEqual(original);
-  });
+		expect(input).toEqual(original);
+	});
 });
 
 describe("backspaceStringCompare", () => {
-  test("returns true for identical strings without backspaces", () => {
-    expect(backspaceStringCompare("abc", "abc")).toBe(true);
-  });
+	test("returns true for identical strings without backspaces", () => {
+		expect(backspaceStringCompare("abc", "abc")).toBe(true);
+	});
 
-  test("handles single backspace correctly", () => {
-    expect(backspaceStringCompare("ab#c", "ac")).toBe(true);
-  });
+	test("handles single backspace correctly", () => {
+		expect(backspaceStringCompare("ab#c", "ac")).toBe(true);
+	});
 
-  test("handles multiple backspaces in a row", () => {
-    expect(backspaceStringCompare("a##c", "#a#c")).toBe(true);
-  });
+	test("handles multiple backspaces in a row", () => {
+		expect(backspaceStringCompare("a##c", "#a#c")).toBe(true);
+	});
 
-  test("returns false when final strings differ", () => {
-    expect(backspaceStringCompare("a#c", "b")).toBe(false);
-  });
+	test("returns false when final strings differ", () => {
+		expect(backspaceStringCompare("a#c", "b")).toBe(false);
+	});
 
-  test("handles backspaces at the beginning", () => {
-    expect(backspaceStringCompare("###abc", "abc")).toBe(true);
-  });
+	test("handles backspaces at the beginning", () => {
+		expect(backspaceStringCompare("###abc", "abc")).toBe(true);
+	});
 
-  test("handles backspaces that exceed character count", () => {
-    expect(backspaceStringCompare("abc####", "")).toBe(true);
-  });
+	test("handles backspaces that exceed character count", () => {
+		expect(backspaceStringCompare("abc####", "")).toBe(true);
+	});
 
-  test("handles empty strings", () => {
-    expect(backspaceStringCompare("", "")).toBe(true);
-  });
+	test("handles empty strings", () => {
+		expect(backspaceStringCompare("", "")).toBe(true);
+	});
 
-  test("handles one empty and one non-empty string", () => {
-    expect(backspaceStringCompare("", "a")).toBe(false);
-  });
+	test("handles one empty and one non-empty string", () => {
+		expect(backspaceStringCompare("", "a")).toBe(false);
+	});
 
-  test("handles only backspaces", () => {
-    expect(backspaceStringCompare("###", "####")).toBe(true);
-  });
+	test("handles only backspaces", () => {
+		expect(backspaceStringCompare("###", "####")).toBe(true);
+	});
 
-  test("handles interleaved characters and backspaces", () => {
-    expect(backspaceStringCompare("bxj##tw", "bxo#j##tw")).toBe(true);
-  });
+	test("handles interleaved characters and backspaces", () => {
+		expect(backspaceStringCompare("bxj##tw", "bxo#j##tw")).toBe(true);
+	});
 
-  test("detects mismatch after backspaces", () => {
-    expect(backspaceStringCompare("xy#z", "xzz#")).toBe(true);
-  });
+	test("detects mismatch after backspaces", () => {
+		expect(backspaceStringCompare("xy#z", "xzz#")).toBe(true);
+	});
 });
 
 describe("Max Planes Stopped Before Landing", () => {
-  test("should return 0 when there are no planes", () => {
-    const result = maxPlanesStopped([], []);
-    expect(result).toBe(0);
-  });
+	test("should return 0 when there are no planes", () => {
+		const result = maxPlanesStopped([], []);
+		expect(result).toBe(0);
+	});
 
-  test("should handle a single plane", () => {
-    const result = maxPlanesStopped([5], [1]);
-    expect(result).toBe(1);
-  });
+	test("should handle a single plane", () => {
+		const result = maxPlanesStopped([5], [1]);
+		expect(result).toBe(1);
+	});
 
-  test("should return the maximum planes stopped for given example", () => {
-    const initialDistance = [1, 3, 5, 4, 8];
-    const landingSpeed = [1, 2, 2, 1, 2];
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(4);
-  });
+	test("should return the maximum planes stopped for given example", () => {
+		const initialDistance = [1, 3, 5, 4, 8];
+		const landingSpeed = [1, 2, 2, 1, 2];
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(4);
+	});
 
-  test("should handle planes landing at the same time", () => {
-    const initialDistance = [2, 4, 6];
-    const landingSpeed = [2, 4, 6]; // landing times: [1,1,1]
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(1); // only one plane per second can be stopped
-  });
+	test("should handle planes landing at the same time", () => {
+		const initialDistance = [2, 4, 6];
+		const landingSpeed = [2, 4, 6]; // landing times: [1,1,1]
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(1); // only one plane per second can be stopped
+	});
 
-  test("should handle planes with large distances and speeds", () => {
-    const initialDistance = [100, 200, 300];
-    const landingSpeed = [10, 20, 30]; // landing times: [10,10,10]
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(3); // stop one per second before deadline
-  });
+	test("should handle planes with large distances and speeds", () => {
+		const initialDistance = [100, 200, 300];
+		const landingSpeed = [10, 20, 30]; // landing times: [10,10,10]
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(3); // stop one per second before deadline
+	});
 
-  test("should handle fast planes landing before others", () => {
-    const initialDistance = [5, 10, 15];
-    const landingSpeed = [5, 1, 1]; // landing times: [1,10,15]
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(3);
-  });
+	test("should handle fast planes landing before others", () => {
+		const initialDistance = [5, 10, 15];
+		const landingSpeed = [5, 1, 1]; // landing times: [1,10,15]
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(3);
+	});
 
-  test("should handle planes where some land too quickly", () => {
-    const initialDistance = [1, 5, 6, 7];
-    const landingSpeed = [2, 1, 1, 1]; // landing times: [1,5,6,7]
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(4);
-  });
+	test("should handle planes where some land too quickly", () => {
+		const initialDistance = [1, 5, 6, 7];
+		const landingSpeed = [2, 1, 1, 1]; // landing times: [1,5,6,7]
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(4);
+	});
 
-  test("should handle unsorted input arrays", () => {
-    const initialDistance = [10, 2, 8, 1];
-    const landingSpeed = [2, 1, 4, 1]; // landing times: [5,2,2,1]
-    const result = maxPlanesStopped(initialDistance, landingSpeed);
-    expect(result).toBe(3);
-  });
+	test("should handle unsorted input arrays", () => {
+		const initialDistance = [10, 2, 8, 1];
+		const landingSpeed = [2, 1, 4, 1]; // landing times: [5,2,2,1]
+		const result = maxPlanesStopped(initialDistance, landingSpeed);
+		expect(result).toBe(3);
+	});
 });
 
 describe("minimumWaitingTime", () => {
-  test("should return correct waiting time for example input", () => {
-    expect(minimumWaitingTime([3, 2, 1, 2, 6])).toBe(17);
-  });
+	test("should return correct waiting time for example input", () => {
+		expect(minimumWaitingTime([3, 2, 1, 2, 6])).toBe(17);
+	});
 
-  test("should return 0 for empty array", () => {
-    expect(minimumWaitingTime([])).toBe(0);
-  });
+	test("should return 0 for empty array", () => {
+		expect(minimumWaitingTime([])).toBe(0);
+	});
 
-  test("should return 0 for single task", () => {
-    expect(minimumWaitingTime([5])).toBe(0);
-  });
+	test("should return 0 for single task", () => {
+		expect(minimumWaitingTime([5])).toBe(0);
+	});
 
-  test("should return correct waiting time for already sorted tasks", () => {
-    // [1, 2, 3, 4] → waiting times: 0, 1, 3, 6 → total 10
-    expect(minimumWaitingTime([1, 2, 3, 4])).toBe(10);
-  });
+	test("should return correct waiting time for already sorted tasks", () => {
+		// [1, 2, 3, 4] → waiting times: 0, 1, 3, 6 → total 10
+		expect(minimumWaitingTime([1, 2, 3, 4])).toBe(10);
+	});
 
-  test("should return correct waiting time for reverse sorted tasks", () => {
-    // [4, 3, 2, 1] → sort → [1, 2, 3, 4] → total 10
-    expect(minimumWaitingTime([4, 3, 2, 1])).toBe(10);
-  });
+	test("should return correct waiting time for reverse sorted tasks", () => {
+		// [4, 3, 2, 1] → sort → [1, 2, 3, 4] → total 10
+		expect(minimumWaitingTime([4, 3, 2, 1])).toBe(10);
+	});
 
-  test("should handle tasks with duplicate durations", () => {
-    // [2, 2, 2] → waiting times: 0, 2, 4 → total 6
-    expect(minimumWaitingTime([2, 2, 2])).toBe(6);
-  });
+	test("should handle tasks with duplicate durations", () => {
+		// [2, 2, 2] → waiting times: 0, 2, 4 → total 6
+		expect(minimumWaitingTime([2, 2, 2])).toBe(6);
+	});
 
-  test("should handle large numbers", () => {
-    // [10, 20, 30] → sort → [10,20,30] → waiting times: 0,10,30 → total 40
-    expect(minimumWaitingTime([10, 20, 30])).toBe(40);
-  });
+	test("should handle large numbers", () => {
+		// [10, 20, 30] → sort → [10,20,30] → waiting times: 0,10,30 → total 40
+		expect(minimumWaitingTime([10, 20, 30])).toBe(40);
+	});
 });
 
 describe("classPhoto", () => {
-  test("should return true when one group is strictly taller", () => {
-    const redShirts = [5, 8, 1, 3, 4];
-    const blueShirts = [6, 9, 2, 4, 5];
+	test("should return true when one group is strictly taller", () => {
+		const redShirts = [5, 8, 1, 3, 4];
+		const blueShirts = [6, 9, 2, 4, 5];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should return false when heights are equal at any position", () => {
-    const redShirts = [5, 6, 7];
-    const blueShirts = [5, 6, 7];
+	test("should return false when heights are equal at any position", () => {
+		const redShirts = [5, 6, 7];
+		const blueShirts = [5, 6, 7];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should return false when rows cannot be arranged", () => {
-    const redShirts = [6, 5, 4];
-    const blueShirts = [7, 3, 5];
+	test("should return false when rows cannot be arranged", () => {
+		const redShirts = [6, 5, 4];
+		const blueShirts = [7, 3, 5];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should handle single student per row", () => {
-    const redShirts = [5];
-    const blueShirts = [6];
+	test("should handle single student per row", () => {
+		const redShirts = [5];
+		const blueShirts = [6];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should return false for single student of equal height", () => {
-    const redShirts = [5];
-    const blueShirts = [5];
+	test("should return false for single student of equal height", () => {
+		const redShirts = [5];
+		const blueShirts = [5];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should return false when array lengths differ", () => {
-    const redShirts = [5, 6];
-    const blueShirts = [7];
+	test("should return false when array lengths differ", () => {
+		const redShirts = [5, 6];
+		const blueShirts = [7];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should work when red shirts are in the back row", () => {
-    const redShirts = [10, 8, 6];
-    const blueShirts = [9, 7, 5];
+	test("should work when red shirts are in the back row", () => {
+		const redShirts = [10, 8, 6];
+		const blueShirts = [9, 7, 5];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should handle already sorted arrays", () => {
-    const redShirts = [9, 7, 5];
-    const blueShirts = [10, 8, 6];
+	test("should handle already sorted arrays", () => {
+		const redShirts = [9, 7, 5];
+		const blueShirts = [10, 8, 6];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should handle unsorted arrays", () => {
-    const redShirts = [3, 6, 1, 8];
-    const blueShirts = [4, 7, 2, 9];
+	test("should handle unsorted arrays", () => {
+		const redShirts = [3, 6, 1, 8];
+		const blueShirts = [4, 7, 2, 9];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should fail if any back-row student is not strictly taller", () => {
-    const redShirts = [9, 7, 5];
-    const blueShirts = [10, 6, 6];
+	test("should fail if any back-row student is not strictly taller", () => {
+		const redShirts = [9, 7, 5];
+		const blueShirts = [10, 6, 6];
 
-    const result = classPhoto(redShirts, blueShirts);
+		const result = classPhoto(redShirts, blueShirts);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 });
 
 test("returns fastest total speed", () => {
-  const red = [5, 5, 3, 9, 2];
-  const blue = [3, 6, 7, 2, 1];
+	const red = [5, 5, 3, 9, 2];
+	const blue = [3, 6, 7, 2, 1];
 
-  const result = tandemBicycle(red, blue, true);
-  expect(result).toBe(32);
+	const result = tandemBicycle(red, blue, true);
+	expect(result).toBe(32);
 });
 
 test("returns slowest total speed", () => {
-  const red = [5, 5, 3, 9, 2];
-  const blue = [3, 6, 7, 2, 1];
+	const red = [5, 5, 3, 9, 2];
+	const blue = [3, 6, 7, 2, 1];
 
-  const result = tandemBicycle(red, blue, false);
-  expect(result).toBe(25);
+	const result = tandemBicycle(red, blue, false);
+	expect(result).toBe(25);
 });
 
 test("works with equal speeds", () => {
-  const red = [4, 4, 4];
-  const blue = [4, 4, 4];
+	const red = [4, 4, 4];
+	const blue = [4, 4, 4];
 
-  expect(tandemBicycle(red, blue, true)).toBe(12);
-  expect(tandemBicycle(red, blue, false)).toBe(12);
+	expect(tandemBicycle(red, blue, true)).toBe(12);
+	expect(tandemBicycle(red, blue, false)).toBe(12);
 });
 
 test("works with a single rider", () => {
-  const red = [10];
-  const blue = [3];
+	const red = [10];
+	const blue = [3];
 
-  expect(tandemBicycle(red, blue, true)).toBe(10);
-  expect(tandemBicycle(red, blue, false)).toBe(10);
+	expect(tandemBicycle(red, blue, true)).toBe(10);
+	expect(tandemBicycle(red, blue, false)).toBe(10);
 });
 
 test("handles unsorted input arrays", () => {
-  const red = [1, 7, 3];
-  const blue = [6, 2, 4];
+	const red = [1, 7, 3];
+	const blue = [6, 2, 4];
 
-  expect(tandemBicycle(red, blue, true)).toBe(17);
-  expect(tandemBicycle(red, blue, false)).toBe(13);
+	expect(tandemBicycle(red, blue, true)).toBe(17);
+	expect(tandemBicycle(red, blue, false)).toBe(13);
 });
 
 test("handles already sorted arrays", () => {
-  const red = [1, 2, 3];
-  const blue = [4, 5, 6];
+	const red = [1, 2, 3];
+	const blue = [4, 5, 6];
 
-  expect(tandemBicycle(red, blue, true)).toBe(15);
-  expect(tandemBicycle(red, blue, false)).toBe(15);
+	expect(tandemBicycle(red, blue, true)).toBe(15);
+	expect(tandemBicycle(red, blue, false)).toBe(15);
 });
 
 describe("optimalFreelancing", () => {
-  test("should schedule jobs to maximize total payment", () => {
-    const jobs = [
-      { deadline: 1, payment: 100 },
-      { deadline: 2, payment: 19 },
-      { deadline: 2, payment: 27 },
-      { deadline: 1, payment: 25 },
-      { deadline: 3, payment: 15 },
-    ];
+	test("should schedule jobs to maximize total payment", () => {
+		const jobs = [
+			{ deadline: 1, payment: 100 },
+			{ deadline: 2, payment: 19 },
+			{ deadline: 2, payment: 27 },
+			{ deadline: 1, payment: 25 },
+			{ deadline: 3, payment: 15 },
+		];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    // Optimal schedule: 100 (day 1) + 27 (day 2) + 15 (day 3)
-    expect(result).toBe(142);
-  });
+		// Optimal schedule: 100 (day 1) + 27 (day 2) + 15 (day 3)
+		expect(result).toBe(142);
+	});
 
-  test("should handle jobs with same deadline", () => {
-    const jobs = [
-      { deadline: 1, payment: 50 },
-      { deadline: 1, payment: 40 },
-      { deadline: 1, payment: 30 },
-    ];
+	test("should handle jobs with same deadline", () => {
+		const jobs = [
+			{ deadline: 1, payment: 50 },
+			{ deadline: 1, payment: 40 },
+			{ deadline: 1, payment: 30 },
+		];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    // Only one job can be done on day 1
-    expect(result).toBe(50);
-  });
+		// Only one job can be done on day 1
+		expect(result).toBe(50);
+	});
 
-  test("should schedule jobs as late as possible", () => {
-    const jobs = [
-      { deadline: 3, payment: 20 },
-      { deadline: 1, payment: 100 },
-      { deadline: 2, payment: 50 },
-    ];
+	test("should schedule jobs as late as possible", () => {
+		const jobs = [
+			{ deadline: 3, payment: 20 },
+			{ deadline: 1, payment: 100 },
+			{ deadline: 2, payment: 50 },
+		];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    // Day 1 → 100, Day 2 → 50, Day 3 → 20
-    expect(result).toBe(170);
-  });
+		// Day 1 → 100, Day 2 → 50, Day 3 → 20
+		expect(result).toBe(170);
+	});
 
-  test("should skip jobs that cannot be scheduled", () => {
-    const jobs = [
-      { deadline: 1, payment: 100 },
-      { deadline: 1, payment: 90 },
-      { deadline: 1, payment: 80 },
-    ];
+	test("should skip jobs that cannot be scheduled", () => {
+		const jobs = [
+			{ deadline: 1, payment: 100 },
+			{ deadline: 1, payment: 90 },
+			{ deadline: 1, payment: 80 },
+		];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    // Only one job fits on day 1
-    expect(result).toBe(100);
-  });
+		// Only one job fits on day 1
+		expect(result).toBe(100);
+	});
 
-  test("should handle empty job list", () => {
-    const jobs: Array<{ deadline: number; payment: number }> = [];
+	test("should handle empty job list", () => {
+		const jobs: Array<{ deadline: number; payment: number }> = [];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 
-  test("should handle single job", () => {
-    const jobs = [{ deadline: 5, payment: 75 }];
+	test("should handle single job", () => {
+		const jobs = [{ deadline: 5, payment: 75 }];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    expect(result).toBe(75);
-  });
+		expect(result).toBe(75);
+	});
 
-  test("should ignore jobs with deadline <= 0", () => {
-    const jobs = [
-      { deadline: 0, payment: 100 },
-      { deadline: -1, payment: 50 },
-      { deadline: 1, payment: 30 },
-    ];
+	test("should ignore jobs with deadline <= 0", () => {
+		const jobs = [
+			{ deadline: 0, payment: 100 },
+			{ deadline: -1, payment: 50 },
+			{ deadline: 1, payment: 30 },
+		];
 
-    const result = optimalFreelancing(jobs);
+		const result = optimalFreelancing(jobs);
 
-    // Only the valid job can be scheduled
-    expect(result).toBe(30);
-  });
+		// Only the valid job can be scheduled
+		expect(result).toBe(30);
+	});
 });
 
 describe("binarySearch", () => {
-  test("should find target in the middle of the array", () => {
-    const arr = [1, 3, 5, 7, 9];
-    const index = binarySearch(arr, 5);
+	test("should find target in the middle of the array", () => {
+		const arr = [1, 3, 5, 7, 9];
+		const index = binarySearch(arr, 5);
 
-    expect(index).toBe(2);
-  });
+		expect(index).toBe(2);
+	});
 
-  test("should find target at the beginning of the array", () => {
-    const arr = [2, 4, 6, 8, 10];
-    const index = binarySearch(arr, 2);
+	test("should find target at the beginning of the array", () => {
+		const arr = [2, 4, 6, 8, 10];
+		const index = binarySearch(arr, 2);
 
-    expect(index).toBe(0);
-  });
+		expect(index).toBe(0);
+	});
 
-  test("should find target at the end of the array", () => {
-    const arr = [2, 4, 6, 8, 10];
-    const index = binarySearch(arr, 10);
+	test("should find target at the end of the array", () => {
+		const arr = [2, 4, 6, 8, 10];
+		const index = binarySearch(arr, 10);
 
-    expect(index).toBe(4);
-  });
+		expect(index).toBe(4);
+	});
 
-  test("should return null when target is not present", () => {
-    const arr = [1, 2, 3, 4, 5];
-    const index = binarySearch(arr, 6);
+	test("should return null when target is not present", () => {
+		const arr = [1, 2, 3, 4, 5];
+		const index = binarySearch(arr, 6);
 
-    expect(index).toBeNull();
-  });
+		expect(index).toBeNull();
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    const index = binarySearch(arr, 3);
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		const index = binarySearch(arr, 3);
 
-    expect(index).toBeNull();
-  });
+		expect(index).toBeNull();
+	});
 
-  test("should handle single-element array when target exists", () => {
-    const arr = [7];
-    const index = binarySearch(arr, 7);
+	test("should handle single-element array when target exists", () => {
+		const arr = [7];
+		const index = binarySearch(arr, 7);
 
-    expect(index).toBe(0);
-  });
+		expect(index).toBe(0);
+	});
 
-  test("should handle single-element array when target does not exist", () => {
-    const arr = [7];
-    const index = binarySearch(arr, 3);
+	test("should handle single-element array when target does not exist", () => {
+		const arr = [7];
+		const index = binarySearch(arr, 3);
 
-    expect(index).toBeNull();
-  });
+		expect(index).toBeNull();
+	});
 
-  test("should work with negative numbers", () => {
-    const arr = [-10, -5, -2, 0, 3, 8];
-    const index = binarySearch(arr, -5);
+	test("should work with negative numbers", () => {
+		const arr = [-10, -5, -2, 0, 3, 8];
+		const index = binarySearch(arr, -5);
 
-    expect(index).toBe(1);
-  });
+		expect(index).toBe(1);
+	});
 
-  test("should work with duplicate values (returns any valid index)", () => {
-    const arr = [1, 2, 2, 2, 3];
-    const index = binarySearch(arr, 2);
+	test("should work with duplicate values (returns any valid index)", () => {
+		const arr = [1, 2, 2, 2, 3];
+		const index = binarySearch(arr, 2);
 
-    expect(index).not.toBeNull();
-    expect(arr[index!]).toBe(2);
-  });
+		expect(index).not.toBeNull();
+		expect(arr[index!]).toBe(2);
+	});
 
-  test("should not modify the input array", () => {
-    const arr = [1, 3, 5, 7, 9];
-    const copy = [...arr];
+	test("should not modify the input array", () => {
+		const arr = [1, 3, 5, 7, 9];
+		const copy = [...arr];
 
-    binarySearch(arr, 5);
+		binarySearch(arr, 5);
 
-    expect(arr).toEqual(copy);
-  });
+		expect(arr).toEqual(copy);
+	});
 
-  test("should handle target smaller than all elements", () => {
-    const arr = [5, 10, 15];
-    const index = binarySearch(arr, 1);
+	test("should handle target smaller than all elements", () => {
+		const arr = [5, 10, 15];
+		const index = binarySearch(arr, 1);
 
-    expect(index).toBeNull();
-  });
+		expect(index).toBeNull();
+	});
 
-  test("should handle target larger than all elements", () => {
-    const arr = [5, 10, 15];
-    const index = binarySearch(arr, 20);
+	test("should handle target larger than all elements", () => {
+		const arr = [5, 10, 15];
+		const index = binarySearch(arr, 20);
 
-    expect(index).toBeNull();
-  });
+		expect(index).toBeNull();
+	});
 });
 
 describe("threeLargestNumbers", () => {
-  test("returns the three largest numbers in correct order", () => {
-    const nums = [10, 5, 9, 10, 12];
-    const result = threeLargestNumbers(nums);
+	test("returns the three largest numbers in correct order", () => {
+		const nums = [10, 5, 9, 10, 12];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([10, 10, 12]);
-  });
+		expect(result).toEqual([10, 10, 12]);
+	});
 
-  test("handles array with exactly three elements", () => {
-    const nums = [1, 2, 3];
-    const result = threeLargestNumbers(nums);
+	test("handles array with exactly three elements", () => {
+		const nums = [1, 2, 3];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([1, 2, 3]);
-  });
+		expect(result).toEqual([1, 2, 3]);
+	});
 
-  test("handles negative numbers", () => {
-    const nums = [-10, -5, -2, -1];
-    const result = threeLargestNumbers(nums);
+	test("handles negative numbers", () => {
+		const nums = [-10, -5, -2, -1];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([-5, -2, -1]);
-  });
+		expect(result).toEqual([-5, -2, -1]);
+	});
 
-  test("handles duplicate values", () => {
-    const nums = [4, 4, 4, 4];
-    const result = threeLargestNumbers(nums);
+	test("handles duplicate values", () => {
+		const nums = [4, 4, 4, 4];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([4, 4, 4]);
-  });
+		expect(result).toEqual([4, 4, 4]);
+	});
 
-  test("handles mixed positive and negative values", () => {
-    const nums = [-1, 3, 0, 2, 5];
-    const result = threeLargestNumbers(nums);
+	test("handles mixed positive and negative values", () => {
+		const nums = [-1, 3, 0, 2, 5];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([2, 3, 5]);
-  });
+		expect(result).toEqual([2, 3, 5]);
+	});
 
-  test("handles numbers in descending order", () => {
-    const nums = [9, 8, 7, 6, 5];
-    const result = threeLargestNumbers(nums);
+	test("handles numbers in descending order", () => {
+		const nums = [9, 8, 7, 6, 5];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([7, 8, 9]);
-  });
+		expect(result).toEqual([7, 8, 9]);
+	});
 
-  test("handles numbers in ascending order", () => {
-    const nums = [1, 2, 3, 4, 5];
-    const result = threeLargestNumbers(nums);
+	test("handles numbers in ascending order", () => {
+		const nums = [1, 2, 3, 4, 5];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([3, 4, 5]);
-  });
+		expect(result).toEqual([3, 4, 5]);
+	});
 
-  test("does not mutate the input array", () => {
-    const nums = [3, 1, 2, 4];
-    const copy = [...nums];
+	test("does not mutate the input array", () => {
+		const nums = [3, 1, 2, 4];
+		const copy = [...nums];
 
-    threeLargestNumbers(nums);
+		threeLargestNumbers(nums);
 
-    expect(nums).toEqual(copy);
-  });
+		expect(nums).toEqual(copy);
+	});
 
-  test("handles large numbers", () => {
-    const nums = [Number.MIN_SAFE_INTEGER, 0, Number.MAX_SAFE_INTEGER, 42];
-    const result = threeLargestNumbers(nums);
+	test("handles large numbers", () => {
+		const nums = [Number.MIN_SAFE_INTEGER, 0, Number.MAX_SAFE_INTEGER, 42];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([0, 42, Number.MAX_SAFE_INTEGER]);
-  });
+		expect(result).toEqual([0, 42, Number.MAX_SAFE_INTEGER]);
+	});
 
-  test("handles repeated insertion of same value", () => {
-    const nums = [5, 5, 1, 5, 2];
-    const result = threeLargestNumbers(nums);
+	test("handles repeated insertion of same value", () => {
+		const nums = [5, 5, 1, 5, 2];
+		const result = threeLargestNumbers(nums);
 
-    expect(result).toEqual([5, 5, 5]);
-  });
+		expect(result).toEqual([5, 5, 5]);
+	});
 });
 
 describe("caesarCipherEncryptor", () => {
-  test("shifts lowercase letters correctly", () => {
-    const result = caesarCipherEncryptor("abc", 1);
-    expect(result).toBe("bcd");
-  });
+	test("shifts lowercase letters correctly", () => {
+		const result = caesarCipherEncryptor("abc", 1);
+		expect(result).toBe("bcd");
+	});
 
-  test("wraps around the alphabet", () => {
-    const result = caesarCipherEncryptor("xyz", 2);
-    expect(result).toBe("zab");
-  });
+	test("wraps around the alphabet", () => {
+		const result = caesarCipherEncryptor("xyz", 2);
+		expect(result).toBe("zab");
+	});
 
-  test("handles shift values greater than 26", () => {
-    const result = caesarCipherEncryptor("abc", 28);
-    expect(result).toBe("cde");
-  });
+	test("handles shift values greater than 26", () => {
+		const result = caesarCipherEncryptor("abc", 28);
+		expect(result).toBe("cde");
+	});
 
-  test("handles negative shifts", () => {
-    const result = caesarCipherEncryptor("bcd", -1);
-    expect(result).toBe("abc");
-  });
+	test("handles negative shifts", () => {
+		const result = caesarCipherEncryptor("bcd", -1);
+		expect(result).toBe("abc");
+	});
 
-  test("handles full lowercase alphabet input", () => {
-    const result = caesarCipherEncryptor("abcdefghijklmnopqrstuvwxyz", 1);
-    expect(result).toBe("bcdefghijklmnopqrstuvwxyza");
-  });
+	test("handles full lowercase alphabet input", () => {
+		const result = caesarCipherEncryptor("abcdefghijklmnopqrstuvwxyz", 1);
+		expect(result).toBe("bcdefghijklmnopqrstuvwxyza");
+	});
 
-  test("handles uppercase letters correctly", () => {
-    const result = caesarCipherEncryptor("ABC", 2);
-    expect(result).toBe("CDE");
-  });
+	test("handles uppercase letters correctly", () => {
+		const result = caesarCipherEncryptor("ABC", 2);
+		expect(result).toBe("CDE");
+	});
 
-  test("wraps around uppercase letters", () => {
-    const result = caesarCipherEncryptor("XYZ", 3);
-    expect(result).toBe("ABC");
-  });
+	test("wraps around uppercase letters", () => {
+		const result = caesarCipherEncryptor("XYZ", 3);
+		expect(result).toBe("ABC");
+	});
 
-  test("handles mixed uppercase and lowercase letters", () => {
-    const result = caesarCipherEncryptor("AbCz", 1);
-    expect(result).toBe("BcDa");
-  });
+	test("handles mixed uppercase and lowercase letters", () => {
+		const result = caesarCipherEncryptor("AbCz", 1);
+		expect(result).toBe("BcDa");
+	});
 
-  test("preserves spaces and special characters", () => {
-    const result = caesarCipherEncryptor("Hello, World!", 3);
-    expect(result).toBe("Khoor, Zruog!");
-  });
+	test("preserves spaces and special characters", () => {
+		const result = caesarCipherEncryptor("Hello, World!", 3);
+		expect(result).toBe("Khoor, Zruog!");
+	});
 
-  test("preserves numbers and symbols", () => {
-    const result = caesarCipherEncryptor("123!@#", 5);
-    expect(result).toBe("123!@#");
-  });
+	test("preserves numbers and symbols", () => {
+		const result = caesarCipherEncryptor("123!@#", 5);
+		expect(result).toBe("123!@#");
+	});
 
-  test("handles zero shift (returns same string)", () => {
-    const result = caesarCipherEncryptor("NoChange", 0);
-    expect(result).toBe("NoChange");
-  });
+	test("handles zero shift (returns same string)", () => {
+		const result = caesarCipherEncryptor("NoChange", 0);
+		expect(result).toBe("NoChange");
+	});
 
-  test("handles very large negative shifts", () => {
-    const result = caesarCipherEncryptor("abc", -27);
-    expect(result).toBe("zab");
-  });
+	test("handles very large negative shifts", () => {
+		const result = caesarCipherEncryptor("abc", -27);
+		expect(result).toBe("zab");
+	});
 
-  test("handles empty string", () => {
-    const result = caesarCipherEncryptor("", 5);
-    expect(result).toBe("");
-  });
+	test("handles empty string", () => {
+		const result = caesarCipherEncryptor("", 5);
+		expect(result).toBe("");
+	});
 
-  test("does not mutate the input string", () => {
-    const input = "abc";
-    caesarCipherEncryptor(input, 1);
-    expect(input).toBe("abc");
-  });
+	test("does not mutate the input string", () => {
+		const input = "abc";
+		caesarCipherEncryptor(input, 1);
+		expect(input).toBe("abc");
+	});
 
-  test("handles repeated characters", () => {
-    const result = caesarCipherEncryptor("aaa", 3);
-    expect(result).toBe("ddd");
-  });
+	test("handles repeated characters", () => {
+		const result = caesarCipherEncryptor("aaa", 3);
+		expect(result).toBe("ddd");
+	});
 });
 
 describe("runLengthEncoding", () => {
-  test("encodes simple repeated characters", () => {
-    expect(runLengthEncoding("aaabbc")).toBe("3a2b1c");
-  });
+	test("encodes simple repeated characters", () => {
+		expect(runLengthEncoding("aaabbc")).toBe("3a2b1c");
+	});
 
-  test("handles long runs with count > 9", () => {
-    expect(runLengthEncoding("AAAAAAAAAAAAA")).toBe("9A4A"); // 13 As
-  });
+	test("handles long runs with count > 9", () => {
+		expect(runLengthEncoding("AAAAAAAAAAAAA")).toBe("9A4A"); // 13 As
+	});
 
-  test("handles single characters", () => {
-    expect(runLengthEncoding("A")).toBe("1A");
-  });
+	test("handles single characters", () => {
+		expect(runLengthEncoding("A")).toBe("1A");
+	});
 
-  test("handles multiple single characters", () => {
-    expect(runLengthEncoding("ABCD")).toBe("1A1B1C1D");
-  });
+	test("handles multiple single characters", () => {
+		expect(runLengthEncoding("ABCD")).toBe("1A1B1C1D");
+	});
 
-  test("handles empty string", () => {
-    expect(runLengthEncoding("")).toBe("");
-  });
+	test("handles empty string", () => {
+		expect(runLengthEncoding("")).toBe("");
+	});
 
-  test("handles mixed long and short runs", () => {
-    expect(runLengthEncoding("AAAAAAAAAAAAABBCCCCDD")).toBe("9A4A2B4C2D");
-  });
+	test("handles mixed long and short runs", () => {
+		expect(runLengthEncoding("AAAAAAAAAAAAABBCCCCDD")).toBe("9A4A2B4C2D");
+	});
 
-  test("handles alternating characters", () => {
-    expect(runLengthEncoding("ABABAB")).toBe("1A1B1A1B1A1B");
-  });
+	test("handles alternating characters", () => {
+		expect(runLengthEncoding("ABABAB")).toBe("1A1B1A1B1A1B");
+	});
 
-  test("handles exactly 9 consecutive characters", () => {
-    expect(runLengthEncoding("AAAAAAAAA")).toBe("9A");
-  });
+	test("handles exactly 9 consecutive characters", () => {
+		expect(runLengthEncoding("AAAAAAAAA")).toBe("9A");
+	});
 
-  test("handles 10 consecutive characters", () => {
-    expect(runLengthEncoding("AAAAAAAAAA")).toBe("9A1A");
-  });
+	test("handles 10 consecutive characters", () => {
+		expect(runLengthEncoding("AAAAAAAAAA")).toBe("9A1A");
+	});
 
-  test("handles all letters unique", () => {
-    expect(runLengthEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZ")).toBe(
-      "1A1B1C1D1E1F1G1H1I1J1K1L1M1N1O1P1Q1R1S1T1U1V1W1X1Y1Z",
-    );
-  });
+	test("handles all letters unique", () => {
+		expect(runLengthEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZ")).toBe(
+			"1A1B1C1D1E1F1G1H1I1J1K1L1M1N1O1P1Q1R1S1T1U1V1W1X1Y1Z",
+		);
+	});
 });
 
 describe("threeNumberSum", () => {
-  test("should find all triplets that sum to target", () => {
-    const nums = [1, 2, 3, 4, 5, 6];
-    const target = 10;
-    const result = threeNumberSum(nums, target);
+	test("should find all triplets that sum to target", () => {
+		const nums = [1, 2, 3, 4, 5, 6];
+		const target = 10;
+		const result = threeNumberSum(nums, target);
 
-    expect(result).toEqual([
-      [1, 3, 6],
-      [1, 4, 5],
-      [2, 3, 5],
-    ]);
-  });
+		expect(result).toEqual([
+			[1, 3, 6],
+			[1, 4, 5],
+			[2, 3, 5],
+		]);
+	});
 
-  test("should handle negative numbers", () => {
-    const nums = [0, -1, 2, -3, 1];
-    const target = 0;
-    const result = threeNumberSum(nums, target);
+	test("should handle negative numbers", () => {
+		const nums = [0, -1, 2, -3, 1];
+		const target = 0;
+		const result = threeNumberSum(nums, target);
 
-    expect(result).toEqual([
-      [-3, 1, 2],
-      [-1, 0, 1],
-    ]);
-  });
+		expect(result).toEqual([
+			[-3, 1, 2],
+			[-1, 0, 1],
+		]);
+	});
 
-  test("should handle empty array", () => {
-    const result = threeNumberSum([], 5);
-    expect(result).toEqual([]);
-  });
+	test("should handle empty array", () => {
+		const result = threeNumberSum([], 5);
+		expect(result).toEqual([]);
+	});
 
-  test("should handle array with less than 3 numbers", () => {
-    expect(threeNumberSum([1, 2], 3)).toEqual([]);
-    expect(threeNumberSum([5], 5)).toEqual([]);
-  });
+	test("should handle array with less than 3 numbers", () => {
+		expect(threeNumberSum([1, 2], 3)).toEqual([]);
+		expect(threeNumberSum([5], 5)).toEqual([]);
+	});
 
-  test("should handle duplicates in array", () => {
-    const nums = [1, 2, 2, 3, 3, 4];
-    const target = 7;
-    const result = threeNumberSum(nums, target);
+	test("should handle duplicates in array", () => {
+		const nums = [1, 2, 2, 3, 3, 4];
+		const target = 7;
+		const result = threeNumberSum(nums, target);
 
-    expect(result).toEqual([
-      [1, 2, 4],
-      [1, 3, 3],
-      [2, 2, 3],
-    ]);
-  });
+		expect(result).toEqual([
+			[1, 2, 4],
+			[1, 3, 3],
+			[2, 2, 3],
+		]);
+	});
 
-  test("should return empty array when no triplets sum to target", () => {
-    const nums = [1, 2, 3, 4, 5];
-    const target = 50;
-    const result = threeNumberSum(nums, target);
+	test("should return empty array when no triplets sum to target", () => {
+		const nums = [1, 2, 3, 4, 5];
+		const target = 50;
+		const result = threeNumberSum(nums, target);
 
-    expect(result).toEqual([]);
-  });
+		expect(result).toEqual([]);
+	});
 });
 
 describe("smallestDifference", () => {
-  test("should find the smallest difference for normal arrays", () => {
-    const arr1 = [1, 3, 15, 11, 2];
-    const arr2 = [23, 127, 235, 19, 8];
-    const result = smallestDifference(arr1, arr2);
+	test("should find the smallest difference for normal arrays", () => {
+		const arr1 = [1, 3, 15, 11, 2];
+		const arr2 = [23, 127, 235, 19, 8];
+		const result = smallestDifference(arr1, arr2);
 
-    expect(result).toEqual([11, 8]);
-  });
+		expect(result).toEqual([11, 8]);
+	});
 
-  test("should handle arrays with negative numbers", () => {
-    const arr1 = [-1, -5, 4, 10];
-    const arr2 = [3, -2, 8, -7];
-    const result = smallestDifference(arr1, arr2);
+	test("should handle arrays with negative numbers", () => {
+		const arr1 = [-1, -5, 4, 10];
+		const arr2 = [3, -2, 8, -7];
+		const result = smallestDifference(arr1, arr2);
 
-    expect(result).toEqual([-1, -2]);
-  });
+		expect(result).toEqual([-1, -2]);
+	});
 
-  test("should handle arrays with single element each", () => {
-    const arr1 = [5];
-    const arr2 = [10];
-    const result = smallestDifference(arr1, arr2);
+	test("should handle arrays with single element each", () => {
+		const arr1 = [5];
+		const arr2 = [10];
+		const result = smallestDifference(arr1, arr2);
 
-    expect(result).toEqual([5, 10]);
-  });
+		expect(result).toEqual([5, 10]);
+	});
 
-  test("should handle arrays with multiple equal differences", () => {
-    const arr1 = [1, 3, 5];
-    const arr2 = [2, 4, 6];
-    const result = smallestDifference(arr1, arr2);
+	test("should handle arrays with multiple equal differences", () => {
+		const arr1 = [1, 3, 5];
+		const arr2 = [2, 4, 6];
+		const result = smallestDifference(arr1, arr2);
 
-    // Multiple pairs have difference 1, but first one found is [1,2]
-    expect(result).toEqual([1, 2]);
-  });
+		// Multiple pairs have difference 1, but first one found is [1,2]
+		expect(result).toEqual([1, 2]);
+	});
 
-  test("should handle arrays with zero", () => {
-    const arr1 = [0, 10, 20];
-    const arr2 = [5, 15, 25];
-    const result = smallestDifference(arr1, arr2);
+	test("should handle arrays with zero", () => {
+		const arr1 = [0, 10, 20];
+		const arr2 = [5, 15, 25];
+		const result = smallestDifference(arr1, arr2);
 
-    expect(result).toEqual([0, 5]);
-  });
+		expect(result).toEqual([0, 5]);
+	});
 
-  test("should throw error if one array is empty", () => {
-    expect(() => smallestDifference([], [1, 2, 3])).toThrow(
-      "Both arrays must have at least one element",
-    );
-    expect(() => smallestDifference([1, 2, 3], [])).toThrow(
-      "Both arrays must have at least one element",
-    );
-  });
+	test("should throw error if one array is empty", () => {
+		expect(() => smallestDifference([], [1, 2, 3])).toThrow(
+			"Both arrays must have at least one element",
+		);
+		expect(() => smallestDifference([1, 2, 3], [])).toThrow(
+			"Both arrays must have at least one element",
+		);
+	});
 
-  test("should handle arrays with same elements", () => {
-    const arr1 = [7, 7, 7];
-    const arr2 = [7, 7, 7];
-    const result = smallestDifference(arr1, arr2);
+	test("should handle arrays with same elements", () => {
+		const arr1 = [7, 7, 7];
+		const arr2 = [7, 7, 7];
+		const result = smallestDifference(arr1, arr2);
 
-    expect(result).toEqual([7, 7]);
-  });
+		expect(result).toEqual([7, 7]);
+	});
 });
 
 describe("moveElementToTheEnd", () => {
-  test("should move middle element to the end", () => {
-    const arr = [1, 2, 3, 4, 5];
-    const result = moveElementToTheEnd(arr, 2); // move 3
-    expect(result).toEqual([1, 2, 4, 5, 3]);
-  });
+	test("should move middle element to the end", () => {
+		const arr = [1, 2, 3, 4, 5];
+		const result = moveElementToTheEnd(arr, 2); // move 3
+		expect(result).toEqual([1, 2, 4, 5, 3]);
+	});
 
-  test("should move first element to the end", () => {
-    const arr = [10, 20, 30];
-    const result = moveElementToTheEnd(arr, 0); // move 10
-    expect(result).toEqual([20, 30, 10]);
-  });
+	test("should move first element to the end", () => {
+		const arr = [10, 20, 30];
+		const result = moveElementToTheEnd(arr, 0); // move 10
+		expect(result).toEqual([20, 30, 10]);
+	});
 
-  test("should do nothing if last element is chosen", () => {
-    const arr = ["a", "b", "c"];
-    const result = moveElementToTheEnd(arr, 2); // move "c"
-    expect(result).toEqual(["a", "b", "c"]);
-  });
+	test("should do nothing if last element is chosen", () => {
+		const arr = ["a", "b", "c"];
+		const result = moveElementToTheEnd(arr, 2); // move "c"
+		expect(result).toEqual(["a", "b", "c"]);
+	});
 
-  test("should handle single-element array", () => {
-    const arr = [42];
-    const result = moveElementToTheEnd(arr, 0);
-    expect(result).toEqual([42]);
-  });
+	test("should handle single-element array", () => {
+		const arr = [42];
+		const result = moveElementToTheEnd(arr, 0);
+		expect(result).toEqual([42]);
+	});
 
-  test("should handle moving second-to-last element", () => {
-    const arr = [1, 2, 3, 4];
-    const result = moveElementToTheEnd(arr, 2); // move 3
-    expect(result).toEqual([1, 2, 4, 3]);
-  });
+	test("should handle moving second-to-last element", () => {
+		const arr = [1, 2, 3, 4];
+		const result = moveElementToTheEnd(arr, 2); // move 3
+		expect(result).toEqual([1, 2, 4, 3]);
+	});
 
-  test("should throw error for negative index", () => {
-    const arr = [1, 2, 3];
-    expect(() => moveElementToTheEnd(arr, -1)).toThrow("Index out of bounds");
-  });
+	test("should throw error for negative index", () => {
+		const arr = [1, 2, 3];
+		expect(() => moveElementToTheEnd(arr, -1)).toThrow("Index out of bounds");
+	});
 
-  test("should throw error for index out of bounds", () => {
-    const arr = [1, 2, 3];
-    expect(() => moveElementToTheEnd(arr, 3)).toThrow("Index out of bounds");
-  });
+	test("should throw error for index out of bounds", () => {
+		const arr = [1, 2, 3];
+		expect(() => moveElementToTheEnd(arr, 3)).toThrow("Index out of bounds");
+	});
 
-  test("should handle array with objects", () => {
-    const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const result = moveElementToTheEnd(arr, 1);
-    expect(result).toEqual([{ id: 1 }, { id: 3 }, { id: 2 }]);
-  });
+	test("should handle array with objects", () => {
+		const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
+		const result = moveElementToTheEnd(arr, 1);
+		expect(result).toEqual([{ id: 1 }, { id: 3 }, { id: 2 }]);
+	});
 });
 
 describe("monotonicArray", () => {
-  test("should return true for increasing array", () => {
-    const nums = [1, 2, 3, 4, 5];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should return true for increasing array", () => {
+		const nums = [1, 2, 3, 4, 5];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return true for decreasing array", () => {
-    const nums = [5, 4, 3, 2, 1];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should return true for decreasing array", () => {
+		const nums = [5, 4, 3, 2, 1];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return true for constant array", () => {
-    const nums = [2, 2, 2, 2];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should return true for constant array", () => {
+		const nums = [2, 2, 2, 2];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return true for non-decreasing array with duplicates", () => {
-    const nums = [1, 2, 2, 3];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should return true for non-decreasing array with duplicates", () => {
+		const nums = [1, 2, 2, 3];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return true for non-increasing array with duplicates", () => {
-    const nums = [4, 3, 3, 1];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should return true for non-increasing array with duplicates", () => {
+		const nums = [4, 3, 3, 1];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return false for array that changes direction", () => {
-    const nums = [1, 3, 2];
-    expect(monotonicArray(nums)).toBe(false);
-  });
+	test("should return false for array that changes direction", () => {
+		const nums = [1, 3, 2];
+		expect(monotonicArray(nums)).toBe(false);
+	});
 
-  test("should handle empty array", () => {
-    const nums: number[] = [];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should handle empty array", () => {
+		const nums: number[] = [];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should handle single element array", () => {
-    const nums = [10];
-    expect(monotonicArray(nums)).toBe(true);
-  });
+	test("should handle single element array", () => {
+		const nums = [10];
+		expect(monotonicArray(nums)).toBe(true);
+	});
 
-  test("should return false for multiple direction changes", () => {
-    const nums = [1, 3, 2, 4];
-    expect(monotonicArray(nums)).toBe(false);
-  });
+	test("should return false for multiple direction changes", () => {
+		const nums = [1, 3, 2, 4];
+		expect(monotonicArray(nums)).toBe(false);
+	});
 });
 
 describe("spiralTraverse", () => {
-  test("should traverse a square matrix", () => {
-    const matrix = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-    ];
+	test("should traverse a square matrix", () => {
+		const matrix = [
+			[1, 2, 3],
+			[4, 5, 6],
+			[7, 8, 9],
+		];
 
-    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 6, 9, 8, 7, 4, 5]);
-  });
+		expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 6, 9, 8, 7, 4, 5]);
+	});
 
-  test("should traverse a rectangular matrix (more columns)", () => {
-    const matrix = [
-      [1, 2, 3, 4],
-      [5, 6, 7, 8],
-    ];
+	test("should traverse a rectangular matrix (more columns)", () => {
+		const matrix = [
+			[1, 2, 3, 4],
+			[5, 6, 7, 8],
+		];
 
-    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4, 8, 7, 6, 5]);
-  });
+		expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4, 8, 7, 6, 5]);
+	});
 
-  test("should traverse a rectangular matrix (more rows)", () => {
-    const matrix = [
-      [1, 2],
-      [3, 4],
-      [5, 6],
-    ];
+	test("should traverse a rectangular matrix (more rows)", () => {
+		const matrix = [
+			[1, 2],
+			[3, 4],
+			[5, 6],
+		];
 
-    expect(spiralTraverse(matrix)).toEqual([1, 2, 4, 6, 5, 3]);
-  });
+		expect(spiralTraverse(matrix)).toEqual([1, 2, 4, 6, 5, 3]);
+	});
 
-  test("should handle single row matrix", () => {
-    const matrix = [[1, 2, 3, 4]];
-    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
-  });
+	test("should handle single row matrix", () => {
+		const matrix = [[1, 2, 3, 4]];
+		expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
+	});
 
-  test("should handle single column matrix", () => {
-    const matrix = [[1], [2], [3], [4]];
-    expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
-  });
+	test("should handle single column matrix", () => {
+		const matrix = [[1], [2], [3], [4]];
+		expect(spiralTraverse(matrix)).toEqual([1, 2, 3, 4]);
+	});
 
-  test("should handle single element matrix", () => {
-    const matrix = [[42]];
-    expect(spiralTraverse(matrix)).toEqual([42]);
-  });
+	test("should handle single element matrix", () => {
+		const matrix = [[42]];
+		expect(spiralTraverse(matrix)).toEqual([42]);
+	});
 
-  test("should handle matrix with non-number values", () => {
-    const matrix = [
-      ["a", "b", "c"],
-      ["d", "e", "f"],
-    ];
+	test("should handle matrix with non-number values", () => {
+		const matrix = [
+			["a", "b", "c"],
+			["d", "e", "f"],
+		];
 
-    expect(spiralTraverse(matrix)).toEqual(["a", "b", "c", "f", "e", "d"]);
-  });
+		expect(spiralTraverse(matrix)).toEqual(["a", "b", "c", "f", "e", "d"]);
+	});
 });
 
 describe("longestPeak", () => {
-  test("should return length of a simple peak", () => {
-    const arr = [1, 3, 2];
-    const result = longestPeak(arr);
+	test("should return length of a simple peak", () => {
+		const arr = [1, 3, 2];
+		const result = longestPeak(arr);
 
-    expect(result).toBe(3);
-  });
+		expect(result).toBe(3);
+	});
 
-  test("should return 0 when no peak exists", () => {
-    const arr = [1, 2, 3, 4, 5];
-    const result = longestPeak(arr);
+	test("should return 0 when no peak exists", () => {
+		const arr = [1, 2, 3, 4, 5];
+		const result = longestPeak(arr);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 
-  test("should handle a large peak", () => {
-    const arr = [1, 2, 3, 5, 4, 3, 2];
-    const result = longestPeak(arr);
+	test("should handle a large peak", () => {
+		const arr = [1, 2, 3, 5, 4, 3, 2];
+		const result = longestPeak(arr);
 
-    expect(result).toBe(7);
-  });
+		expect(result).toBe(7);
+	});
 
-  test("should handle multiple small peaks", () => {
-    const arr = [1, 3, 2, 1, 2, 3, 2];
-    const result = longestPeak(arr);
+	test("should handle multiple small peaks", () => {
+		const arr = [1, 3, 2, 1, 2, 3, 2];
+		const result = longestPeak(arr);
 
-    // Peaks: [1,3,2] and [1,2,3,2]
-    expect(result).toBe(4);
-  });
+		// Peaks: [1,3,2] and [1,2,3,2]
+		expect(result).toBe(4);
+	});
 
-  test("should handle array with negative numbers", () => {
-    const arr = [-5, -3, -1, -2, -4];
-    const result = longestPeak(arr);
+	test("should handle array with negative numbers", () => {
+		const arr = [-5, -3, -1, -2, -4];
+		const result = longestPeak(arr);
 
-    expect(result).toBe(5);
-  });
+		expect(result).toBe(5);
+	});
 
-  test("should return 0 for arrays shorter than 3", () => {
-    expect(longestPeak([])).toBe(0);
-    expect(longestPeak([1])).toBe(0);
-    expect(longestPeak([1, 2])).toBe(0);
-  });
+	test("should return 0 for arrays shorter than 3", () => {
+		expect(longestPeak([])).toBe(0);
+		expect(longestPeak([1])).toBe(0);
+		expect(longestPeak([1, 2])).toBe(0);
+	});
 
-  test("should handle peak in the middle only", () => {
-    const arr = [5, 4, 3, 2, 3, 4, 1];
-    const result = longestPeak(arr);
+	test("should handle peak in the middle only", () => {
+		const arr = [5, 4, 3, 2, 3, 4, 1];
+		const result = longestPeak(arr);
 
-    // Peak is [2, 3, 4, 1]
-    expect(result).toBe(4);
-  });
+		// Peak is [2, 3, 4, 1]
+		expect(result).toBe(4);
+	});
 
-  test("should handle repeated values breaking peaks", () => {
-    const arr = [1, 2, 3, 3, 2, 1];
-    const result = longestPeak(arr);
+	test("should handle repeated values breaking peaks", () => {
+		const arr = [1, 2, 3, 3, 2, 1];
+		const result = longestPeak(arr);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 });
 
 describe("arrayOfProducts", () => {
-  test("should return correct products for a normal array", () => {
-    const arr = [1, 2, 3, 4];
-    const result = arrayOfProducts(arr);
+	test("should return correct products for a normal array", () => {
+		const arr = [1, 2, 3, 4];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([24, 12, 8, 6]);
-  });
+		expect(result).toEqual([24, 12, 8, 6]);
+	});
 
-  test("should handle an array with a zero", () => {
-    const arr = [0, 1, 2, 3];
-    const result = arrayOfProducts(arr);
+	test("should handle an array with a zero", () => {
+		const arr = [0, 1, 2, 3];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([6, 0, 0, 0]);
-  });
+		expect(result).toEqual([6, 0, 0, 0]);
+	});
 
-  test("should handle multiple zeros", () => {
-    const arr = [0, 0, 2, 3];
-    const result = arrayOfProducts(arr);
+	test("should handle multiple zeros", () => {
+		const arr = [0, 0, 2, 3];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([0, 0, 0, 0]);
-  });
+		expect(result).toEqual([0, 0, 0, 0]);
+	});
 
-  test("should handle negative numbers", () => {
-    const arr = [1, -2, 3, -4];
-    const result = arrayOfProducts(arr);
+	test("should handle negative numbers", () => {
+		const arr = [1, -2, 3, -4];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([24, -12, 8, -6]);
-  });
+		expect(result).toEqual([24, -12, 8, -6]);
+	});
 
-  test("should handle single element", () => {
-    const arr = [5];
-    const result = arrayOfProducts(arr);
+	test("should handle single element", () => {
+		const arr = [5];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([1]); // product of empty array = 1
-  });
+		expect(result).toEqual([1]); // product of empty array = 1
+	});
 
-  test("should handle empty array", () => {
-    const arr: number[] = [];
-    const result = arrayOfProducts(arr);
+	test("should handle empty array", () => {
+		const arr: number[] = [];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([]);
-  });
+		expect(result).toEqual([]);
+	});
 
-  test("should handle all ones", () => {
-    const arr = [1, 1, 1, 1];
-    const result = arrayOfProducts(arr);
+	test("should handle all ones", () => {
+		const arr = [1, 1, 1, 1];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([1, 1, 1, 1]);
-  });
+		expect(result).toEqual([1, 1, 1, 1]);
+	});
 
-  test("should handle array with repeated numbers", () => {
-    const arr = [2, 2, 2];
-    const result = arrayOfProducts(arr);
+	test("should handle array with repeated numbers", () => {
+		const arr = [2, 2, 2];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([4, 4, 4]);
-  });
+		expect(result).toEqual([4, 4, 4]);
+	});
 
-  test("should handle large numbers", () => {
-    const arr = [1000, 2000, 3000];
-    const result = arrayOfProducts(arr);
+	test("should handle large numbers", () => {
+		const arr = [1000, 2000, 3000];
+		const result = arrayOfProducts(arr);
 
-    expect(result).toEqual([6000000, 3000000, 2000000]);
-  });
+		expect(result).toEqual([6000000, 3000000, 2000000]);
+	});
 });
 
 describe("numberOfIslands", () => {
-  test("should count a single island", () => {
-    const grid = [
-      [1, 1],
-      [1, 1],
-    ];
+	test("should count a single island", () => {
+		const grid = [
+			[1, 1],
+			[1, 1],
+		];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(1);
-  });
+		expect(result).toBe(1);
+	});
 
-  test("should count multiple separate islands", () => {
-    const grid = [
-      [1, 0, 1],
-      [0, 0, 0],
-      [1, 0, 1],
-    ];
+	test("should count multiple separate islands", () => {
+		const grid = [
+			[1, 0, 1],
+			[0, 0, 0],
+			[1, 0, 1],
+		];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(4);
-  });
+		expect(result).toBe(4);
+	});
 
-  test("should return 0 when grid has no land", () => {
-    const grid = [
-      [0, 0],
-      [0, 0],
-    ];
+	test("should return 0 when grid has no land", () => {
+		const grid = [
+			[0, 0],
+			[0, 0],
+		];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 
-  test("should handle empty grid", () => {
-    const grid: number[][] = [];
+	test("should handle empty grid", () => {
+		const grid: number[][] = [];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 
-  test("should handle grid with one cell land", () => {
-    const grid = [[1]];
+	test("should handle grid with one cell land", () => {
+		const grid = [[1]];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(1);
-  });
+		expect(result).toBe(1);
+	});
 
-  test("should handle grid with one cell water", () => {
-    const grid = [[0]];
+	test("should handle grid with one cell water", () => {
+		const grid = [[0]];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(0);
-  });
+		expect(result).toBe(0);
+	});
 
-  test("should not count diagonal connections as islands", () => {
-    const grid = [
-      [1, 0],
-      [0, 1],
-    ];
+	test("should not count diagonal connections as islands", () => {
+		const grid = [
+			[1, 0],
+			[0, 1],
+		];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(2);
-  });
+		expect(result).toBe(2);
+	});
 
-  test("should mutate grid by marking visited land as water", () => {
-    const grid = [
-      [1, 1],
-      [0, 1],
-    ];
+	test("should mutate grid by marking visited land as water", () => {
+		const grid = [
+			[1, 1],
+			[0, 1],
+		];
 
-    numberOfIslands(grid);
+		numberOfIslands(grid);
 
-    expect(grid).toEqual([
-      [0, 0],
-      [0, 0],
-    ]);
-  });
+		expect(grid).toEqual([
+			[0, 0],
+			[0, 0],
+		]);
+	});
 
-  test("should handle large connected island", () => {
-    const grid = [
-      [1, 1, 1],
-      [1, 1, 1],
-      [1, 1, 1],
-    ];
+	test("should handle large connected island", () => {
+		const grid = [
+			[1, 1, 1],
+			[1, 1, 1],
+			[1, 1, 1],
+		];
 
-    const result = numberOfIslands(grid);
+		const result = numberOfIslands(grid);
 
-    expect(result).toBe(1);
-  });
+		expect(result).toBe(1);
+	});
 });
 
 describe("rottenOranges", () => {
-  test("rots all oranges in 4 minutes (example case)", () => {
-    const grid = [
-      [2, 1, 1],
-      [1, 1, 0],
-      [0, 1, 1],
-    ];
+	test("rots all oranges in 4 minutes (example case)", () => {
+		const grid = [
+			[2, 1, 1],
+			[1, 1, 0],
+			[0, 1, 1],
+		];
 
-    expect(rottenOranges(grid)).toBe(4);
-  });
+		expect(rottenOranges(grid)).toBe(4);
+	});
 
-  test("returns 0 when there are no fresh oranges", () => {
-    const grid = [
-      [0, 2],
-      [2, 0],
-    ];
+	test("returns 0 when there are no fresh oranges", () => {
+		const grid = [
+			[0, 2],
+			[2, 0],
+		];
 
-    expect(rottenOranges(grid)).toBe(0);
-  });
+		expect(rottenOranges(grid)).toBe(0);
+	});
 
-  test("returns -1 when fresh oranges cannot be reached", () => {
-    const grid = [
-      [2, 1, 1],
-      [0, 1, 1],
-      [1, 0, 1],
-    ];
+	test("returns -1 when fresh oranges cannot be reached", () => {
+		const grid = [
+			[2, 1, 1],
+			[0, 1, 1],
+			[1, 0, 1],
+		];
 
-    expect(rottenOranges(grid)).toBe(-1);
-  });
+		expect(rottenOranges(grid)).toBe(-1);
+	});
 
-  test("returns -1 when there are fresh oranges but no rotten ones", () => {
-    const grid = [
-      [1, 1],
-      [1, 1],
-    ];
+	test("returns -1 when there are fresh oranges but no rotten ones", () => {
+		const grid = [
+			[1, 1],
+			[1, 1],
+		];
 
-    expect(rottenOranges(grid)).toBe(-1);
-  });
+		expect(rottenOranges(grid)).toBe(-1);
+	});
 
-  test("handles single cell with fresh orange", () => {
-    const grid = [[1]];
-    expect(rottenOranges(grid)).toBe(-1);
-  });
+	test("handles single cell with fresh orange", () => {
+		const grid = [[1]];
+		expect(rottenOranges(grid)).toBe(-1);
+	});
 
-  test("handles single cell with rotten orange", () => {
-    const grid = [[2]];
-    expect(rottenOranges(grid)).toBe(0);
-  });
+	test("handles single cell with rotten orange", () => {
+		const grid = [[2]];
+		expect(rottenOranges(grid)).toBe(0);
+	});
 
-  test("handles empty grid with only empty cells", () => {
-    const grid = [
-      [0, 0],
-      [0, 0],
-    ];
+	test("handles empty grid with only empty cells", () => {
+		const grid = [
+			[0, 0],
+			[0, 0],
+		];
 
-    expect(rottenOranges(grid)).toBe(0);
-  });
+		expect(rottenOranges(grid)).toBe(0);
+	});
 
-  test("rots oranges layer by layer correctly", () => {
-    const grid = [[2, 1, 1, 1]];
+	test("rots oranges layer by layer correctly", () => {
+		const grid = [[2, 1, 1, 1]];
 
-    expect(rottenOranges(grid)).toBe(3);
-  });
+		expect(rottenOranges(grid)).toBe(3);
+	});
 
-  test("works with multiple starting rotten oranges", () => {
-    const grid = [
-      [2, 1, 2],
-      [1, 1, 1],
-      [0, 1, 2],
-    ];
+	test("works with multiple starting rotten oranges", () => {
+		const grid = [
+			[2, 1, 2],
+			[1, 1, 1],
+			[0, 1, 2],
+		];
 
-    expect(rottenOranges(grid)).toBe(2);
-  });
+		expect(rottenOranges(grid)).toBe(2);
+	});
 });
 
 describe("wallsAndGates", () => {
-  test("finds shortest path in a straight line", () => {
-    const matrix = [[0, 1, 1, 1, 1]];
+	test("finds shortest path in a straight line", () => {
+		const matrix = [[0, 1, 1, 1, 1]];
 
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("finds shortest path in a vertical line", () => {
-    const matrix = [[0], [1], [1], [1]];
+	test("finds shortest path in a vertical line", () => {
+		const matrix = [[0], [1], [1], [1]];
 
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("navigates around walls to reach a room", () => {
-    const matrix = [
-      [0, -1, 1, 1],
-      [1, -1, 1, -1],
-      [1, 1, 1, -1],
-    ];
+	test("navigates around walls to reach a room", () => {
+		const matrix = [
+			[0, -1, 1, 1],
+			[1, -1, 1, -1],
+			[1, 1, 1, -1],
+		];
 
-    // Shortest reachable room is directly below the gate
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		// Shortest reachable room is directly below the gate
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("chooses the closest room among long and short paths", () => {
-    const matrix = [
-      [0, 1, 1, 1, 1],
-      [-1, -1, -1, -1, 1],
-      [1, 1, 1, 1, 1],
-    ];
+	test("chooses the closest room among long and short paths", () => {
+		const matrix = [
+			[0, 1, 1, 1, 1],
+			[-1, -1, -1, -1, 1],
+			[1, 1, 1, 1, 1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("handles complex maze with multiple gates", () => {
-    const matrix = [
-      [1, -1, 0, 1, 1],
-      [1, -1, -1, -1, 1],
-      [1, 1, 1, 1, 1],
-      [0, -1, 1, -1, 1],
-    ];
+	test("handles complex maze with multiple gates", () => {
+		const matrix = [
+			[1, -1, 0, 1, 1],
+			[1, -1, -1, -1, 1],
+			[1, 1, 1, 1, 1],
+			[0, -1, 1, -1, 1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("returns -1 when rooms are completely enclosed by walls", () => {
-    const matrix = [
-      [0, -1, -1, -1],
-      [-1, 1, 1, -1],
-      [-1, 1, 1, -1],
-      [-1, -1, -1, -1],
-    ];
+	test("returns -1 when rooms are completely enclosed by walls", () => {
+		const matrix = [
+			[0, -1, -1, -1],
+			[-1, 1, 1, -1],
+			[-1, 1, 1, -1],
+			[-1, -1, -1, -1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(-1);
-  });
+		expect(wallsAndGates(matrix)).toBe(-1);
+	});
 
-  test("handles non-square matrix", () => {
-    const matrix = [
-      [0, 1, 1],
-      [1, 1, 1],
-    ];
+	test("handles non-square matrix", () => {
+		const matrix = [
+			[0, 1, 1],
+			[1, 1, 1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(1);
-  });
+		expect(wallsAndGates(matrix)).toBe(1);
+	});
 
-  test("returns Infinity for empty rooms with no gates (larger grid)", () => {
-    const matrix = [
-      [1, 1, 1, 1],
-      [1, -1, 1, 1],
-      [1, 1, 1, 1],
-    ];
+	test("returns Infinity for empty rooms with no gates (larger grid)", () => {
+		const matrix = [
+			[1, 1, 1, 1],
+			[1, -1, 1, 1],
+			[1, 1, 1, 1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(Infinity);
-  });
+		expect(wallsAndGates(matrix)).toBe(Infinity);
+	});
 
-  test("handles grid with only walls", () => {
-    const matrix = [
-      [-1, -1],
-      [-1, -1],
-    ];
+	test("handles grid with only walls", () => {
+		const matrix = [
+			[-1, -1],
+			[-1, -1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(Infinity);
-  });
+		expect(wallsAndGates(matrix)).toBe(Infinity);
+	});
 
-  test("handles grid with gates surrounded by walls", () => {
-    const matrix = [
-      [-1, -1, -1],
-      [-1, 0, -1],
-      [-1, -1, -1],
-    ];
+	test("handles grid with gates surrounded by walls", () => {
+		const matrix = [
+			[-1, -1, -1],
+			[-1, 0, -1],
+			[-1, -1, -1],
+		];
 
-    expect(wallsAndGates(matrix)).toBe(-1);
-  });
+		expect(wallsAndGates(matrix)).toBe(-1);
+	});
 });

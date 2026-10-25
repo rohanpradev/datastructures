@@ -1,24 +1,40 @@
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
-import { CircuitBreaker, type CircuitBreakerOptions } from "../async/circuit-breaker";
+import {
+	CircuitBreaker,
+	type CircuitBreakerOptions,
+} from "../async/circuit-breaker";
 
 const options: CircuitBreakerOptions = {
-	failureThreshold: 50, minimumRequests: 2, windowDuration: 10,
-	resetTimeout: 20, timeout: 1000,
+	failureThreshold: 50,
+	minimumRequests: 2,
+	windowDuration: 10,
+	resetTimeout: 20,
+	timeout: 1000,
 };
 const restored: Array<() => void> = [];
-afterEach(() => { for (const restore of restored.splice(0)) restore(); });
+afterEach(() => {
+	for (const restore of restored.splice(0)) restore();
+});
 
 function clock() {
 	let now = 0;
 	const mock = spyOn(Date, "now").mockImplementation(() => now);
 	restored.push(() => mock.mockRestore());
-	return (value: number) => { now = value; };
+	return (value: number) => {
+		now = value;
+	};
 }
 
 describe("CircuitBreaker recovery", () => {
 	test("a failed recovery probe reopens even after rolling metrics expire", async () => {
 		const advance = clock();
-		const breaker = new CircuitBreaker(async () => { throw new Error("offline"); }, options, () => "fallback");
+		const breaker = new CircuitBreaker(
+			async () => {
+				throw new Error("offline");
+			},
+			options,
+			() => "fallback",
+		);
 		await breaker.fire();
 		await breaker.fire();
 		expect(breaker.getState()).toBe("OPEN");
@@ -32,12 +48,16 @@ describe("CircuitBreaker recovery", () => {
 		const old = Promise.withResolvers<string>();
 		const probe = Promise.withResolvers<string>();
 		let calls = 0;
-		const breaker = new CircuitBreaker(() => {
-			calls++;
-			if (calls === 1) return old.promise;
-			if (calls === 2) return Promise.reject(new Error("offline"));
-			return probe.promise;
-		}, { ...options, minimumRequests: 1 }, () => "fallback");
+		const breaker = new CircuitBreaker(
+			() => {
+				calls++;
+				if (calls === 1) return old.promise;
+				if (calls === 2) return Promise.reject(new Error("offline"));
+				return probe.promise;
+			},
+			{ ...options, minimumRequests: 1 },
+			() => "fallback",
+		);
 		const pendingOld = breaker.fire();
 		await breaker.fire();
 		advance(20);
@@ -57,11 +77,15 @@ describe("CircuitBreaker recovery", () => {
 		const first = Promise.withResolvers<string>();
 		const second = Promise.withResolvers<string>();
 		let calls = 0;
-		const breaker = new CircuitBreaker(() => {
-			calls++;
-			if (calls === 1) return Promise.reject(new Error("offline"));
-			return calls === 2 ? first.promise : second.promise;
-		}, { ...options, minimumRequests: 1, halfOpenMaxCalls: 2 }, () => "fallback");
+		const breaker = new CircuitBreaker(
+			() => {
+				calls++;
+				if (calls === 1) return Promise.reject(new Error("offline"));
+				return calls === 2 ? first.promise : second.promise;
+			},
+			{ ...options, minimumRequests: 1, halfOpenMaxCalls: 2 },
+			() => "fallback",
+		);
 		await breaker.fire();
 		advance(20);
 		const a = breaker.fire();
@@ -80,11 +104,19 @@ describe("CircuitBreaker recovery", () => {
 
 	test("validates thresholds, probe counts, and timer ranges", () => {
 		for (const invalid of [
-			{ failureThreshold: NaN }, { failureThreshold: 101 }, { failureThreshold: 0 },
-			{ minimumRequests: 0 }, { minimumRequests: 1.5 }, { halfOpenMaxCalls: 0 },
-			{ windowDuration: Infinity }, { resetTimeout: -1 }, { timeout: 2 ** 31 },
+			{ failureThreshold: NaN },
+			{ failureThreshold: 101 },
+			{ failureThreshold: 0 },
+			{ minimumRequests: 0 },
+			{ minimumRequests: 1.5 },
+			{ halfOpenMaxCalls: 0 },
+			{ windowDuration: Infinity },
+			{ resetTimeout: -1 },
+			{ timeout: 2 ** 31 },
 		]) {
-			expect(() => new CircuitBreaker(async () => "ok", { ...options, ...invalid })).toThrow(RangeError);
+			expect(
+				() => new CircuitBreaker(async () => "ok", { ...options, ...invalid }),
+			).toThrow(RangeError);
 		}
 	});
 });

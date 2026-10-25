@@ -33,12 +33,21 @@ afterAll(async () => {
 describe("generate-practice CLI model", () => {
 	test("bounds hanging validation modules and still reports ordinary test failures", async () => {
 		const outputRoot = join(TEST_ROOT, "subprocess");
-		await Bun.write(join(outputRoot, "hang.test.ts"), 'console.error("Not implemented");\nawait Bun.sleep(60_000);\n');
-		await expect(runFocusedValidationTest(outputRoot, "./hang.test.ts", 250))
-			.rejects.toThrow("Focused validation timed out");
-		await Bun.write(join(outputRoot, "failure.test.ts"),
-			'import { test } from "bun:test";\ntest("stub", () => { throw new Error("Not implemented: example"); });\n');
-		const result = await runFocusedValidationTest(outputRoot, "./failure.test.ts");
+		await Bun.write(
+			join(outputRoot, "hang.test.ts"),
+			'console.error("Not implemented");\nawait Bun.sleep(60_000);\n',
+		);
+		await expect(
+			runFocusedValidationTest(outputRoot, "./hang.test.ts", 250),
+		).rejects.toThrow("Focused validation timed out");
+		await Bun.write(
+			join(outputRoot, "failure.test.ts"),
+			'import { test } from "bun:test";\ntest("stub", () => { throw new Error("Not implemented: example"); });\n',
+		);
+		const result = await runFocusedValidationTest(
+			outputRoot,
+			"./failure.test.ts",
+		);
 		expect(result.exitCode).toBe(1);
 		expect(result.stderrText).toContain("Not implemented: example");
 	});

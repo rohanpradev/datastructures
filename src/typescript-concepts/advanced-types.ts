@@ -2,8 +2,7 @@
  * Discriminated result type for APIs that return failures as values.
  */
 export type Result<TValue, TError = Error> =
-	| { ok: true; value: TValue }
-	| { ok: false; error: TError };
+	{ ok: true; value: TValue } | { ok: false; error: TError };
 
 /**
  * Metadata for one TypeScript language feature covered by the examples.

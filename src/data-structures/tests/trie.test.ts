@@ -2,265 +2,270 @@ import { describe, expect, test } from "bun:test";
 import { Trie } from "@/data-structures/trie/trie";
 
 describe("Trie", () => {
-  describe("constructor", () => {
-    test("should create an empty Trie", () => {
-      const trie = new Trie();
+	describe("constructor", () => {
+		test("should create an empty Trie", () => {
+			const trie = new Trie();
 
-      expect(trie.search("anything")).toBe(false);
-      expect(trie.startsWith("any")).toBe(false);
-      expect(trie.getAllWords()).toEqual([]);
-    });
-  });
+			expect(trie.search("anything")).toBe(false);
+			expect(trie.startsWith("any")).toBe(false);
+			expect(trie.getAllWords()).toEqual([]);
+		});
+	});
 
-  describe("insert()", () => {
-    test("should insert a single word", () => {
-      const trie = new Trie();
-      trie.insert("hello");
+	describe("insert()", () => {
+		test("should insert a single word", () => {
+			const trie = new Trie();
+			trie.insert("hello");
 
-      expect(trie.search("hello")).toBe(true);
-      expect(trie.search("hell")).toBe(false);
-      expect(trie.startsWith("hell")).toBe(true);
-    });
+			expect(trie.search("hello")).toBe(true);
+			expect(trie.search("hell")).toBe(false);
+			expect(trie.startsWith("hell")).toBe(true);
+		});
 
-    test("should insert multiple words and maintain prefix relationships", () => {
-      const trie = new Trie();
-      trie.insert("car");
-      trie.insert("card");
-      trie.insert("care");
-      trie.insert("cat");
+		test("should insert multiple words and maintain prefix relationships", () => {
+			const trie = new Trie();
+			trie.insert("car");
+			trie.insert("card");
+			trie.insert("care");
+			trie.insert("cat");
 
-      expect(trie.search("car")).toBe(true);
-      expect(trie.search("card")).toBe(true);
-      expect(trie.search("care")).toBe(true);
-      expect(trie.search("cat")).toBe(true);
-      expect(trie.search("ca")).toBe(false);
+			expect(trie.search("car")).toBe(true);
+			expect(trie.search("card")).toBe(true);
+			expect(trie.search("care")).toBe(true);
+			expect(trie.search("cat")).toBe(true);
+			expect(trie.search("ca")).toBe(false);
 
-      expect(trie.startsWith("ca")).toBe(true);
-      expect(trie.startsWith("car")).toBe(true);
-      expect(trie.startsWith("cap")).toBe(false);
-    });
+			expect(trie.startsWith("ca")).toBe(true);
+			expect(trie.startsWith("car")).toBe(true);
+			expect(trie.startsWith("cap")).toBe(false);
+		});
 
-    test("should handle duplicate insertions gracefully", () => {
-      const trie = new Trie();
-      trie.insert("hello");
-      trie.insert("hello");
+		test("should handle duplicate insertions gracefully", () => {
+			const trie = new Trie();
+			trie.insert("hello");
+			trie.insert("hello");
 
-      expect(trie.search("hello")).toBe(true);
-      expect(trie.getAllWords()).toEqual(["hello"]);
-    });
+			expect(trie.search("hello")).toBe(true);
+			expect(trie.getAllWords()).toEqual(["hello"]);
+		});
 
-    test("should handle empty string insertion", () => {
-      const trie = new Trie();
-      trie.insert("");
+		test("should handle empty string insertion", () => {
+			const trie = new Trie();
+			trie.insert("");
 
-      expect(trie.search("")).toBe(false);
-      expect(trie.getAllWords()).toEqual([]);
-    });
-  });
+			expect(trie.search("")).toBe(false);
+			expect(trie.getAllWords()).toEqual([]);
+		});
+	});
 
-  describe("search()", () => {
-    test("should return true for inserted words", () => {
-      const trie = new Trie();
-      trie.insert("apple");
-      trie.insert("app");
+	describe("search()", () => {
+		test("should return true for inserted words", () => {
+			const trie = new Trie();
+			trie.insert("apple");
+			trie.insert("app");
 
-      expect(trie.search("apple")).toBe(true);
-      expect(trie.search("app")).toBe(true);
-    });
+			expect(trie.search("apple")).toBe(true);
+			expect(trie.search("app")).toBe(true);
+		});
 
-    test("should return false for non-existent words", () => {
-      const trie = new Trie();
-      trie.insert("apple");
+		test("should return false for non-existent words", () => {
+			const trie = new Trie();
+			trie.insert("apple");
 
-      expect(trie.search("apples")).toBe(false);
-      expect(trie.search("ap")).toBe(false);
-    });
-  });
+			expect(trie.search("apples")).toBe(false);
+			expect(trie.search("ap")).toBe(false);
+		});
+	});
 
-  describe("startsWith()", () => {
-    test("should return true for existing prefixes", () => {
-      const trie = new Trie();
-      trie.insert("banana");
-      trie.insert("band");
+	describe("startsWith()", () => {
+		test("should return true for existing prefixes", () => {
+			const trie = new Trie();
+			trie.insert("banana");
+			trie.insert("band");
 
-      expect(trie.startsWith("ban")).toBe(true);
-      expect(trie.startsWith("band")).toBe(true);
-    });
+			expect(trie.startsWith("ban")).toBe(true);
+			expect(trie.startsWith("band")).toBe(true);
+		});
 
-    test("should return false for non-existent prefixes", () => {
-      const trie = new Trie();
-      trie.insert("banana");
+		test("should return false for non-existent prefixes", () => {
+			const trie = new Trie();
+			trie.insert("banana");
 
-      expect(trie.startsWith("baaa")).toBe(false);
-      expect(trie.startsWith("bananas")).toBe(false);
-    });
-  });
+			expect(trie.startsWith("baaa")).toBe(false);
+			expect(trie.startsWith("bananas")).toBe(false);
+		});
+	});
 
-  describe("delete()", () => {
-    test("should delete a word and keep other words intact", () => {
-      const trie = new Trie();
-      trie.insert("car");
-      trie.insert("card");
-      trie.insert("care");
+	describe("delete()", () => {
+		test("should delete a word and keep other words intact", () => {
+			const trie = new Trie();
+			trie.insert("car");
+			trie.insert("card");
+			trie.insert("care");
 
-      expect(trie.delete("card")).toBe(true);
-      expect(trie.search("card")).toBe(false);
-      expect(trie.search("car")).toBe(true);
-      expect(trie.search("care")).toBe(true);
-    });
+			expect(trie.delete("card")).toBe(true);
+			expect(trie.search("card")).toBe(false);
+			expect(trie.search("car")).toBe(true);
+			expect(trie.search("care")).toBe(true);
+		});
 
-    test("should return false when deleting non-existent word", () => {
-      const trie = new Trie();
-      trie.insert("apple");
+		test("should return false when deleting non-existent word", () => {
+			const trie = new Trie();
+			trie.insert("apple");
 
-      expect(trie.delete("banana")).toBe(false);
-      expect(trie.search("apple")).toBe(true);
-    });
+			expect(trie.delete("banana")).toBe(false);
+			expect(trie.search("apple")).toBe(true);
+		});
 
-    test("should delete entire word chain when possible", () => {
-      const trie = new Trie();
-      trie.insert("a");
-      trie.insert("ab");
-      trie.insert("abc");
+		test("should delete entire word chain when possible", () => {
+			const trie = new Trie();
+			trie.insert("a");
+			trie.insert("ab");
+			trie.insert("abc");
 
-      expect(trie.delete("abc")).toBe(true);
-      expect(trie.search("abc")).toBe(false);
-      expect(trie.search("ab")).toBe(true);
-      expect(trie.search("a")).toBe(true);
+			expect(trie.delete("abc")).toBe(true);
+			expect(trie.search("abc")).toBe(false);
+			expect(trie.search("ab")).toBe(true);
+			expect(trie.search("a")).toBe(true);
 
-      expect(trie.delete("ab")).toBe(true);
-      expect(trie.search("ab")).toBe(false);
-      expect(trie.search("a")).toBe(true);
+			expect(trie.delete("ab")).toBe(true);
+			expect(trie.search("ab")).toBe(false);
+			expect(trie.search("a")).toBe(true);
 
-      expect(trie.delete("a")).toBe(true);
-      expect(trie.search("a")).toBe(false);
-    });
+			expect(trie.delete("a")).toBe(true);
+			expect(trie.search("a")).toBe(false);
+		});
 
-    test("should handle deletion of empty string safely", () => {
-      const trie = new Trie();
-      expect(trie.delete("")).toBe(false);
-    });
-  });
+		test("should handle deletion of empty string safely", () => {
+			const trie = new Trie();
+			expect(trie.delete("")).toBe(false);
+		});
+	});
 
-  describe("getAllWords()", () => {
-    test("should return all words in Trie", () => {
-      const trie = new Trie();
-      trie.insert("dog");
-      trie.insert("deer");
-      trie.insert("deal");
+	describe("getAllWords()", () => {
+		test("should return all words in Trie", () => {
+			const trie = new Trie();
+			trie.insert("dog");
+			trie.insert("deer");
+			trie.insert("deal");
 
-      const words = trie.getAllWords().sort();
-      expect(words).toEqual(["deal", "deer", "dog"]);
-    });
+			const words = trie.getAllWords().sort();
+			expect(words).toEqual(["deal", "deer", "dog"]);
+		});
 
-    test("should return empty array for empty Trie", () => {
-      const trie = new Trie();
-      expect(trie.getAllWords()).toEqual([]);
-    });
-  });
+		test("should return empty array for empty Trie", () => {
+			const trie = new Trie();
+			expect(trie.getAllWords()).toEqual([]);
+		});
+	});
 
-  describe("integration scenarios", () => {
-    test("should work for autocomplete simulation", () => {
-      const trie = new Trie();
-      trie.insert("apple");
-      trie.insert("app");
-      trie.insert("application");
+	describe("integration scenarios", () => {
+		test("should work for autocomplete simulation", () => {
+			const trie = new Trie();
+			trie.insert("apple");
+			trie.insert("app");
+			trie.insert("application");
 
-      const prefix = "app";
-      const words = trie
-        .getAllWords()
-        .filter((word) => word.startsWith(prefix))
-        .sort();
+			const prefix = "app";
+			const words = trie
+				.getAllWords()
+				.filter((word) => word.startsWith(prefix))
+				.sort();
 
-      expect(words).toEqual(["app", "apple", "application"]);
-    });
+			expect(words).toEqual(["app", "apple", "application"]);
+		});
 
-    test("should support incremental word building", () => {
-      const trie = new Trie();
-      const input = "hello";
+		test("should support incremental word building", () => {
+			const trie = new Trie();
+			const input = "hello";
 
-      let current = "";
-      for (const char of input) {
-        current += char;
-        trie.insert(current);
-      }
+			let current = "";
+			for (const char of input) {
+				current += char;
+				trie.insert(current);
+			}
 
-      expect(trie.search("h")).toBe(true);
-      expect(trie.search("he")).toBe(true);
-      expect(trie.search("hel")).toBe(true);
-      expect(trie.search("hell")).toBe(true);
-      expect(trie.search("hello")).toBe(true);
-    });
-  });
+			expect(trie.search("h")).toBe(true);
+			expect(trie.search("he")).toBe(true);
+			expect(trie.search("hel")).toBe(true);
+			expect(trie.search("hell")).toBe(true);
+			expect(trie.search("hello")).toBe(true);
+		});
+	});
 
-  describe("edge cases", () => {
-    test("enumerates and prunes long Unicode paths without recursion limits", () => {
-      const trie = new Trie();
-      const prefix = "😀".repeat(20_000);
-      trie.insert(prefix);
-      trie.insert(`${prefix}a`);
-      trie.insert(`${prefix}b`);
-      trie.insert("last");
+	describe("edge cases", () => {
+		test("enumerates and prunes long Unicode paths without recursion limits", () => {
+			const trie = new Trie();
+			const prefix = "😀".repeat(20_000);
+			trie.insert(prefix);
+			trie.insert(`${prefix}a`);
+			trie.insert(`${prefix}b`);
+			trie.insert("last");
 
-      expect(trie.getAllWords()).toEqual([prefix, `${prefix}a`, `${prefix}b`, "last"]);
-      expect(trie.delete(prefix)).toBe(true);
-      expect(trie.search(`${prefix}a`)).toBe(true);
-      expect(trie.delete(`${prefix}a`)).toBe(true);
-      expect(trie.startsWith(prefix)).toBe(true);
-      expect(trie.delete(`${prefix}b`)).toBe(true);
-      expect(trie.startsWith("😀")).toBe(false);
-      expect(trie.getAllWords()).toEqual(["last"]);
-    });
+			expect(trie.getAllWords()).toEqual([
+				prefix,
+				`${prefix}a`,
+				`${prefix}b`,
+				"last",
+			]);
+			expect(trie.delete(prefix)).toBe(true);
+			expect(trie.search(`${prefix}a`)).toBe(true);
+			expect(trie.delete(`${prefix}a`)).toBe(true);
+			expect(trie.startsWith(prefix)).toBe(true);
+			expect(trie.delete(`${prefix}b`)).toBe(true);
+			expect(trie.startsWith("😀")).toBe(false);
+			expect(trie.getAllWords()).toEqual(["last"]);
+		});
 
-    test("should handle long words", () => {
-      const trie = new Trie();
-      const longWord = "a".repeat(1000);
-      trie.insert(longWord);
+		test("should handle long words", () => {
+			const trie = new Trie();
+			const longWord = "a".repeat(1000);
+			trie.insert(longWord);
 
-      expect(trie.search(longWord)).toBe(true);
-      expect(trie.startsWith("a".repeat(500))).toBe(true);
-      expect(trie.delete(longWord)).toBe(true);
-      expect(trie.search(longWord)).toBe(false);
-    });
+			expect(trie.search(longWord)).toBe(true);
+			expect(trie.startsWith("a".repeat(500))).toBe(true);
+			expect(trie.delete(longWord)).toBe(true);
+			expect(trie.search(longWord)).toBe(false);
+		});
 
-    test("should handle overlapping prefixes", () => {
-      const trie = new Trie();
-      trie.insert("at");
-      trie.insert("ate");
-      trie.insert("atom");
+		test("should handle overlapping prefixes", () => {
+			const trie = new Trie();
+			trie.insert("at");
+			trie.insert("ate");
+			trie.insert("atom");
 
-      expect(trie.search("at")).toBe(true);
-      expect(trie.search("ate")).toBe(true);
-      expect(trie.search("atom")).toBe(true);
+			expect(trie.search("at")).toBe(true);
+			expect(trie.search("ate")).toBe(true);
+			expect(trie.search("atom")).toBe(true);
 
-      trie.delete("ate");
-      expect(trie.search("ate")).toBe(false);
-      expect(trie.search("at")).toBe(true);
-      expect(trie.search("atom")).toBe(true);
-    });
-  });
+			trie.delete("ate");
+			expect(trie.search("ate")).toBe(false);
+			expect(trie.search("at")).toBe(true);
+			expect(trie.search("atom")).toBe(true);
+		});
+	});
 
-  describe("different data types", () => {
-    test("should work with numeric strings", () => {
-      const trie = new Trie();
-      trie.insert("123");
-      trie.insert("1234");
+	describe("different data types", () => {
+		test("should work with numeric strings", () => {
+			const trie = new Trie();
+			trie.insert("123");
+			trie.insert("1234");
 
-      expect(trie.search("123")).toBe(true);
-      expect(trie.search("1234")).toBe(true);
-      expect(trie.startsWith("12")).toBe(true);
-    });
+			expect(trie.search("123")).toBe(true);
+			expect(trie.search("1234")).toBe(true);
+			expect(trie.startsWith("12")).toBe(true);
+		});
 
-    test("should handle single-character words", () => {
-      const trie = new Trie();
-      trie.insert("x");
-      trie.insert("y");
+		test("should handle single-character words", () => {
+			const trie = new Trie();
+			trie.insert("x");
+			trie.insert("y");
 
-      expect(trie.search("x")).toBe(true);
-      expect(trie.search("y")).toBe(true);
-      expect(trie.search("z")).toBe(false);
-    });
-  });
+			expect(trie.search("x")).toBe(true);
+			expect(trie.search("y")).toBe(true);
+			expect(trie.search("z")).toBe(false);
+		});
+	});
 });
 // Insertion and deletion must agree on Unicode code points, not UTF-16 units.
 test("Trie deletes emoji words while preserving shared prefixes", () => {

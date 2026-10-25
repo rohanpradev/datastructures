@@ -4,11 +4,11 @@ This guide explains the heap problems covered in `src/data-structures/heap/heap.
 
 ## Problems Covered
 
-| Problem | Export | Main pattern |
-| --- | --- | --- |
-| Kth Largest Element | `kthLargestElement` | Fixed-size min heap |
-| Find Median From Data Stream | `MedianFinder` | Two heaps |
-| Merge K Sorted Arrays | `mergeKSortedArrays` | Min heap over k sources |
+| Problem                      | Export               | Main pattern            |
+| ---------------------------- | -------------------- | ----------------------- |
+| Kth Largest Element          | `kthLargestElement`  | Fixed-size min heap     |
+| Find Median From Data Stream | `MedianFinder`       | Two heaps               |
+| Merge K Sorted Arrays        | `mergeKSortedArrays` | Min heap over k sources |
 
 ## Kth Largest Element
 

@@ -165,9 +165,9 @@ describe("AgentCheckpointStore", () => {
 
 		const resumed = store.acquire("run-1", "worker-b", 11);
 		expect(resumed.checkpoint).toEqual({ step: 1 });
-		expect(() =>
-			store.save("run-1", first.receipt, { step: 99 }, 12),
-		).toThrow("checkpoint receipt is stale");
+		expect(() => store.save("run-1", first.receipt, { step: 99 }, 12)).toThrow(
+			"checkpoint receipt is stale",
+		);
 		store.save("run-1", resumed.receipt, { step: 2 }, 12);
 		expect(store.get("run-1").checkpoint).toEqual({ step: 2 });
 	});
@@ -200,9 +200,9 @@ describe("AgentCheckpointStore", () => {
 
 		store.approve("run-1", decision.approvalId, "reviewer");
 		const resumed = store.acquire("run-1", "worker-b", 3);
-		expect(
-			store.requestAction("run-1", resumed.receipt, action, 4),
-		).toEqual({ allowed: true });
+		expect(store.requestAction("run-1", resumed.receipt, action, 4)).toEqual({
+			allowed: true,
+		});
 		const repeated = store.requestAction("run-1", resumed.receipt, action, 5);
 		expect(repeated).toMatchObject({ allowed: false });
 	});

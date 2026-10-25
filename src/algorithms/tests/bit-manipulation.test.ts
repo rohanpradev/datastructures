@@ -31,9 +31,7 @@ describe("missingNumberXor", () => {
 
 describe("reverseBits", () => {
 	test("reverses 32-bit unsigned integers", () => {
-		expect(reverseBits(0b00000010100101000001111010011100)).toBe(
-			964176192,
-		);
+		expect(reverseBits(0b00000010100101000001111010011100)).toBe(964176192);
 		expect(reverseBits(0)).toBe(0);
 		expect(reverseBits(0xffffffff)).toBe(0xffffffff);
 	});

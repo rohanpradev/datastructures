@@ -42,8 +42,13 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+        env:
+          BUN_CONFIG_HTTP_RETRY_BACKOFF: "250"
 
-      - name: Lint and format check
+      - name: Bun format check
+        run: bun run format:check
+
+      - name: Biome lint check
         run: bun run lint
 
       - name: Bun TypeScript typecheck

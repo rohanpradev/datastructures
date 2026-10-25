@@ -1,223 +1,223 @@
 import { describe, expect, test } from "bun:test";
 import {
-  generateDocument,
-  firstNonRepeatingCharacter,
-  groupAnagrams,
-  isAnagram,
-  semordNilap,
+	generateDocument,
+	firstNonRepeatingCharacter,
+	groupAnagrams,
+	isAnagram,
+	semordNilap,
 } from "@/algorithms/strings/string-exercises";
 
 describe("generateDocument", () => {
-  test("should return true when document can be generated", () => {
-    const characters = "aabbcc";
-    const document = "abc";
+	test("should return true when document can be generated", () => {
+		const characters = "aabbcc";
+		const document = "abc";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should return false when characters are insufficient", () => {
-    const characters = "abc";
-    const document = "aabb";
+	test("should return false when characters are insufficient", () => {
+		const characters = "abc";
+		const document = "aabb";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should handle exact character match", () => {
-    const characters = "hello";
-    const document = "hello";
+	test("should handle exact character match", () => {
+		const characters = "hello";
+		const document = "hello";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should return false when document is longer than characters", () => {
-    const characters = "abc";
-    const document = "abcd";
+	test("should return false when document is longer than characters", () => {
+		const characters = "abc";
+		const document = "abcd";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should handle empty document", () => {
-    const characters = "abc";
-    const document = "";
+	test("should handle empty document", () => {
+		const characters = "abc";
+		const document = "";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should handle empty characters string", () => {
-    const characters = "";
-    const document = "a";
+	test("should handle empty characters string", () => {
+		const characters = "";
+		const document = "a";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should handle both strings empty", () => {
-    const characters = "";
-    const document = "";
+	test("should handle both strings empty", () => {
+		const characters = "";
+		const document = "";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should handle repeated characters correctly", () => {
-    const characters = "aaabbb";
-    const document = "aab";
+	test("should handle repeated characters correctly", () => {
+		const characters = "aaabbb";
+		const document = "aab";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(true);
-  });
+		expect(result).toBe(true);
+	});
 
-  test("should return false when a required character is missing", () => {
-    const characters = "abc";
-    const document = "abd";
+	test("should return false when a required character is missing", () => {
+		const characters = "abc";
+		const document = "abd";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 
-  test("should be case-sensitive", () => {
-    const characters = "aA";
-    const document = "aa";
+	test("should be case-sensitive", () => {
+		const characters = "aA";
+		const document = "aa";
 
-    const result = generateDocument(characters, document);
+		const result = generateDocument(characters, document);
 
-    expect(result).toBe(false);
-  });
+		expect(result).toBe(false);
+	});
 });
 
 describe("firstNonRepeatingCharacter", () => {
-  test("should return first non-repeating character", () => {
-    expect(firstNonRepeatingCharacter("aabcc")).toBe("b");
-    expect(firstNonRepeatingCharacter("abcd")).toBe("a");
-    expect(firstNonRepeatingCharacter("aaabcccdeff")).toBe("b");
-  });
+	test("should return first non-repeating character", () => {
+		expect(firstNonRepeatingCharacter("aabcc")).toBe("b");
+		expect(firstNonRepeatingCharacter("abcd")).toBe("a");
+		expect(firstNonRepeatingCharacter("aaabcccdeff")).toBe("b");
+	});
 
-  test("should return null when all characters repeat", () => {
-    expect(firstNonRepeatingCharacter("aabbcc")).toBeNull();
-    expect(firstNonRepeatingCharacter("zzzz")).toBeNull();
-  });
+	test("should return null when all characters repeat", () => {
+		expect(firstNonRepeatingCharacter("aabbcc")).toBeNull();
+		expect(firstNonRepeatingCharacter("zzzz")).toBeNull();
+	});
 
-  test("should handle empty string", () => {
-    expect(firstNonRepeatingCharacter("")).toBeNull();
-  });
+	test("should handle empty string", () => {
+		expect(firstNonRepeatingCharacter("")).toBeNull();
+	});
 
-  test("should handle single character strings", () => {
-    expect(firstNonRepeatingCharacter("x")).toBe("x");
-  });
+	test("should handle single character strings", () => {
+		expect(firstNonRepeatingCharacter("x")).toBe("x");
+	});
 
-  test("should handle repeated characters with single unique at end", () => {
-    expect(firstNonRepeatingCharacter("aabbccd")).toBe("d");
-  });
+	test("should handle repeated characters with single unique at end", () => {
+		expect(firstNonRepeatingCharacter("aabbccd")).toBe("d");
+	});
 
-  test("should be case-sensitive", () => {
-    expect(firstNonRepeatingCharacter("aA")).toBe("a");
-    expect(firstNonRepeatingCharacter("Aa")).toBe("A");
-  });
+	test("should be case-sensitive", () => {
+		expect(firstNonRepeatingCharacter("aA")).toBe("a");
+		expect(firstNonRepeatingCharacter("Aa")).toBe("A");
+	});
 
-  test("should handle long strings", () => {
-    const str = "a".repeat(1000) + "b" + "c".repeat(500);
-    expect(firstNonRepeatingCharacter(str)).toBe("b");
-  });
+	test("should handle long strings", () => {
+		const str = "a".repeat(1000) + "b" + "c".repeat(500);
+		expect(firstNonRepeatingCharacter(str)).toBe("b");
+	});
 
-  test("should handle numbers and symbols in string", () => {
-    expect(firstNonRepeatingCharacter("112233!@#!!")).toBe("@");
-  });
+	test("should handle numbers and symbols in string", () => {
+		expect(firstNonRepeatingCharacter("112233!@#!!")).toBe("@");
+	});
 });
 
 describe("semordNilap", () => {
-  test("should find semordnilap pairs", () => {
-    const words = ["diaper", "repaid", "test", "tset", "loop"];
-    const result = semordNilap(words);
-    expect(result).toEqual([
-      ["diaper", "repaid"],
-      ["test", "tset"],
-    ]);
-  });
+	test("should find semordnilap pairs", () => {
+		const words = ["diaper", "repaid", "test", "tset", "loop"];
+		const result = semordNilap(words);
+		expect(result).toEqual([
+			["diaper", "repaid"],
+			["test", "tset"],
+		]);
+	});
 
-  test("should handle multiple pairs", () => {
-    const words = ["loop", "pool", "god", "dog", "cat"];
-    const result = semordNilap(words);
-    expect(result).toEqual([
-      ["loop", "pool"],
-      ["god", "dog"],
-    ]);
-  });
+	test("should handle multiple pairs", () => {
+		const words = ["loop", "pool", "god", "dog", "cat"];
+		const result = semordNilap(words);
+		expect(result).toEqual([
+			["loop", "pool"],
+			["god", "dog"],
+		]);
+	});
 
-  test("should handle duplicates properly", () => {
-    const words = ["loop", "pool", "loop", "pool"];
-    const result = semordNilap(words);
-    expect(result).toEqual([
-      ["loop", "pool"],
-      ["loop", "pool"],
-    ]);
-  });
+	test("should handle duplicates properly", () => {
+		const words = ["loop", "pool", "loop", "pool"];
+		const result = semordNilap(words);
+		expect(result).toEqual([
+			["loop", "pool"],
+			["loop", "pool"],
+		]);
+	});
 
-  test("should handle empty array", () => {
-    const result = semordNilap([]);
-    expect(result).toEqual([]);
-  });
+	test("should handle empty array", () => {
+		const result = semordNilap([]);
+		expect(result).toEqual([]);
+	});
 
-  test("should handle array with no pairs", () => {
-    const words = ["abc", "def", "ghi"];
-    const result = semordNilap(words);
-    expect(result).toEqual([]);
-  });
+	test("should handle array with no pairs", () => {
+		const words = ["abc", "def", "ghi"];
+		const result = semordNilap(words);
+		expect(result).toEqual([]);
+	});
 
-  test("should handle single word", () => {
-    const result = semordNilap(["abc"]);
-    expect(result).toEqual([]);
-  });
+	test("should handle single word", () => {
+		const result = semordNilap(["abc"]);
+		expect(result).toEqual([]);
+	});
 
-  test("should handle words that are their own reverse", () => {
-    const words = ["level", "deified", "rotor"];
-    const result = semordNilap(words);
-    expect(result).toEqual([]); // palindromes alone are not semordnilap pairs
-  });
+	test("should handle words that are their own reverse", () => {
+		const words = ["level", "deified", "rotor"];
+		const result = semordNilap(words);
+		expect(result).toEqual([]); // palindromes alone are not semordnilap pairs
+	});
 
-  test("should handle mixed normal and palindrome words", () => {
-    const words = ["loop", "pool", "level"];
-    const result = semordNilap(words);
-    expect(result).toEqual([["loop", "pool"]]);
-  });
+	test("should handle mixed normal and palindrome words", () => {
+		const words = ["loop", "pool", "level"];
+		const result = semordNilap(words);
+		expect(result).toEqual([["loop", "pool"]]);
+	});
 });
 
 describe("groupAnagrams", () => {
-  test("groups words that share the same character counts", () => {
-    const result = groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])
-      .map((group) => group.sort())
-      .sort((a, b) => a[0]!.localeCompare(b[0]!));
+	test("groups words that share the same character counts", () => {
+		const result = groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])
+			.map((group) => group.sort())
+			.sort((a, b) => a[0]!.localeCompare(b[0]!));
 
-    expect(result).toEqual([["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]);
-  });
+		expect(result).toEqual([["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]);
+	});
 
-  test("handles empty strings and single word groups", () => {
-    const result = groupAnagrams(["", "b", ""]);
+	test("handles empty strings and single word groups", () => {
+		const result = groupAnagrams(["", "b", ""]);
 
-    expect(result.map((group) => group.sort())).toEqual([["", ""], ["b"]]);
-  });
+		expect(result.map((group) => group.sort())).toEqual([["", ""], ["b"]]);
+	});
 });
 
 describe("isAnagram", () => {
-  test("returns true for valid anagrams", () => {
-    expect(isAnagram("anagram", "nagaram")).toBe(true);
-  });
+	test("returns true for valid anagrams", () => {
+		expect(isAnagram("anagram", "nagaram")).toBe(true);
+	});
 
-  test("returns false for different counts or lengths", () => {
-    expect(isAnagram("rat", "car")).toBe(false);
-    expect(isAnagram("ab", "a")).toBe(false);
-  });
+	test("returns false for different counts or lengths", () => {
+		expect(isAnagram("rat", "car")).toBe(false);
+		expect(isAnagram("ab", "a")).toBe(false);
+	});
 });

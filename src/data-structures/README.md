@@ -4,20 +4,20 @@ This folder teaches the implementation mechanics behind common interview and bac
 
 ## How This Folder Is Organized
 
-| Folder | Core idea | Interview skills |
-|---|---|---|
-| `singly-linked-list/` | One-way node chain | Pointer updates, cycle checks, middle/kth node, in-place reversal |
-| `doubly-linked-list/` | Previous and next links | O(1) removal when you already have a node, LRU-cache internals |
-| `stack/` | Last-in, first-out access | Parentheses, monotonic stack, expression evaluation, DFS simulation |
-| `queue/` | First-in, first-out access | BFS, scheduling, producer/consumer workflows |
-| `hash-table/` | Key-to-value lookup | Frequency counts, dedupe, grouping, collision and load-factor reasoning |
-| `binary-tree/` | Hierarchical nodes without ordering guarantees | DFS/BFS traversals, path state, subtree reasoning |
-| `binary-search-tree/` | Ordered binary tree | Bounds validation, kth element, predecessor/successor, search pruning |
-| `heap/` | Priority queue over an array | Top-k, streaming median, merge k sorted lists/arrays |
-| `trie/` | Prefix tree | Autocomplete, word search, prefix counting |
-| `graph/` | Vertices and edges | DFS/BFS, components, cycle detection, topological order, shortest paths |
-| `fenwick-tree/` | Mutable prefix and range sums | Bitwise block invariants, point corrections, half-open ranges |
-| [`segment-tree/`](./segment-tree/SEGMENT_TREE_GUIDE.md) | Ordered associative range aggregates | Point assignment, sum/min/max, identity, noncommutative combination |
+| Folder                                                  | Core idea                                      | Interview skills                                                        |
+| ------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
+| `singly-linked-list/`                                   | One-way node chain                             | Pointer updates, cycle checks, middle/kth node, in-place reversal       |
+| `doubly-linked-list/`                                   | Previous and next links                        | O(1) removal when you already have a node, LRU-cache internals          |
+| `stack/`                                                | Last-in, first-out access                      | Parentheses, monotonic stack, expression evaluation, DFS simulation     |
+| `queue/`                                                | First-in, first-out access                     | BFS, scheduling, producer/consumer workflows                            |
+| `hash-table/`                                           | Key-to-value lookup                            | Frequency counts, dedupe, grouping, collision and load-factor reasoning |
+| `binary-tree/`                                          | Hierarchical nodes without ordering guarantees | DFS/BFS traversals, path state, subtree reasoning                       |
+| `binary-search-tree/`                                   | Ordered binary tree                            | Bounds validation, kth element, predecessor/successor, search pruning   |
+| `heap/`                                                 | Priority queue over an array                   | Top-k, streaming median, merge k sorted lists/arrays                    |
+| `trie/`                                                 | Prefix tree                                    | Autocomplete, word search, prefix counting                              |
+| `graph/`                                                | Vertices and edges                             | DFS/BFS, components, cycle detection, topological order, shortest paths |
+| `fenwick-tree/`                                         | Mutable prefix and range sums                  | Bitwise block invariants, point corrections, half-open ranges           |
+| [`segment-tree/`](./segment-tree/SEGMENT_TREE_GUIDE.md) | Ordered associative range aggregates           | Point assignment, sum/min/max, identity, noncommutative combination     |
 
 ## Best Study Order
 

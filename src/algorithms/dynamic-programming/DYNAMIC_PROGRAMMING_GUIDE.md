@@ -106,26 +106,26 @@ Result: 15
  * // → 15
  */
 export function maxSumNonAdjacent(nums: number[]): number | null {
-  // Edge case: empty array
-  if (nums.length === 0) return null;
+	// Edge case: empty array
+	if (nums.length === 0) return null;
 
-  // Edge case: single element
-  if (nums.length === 1) return nums[0];
+	// Edge case: single element
+	if (nums.length === 1) return nums[0];
 
-  // prevTwo: max sum up to i-2
-  let prevTwo = nums[0];
+	// prevTwo: max sum up to i-2
+	let prevTwo = nums[0];
 
-  // prevOne: max sum up to i-1
-  let prevOne = Math.max(nums[0], nums[1]);
+	// prevOne: max sum up to i-1
+	let prevOne = Math.max(nums[0], nums[1]);
 
-  // Iterate through the array
-  for (let i = 2; i < nums.length; i++) {
-    const currentMax = Math.max(prevOne, prevTwo + nums[i]);
-    prevTwo = prevOne;
-    prevOne = currentMax;
-  }
+	// Iterate through the array
+	for (let i = 2; i < nums.length; i++) {
+		const currentMax = Math.max(prevOne, prevTwo + nums[i]);
+		prevTwo = prevOne;
+		prevOne = currentMax;
+	}
 
-  return prevOne;
+	return prevOne;
 }
 ```
 
@@ -238,17 +238,17 @@ Result: ways[5] = 4
  * // → 4
  */
 export function waysOfChange(target: number, denoms: number[]): number {
-  // ways[i] = number of ways to make amount i
-  const ways = new Array(target + 1).fill(0);
-  ways[0] = 1; // 1 way to make 0
+	// ways[i] = number of ways to make amount i
+	const ways = new Array(target + 1).fill(0);
+	ways[0] = 1; // 1 way to make 0
 
-  for (const coin of denoms) {
-    for (let amount = coin; amount <= target; amount++) {
-      ways[amount] += ways[amount - coin];
-    }
-  }
+	for (const coin of denoms) {
+		for (let amount = coin; amount <= target; amount++) {
+			ways[amount] += ways[amount - coin];
+		}
+	}
 
-  return ways[target];
+	return ways[target];
 }
 ```
 
@@ -376,22 +376,22 @@ Result: dp[7] = 3
  * // → 3
  */
 export function minNumberOfCoinsForChange(
-  target: number,
-  denoms: number[],
+	target: number,
+	denoms: number[],
 ): number {
-  // dp[i] = minimum coins needed to make amount i
-  const dp = new Array(target + 1).fill(Infinity);
+	// dp[i] = minimum coins needed to make amount i
+	const dp = new Array(target + 1).fill(Infinity);
 
-  // Base case: 0 coins are needed to make amount 0
-  dp[0] = 0;
+	// Base case: 0 coins are needed to make amount 0
+	dp[0] = 0;
 
-  for (const coin of denoms) {
-    for (let amount = coin; amount <= target; amount++) {
-      dp[amount] = Math.min(dp[amount], 1 + dp[amount - coin]);
-    }
-  }
+	for (const coin of denoms) {
+		for (let amount = coin; amount <= target; amount++) {
+			dp[amount] = Math.min(dp[amount], 1 + dp[amount - coin]);
+		}
+	}
 
-  return dp[target] === Infinity ? -1 : dp[target];
+	return dp[target] === Infinity ? -1 : dp[target];
 }
 ```
 
@@ -608,31 +608,31 @@ t  |  3  2  2  1
  * @returns Minimum number of edit operations
  */
 export function levenshteinDistance(str1: string, str2: string): number {
-  const n = str1.length;
-  const m = str2.length;
+	const n = str1.length;
+	const m = str2.length;
 
-  const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+	const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
 
-  for (let i = 0; i <= n; i++) dp[i][0] = i;
-  for (let j = 0; j <= m; j++) dp[0][j] = j;
+	for (let i = 0; i <= n; i++) dp[i][0] = i;
+	for (let j = 0; j <= m; j++) dp[0][j] = j;
 
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] =
-          1 +
-          Math.min(
-            dp[i][j - 1], // Insert
-            dp[i - 1][j], // Delete
-            dp[i - 1][j - 1], // Replace
-          );
-      }
-    }
-  }
+	for (let i = 1; i <= n; i++) {
+		for (let j = 1; j <= m; j++) {
+			if (str1[i - 1] === str2[j - 1]) {
+				dp[i][j] = dp[i - 1][j - 1];
+			} else {
+				dp[i][j] =
+					1 +
+					Math.min(
+						dp[i][j - 1], // Insert
+						dp[i - 1][j], // Delete
+						dp[i - 1][j - 1], // Replace
+					);
+			}
+		}
+	}
 
-  return dp[n][m];
+	return dp[n][m];
 }
 ```
 
@@ -809,15 +809,15 @@ If either:
 
 ```ts
 export function numOfWaysToTraverseGraphRecursive(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  if (width === 1 || height === 1) return 1;
+	if (width === 1 || height === 1) return 1;
 
-  return (
-    numOfWaysToTraverseGraphRecursive(width - 1, height) +
-    numOfWaysToTraverseGraphRecursive(width, height - 1)
-  );
+	return (
+		numOfWaysToTraverseGraphRecursive(width - 1, height) +
+		numOfWaysToTraverseGraphRecursive(width, height - 1)
+	);
 }
 ```
 
@@ -863,24 +863,24 @@ number of ways to reach cell (row, col)
 
 ```ts
 export function numberOfWaysToTraverseGraph(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  const ways: number[][] = Array.from({ length: height }, () =>
-    new Array(width).fill(0),
-  );
+	const ways: number[][] = Array.from({ length: height }, () =>
+		new Array(width).fill(0),
+	);
 
-  for (let row = 0; row < height; row++) {
-    for (let col = 0; col < width; col++) {
-      if (row === 0 || col === 0) {
-        ways[row][col] = 1;
-      } else {
-        ways[row][col] = ways[row - 1][col] + ways[row][col - 1];
-      }
-    }
-  }
+	for (let row = 0; row < height; row++) {
+		for (let col = 0; col < width; col++) {
+			if (row === 0 || col === 0) {
+				ways[row][col] = 1;
+			} else {
+				ways[row][col] = ways[row - 1][col] + ways[row][col - 1];
+			}
+		}
+	}
 
-  return ways[height - 1][width - 1];
+	return ways[height - 1][width - 1];
 }
 ```
 
@@ -930,11 +930,11 @@ This is a **binomial coefficient**.
 
 ```ts
 function factorial(n: number): number {
-  let result = 1;
-  for (let i = 2; i <= n; i++) {
-    result *= i;
-  }
-  return result;
+	let result = 1;
+	for (let i = 2; i <= n; i++) {
+		result *= i;
+	}
+	return result;
 }
 ```
 
@@ -944,14 +944,14 @@ function factorial(n: number): number {
 
 ```ts
 export function numberOfWaysToTraverseGraphFactorial(
-  width: number,
-  height: number,
+	width: number,
+	height: number,
 ): number {
-  const rightMoves = width - 1;
-  const downMoves = height - 1;
-  const totalMoves = rightMoves + downMoves;
+	const rightMoves = width - 1;
+	const downMoves = height - 1;
+	const totalMoves = rightMoves + downMoves;
 
-  return factorial(totalMoves) / (factorial(rightMoves) * factorial(downMoves));
+	return factorial(totalMoves) / (factorial(rightMoves) * factorial(downMoves));
 }
 ```
 

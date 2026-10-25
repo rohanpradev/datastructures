@@ -16,12 +16,12 @@ to reuse the database. Tests use separate temporary or in-memory stores.
 
 ## Four experiments
 
-| Experiment | Action | Expected evidence |
-| --- | --- | --- |
-| Safe retry | Publish once, then choose **Retry same event** | Same sequence; commits stay unchanged; safe retries increase |
-| Reconnect | Disconnect one tab; publish in the other; reconnect | Missing events return through HTTP catch-up or socket replay |
-| Restart | Stop the server, then restart with the same database | Committed history survives; process counters restart at zero |
-| Bounded replay | While disconnected, publish more than 25 events | HTTP pagination catches up; a socket with a large backlog is asked to resync |
+| Experiment     | Action                                               | Expected evidence                                                            |
+| -------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Safe retry     | Publish once, then choose **Retry same event**       | Same sequence; commits stay unchanged; safe retries increase                 |
+| Reconnect      | Disconnect one tab; publish in the other; reconnect  | Missing events return through HTTP catch-up or socket replay                 |
+| Restart        | Stop the server, then restart with the same database | Committed history survives; process counters restart at zero                 |
+| Bounded replay | While disconnected, publish more than 25 events      | HTTP pagination catches up; a socket with a large backlog is asked to resync |
 
 The stream keeps at most 200 visible rows per tab. That is a presentation bound;
 older committed records remain in SQLite. Browsers restored from their page

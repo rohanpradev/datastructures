@@ -9,10 +9,12 @@ This guide covers heap data structure operations and common heap-based algorithm
 ## What is a Heap?
 
 A heap is a complete binary tree where:
+
 - **Max Heap:** Parent ≥ all children (largest at root)
 - **Min Heap:** Parent ≤ all children (smallest at root)
 
 ### Visual Representation
+
 ```
 Max Heap:          Min Heap:
      100                1
@@ -34,6 +36,7 @@ Array: [1,3,2,7,5]
 **Problem:** Insert a value while maintaining heap property.
 
 #### Visual Explanation
+
 ```
 Max Heap: [100, 90, 80, 70, 50]
 
@@ -60,6 +63,7 @@ Final: [100, 90, 95, 70, 50, 80]
 ```
 
 #### Algorithm
+
 ```
 function insert(value):
 	1. Add value to end of array
@@ -70,6 +74,7 @@ function insert(value):
 ```
 
 #### Parent-Child Relationships
+
 ```
 For node at index i:
 - Parent: (i - 1) / 2
@@ -83,15 +88,16 @@ Example: i = 5
 ```
 
 #### Implementation Steps
+
 ```typescript
 class MaxHeap {
 	private heap: number[] = [];
-	
+
 	insert(value: number): void {
 		// TODO: Push value to heap
-		
+
 		// TODO: Get current index
-		
+
 		// TODO: Bubble up loop
 		while (current > 0) {
 			// TODO: Calculate parent index
@@ -104,6 +110,7 @@ class MaxHeap {
 ```
 
 #### Complexity
+
 - **Time:** O(log n) - height of tree
 - **Space:** O(1)
 
@@ -114,6 +121,7 @@ class MaxHeap {
 **Problem:** Remove root (max/min) while maintaining heap property.
 
 #### Visual Explanation
+
 ```
 Max Heap: [100, 90, 95, 70, 50, 80]
      100
@@ -144,6 +152,7 @@ Return: 100
 ```
 
 #### Algorithm
+
 ```
 function remove():
 	if heap empty:
@@ -166,17 +175,18 @@ function remove():
 ```
 
 #### Implementation Steps
+
 ```typescript
 class MaxHeap {
 	remove(): number | null {
 		// TODO: Handle empty heap
-		
+
 		// TODO: Save root value
-		
+
 		// TODO: Replace root with last element
-		
+
 		// TODO: Remove last element
-		
+
 		// TODO: Bubble down loop
 		let current = 0;
 		while (true) {
@@ -185,13 +195,14 @@ class MaxHeap {
 			// TODO: If no swap needed, break
 			// TODO: Otherwise, swap and continue
 		}
-		
+
 		// TODO: Return saved root
 	}
 }
 ```
 
 #### Complexity
+
 - **Time:** O(log n) - height of tree
 - **Space:** O(1)
 
@@ -202,9 +213,11 @@ class MaxHeap {
 ### Problem 1: Find Kth Largest Element (LeetCode 215)
 
 #### Problem Statement
+
 Find the kth largest element in an unsorted array.
 
 #### Example
+
 ```
 Input: [3, 2, 1, 5, 6, 4], k = 2
 Output: 5
@@ -214,6 +227,7 @@ Output: 4
 ```
 
 #### Visual Explanation
+
 ```
 Array: [3, 2, 1, 5, 6, 4], k = 2
 
@@ -234,6 +248,7 @@ Heap top: 5 (2nd largest)
 ```
 
 #### Algorithm
+
 ```
 1. Create min heap of size k
 2. For each number:
@@ -243,6 +258,7 @@ Heap top: 5 (2nd largest)
 ```
 
 #### Complexity
+
 - **Time:** O(n log k)
 - **Space:** O(k)
 
@@ -251,9 +267,11 @@ Heap top: 5 (2nd largest)
 ### Problem 2: Merge K Sorted Lists (LeetCode 23)
 
 #### Problem Statement
+
 Merge k sorted linked lists into one sorted list.
 
 #### Example
+
 ```
 Input:
 [
@@ -265,6 +283,7 @@ Output: 1 → 1 → 2 → 3 → 4 → 4 → 5 → 6
 ```
 
 #### Visual Explanation
+
 ```
 Use min heap to track smallest element from each list:
 
@@ -284,6 +303,7 @@ Continue until all lists exhausted...
 ```
 
 #### Algorithm
+
 ```
 1. Add first node from each list to min heap
 2. While heap not empty:
@@ -294,6 +314,7 @@ Continue until all lists exhausted...
 ```
 
 #### Complexity
+
 - **Time:** O(n log k) where n = total nodes, k = lists
 - **Space:** O(k) - heap size
 
@@ -302,9 +323,11 @@ Continue until all lists exhausted...
 ### Problem 3: Top K Frequent Elements (LeetCode 347)
 
 #### Problem Statement
+
 Find the k most frequent elements in an array.
 
 #### Example
+
 ```
 Input: [1, 1, 1, 2, 2, 3], k = 2
 Output: [1, 2]
@@ -314,6 +337,7 @@ Output: [1]
 ```
 
 #### Visual Explanation
+
 ```
 Step 1: Count frequencies
 {1: 3, 2: 2, 3: 1}
@@ -329,6 +353,7 @@ Result: [2, 1]
 ```
 
 #### Algorithm
+
 ```
 1. Count frequencies using hash map
 2. Create min heap of size k (by frequency)
@@ -339,6 +364,7 @@ Result: [2, 1]
 ```
 
 #### Complexity
+
 - **Time:** O(n log k)
 - **Space:** O(n)
 
@@ -347,11 +373,14 @@ Result: [2, 1]
 ### Problem 4: Find Median from Data Stream (LeetCode 295)
 
 #### Problem Statement
+
 Design a data structure that supports:
+
 - addNum(num): Add number to stream
 - findMedian(): Return median of all numbers
 
 #### Example
+
 ```
 addNum(1)
 addNum(2)
@@ -361,6 +390,7 @@ findMedian() → 2
 ```
 
 #### Visual Explanation
+
 ```
 Use two heaps:
 - Max heap (left): smaller half
@@ -388,6 +418,7 @@ Median: 2
 ```
 
 #### Algorithm
+
 ```
 addNum(num):
 	if maxHeap empty or num < maxHeap.top():
@@ -409,6 +440,7 @@ findMedian():
 ```
 
 #### Complexity
+
 - **addNum:** O(log n)
 - **findMedian:** O(1)
 - **Space:** O(n)
@@ -418,6 +450,7 @@ findMedian():
 ## Heap Properties
 
 ### Complete Binary Tree
+
 ```
 Valid (complete):      Invalid (not complete):
       1                      1
@@ -431,6 +464,7 @@ which fills left to right.
 ```
 
 ### Heap Property
+
 ```
 Max Heap:
 - Parent ≥ children
@@ -442,6 +476,7 @@ Min Heap:
 ```
 
 ### Height
+
 ```
 For n elements:
 Height = ⌊log₂(n)⌋
@@ -478,11 +513,13 @@ Result: Valid max heap
 ## Practice Tips
 
 ### Order to Practice
+
 1. **Start with:** Basic insert/remove operations
 2. **Then:** Kth largest, top K frequent (fixed-size heap)
 3. **Finally:** Merge K lists, find median (advanced)
 
 ### When to Use Heap
+
 - ✅ Find kth largest/smallest
 - ✅ Maintain sorted order while streaming
 - ✅ Merge k sorted arrays/lists
@@ -491,6 +528,7 @@ Result: Valid max heap
 - ✅ Dijkstra's algorithm
 
 ### Common Mistakes
+
 1. ❌ Wrong parent/child index calculation
 2. ❌ Not handling empty heap
 3. ❌ Using max heap when min heap needed (or vice versa)
@@ -498,6 +536,7 @@ Result: Valid max heap
 5. ❌ Off-by-one errors in array indices
 
 ### Testing Strategy
+
 ```typescript
 ✓ Empty heap
 ✓ Single element
@@ -512,19 +551,19 @@ Result: Valid max heap
 
 ## Complexity Cheat Sheet
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Insert | O(log n) | O(1) |
-| Remove | O(log n) | O(1) |
-| Peek | O(1) | O(1) |
-| Heapify | O(n) | O(1) |
-| Search | O(n) | O(1) |
+| Operation | Time     | Space |
+| --------- | -------- | ----- |
+| Insert    | O(log n) | O(1)  |
+| Remove    | O(log n) | O(1)  |
+| Peek      | O(1)     | O(1)  |
+| Heapify   | O(n)     | O(1)  |
+| Search    | O(n)     | O(1)  |
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Kth Largest | O(n log k) | O(k) | Fixed-size min heap |
-| Merge K Lists | O(n log k) | O(k) | Min heap of k elements |
-| Top K Frequent | O(n log k) | O(n) | Frequency + heap |
-| Find Median | O(log n) | O(n) | Two heaps (max + min) |
+| Problem        | Time       | Space | Key Technique          |
+| -------------- | ---------- | ----- | ---------------------- |
+| Kth Largest    | O(n log k) | O(k)  | Fixed-size min heap    |
+| Merge K Lists  | O(n log k) | O(k)  | Min heap of k elements |
+| Top K Frequent | O(n log k) | O(n)  | Frequency + heap       |
+| Find Median    | O(log n)   | O(n)  | Two heaps (max + min)  |
 
 Happy Coding! 🚀

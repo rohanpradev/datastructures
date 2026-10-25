@@ -20,9 +20,14 @@ function delayedResolve<T>(value: T, delayMs: number) {
 }
 
 describe("withTimeout", () => {
-	test.each([-1, NaN, Infinity, 2_147_483_648])("rejects invalid timeout %s", async (timeoutMs) => {
-		await expect(withTimeout(Promise.resolve("ok"), timeoutMs)).rejects.toThrow(RangeError);
-	});
+	test.each([-1, NaN, Infinity, 2_147_483_648])(
+		"rejects invalid timeout %s",
+		async (timeoutMs) => {
+			await expect(
+				withTimeout(Promise.resolve("ok"), timeoutMs),
+			).rejects.toThrow(RangeError);
+		},
+	);
 
 	test("returns the operation result before timeout", async () => {
 		await expect(withTimeout(Promise.resolve("ok"), 20)).resolves.toBe("ok");
@@ -42,30 +47,55 @@ describe("withTimeout", () => {
 });
 
 describe("retry", () => {
-	test.each([-1, 0.5, NaN, Infinity])("rejects invalid retry budget %s before running", async (retries) => {
-		let calls = 0;
-		await expect(retry(async () => ++calls, { retries })).rejects.toThrow(RangeError);
-		expect(calls).toBe(0);
-	});
+	test.each([-1, 0.5, NaN, Infinity])(
+		"rejects invalid retry budget %s before running",
+		async (retries) => {
+			let calls = 0;
+			await expect(retry(async () => ++calls, { retries })).rejects.toThrow(
+				RangeError,
+			);
+			expect(calls).toBe(0);
+		},
+	);
 
-	test.each([-1, NaN, Infinity, 2_147_483_648])("rejects invalid backoff %s", async (delay) => {
-		await expect(retry(async () => "ok", { retries: 1, baseDelayMs: delay })).rejects.toThrow(RangeError);
-		await expect(retry(async () => "ok", { retries: 1, maxDelayMs: delay })).rejects.toThrow(RangeError);
-	});
+	test.each([-1, NaN, Infinity, 2_147_483_648])(
+		"rejects invalid backoff %s",
+		async (delay) => {
+			await expect(
+				retry(async () => "ok", { retries: 1, baseDelayMs: delay }),
+			).rejects.toThrow(RangeError);
+			await expect(
+				retry(async () => "ok", { retries: 1, maxDelayMs: delay }),
+			).rejects.toThrow(RangeError);
+		},
+	);
 
 	test("does not run an already cancelled operation", async () => {
 		let calls = 0;
 		const reason = new Error("cancelled by caller");
-		await expect(retry(async () => ++calls, { retries: 2, signal: AbortSignal.abort(reason) })).rejects.toBe(reason);
+		await expect(
+			retry(async () => ++calls, {
+				retries: 2,
+				signal: AbortSignal.abort(reason),
+			}),
+		).rejects.toBe(reason);
 		expect(calls).toBe(0);
 	});
 
 	test("cancels a backoff without launching another attempt", async () => {
 		const controller = new AbortController();
 		let calls = 0;
-		const pending = retry(async () => { calls++; throw new Error("temporary"); }, {
-			retries: 2, baseDelayMs: 30_000, signal: controller.signal,
-		});
+		const pending = retry(
+			async () => {
+				calls++;
+				throw new Error("temporary");
+			},
+			{
+				retries: 2,
+				baseDelayMs: 30_000,
+				signal: controller.signal,
+			},
+		);
 		await Promise.resolve();
 		controller.abort();
 		await expect(pending).rejects.toBeInstanceOf(DOMException);
@@ -76,9 +106,17 @@ describe("retry", () => {
 		const controller = new AbortController();
 		const reason = new Error("request deadline exceeded");
 		let calls = 0;
-		const pending = retry(async () => { calls++; throw new Error("temporary"); }, {
-			retries: 2, baseDelayMs: 30_000, signal: controller.signal,
-		});
+		const pending = retry(
+			async () => {
+				calls++;
+				throw new Error("temporary");
+			},
+			{
+				retries: 2,
+				baseDelayMs: 30_000,
+				signal: controller.signal,
+			},
+		);
 		await Promise.resolve();
 		controller.abort(reason);
 		await expect(pending).rejects.toBe(reason);
@@ -88,10 +126,23 @@ describe("retry", () => {
 	test("caps backoff and stops consulting the retry filter after exhaustion", async () => {
 		let calls = 0;
 		let filterCalls = 0;
-		await expect(retry(async () => { calls++; throw new Error("failure"); }, {
-			retries: 2, baseDelayMs: 30_000, maxDelayMs: 0,
-			shouldRetry: () => { filterCalls++; return true; },
-		})).rejects.toThrow("failure");
+		await expect(
+			retry(
+				async () => {
+					calls++;
+					throw new Error("failure");
+				},
+				{
+					retries: 2,
+					baseDelayMs: 30_000,
+					maxDelayMs: 0,
+					shouldRetry: () => {
+						filterCalls++;
+						return true;
+					},
+				},
+			),
+		).rejects.toThrow("failure");
 		expect(calls).toBe(3);
 		expect(filterCalls).toBe(2);
 	});
@@ -133,14 +184,21 @@ describe("retry", () => {
 });
 
 describe("abortableDelay", () => {
-	test.each([-1, NaN, Infinity, 2_147_483_648])("rejects invalid delay %s with and without cancellation", async (delayMs) => {
-		await expect(abortableDelay(delayMs)).rejects.toThrow(RangeError);
-		await expect(abortableDelay(delayMs, new AbortController().signal)).rejects.toThrow(RangeError);
-	});
+	test.each([-1, NaN, Infinity, 2_147_483_648])(
+		"rejects invalid delay %s with and without cancellation",
+		async (delayMs) => {
+			await expect(abortableDelay(delayMs)).rejects.toThrow(RangeError);
+			await expect(
+				abortableDelay(delayMs, new AbortController().signal),
+			).rejects.toThrow(RangeError);
+		},
+	);
 
 	test("preserves an already aborted signal's reason", async () => {
 		const reason = new Error("caller cancelled");
-		await expect(abortableDelay(30_000, AbortSignal.abort(reason))).rejects.toBe(reason);
+		await expect(
+			abortableDelay(30_000, AbortSignal.abort(reason)),
+		).rejects.toBe(reason);
 	});
 
 	test("resolves after the delay", async () => {
@@ -149,7 +207,9 @@ describe("abortableDelay", () => {
 
 	test("removes abort listeners after resolving", async () => {
 		const controller = new AbortController();
-		const originalAdd = controller.signal.addEventListener.bind(controller.signal);
+		const originalAdd = controller.signal.addEventListener.bind(
+			controller.signal,
+		);
 		const originalRemove = controller.signal.removeEventListener.bind(
 			controller.signal,
 		);

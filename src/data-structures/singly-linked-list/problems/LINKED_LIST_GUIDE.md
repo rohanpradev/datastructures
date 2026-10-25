@@ -56,9 +56,9 @@ S   F             (start)
 
 ```typescript
 export function findMiddleNode(head: Node | null): Node | null {
-  // TODO: Initialize slow and fast pointers
-  // TODO: Move fast 2 steps, slow 1 step until fast reaches end
-  // TODO: Return slow pointer
+	// TODO: Initialize slow and fast pointers
+	// TODO: Move fast 2 steps, slow 1 step until fast reaches end
+	// TODO: Return slow pointer
 }
 ```
 
@@ -125,10 +125,10 @@ If no cycle, fast reaches null
 
 ```typescript
 export function hasLoop(head: Node | null): boolean {
-  // TODO: Handle empty list
-  // TODO: Initialize slow and fast pointers
-  // TODO: Move pointers until they meet or fast reaches end
-  // TODO: Return true if pointers meet, false otherwise
+	// TODO: Handle empty list
+	// TODO: Initialize slow and fast pointers
+	// TODO: Move pointers until they meet or fast reaches end
+	// TODO: Return true if pointers meet, false otherwise
 }
 ```
 
@@ -193,11 +193,11 @@ Result: 4
 
 ```typescript
 export function findKthFromEnd(head: Node | null, k: number): Node | null {
-  // TODO: Initialize slow and fast pointers
-  // TODO: Move fast k steps ahead
-  // TODO: Handle case where k > length
-  // TODO: Move both pointers until fast reaches end
-  // TODO: Return slow
+	// TODO: Initialize slow and fast pointers
+	// TODO: Move fast k steps ahead
+	// TODO: Handle case where k > length
+	// TODO: Move both pointers until fast reaches end
+	// TODO: Return slow
 }
 ```
 
@@ -268,12 +268,12 @@ Step 5: C.value = 3, next.value = 4 (different)
 
 ```typescript
 export function removeDuplicates(head: Node | null): Node | null {
-  // TODO: Handle empty list
-  // TODO: Initialize current pointer
-  // TODO: Loop while current and current.next exist
-  // TODO: If duplicate, skip node
-  // TODO: Otherwise, move to next
-  // TODO: Return head
+	// TODO: Handle empty list
+	// TODO: Initialize current pointer
+	// TODO: Loop while current and current.next exist
+	// TODO: If duplicate, skip node
+	// TODO: Otherwise, move to next
+	// TODO: Return head
 }
 ```
 
@@ -336,15 +336,15 @@ L.next = after (2 → 5)
 
 ```typescript
 export function reverseBetween(
-  head: Node | null,
-  left: number,
-  right: number,
+	head: Node | null,
+	left: number,
+	right: number,
 ): Node | null {
-  // TODO: Create dummy node
-  // TODO: Find node before left position
-  // TODO: Reverse sublist
-  // TODO: Reconnect pointers
-  // TODO: Return dummy.next
+	// TODO: Create dummy node
+	// TODO: Find node before left position
+	// TODO: Reverse sublist
+	// TODO: Reconnect pointers
+	// TODO: Return dummy.next
 }
 ```
 
@@ -419,12 +419,12 @@ Result: 1 → 2 → 2 → 4 → 3 → 5
 
 ```typescript
 export function partitionList(head: Node | null, x: number): Node | null {
-  // TODO: Create two dummy nodes
-  // TODO: Initialize pointers for both lists
-  // TODO: Traverse original list
-  // TODO: Add to appropriate list based on value
-  // TODO: Connect less list to greater list
-  // TODO: Return result
+	// TODO: Create two dummy nodes
+	// TODO: Initialize pointers for both lists
+	// TODO: Traverse original list
+	// TODO: Add to appropriate list based on value
+	// TODO: Connect less list to greater list
+	// TODO: Return result
 }
 ```
 
@@ -520,14 +520,14 @@ dummy → 1 → 1 → 2 → 3 → 4 → 4
 
 ```typescript
 export function mergeTwoLists(
-  list1: Node | null,
-  list2: Node | null,
+	list1: Node | null,
+	list2: Node | null,
 ): Node | null {
-  // TODO: Create dummy node
-  // TODO: Initialize current pointer
-  // TODO: Compare and merge while both lists have nodes
-  // TODO: Attach remaining nodes
-  // TODO: Return dummy.next
+	// TODO: Create dummy node
+	// TODO: Initialize current pointer
+	// TODO: Compare and merge while both lists have nodes
+	// TODO: Attach remaining nodes
+	// TODO: Return dummy.next
 }
 ```
 
@@ -631,16 +631,16 @@ Carry represents **overflow**, not a digit.
 
 ```typescript
 export function addTwoNumbers(
-  l1: Node<number> | null,
-  l2: Node<number> | null,
+	l1: Node<number> | null,
+	l2: Node<number> | null,
 ): Node<number> | null {
-  // TODO: Handle edge case when both lists are null
-  // TODO: Create dummy head node
-  // TODO: Initialize current pointer and carry
-  // TODO: Traverse both lists while nodes remain
-  // TODO: Add digits + carry and create new node
-  // TODO: Append remaining carry if present
-  // TODO: Return dummy.next
+	// TODO: Handle edge case when both lists are null
+	// TODO: Create dummy head node
+	// TODO: Initialize current pointer and carry
+	// TODO: Traverse both lists while nodes remain
+	// TODO: Add digits + carry and create new node
+	// TODO: Append remaining carry if present
+	// TODO: Return dummy.next
 }
 ```
 
@@ -740,8 +740,8 @@ return prev
 ```typescript
 let current = head;
 while (current) {
-  // process current
-  current = current.next;
+	// process current
+	current = current.next;
 }
 ```
 
@@ -758,13 +758,13 @@ head = newNode;
 ```typescript
 const newNode = new Node(value);
 if (!head) {
-  head = newNode;
+	head = newNode;
 } else {
-  let current = head;
-  while (current.next) {
-    current = current.next;
-  }
-  current.next = newNode;
+	let current = head;
+	while (current.next) {
+		current = current.next;
+	}
+	current.next = newNode;
 }
 ```
 
@@ -775,15 +775,15 @@ if (!head) {
 let current = head;
 let prev = null;
 while (current && current.value !== target) {
-  prev = current;
-  current = current.next;
+	prev = current;
+	current = current.next;
 }
 if (current) {
-  if (prev) {
-    prev.next = current.next;
-  } else {
-    head = current.next;
-  }
+	if (prev) {
+		prev.next = current.next;
+	} else {
+		head = current.next;
+	}
 }
 ```
 
@@ -886,19 +886,19 @@ current.value === current.next.value
 
 ```ts
 export function removeDuplicatesFromSortedLinkedList(
-  list: SinglyLinkedList<number>,
+	list: SinglyLinkedList<number>,
 ): SinglyLinkedList<number> {
-  let current = list.head;
+	let current = list.head;
 
-  while (current && current.next) {
-    if (current.value === current.next.value) {
-      current.next = current.next.next;
-    } else {
-      current = current.next;
-    }
-  }
+	while (current && current.next) {
+		if (current.value === current.next.value) {
+			current.next = current.next.next;
+		} else {
+			current = current.next;
+		}
+	}
 
-  return list;
+	return list;
 }
 ```
 
@@ -1074,30 +1074,30 @@ Final list:
 
 ```ts
 export function sumOfLinkedList(
-  l1: Node<number> | null,
-  l2: Node<number> | null,
+	l1: Node<number> | null,
+	l2: Node<number> | null,
 ): Node<number> | null {
-  const dummy = new Node(0);
-  let current = dummy;
-  let carry = 0;
+	const dummy = new Node(0);
+	let current = dummy;
+	let carry = 0;
 
-  while (l1 !== null || l2 !== null || carry !== 0) {
-    const value1 = l1?.value ?? 0;
-    const value2 = l2?.value ?? 0;
+	while (l1 !== null || l2 !== null || carry !== 0) {
+		const value1 = l1?.value ?? 0;
+		const value2 = l2?.value ?? 0;
 
-    const total = value1 + value2 + carry;
+		const total = value1 + value2 + carry;
 
-    carry = Math.floor(total / 10);
-    const digit = total % 10;
+		carry = Math.floor(total / 10);
+		const digit = total % 10;
 
-    current.next = new Node(digit);
-    current = current.next;
+		current.next = new Node(digit);
+		current = current.next;
 
-    l1 = l1?.next ?? null;
-    l2 = l2?.next ?? null;
-  }
+		l1 = l1?.next ?? null;
+		l2 = l2?.next ?? null;
+	}
 
-  return dummy.next;
+	return dummy.next;
 }
 ```
 

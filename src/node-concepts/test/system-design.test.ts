@@ -100,9 +100,9 @@ describe("TokenBucketRateLimiter", () => {
 		expect(() => new TokenBucketRateLimiter(Number.NaN, 1, 0)).toThrow(
 			"capacity must be a finite number of at least 1",
 		);
-		expect(() => new TokenBucketRateLimiter(1, Number.POSITIVE_INFINITY, 0)).toThrow(
-			"refillTokensPerSecond must be positive",
-		);
+		expect(
+			() => new TokenBucketRateLimiter(1, Number.POSITIVE_INFINITY, 0),
+		).toThrow("refillTokensPerSecond must be positive");
 
 		const limiter = new TokenBucketRateLimiter(1, 1, 0);
 		expect(() => limiter.consume(0, Number.NaN)).toThrow(
@@ -375,9 +375,9 @@ describe("WeightedFairQueue", () => {
 			queue.dequeue()?.tenant,
 		];
 
-		expect(firstThreeTenants.filter((tenant) => tenant === "premium")).toHaveLength(
-			2,
-		);
+		expect(
+			firstThreeTenants.filter((tenant) => tenant === "premium"),
+		).toHaveLength(2);
 		expect(queue.size()).toBe(1);
 	});
 
@@ -399,17 +399,26 @@ describe("WeightedFairQueue", () => {
 
 describe("IdempotencyKeyStore", () => {
 	test("rejects completion at the expiry boundary before another caller reclaims the key", () => {
-		const store = new IdempotencyKeyStore<string>({ inFlightTtlMs: 10, replayTtlMs: 100 });
+		const store = new IdempotencyKeyStore<string>({
+			inFlightTtlMs: 10,
+			replayTtlMs: 100,
+		});
 		const claim = store.claim("payment:expired", 0);
 		if (claim.status !== "started") throw new Error("expected a new claim");
-		expect(() => store.complete("payment:expired", claim.claimToken, "late", 10)).toThrow("idempotency claim is stale");
+		expect(() =>
+			store.complete("payment:expired", claim.claimToken, "late", 10),
+		).toThrow("idempotency claim is stale");
 		expect(store.claim("payment:expired", 10).status).toBe("started");
 	});
 
 	test("rejects invalid TTLs and isolates its configuration from caller mutation", () => {
 		for (const ttl of [0, -1, NaN, Infinity]) {
-			expect(() => new IdempotencyKeyStore({ inFlightTtlMs: ttl, replayTtlMs: 10 })).toThrow();
-			expect(() => new IdempotencyKeyStore({ inFlightTtlMs: 10, replayTtlMs: ttl })).toThrow();
+			expect(
+				() => new IdempotencyKeyStore({ inFlightTtlMs: ttl, replayTtlMs: 10 }),
+			).toThrow();
+			expect(
+				() => new IdempotencyKeyStore({ inFlightTtlMs: 10, replayTtlMs: ttl }),
+			).toThrow();
 		}
 		const options = { inFlightTtlMs: 10, replayTtlMs: 100 };
 		const store = new IdempotencyKeyStore<string>(options);
@@ -420,12 +429,17 @@ describe("IdempotencyKeyStore", () => {
 
 	test("invalid clocks cannot erase claims or corrupt completed responses", () => {
 		for (const time of [NaN, Infinity, -Infinity]) {
-			const store = new IdempotencyKeyStore<string>({ inFlightTtlMs: 10, replayTtlMs: 100 });
+			const store = new IdempotencyKeyStore<string>({
+				inFlightTtlMs: 10,
+				replayTtlMs: 100,
+			});
 			const claim = store.claim("a", 0);
 			if (claim.status !== "started") throw new Error("expected a new claim");
 			expect(() => store.claim("b", time)).toThrow();
 			expect(() => store.pruneExpired(time)).toThrow();
-			expect(() => store.complete("a", claim.claimToken, "bad", time)).toThrow();
+			expect(() =>
+				store.complete("a", claim.claimToken, "bad", time),
+			).toThrow();
 			expect(store.claim("a", 1).status).toBe("conflict");
 			store.complete("a", claim.claimToken, "ok", 2);
 			expect(store.claim("a", 3)).toEqual({ status: "replay", response: "ok" });
@@ -485,7 +499,8 @@ describe("IdempotencyKeyStore", () => {
 		});
 
 		const firstClaim = store.claim("invoice:1", 0);
-		if (firstClaim.status !== "started") throw new Error("expected a new claim");
+		if (firstClaim.status !== "started")
+			throw new Error("expected a new claim");
 
 		expect(store.fail("invoice:1", firstClaim.claimToken)).toBe(true);
 		const retryClaim = store.claim("invoice:1", 10);
@@ -640,19 +655,30 @@ describe("AtLeastOnceQueue", () => {
 			expect(delivery.attempt).toBe(1);
 			expect(() => queue.nack(delivery.receipt, now)).toThrow(RangeError);
 			expect(() => queue.stats(now)).toThrow(RangeError);
-			expect(queue.stats(0)).toEqual({ deadLettered: 0, inFlight: 1, queued: 0 });
+			expect(queue.stats(0)).toEqual({
+				deadLettered: 0,
+				inFlight: 1,
+				queued: 0,
+			});
 			expect(queue.ack(delivery.receipt)).toBe(true);
 		}
 	});
 
 	test("rejects deadline overflow before changing message state", () => {
-		const queue = new AtLeastOnceQueue<string>({ maxAttempts: 2, visibilityTimeoutMs: Number.MAX_VALUE });
-		expect(() => queue.enqueue("invalid", Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(RangeError);
+		const queue = new AtLeastOnceQueue<string>({
+			maxAttempts: 2,
+			visibilityTimeoutMs: Number.MAX_VALUE,
+		});
+		expect(() =>
+			queue.enqueue("invalid", Number.MAX_VALUE, Number.MAX_VALUE),
+		).toThrow(RangeError);
 		queue.enqueue("valid", 0);
 		expect(() => queue.receive(Number.MAX_VALUE)).toThrow(RangeError);
 		const delivery = queue.receive(0)!;
 		expect(delivery.attempt).toBe(1);
-		expect(() => queue.nack(delivery.receipt, Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(RangeError);
+		expect(() =>
+			queue.nack(delivery.receipt, Number.MAX_VALUE, Number.MAX_VALUE),
+		).toThrow(RangeError);
 		expect(queue.ack(delivery.receipt)).toBe(true);
 	});
 
@@ -666,11 +692,13 @@ describe("AtLeastOnceQueue", () => {
 		expect(queue.receive(0)).toBeUndefined();
 		expect(queue.receive(100)?.attempt).toBe(2);
 		for (const maxAttempts of [NaN, Infinity, 1.5, 2 ** 53]) {
-			expect(() => new AtLeastOnceQueue({ maxAttempts, visibilityTimeoutMs: 1 })).toThrow(RangeError);
+			expect(
+				() => new AtLeastOnceQueue({ maxAttempts, visibilityTimeoutMs: 1 }),
+			).toThrow(RangeError);
 		}
 	});
 
-		test("hides delivered work until it is acknowledged", () => {
+	test("hides delivered work until it is acknowledged", () => {
 		const queue = createQueue();
 		queue.enqueue("send-email", 0);
 
@@ -680,18 +708,18 @@ describe("AtLeastOnceQueue", () => {
 			id: "job-1",
 			value: "send-email",
 		});
-			expect(queue.receive(50)).toBeUndefined();
-			expect(queue.stats(50)).toEqual({
-				deadLettered: 0,
-				inFlight: 1,
-				queued: 0,
-			});
-			expect(queue.stats(101)).toEqual({
-				deadLettered: 0,
-				inFlight: 0,
-				queued: 1,
-			});
-			expect(queue.ack(delivery.receipt)).toBe(true);
+		expect(queue.receive(50)).toBeUndefined();
+		expect(queue.stats(50)).toEqual({
+			deadLettered: 0,
+			inFlight: 1,
+			queued: 0,
+		});
+		expect(queue.stats(101)).toEqual({
+			deadLettered: 0,
+			inFlight: 0,
+			queued: 1,
+		});
+		expect(queue.ack(delivery.receipt)).toBe(true);
 		expect(queue.stats()).toEqual({ deadLettered: 0, inFlight: 0, queued: 0 });
 	});
 
@@ -709,7 +737,7 @@ describe("AtLeastOnceQueue", () => {
 		expect(queue.ack(second.receipt)).toBe(true);
 	});
 
-		test("supports delayed retries and dead-letters exhausted work", () => {
+	test("supports delayed retries and dead-letters exhausted work", () => {
 		const queue = createQueue(2);
 		queue.enqueue("poison-message", 0);
 
@@ -719,21 +747,21 @@ describe("AtLeastOnceQueue", () => {
 		expect(queue.receive(60)?.attempt).toBe(2);
 
 		expect(queue.receive(161)).toBeUndefined();
-			expect(queue.peekDeadLetters()).toEqual([
-				{ attempts: 2, id: "job-1", value: "poison-message" },
-			]);
-		});
-
-		test("rejects reused message IDs so stale receipts cannot target new work", () => {
-			const queue = new AtLeastOnceQueue<string>({
-				idFactory: () => "duplicate-id",
-				maxAttempts: 1,
-				visibilityTimeoutMs: 100,
-			});
-
-			queue.enqueue("first", 0);
-			expect(() => queue.enqueue("second", 0)).toThrow(
-				"idFactory returned duplicate id",
-			);
-		});
+		expect(queue.peekDeadLetters()).toEqual([
+			{ attempts: 2, id: "job-1", value: "poison-message" },
+		]);
 	});
+
+	test("rejects reused message IDs so stale receipts cannot target new work", () => {
+		const queue = new AtLeastOnceQueue<string>({
+			idFactory: () => "duplicate-id",
+			maxAttempts: 1,
+			visibilityTimeoutMs: 100,
+		});
+
+		queue.enqueue("first", 0);
+		expect(() => queue.enqueue("second", 0)).toThrow(
+			"idFactory returned duplicate id",
+		);
+	});
+});

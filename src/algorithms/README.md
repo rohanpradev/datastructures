@@ -4,17 +4,17 @@ This folder is the pattern-recognition half of the repo. Each topic contains run
 
 ## How This Folder Is Organized
 
-| Folder | Pattern family | Learn first | Then practice |
-|---|---|---|---|
-| `arrays/` | Hash maps, two pointers, matrix traversal, greedy scans, intervals | `array-exercises.ts` | `array-problems.ts`, `FAANG_ARRAY_PROBLEMS_GUIDE.md` |
-| `strings/` | Frequencies, anagrams, palindrome checks, document generation | `string-exercises.ts` | `FAANG_STRING_PROBLEMS_GUIDE.md` |
-| `sorting/` | Comparison sorting and partitioning | `sorting.ts` | `SORTING_GUIDE.md` |
-| `recursion/` | Recursive decomposition and stack frames | `fibonacci.ts`, `array-recursion.ts` | `RECURSION_GUIDE.md` |
-| `backtracking/` | Search trees, choices, constraints, undo state | `backtracking.ts` | `BACKTRACKING_GUIDE.md` |
-| `dynamic-programming/` | Recurrence design, memoization, tabulation | `dynamic-programming.ts` | `DYNAMIC_PROGRAMMING_GUIDE.md`, `FAANG_DP_PROBLEMS_GUIDE.md` |
-| `bit-manipulation/` | XOR, masks, bit shifts, fixed-width integer behavior | `bit-manipulation.ts` | `BIT_MANIPULATION_GUIDE.md` |
-| `math-geometry/` | Matrix transforms and numeric invariants | `math-geometry.ts` | `MATH_GEOMETRY_GUIDE.md` |
-| `interview-patterns/` | Mixed interview templates across common patterns | `interview-patterns.ts` | `INTERVIEW_PATTERNS_GUIDE.md` |
+| Folder                 | Pattern family                                                     | Learn first                          | Then practice                                                |
+| ---------------------- | ------------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------ |
+| `arrays/`              | Hash maps, two pointers, matrix traversal, greedy scans, intervals | `array-exercises.ts`                 | `array-problems.ts`, `FAANG_ARRAY_PROBLEMS_GUIDE.md`         |
+| `strings/`             | Frequencies, anagrams, palindrome checks, document generation      | `string-exercises.ts`                | `FAANG_STRING_PROBLEMS_GUIDE.md`                             |
+| `sorting/`             | Comparison sorting and partitioning                                | `sorting.ts`                         | `SORTING_GUIDE.md`                                           |
+| `recursion/`           | Recursive decomposition and stack frames                           | `fibonacci.ts`, `array-recursion.ts` | `RECURSION_GUIDE.md`                                         |
+| `backtracking/`        | Search trees, choices, constraints, undo state                     | `backtracking.ts`                    | `BACKTRACKING_GUIDE.md`                                      |
+| `dynamic-programming/` | Recurrence design, memoization, tabulation                         | `dynamic-programming.ts`             | `DYNAMIC_PROGRAMMING_GUIDE.md`, `FAANG_DP_PROBLEMS_GUIDE.md` |
+| `bit-manipulation/`    | XOR, masks, bit shifts, fixed-width integer behavior               | `bit-manipulation.ts`                | `BIT_MANIPULATION_GUIDE.md`                                  |
+| `math-geometry/`       | Matrix transforms and numeric invariants                           | `math-geometry.ts`                   | `MATH_GEOMETRY_GUIDE.md`                                     |
+| `interview-patterns/`  | Mixed interview templates across common patterns                   | `interview-patterns.ts`              | `INTERVIEW_PATTERNS_GUIDE.md`                                |
 
 ## Best Study Order
 

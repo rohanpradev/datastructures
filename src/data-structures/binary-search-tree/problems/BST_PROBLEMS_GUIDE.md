@@ -91,15 +91,15 @@ Step 3: Check 6 (range: -∞, 3) ❌
 
 ```typescript
 export function validateBST(
-  node: BSTNode | null,
-  min: number = -Infinity,
-  max: number = Infinity,
+	node: BSTNode | null,
+	min: number = -Infinity,
+	max: number = Infinity,
 ): boolean {
-  // TODO: Base case - null node is valid
-  // TODO: Check if current value violates range
-  // TODO: Recursively validate left subtree (update max)
-  // TODO: Recursively validate right subtree (update min)
-  // TODO: Return true if both subtrees valid
+	// TODO: Base case - null node is valid
+	// TODO: Check if current value violates range
+	// TODO: Recursively validate left subtree (update max)
+	// TODO: Recursively validate right subtree (update min)
+	// TODO: Return true if both subtrees valid
 }
 ```
 
@@ -178,14 +178,14 @@ function LCA(root, p, q):
 
 ```typescript
 export function lowestCommonAncestor(
-  root: BSTNode | null,
-  p: BSTNode,
-  q: BSTNode,
+	root: BSTNode | null,
+	p: BSTNode,
+	q: BSTNode,
 ): BSTNode | null {
-  // TODO: Handle null root
-  // TODO: If both values less than root, search left
-  // TODO: If both values greater than root, search right
-  // TODO: Otherwise, root is LCA
+	// TODO: Handle null root
+	// TODO: If both values less than root, search left
+	// TODO: If both values greater than root, search right
+	// TODO: Otherwise, root is LCA
 }
 ```
 
@@ -262,11 +262,11 @@ function invert(node):
 
 ```typescript
 export function invertTree(node: BSTNode | null): BSTNode | null {
-  // TODO: Base case - null node
-  // TODO: Recursively invert left subtree
-  // TODO: Recursively invert right subtree
-  // TODO: Swap children
-  // TODO: Return node
+	// TODO: Base case - null node
+	// TODO: Recursively invert left subtree
+	// TODO: Recursively invert right subtree
+	// TODO: Swap children
+	// TODO: Return node
 }
 ```
 
@@ -362,13 +362,13 @@ function kthSmallest(root, k):
 
 ```typescript
 export function kthSmallest(root: BSTNode | null, k: number): number | null {
-  // TODO: Initialize count and result variables
-  // TODO: Create helper function for in-order traversal
-  // TODO: In helper: base case for null
-  // TODO: Traverse left subtree
-  // TODO: Increment count, check if count === k
-  // TODO: Traverse right subtree
-  // TODO: Call helper and return result
+	// TODO: Initialize count and result variables
+	// TODO: Create helper function for in-order traversal
+	// TODO: In helper: base case for null
+	// TODO: Traverse left subtree
+	// TODO: Increment count, check if count === k
+	// TODO: Traverse right subtree
+	// TODO: Call helper and return result
 }
 ```
 
@@ -471,13 +471,13 @@ function arrayToBST(arr, left, right):
 
 ```typescript
 export function sortedArrayToBST(nums: number[]): BSTNode | null {
-  // TODO: Create helper function with left/right pointers
-  // TODO: Base case - if left > right, return null
-  // TODO: Calculate middle index
-  // TODO: Create node with middle element
-  // TODO: Recursively build left subtree
-  // TODO: Recursively build right subtree
-  // TODO: Return node
+	// TODO: Create helper function with left/right pointers
+	// TODO: Base case - if left > right, return null
+	// TODO: Calculate middle index
+	// TODO: Create node with middle element
+	// TODO: Recursively build left subtree
+	// TODO: Recursively build right subtree
+	// TODO: Return node
 }
 ```
 
@@ -557,16 +557,16 @@ function rangeSum(node, low, high):
 
 ```typescript
 export function rangeSumBST(
-  root: BSTNode | null,
-  low: number,
-  high: number,
+	root: BSTNode | null,
+	low: number,
+	high: number,
 ): number {
-  // TODO: Base case - null node returns 0
-  // TODO: Initialize sum
-  // TODO: If current in range, add to sum
-  // TODO: If current > low, search left
-  // TODO: If current < high, search right
-  // TODO: Return sum
+	// TODO: Base case - null node returns 0
+	// TODO: Initialize sum
+	// TODO: If current in range, add to sum
+	// TODO: If current > low, search left
+	// TODO: If current < high, search right
+	// TODO: Return sum
 }
 ```
 
@@ -661,14 +661,14 @@ function deleteNode(root, key):
 
 ```typescript
 export function deleteNode(root: BSTNode | null, key: number): BSTNode | null {
-  // TODO: Base case - null node
-  // TODO: If key < root, search left
-  // TODO: If key > root, search right
-  // TODO: Found node - handle 3 cases:
-  //       1. No left child
-  //       2. No right child
-  //       3. Two children (find successor)
-  // TODO: Return root
+	// TODO: Base case - null node
+	// TODO: If key < root, search left
+	// TODO: If key > root, search right
+	// TODO: Found node - handle 3 cases:
+	//       1. No left child
+	//       2. No right child
+	//       3. Two children (find successor)
+	// TODO: Return root
 }
 ```
 
@@ -777,15 +777,15 @@ function closestValue(root, k):
 
 ```typescript
 export function closestValue(
-  root: TreeNode<number> | null,
-  k: number,
+	root: TreeNode<number> | null,
+	k: number,
 ): number | null {
-  // 1. Handle empty tree
-  // 2. Initialize closest with root value
-  // 3. Traverse down the BST
-  // 4. Update closest using absolute difference
-  // 5. Move left or right using BST property
-  // 6. Return closest value
+	// 1. Handle empty tree
+	// 2. Initialize closest with root value
+	// 3. Traverse down the BST
+	// 4. Update closest using absolute difference
+	// 5. Move left or right using BST property
+	// 6. Return closest value
 }
 ```
 
@@ -813,7 +813,7 @@ Given a binary tree, calculate the sum of all node values from the root to each 
     1
 
 / \
- 2 3
+2 3
 / \ \
 4 5 6
 
@@ -989,33 +989,33 @@ Step 3: Apply operator → 3 + 2 = 5
 
 ```ts
 export function evaluateExpressionTree(tree: TreeNode<number>): number {
-  // Base case: leaf node (operand)
-  if (tree.value >= 0) {
-    return tree.value;
-  }
+	// Base case: leaf node (operand)
+	if (tree.value >= 0) {
+		return tree.value;
+	}
 
-  // Operator nodes must have both children
-  if (tree.left === null || tree.right === null) {
-    throw new Error("Operator node must have both left and right children");
-  }
+	// Operator nodes must have both children
+	if (tree.left === null || tree.right === null) {
+		throw new Error("Operator node must have both left and right children");
+	}
 
-  // Recursively evaluate subtrees
-  const leftValue = evaluateExpressionTree(tree.left);
-  const rightValue = evaluateExpressionTree(tree.right);
+	// Recursively evaluate subtrees
+	const leftValue = evaluateExpressionTree(tree.left);
+	const rightValue = evaluateExpressionTree(tree.right);
 
-  // Apply operator
-  switch (tree.value) {
-    case -1: // addition
-      return leftValue + rightValue;
-    case -2: // subtraction
-      return leftValue - rightValue;
-    case -3: // integer division
-      return Math.floor(leftValue / rightValue);
-    case -4: // multiplication
-      return leftValue * rightValue;
-    default:
-      throw new Error(`Unknown operator: ${tree.value}`);
-  }
+	// Apply operator
+	switch (tree.value) {
+		case -1: // addition
+			return leftValue + rightValue;
+		case -2: // subtraction
+			return leftValue - rightValue;
+		case -3: // integer division
+			return Math.floor(leftValue / rightValue);
+		case -4: // multiplication
+			return leftValue * rightValue;
+		default:
+			throw new Error(`Unknown operator: ${tree.value}`);
+	}
 }
 ```
 
@@ -1180,27 +1180,27 @@ Traversal stops early.
 
 ```ts
 function kthLargest<T>(root: TreeNode<T> | null, k: number): T | null {
-  if (!root || k <= 0) return null;
+	if (!root || k <= 0) return null;
 
-  let visitedCount = 0;
-  let result: T | null = null;
+	let visitedCount = 0;
+	let result: T | null = null;
 
-  const reverseInorder = (node: TreeNode<T> | null): void => {
-    if (!node || result !== null) return;
+	const reverseInorder = (node: TreeNode<T> | null): void => {
+		if (!node || result !== null) return;
 
-    reverseInorder(node.right);
+		reverseInorder(node.right);
 
-    visitedCount++;
-    if (visitedCount === k) {
-      result = node.val;
-      return;
-    }
+		visitedCount++;
+		if (visitedCount === k) {
+			result = node.val;
+			return;
+		}
 
-    reverseInorder(node.left);
-  };
+		reverseInorder(node.left);
+	};
 
-  reverseInorder(root);
-  return result;
+	reverseInorder(root);
+	return result;
 }
 ```
 
@@ -1342,26 +1342,26 @@ Current value: 7
 
 ```ts
 export function reconstructBST(preorder: number[]): TreeNode<number> | null {
-  if (preorder.length === 0) return null;
+	if (preorder.length === 0) return null;
 
-  let index = 0;
+	let index = 0;
 
-  const build = (min: number, max: number): TreeNode<number> | null => {
-    if (index >= preorder.length) return null;
+	const build = (min: number, max: number): TreeNode<number> | null => {
+		if (index >= preorder.length) return null;
 
-    const value = preorder[index];
-    if (value <= min || value >= max) return null;
+		const value = preorder[index];
+		if (value <= min || value >= max) return null;
 
-    index++;
+		index++;
 
-    return {
-      value,
-      left: build(min, value),
-      right: build(value, max),
-    };
-  };
+		return {
+			value,
+			left: build(min, value),
+			right: build(value, max),
+		};
+	};
 
-  return build(-Infinity, Infinity);
+	return build(-Infinity, Infinity);
 }
 ```
 
@@ -1582,13 +1582,13 @@ function nodeDepth(node, depth):
  * Calculates the sum of depths of all nodes in a binary tree using recursion.
  */
 export function nodeDepth(root: TreeNode<number> | null, depth = 0): number {
-  if (root === null) {
-    return 0;
-  }
+	if (root === null) {
+		return 0;
+	}
 
-  return (
-    depth + nodeDepth(root.left, depth + 1) + nodeDepth(root.right, depth + 1)
-  );
+	return (
+		depth + nodeDepth(root.left, depth + 1) + nodeDepth(root.right, depth + 1)
+	);
 }
 ```
 
@@ -1598,28 +1598,28 @@ export function nodeDepth(root: TreeNode<number> | null, depth = 0): number {
 
 ```ts
 describe("nodeDepth()", () => {
-  describe("basic functionality", () => {
-    test("should return 0 for a null tree", () => {
-      expect(nodeDepth(null)).toBe(0);
-    });
+	describe("basic functionality", () => {
+		test("should return 0 for a null tree", () => {
+			expect(nodeDepth(null)).toBe(0);
+		});
 
-    test("should return 0 for a single-node tree", () => {
-      const tree = new TreeNode(1);
-      expect(nodeDepth(tree)).toBe(0);
-    });
-  });
+		test("should return 0 for a single-node tree", () => {
+			const tree = new TreeNode(1);
+			expect(nodeDepth(tree)).toBe(0);
+		});
+	});
 
-  describe("balanced trees", () => {
-    test("should calculate correct depth sum", () => {
-      const tree = new TreeNode(1);
-      tree.left = new TreeNode(2);
-      tree.right = new TreeNode(3);
-      tree.left.left = new TreeNode(4);
-      tree.left.right = new TreeNode(5);
+	describe("balanced trees", () => {
+		test("should calculate correct depth sum", () => {
+			const tree = new TreeNode(1);
+			tree.left = new TreeNode(2);
+			tree.right = new TreeNode(3);
+			tree.left.left = new TreeNode(4);
+			tree.left.right = new TreeNode(5);
 
-      expect(nodeDepth(tree)).toBe(6);
-    });
-  });
+			expect(nodeDepth(tree)).toBe(6);
+		});
+	});
 });
 ```
 
@@ -1767,32 +1767,32 @@ function dfs(node):
  * Computes the diameter of a binary tree.
  */
 export function diameterBST(tree: TreeNode<number>): number {
-  const [diameter] = getDiameterAndHeight(tree);
-  return diameter;
+	const [diameter] = getDiameterAndHeight(tree);
+	return diameter;
 }
 
 /**
  * Returns both the diameter and height of a subtree.
  */
 function getDiameterAndHeight(node: TreeNode<number> | null): [number, number] {
-  if (node === null) {
-    return [0, 0];
-  }
+	if (node === null) {
+		return [0, 0];
+	}
 
-  const [leftDiameter, leftHeight] = getDiameterAndHeight(node.left);
-  const [rightDiameter, rightHeight] = getDiameterAndHeight(node.right);
+	const [leftDiameter, leftHeight] = getDiameterAndHeight(node.left);
+	const [rightDiameter, rightHeight] = getDiameterAndHeight(node.right);
 
-  const pathThroughNode = leftHeight + rightHeight;
+	const pathThroughNode = leftHeight + rightHeight;
 
-  const currentDiameter = Math.max(
-    pathThroughNode,
-    leftDiameter,
-    rightDiameter,
-  );
+	const currentDiameter = Math.max(
+		pathThroughNode,
+		leftDiameter,
+		rightDiameter,
+	);
 
-  const currentHeight = 1 + Math.max(leftHeight, rightHeight);
+	const currentHeight = 1 + Math.max(leftHeight, rightHeight);
 
-  return [currentDiameter, currentHeight];
+	return [currentDiameter, currentHeight];
 }
 ```
 
@@ -1828,24 +1828,24 @@ For this tree:
 
 ```ts
 describe("diameterBST()", () => {
-  test("should return 0 for a null tree", () => {
-    expect(diameterBST(null as any)).toBe(0);
-  });
+	test("should return 0 for a null tree", () => {
+		expect(diameterBST(null as any)).toBe(0);
+	});
 
-  test("should return 0 for a single-node tree", () => {
-    const tree = new TreeNode(1);
-    expect(diameterBST(tree)).toBe(0);
-  });
+	test("should return 0 for a single-node tree", () => {
+		const tree = new TreeNode(1);
+		expect(diameterBST(tree)).toBe(0);
+	});
 
-  test("should return correct diameter for a balanced tree", () => {
-    const tree = new TreeNode(1);
-    tree.left = new TreeNode(2);
-    tree.right = new TreeNode(3);
-    tree.left.left = new TreeNode(4);
-    tree.left.right = new TreeNode(5);
+	test("should return correct diameter for a balanced tree", () => {
+		const tree = new TreeNode(1);
+		tree.left = new TreeNode(2);
+		tree.right = new TreeNode(3);
+		tree.left.left = new TreeNode(4);
+		tree.left.right = new TreeNode(5);
 
-    expect(diameterBST(tree)).toBe(3);
-  });
+		expect(diameterBST(tree)).toBe(3);
+	});
 });
 ```
 
@@ -1976,24 +1976,24 @@ function findSuccessor(root, target):
  * Finds the inorder successor of a value in a Binary Search Tree.
  */
 export function findSuccessor(
-  root: TreeNode<number> | null,
-  target: number,
+	root: TreeNode<number> | null,
+	target: number,
 ): number | null {
-  let successor: number | null = null;
-  let current = root;
+	let successor: number | null = null;
+	let current = root;
 
-  while (current !== null) {
-    if (target < current.value) {
-      // Current node is a valid successor candidate
-      successor = current.value;
-      current = current.left;
-    } else {
-      // Successor must be in the right subtree
-      current = current.right;
-    }
-  }
+	while (current !== null) {
+		if (target < current.value) {
+			// Current node is a valid successor candidate
+			successor = current.value;
+			current = current.left;
+		} else {
+			// Successor must be in the right subtree
+			current = current.right;
+		}
+	}
 
-  return successor;
+	return successor;
 }
 ```
 
@@ -2155,7 +2155,7 @@ The tree is balanced if the final result is **not -1**.
  * Determines if a binary tree is height-balanced.
  */
 export function heightBalancedBinaryTree(tree: TreeNode<number>): boolean {
-  return getHeight(tree) !== -1;
+	return getHeight(tree) !== -1;
 }
 
 /**
@@ -2163,24 +2163,24 @@ export function heightBalancedBinaryTree(tree: TreeNode<number>): boolean {
  * Returns -1 if the tree is not balanced.
  */
 function getHeight(node: TreeNode<number> | null): number {
-  // Base case: empty tree
-  if (node === null) return 0;
+	// Base case: empty tree
+	if (node === null) return 0;
 
-  // Get left subtree height
-  const leftHeight = getHeight(node.left);
-  if (leftHeight === -1) return -1;
+	// Get left subtree height
+	const leftHeight = getHeight(node.left);
+	if (leftHeight === -1) return -1;
 
-  // Get right subtree height
-  const rightHeight = getHeight(node.right);
-  if (rightHeight === -1) return -1;
+	// Get right subtree height
+	const rightHeight = getHeight(node.right);
+	if (rightHeight === -1) return -1;
 
-  // Check balance condition
-  if (Math.abs(leftHeight - rightHeight) > 1) {
-    return -1;
-  }
+	// Check balance condition
+	if (Math.abs(leftHeight - rightHeight) > 1) {
+		return -1;
+	}
 
-  // Return height of current node
-  return Math.max(leftHeight, rightHeight) + 1;
+	// Return height of current node
+	return Math.max(leftHeight, rightHeight) + 1;
 }
 ```
 
@@ -2337,17 +2337,17 @@ function mergeTrees(node1, node2):
  * If only one exists, that node is used.
  */
 export function mergeBinaryTrees(
-  tree1: TreeNode<number> | null,
-  tree2: TreeNode<number> | null,
+	tree1: TreeNode<number> | null,
+	tree2: TreeNode<number> | null,
 ): TreeNode<number> | null {
-  if (tree1 === null) return tree2;
-  if (tree2 === null) return tree1;
+	if (tree1 === null) return tree2;
+	if (tree2 === null) return tree1;
 
-  return {
-    value: tree1.value + tree2.value,
-    left: mergeBinaryTrees(tree1.left, tree2.left),
-    right: mergeBinaryTrees(tree1.right, tree2.right),
-  };
+	return {
+		value: tree1.value + tree2.value,
+		left: mergeBinaryTrees(tree1.left, tree2.left),
+		right: mergeBinaryTrees(tree1.right, tree2.right),
+	};
 }
 ```
 
@@ -2554,9 +2554,9 @@ return target if found else 0
 
 ```ts
 interface TreeNode<T> {
-  value: T;
-  left: TreeNode<T> | null;
-  right: TreeNode<T> | null;
+	value: T;
+	left: TreeNode<T> | null;
+	right: TreeNode<T> | null;
 }
 
 /**
@@ -2567,38 +2567,38 @@ interface TreeNode<T> {
  * @returns Half of total sum if split is possible, otherwise 0
  */
 export function splitBinaryTree(root: TreeNode<number> | null): number {
-  if (!root) return 0;
+	if (!root) return 0;
 
-  const totalSum = getTreeSum(root);
-  if (totalSum % 2 !== 0) return 0;
+	const totalSum = getTreeSum(root);
+	if (totalSum % 2 !== 0) return 0;
 
-  const target = totalSum / 2;
-  const [, canBeSplit] = canSplitWithSum(root, target, root);
+	const target = totalSum / 2;
+	const [, canBeSplit] = canSplitWithSum(root, target, root);
 
-  return canBeSplit ? target : 0;
+	return canBeSplit ? target : 0;
 }
 
 function canSplitWithSum(
-  node: TreeNode<number> | null,
-  target: number,
-  root: TreeNode<number>,
+	node: TreeNode<number> | null,
+	target: number,
+	root: TreeNode<number>,
 ): [number, boolean] {
-  if (!node) return [0, false];
+	if (!node) return [0, false];
 
-  const [leftSum, leftSplit] = canSplitWithSum(node.left, target, root);
-  const [rightSum, rightSplit] = canSplitWithSum(node.right, target, root);
+	const [leftSum, leftSplit] = canSplitWithSum(node.left, target, root);
+	const [rightSum, rightSplit] = canSplitWithSum(node.right, target, root);
 
-  const currentSum = node.value + leftSum + rightSum;
+	const currentSum = node.value + leftSum + rightSum;
 
-  const canBeSplit =
-    leftSplit || rightSplit || (currentSum === target && node !== root);
+	const canBeSplit =
+		leftSplit || rightSplit || (currentSum === target && node !== root);
 
-  return [currentSum, canBeSplit];
+	return [currentSum, canBeSplit];
 }
 
 function getTreeSum(node: TreeNode<number> | null): number {
-  if (!node) return 0;
-  return node.value + getTreeSum(node.left) + getTreeSum(node.right);
+	if (!node) return 0;
+	return node.value + getTreeSum(node.left) + getTreeSum(node.right);
 }
 ```
 

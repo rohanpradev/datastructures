@@ -109,18 +109,7 @@ export function staircaseTraversal(height: number, maxSteps: number): number {
  * 0-8 → Revealed cell showing number of adjacent mines
  */
 export type MinesweeperData =
-	| "H"
-	| "M"
-	| "X"
-	| "0"
-	| "1"
-	| "2"
-	| "3"
-	| "4"
-	| "5"
-	| "6"
-	| "7"
-	| "8";
+	"H" | "M" | "X" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 
 const MINE_COUNT_LABELS = [
 	"0",

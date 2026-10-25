@@ -1,17 +1,24 @@
 import { describe, expect, test } from "bun:test";
 import { runInNewContext } from "node:vm";
 
-const html = await Bun.file(new URL("./realtime-lab.html", import.meta.url)).text();
-const clientScript = /<script type="module">([\s\S]*?)<\/script>/.exec(html)?.[1];
+const html = await Bun.file(
+	new URL("./realtime-lab.html", import.meta.url),
+).text();
+const clientScript = /<script type="module">([\s\S]*?)<\/script>/.exec(
+	html,
+)?.[1];
 if (!clientScript) throw new Error("The lab client script is missing");
 
 async function clientHarness() {
 	const listeners = new Map<string, () => void>();
 	const intervals = new Set<number>();
-	const elements = new Map<string, {
-		textContent: string;
-		onclick?: () => void;
-	}>();
+	const elements = new Map<
+		string,
+		{
+			textContent: string;
+			onclick?: () => void;
+		}
+	>();
 	let nextInterval = 0;
 	const element = (id: string) => {
 		let current = elements.get(id);
@@ -26,24 +33,37 @@ async function clientHarness() {
 		closed = false;
 		onopen?: () => void;
 		onclose?: () => void;
-		constructor(readonly url: string) { sockets.push(this); }
-		close() { this.closed = true; this.onclose?.(); }
+		constructor(readonly url: string) {
+			sockets.push(this);
+		}
+		close() {
+			this.closed = true;
+			this.onclose?.();
+		}
 	}
-	const settle = () => new Promise<void>(resolve => setImmediate(resolve));
+	const settle = () => new Promise<void>((resolve) => setImmediate(resolve));
 	runInNewContext(clientScript!, {
 		document: { getElementById: element },
 		location: { origin: "http://127.0.0.1:3002" },
 		WebSocket: FakeSocket,
 		fetch: async (url: string) => ({
 			ok: true,
-			json: async () => url === "/api/metrics"
-				? { commits: 0, duplicates: 0, replayed: 0 }
-				: { events: [], hasMore: false },
+			json: async () =>
+				url === "/api/metrics"
+					? { commits: 0, duplicates: 0, replayed: 0 }
+					: { events: [], hasMore: false },
 		}),
-		addEventListener: (name: string, callback: () => void) => listeners.set(name, callback),
-		setInterval: () => { const id = ++nextInterval; intervals.add(id); return id; },
+		addEventListener: (name: string, callback: () => void) =>
+			listeners.set(name, callback),
+		setInterval: () => {
+			const id = ++nextInterval;
+			intervals.add(id);
+			return id;
+		},
 		clearInterval: (id: number) => intervals.delete(id),
-		setTimeout: () => { throw new Error("Unexpected reconnect timer"); },
+		setTimeout: () => {
+			throw new Error("Unexpected reconnect timer");
+		},
 		clearTimeout: () => {},
 	});
 	await settle();

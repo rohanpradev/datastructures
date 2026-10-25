@@ -23,12 +23,12 @@ it chooses an unseen item in catalog/search order. If every matching item is
 scheduled, it prints the next due time without replacing your active session.
 Generating a problem does not mark it learned. Record a grade after an attempt.
 
-| Grade | Use when | Next review |
-| --- | --- | --- |
-| `again` | Needed the solution or could not explain the invariant | In 10 minutes; resets the stage |
-| `hard` | Completed with substantial hints or uncertainty | In 24 hours; keeps the stage |
-| `good` | Solved independently and explained correctness and complexity | Advances one stage |
-| `easy` | Recalled fluently and handled a follow-up | Skips one stage |
+| Grade   | Use when                                                      | Next review                     |
+| ------- | ------------------------------------------------------------- | ------------------------------- |
+| `again` | Needed the solution or could not explain the invariant        | In 10 minutes; resets the stage |
+| `hard`  | Completed with substantial hints or uncertainty               | In 24 hours; keeps the stage    |
+| `good`  | Solved independently and explained correctness and complexity | Advances one stage              |
+| `easy`  | Recalled fluently and handled a follow-up                     | Skips one stage                 |
 
 The stages are **1, 3, 7, 14, 30, 60, 120, and 180 days**, measured from the
 latest rating. `good` starts at one day; `easy` starts at three. The maximum

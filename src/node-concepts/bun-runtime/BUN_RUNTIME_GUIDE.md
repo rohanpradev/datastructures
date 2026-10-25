@@ -14,6 +14,7 @@ Official references:
 - [Bun Shell](https://bun.com/docs/runtime/shell)
 - [Bun child processes](https://bun.com/docs/runtime/child-process)
 - [Bun SQLite](https://bun.com/docs/runtime/sqlite)
+- [Bun 1.4.4 release notes](https://bun.com/blog/bun-v1.4.4)
 - [Bun test runner](https://bun.com/docs/test)
 - [Bun SQL](https://bun.com/docs/runtime/sql)
 - [Bun Redis](https://bun.com/docs/runtime/redis)
@@ -129,6 +130,19 @@ Problem: "Find every TypeScript file under a folder."
 3. Normalize paths before comparing in tests.
 4. Sort output so CI is deterministic.
 
+Bun 1.4.4 also supports extglobs and brace ranges:
+
+```ts
+await scanFiles(root, "**/!(*.test).ts"); // Source files excluding *.test.ts
+await scanFiles(root, "shard-{01..03}.json"); // 01, 02, 03, preserving padding
+matchesGlob("src/@(app|lib)/**/*.ts", "src/lib/index.ts"); // true
+```
+
+Patterns that previously treated extglobs or ranges literally now have meaning.
+To match `copy(1).txt`, use `*[(]1).txt` rather than `*(1).txt`; to match the literal
+`shard-{1..3}.json`, use `shard-[{]1..3[}].json`. Parentheses without an extglob
+prefix remain literal, so `app/(marketing)/**` still matches route-group paths.
+
 Reference code: [file-system.ts](./file-system.ts)
 
 ### Image Processing
@@ -196,6 +210,27 @@ Problem: "Track interview problems, attempts, and weak patterns without a hosted
 6. Query review candidates with ordered SQL instead of sorting everything in JavaScript.
 
 Reference code: [sqlite.ts](./sqlite.ts)
+
+### SQLite Functions And Aggregates
+
+Problem: "Summarize practice scores with a domain rule and a custom statistic."
+
+1. Register a deterministic scalar rule with `db.function()`: this lab marks
+   scores of 80 percent or higher as mastered.
+2. Register `db.aggregate()` with a fresh accumulator per group. Welford's
+   algorithm computes population variance with constant aggregate state.
+3. Validate scores and cap the batch before running synchronous SQLite work.
+4. Insert through a prepared statement inside one transaction, then combine
+   the functions with ordinary `COUNT`, `SUM`, and `AVG` in a query.
+5. Return `null` for an empty batch's average and variance, finalize statements,
+   and close the in-memory database even when an operation throws.
+
+These Bun 1.4.4 APIs run JavaScript callbacks synchronously during SQL execution.
+Keep callbacks short. SQLite update hooks also fire before commit and can report
+changes later rolled back, so they do not provide durable event delivery.
+
+Reference code: [sqlite-functions.ts](./sqlite-functions.ts). This isolated
+analytics lab leaves the existing practice tracker unchanged.
 
 ### Production SQL Client Discussion
 
@@ -282,5 +317,6 @@ bun test src/node-concepts/test/bun-runtime.test.ts
 # server route and worker-backed image processing
 bun test src/node-concepts/test/blocking-delay.test.ts
 bun test src/node-concepts/test/sqlite.test.ts
+bun test src/node-concepts/test/sqlite-functions.test.ts
 bun run test:coverage
 ```

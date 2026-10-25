@@ -1,10 +1,6 @@
 type CryptoHashInput = string | ArrayBuffer | Uint8Array;
 type FingerprintInput =
-	| string
-	| ArrayBuffer
-	| SharedArrayBuffer
-	| Uint8Array
-	| DataView;
+	string | ArrayBuffer | SharedArrayBuffer | Uint8Array | DataView;
 type PasswordHashOptions = NonNullable<Parameters<typeof Bun.password.hash>[1]>;
 
 const DEFAULT_PASSWORD_HASH_OPTIONS = {

@@ -37,7 +37,9 @@ describe("shortestSubarrayAtLeastK", () => {
 							if (sum >= target) best = Math.min(best, end - start + 1);
 						}
 					}
-					expect(shortestSubarrayAtLeastK(nums, target)).toBe(best === Infinity ? -1 : best);
+					expect(shortestSubarrayAtLeastK(nums, target)).toBe(
+						best === Infinity ? -1 : best,
+					);
 				}
 			}
 		}
@@ -52,16 +54,20 @@ describe("shortestSubarrayAtLeastK", () => {
 
 describe("maxScheduledProfit", () => {
 	test("uses compatible prefixes instead of earliest-end or highest-profit greed", () => {
-		expect(maxScheduledProfit([
-			{ start: 1, end: 3, profit: 5 },
-			{ start: 2, end: 4, profit: 6 },
-			{ start: 3, end: 5, profit: 5 },
-		])).toBe(10);
-		expect(maxScheduledProfit([
-			{ start: 0, end: 10, profit: 15 },
-			{ start: 0, end: 5, profit: 10 },
-			{ start: 5, end: 10, profit: 10 },
-		])).toBe(20);
+		expect(
+			maxScheduledProfit([
+				{ start: 1, end: 3, profit: 5 },
+				{ start: 2, end: 4, profit: 6 },
+				{ start: 3, end: 5, profit: 5 },
+			]),
+		).toBe(10);
+		expect(
+			maxScheduledProfit([
+				{ start: 0, end: 10, profit: 15 },
+				{ start: 0, end: 5, profit: 10 },
+				{ start: 5, end: 10, profit: 10 },
+			]),
+		).toBe(20);
 	});
 
 	test("handles empty input, negative profits, equal ends and immutable input", () => {
@@ -78,17 +84,33 @@ describe("maxScheduledProfit", () => {
 
 	test("matches subset enumeration across deterministic generated jobs", () => {
 		let seed = 42;
-		const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed; };
+		const random = () => {
+			seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+			return seed;
+		};
 		for (let example = 0; example < 80; example++) {
 			const jobs = Array.from({ length: 8 }, () => {
 				const start = random() % 10;
-				return { start, end: start + 1 + random() % 5, profit: random() % 20 - 3 };
+				return {
+					start,
+					end: start + 1 + (random() % 5),
+					profit: (random() % 20) - 3,
+				};
 			});
 			let best = 0;
 			for (let mask = 0; mask < 1 << jobs.length; mask++) {
-				const selected = jobs.filter((_, index) => mask & (1 << index)).sort((a, b) => a.start - b.start);
-				if (selected.every((job, index) => index === 0 || selected[index - 1].end <= job.start)) {
-					best = Math.max(best, selected.reduce((sum, job) => sum + job.profit, 0));
+				const selected = jobs
+					.filter((_, index) => mask & (1 << index))
+					.sort((a, b) => a.start - b.start);
+				if (
+					selected.every(
+						(job, index) => index === 0 || selected[index - 1].end <= job.start,
+					)
+				) {
+					best = Math.max(
+						best,
+						selected.reduce((sum, job) => sum + job.profit, 0),
+					);
 				}
 			}
 			expect(maxScheduledProfit(jobs)).toBe(best);
@@ -102,6 +124,7 @@ describe("maxScheduledProfit", () => {
 			{ start: NaN, end: 1, profit: 1 },
 			{ start: 0, end: Infinity, profit: 1 },
 			{ start: 0, end: 1, profit: NaN },
-		]) expect(() => maxScheduledProfit([job])).toThrow(RangeError);
+		])
+			expect(() => maxScheduledProfit([job])).toThrow(RangeError);
 	});
 });

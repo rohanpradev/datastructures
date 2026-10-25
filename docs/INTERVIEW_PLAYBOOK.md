@@ -55,21 +55,21 @@ Use this for backend and senior/staff prompts.
 
 ## Pattern Prompts
 
-| Pattern | Question to ask before coding |
-| --- | --- |
-| Hash map | What lookup would make the nested loop disappear? |
-| Two pointers | What monotonic movement avoids reconsidering work? |
-| Sliding window | What condition makes the current window valid? |
-| Prefix sum | Which previous accumulated value proves this range? |
-| Stack | What decision must wait until a later value arrives? |
-| Monotonic stack | Which unresolved earlier values does the current value answer? |
-| Heap | Which candidates deserve to stay in memory? |
-| Intervals | Should I sort starts/ends or sweep endpoints, and do touching ranges overlap? |
-| Tree | What does each node return to its parent? |
-| Graph | Is this BFS, DFS, topological order, union-find, or shortest path? |
-| Backtracking | What choice is made, what constraint prunes, what state is undone? |
-| Dynamic programming | What subproblem result can be reused? |
-| Binary search | What invariant proves the answer remains in the search range? |
+| Pattern             | Question to ask before coding                                                 |
+| ------------------- | ----------------------------------------------------------------------------- |
+| Hash map            | What lookup would make the nested loop disappear?                             |
+| Two pointers        | What monotonic movement avoids reconsidering work?                            |
+| Sliding window      | What condition makes the current window valid?                                |
+| Prefix sum          | Which previous accumulated value proves this range?                           |
+| Stack               | What decision must wait until a later value arrives?                          |
+| Monotonic stack     | Which unresolved earlier values does the current value answer?                |
+| Heap                | Which candidates deserve to stay in memory?                                   |
+| Intervals           | Should I sort starts/ends or sweep endpoints, and do touching ranges overlap? |
+| Tree                | What does each node return to its parent?                                     |
+| Graph               | Is this BFS, DFS, topological order, union-find, or shortest path?            |
+| Backtracking        | What choice is made, what constraint prunes, what state is undone?            |
+| Dynamic programming | What subproblem result can be reused?                                         |
+| Binary search       | What invariant proves the answer remains in the search range?                 |
 
 ## TypeScript Standards
 

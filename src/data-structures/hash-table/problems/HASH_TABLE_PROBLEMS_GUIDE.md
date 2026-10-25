@@ -68,13 +68,13 @@ Only 2 iterations!
 
 ```typescript
 export function twoSum(nums: number[], target: number): number[] {
-  // TODO: Create hash map to store num → index
-  // TODO: Loop through array with index
-  // TODO: Calculate complement
-  // TODO: Check if complement exists in map
-  // TODO: If found, return indices
-  // TODO: Add current number to map
-  // TODO: Return empty array if no solution
+	// TODO: Create hash map to store num → index
+	// TODO: Loop through array with index
+	// TODO: Calculate complement
+	// TODO: Check if complement exists in map
+	// TODO: If found, return indices
+	// TODO: Add current number to map
+	// TODO: Return empty array if no solution
 }
 ```
 
@@ -163,11 +163,11 @@ Result: [["eat", "tea"], ["tan"]]
 
 ```typescript
 export function groupAnagrams(strs: string[]): string[][] {
-  // TODO: Create hash map: key → string[]
-  // TODO: Loop through strings
-  // TODO: Sort characters to create key
-  // TODO: Add string to map[key] array
-  // TODO: Return all values from map
+	// TODO: Create hash map: key → string[]
+	// TODO: Loop through strings
+	// TODO: Sort characters to create key
+	// TODO: Add string to map[key] array
+	// TODO: Return all values from map
 }
 ```
 
@@ -233,11 +233,11 @@ Step 4: num = 1
 
 ```typescript
 export function containsDuplicate(nums: number[]): boolean {
-  // TODO: Create Set to track seen numbers
-  // TODO: Loop through array
-  // TODO: If number exists in set, return true
-  // TODO: Add number to set
-  // TODO: Return false if no duplicates found
+	// TODO: Create Set to track seen numbers
+	// TODO: Loop through array
+	// TODO: If number exists in set, return true
+	// TODO: Add number to set
+	// TODO: Return false if no duplicates found
 }
 ```
 
@@ -298,11 +298,11 @@ All match → Anagrams!
 
 ```typescript
 export function isAnagram(s: string, t: string): boolean {
-  // TODO: Check if lengths are different
-  // TODO: Create frequency map for first string
-  // TODO: Loop through second string
-  // TODO: Check char exists and decrement count
-  // TODO: Return true if all chars matched
+	// TODO: Check if lengths are different
+	// TODO: Create frequency map for first string
+	// TODO: Loop through second string
+	// TODO: Check char exists and decrement count
+	// TODO: Return true if all chars matched
 }
 ```
 
@@ -388,14 +388,14 @@ By only starting from sequence beginnings:
 
 ```typescript
 export function longestConsecutive(nums: number[]): number {
-  // TODO: Handle empty array
-  // TODO: Create Set from array
-  // TODO: Initialize max length
-  // TODO: Loop through each number
-  // TODO: Check if it's a sequence start (num-1 not in set)
-  // TODO: Count consecutive numbers
-  // TODO: Update max length
-  // TODO: Return max
+	// TODO: Handle empty array
+	// TODO: Create Set from array
+	// TODO: Initialize max length
+	// TODO: Loop through each number
+	// TODO: Check if it's a sequence start (num-1 not in set)
+	// TODO: Count consecutive numbers
+	// TODO: Update max length
+	// TODO: Return max
 }
 ```
 
@@ -479,14 +479,14 @@ Total: 2
 
 ```typescript
 export function subarraySum(nums: number[], k: number): number {
-  // TODO: Create hash map for prefix sums
-  // TODO: Initialize with {0: 1}
-  // TODO: Initialize sum and count
-  // TODO: Loop through array
-  // TODO: Update running sum
-  // TODO: Check if (sum - k) exists in map
-  // TODO: Add current sum to map
-  // TODO: Return count
+	// TODO: Create hash map for prefix sums
+	// TODO: Initialize with {0: 1}
+	// TODO: Initialize sum and count
+	// TODO: Loop through array
+	// TODO: Update running sum
+	// TODO: Check if (sum - k) exists in map
+	// TODO: Add current sum to map
+	// TODO: Return count
 }
 ```
 
@@ -505,7 +505,7 @@ export function subarraySum(nums: number[], k: number): number {
 // Count occurrences
 const freq = new Map<string, number>();
 for (const item of items) {
-  freq.set(item, (freq.get(item) || 0) + 1);
+	freq.set(item, (freq.get(item) || 0) + 1);
 }
 ```
 
@@ -515,8 +515,8 @@ for (const item of items) {
 // Check if value exists
 const seen = new Set<number>();
 for (const num of nums) {
-  if (seen.has(num)) return true;
-  seen.add(num);
+	if (seen.has(num)) return true;
+	seen.add(num);
 }
 ```
 
@@ -526,11 +526,11 @@ for (const num of nums) {
 // Find pairs that sum to target
 const map = new Map<number, number>();
 for (let i = 0; i < nums.length; i++) {
-  const complement = target - nums[i];
-  if (map.has(complement)) {
-    return [map.get(complement)!, i];
-  }
-  map.set(nums[i], i);
+	const complement = target - nums[i];
+	if (map.has(complement)) {
+		return [map.get(complement)!, i];
+	}
+	map.set(nums[i], i);
 }
 ```
 
@@ -540,9 +540,9 @@ for (let i = 0; i < nums.length; i++) {
 // Group items by key
 const groups = new Map<string, string[]>();
 for (const item of items) {
-  const key = getKey(item);
-  if (!groups.has(key)) groups.set(key, []);
-  groups.get(key)!.push(item);
+	const key = getKey(item);
+	if (!groups.has(key)) groups.set(key, []);
+	groups.get(key)!.push(item);
 }
 ```
 
@@ -717,21 +717,21 @@ To achieve **O(1)** operations:
 
 ```ts
 class LRUCache<K, V> {
-  constructor(capacity: number) {}
+	constructor(capacity: number) {}
 
-  get(key: K): V | undefined {
-    // TODO:
-    // 1. Check if key exists
-    // 2. Move node to front
-    // 3. Return value
-  }
+	get(key: K): V | undefined {
+		// TODO:
+		// 1. Check if key exists
+		// 2. Move node to front
+		// 3. Return value
+	}
 
-  put(key: K, value: V): void {
-    // TODO:
-    // 1. If key exists → update + move to front
-    // 2. If capacity exceeded → remove LRU
-    // 3. Insert new node at front
-  }
+	put(key: K, value: V): void {
+		// TODO:
+		// 1. If key exists → update + move to front
+		// 2. If capacity exceeded → remove LRU
+		// 3. Insert new node at front
+	}
 }
 ```
 

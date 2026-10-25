@@ -2,7 +2,7 @@
 	"name": "code-practice",
 	"type": "module",
 	"private": true,
-	"packageManager": "bun@1.4.3",
+	"packageManager": "bun@1.4.4",
 	"scripts": {
 		"course:lab": "bun --watch run src/course/realtime-lab.ts",
 		"course:test": "bun test src/course src/data-structures/tests/fenwick-tree.test.ts src/data-structures/tests/segment-tree.test.ts src/algorithms/tests/shortest-path.test.ts src/node-concepts/test/durable-event-log.test.ts",
@@ -12,10 +12,11 @@
 		"db:migrate": "bun run src/ai/db/migrate.ts",
 		"db:studio": "bunx drizzle-kit studio",
 		"dev": "bun run src/node-concepts/server.ts",
-		"check": "bun run lint && bun run typecheck && bun run typecheck:tsc && bun run docs:check && bun run practice:audit && bun run test:ci",
+		"check": "bun run format:check && bun run lint && bun run typecheck && bun run typecheck:tsc && bun run docs:check && bun run practice:audit && bun run test:ci",
 		"docs:check": "bun run scripts/validate-docs.ts",
-		"fix": "bun ./node_modules/@biomejs/biome/bin/biome check --write .",
-		"format": "bun ./node_modules/@biomejs/biome/bin/biome format --write .",
+		"fix": "bun ./node_modules/@biomejs/biome/bin/biome check --write . && bun fmt",
+		"format": "bun fmt",
+		"format:check": "bun fmt --check",
 		"lint": "bun ./node_modules/@biomejs/biome/bin/biome check .",
 		"test": "bun test",
 		"test:ai": "bun test src/ai/test",
@@ -55,12 +56,12 @@
 		"generate:practice": "bun run scripts/generate-practice.ts"
 	},
 	"dependencies": {
-		"@langchain/core": "^1.2.19",
-		"@langchain/langgraph": "^1.5.1",
-		"@langchain/langgraph-checkpoint": "^1.2.0",
+		"@langchain/core": "^1.3.0",
+		"@langchain/langgraph": "^1.5.2",
+		"@langchain/langgraph-checkpoint": "^1.2.1",
 		"@modelcontextprotocol/server": "2.3.1",
-		"@scalar/api-reference": "^1.75.0",
-		"ai": "^7.0.146",
+		"@scalar/api-reference": "^1.76.0",
+		"ai": "^7.0.148",
 		"drizzle-orm": "1.0.0-rc.4",
 		"zod": "4.6.7"
 	},
@@ -68,8 +69,8 @@
 		"@ai-sdk/provider-utils@4.0.5": "4.0.33"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.15",
-		"@types/bun": "1.4.3",
+		"@biomejs/biome": "2.6.2",
+		"@types/bun": "1.4.4",
 		"drizzle-kit": "1.0.0-rc.4",
 		"typescript": "7.0.2"
 	}

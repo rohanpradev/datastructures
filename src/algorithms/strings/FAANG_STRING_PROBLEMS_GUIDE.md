@@ -107,4 +107,3 @@ All anagrams produce the same frequency signature, so they land in the same grou
 
 - Time: `O(n * k)`, where `n` is number of words and `k` is max word length
 - Space: `O(n * k)`
-

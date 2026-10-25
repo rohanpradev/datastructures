@@ -93,9 +93,7 @@ describe("longestConsecutiveRun", () => {
 
 describe("topKFrequentElements", () => {
 	test("returns the most frequent values", () => {
-		expect(topKFrequentElements([1, 1, 1, 2, 2, 3], 2).sort()).toEqual([
-			1, 2,
-		]);
+		expect(topKFrequentElements([1, 1, 1, 2, 2, 3], 2).sort()).toEqual([1, 2]);
 		expect(topKFrequentElements([4, 4, 4, 6, 6, 7], 1)).toEqual([4]);
 	});
 
@@ -375,16 +373,15 @@ describe("accountsMerge", () => {
 			["Alex", "b@mail.com", "c@mail.com"],
 		]);
 
-		expect(normalize(merged)).toEqual(["Alex|a@mail.com|b@mail.com|c@mail.com"]);
+		expect(normalize(merged)).toEqual([
+			"Alex|a@mail.com|b@mail.com|c@mail.com",
+		]);
 	});
 
 	test("deduplicates repeated emails and preserves email-less accounts", () => {
 		expect(
 			normalize(
-				accountsMerge([
-					["Nina", "n@mail.com", "n@mail.com"],
-					["Solo"],
-				]),
+				accountsMerge([["Nina", "n@mail.com", "n@mail.com"], ["Solo"]]),
 			),
 		).toEqual(["Nina|n@mail.com", "Solo"]);
 	});
@@ -392,7 +389,9 @@ describe("accountsMerge", () => {
 
 describe("backtracking patterns", () => {
 	test("generates all subsets", () => {
-		const result = subsets([1, 2]).map((subset) => subset.join(",")).sort();
+		const result = subsets([1, 2])
+			.map((subset) => subset.join(","))
+			.sort();
 		expect(result).toEqual(["", "1", "1,2", "2"]);
 	});
 
@@ -409,7 +408,14 @@ describe("backtracking patterns", () => {
 			.map((permutation) => permutation.join(","))
 			.sort();
 
-		expect(result).toEqual(["1,2,3", "1,3,2", "2,1,3", "2,3,1", "3,1,2", "3,2,1"]);
+		expect(result).toEqual([
+			"1,2,3",
+			"1,3,2",
+			"2,1,3",
+			"2,3,1",
+			"3,1,2",
+			"3,2,1",
+		]);
 	});
 });
 
@@ -489,8 +495,22 @@ describe("graph patterns", () => {
 	});
 
 	test("checks bipartite graphs", () => {
-		expect(isBipartite([[1, 3], [0, 2], [1, 3], [0, 2]])).toBe(true);
-		expect(isBipartite([[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]])).toBe(false);
+		expect(
+			isBipartite([
+				[1, 3],
+				[0, 2],
+				[1, 3],
+				[0, 2],
+			]),
+		).toBe(true);
+		expect(
+			isBipartite([
+				[1, 2, 3],
+				[0, 2],
+				[0, 1, 3],
+				[0, 2],
+			]),
+		).toBe(false);
 	});
 });
 
@@ -507,7 +527,9 @@ describe("dynamic programming patterns", () => {
 
 	test("solves word break", () => {
 		expect(wordBreak("leetcode", ["leet", "code"])).toBe(true);
-		expect(wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"])).toBe(false);
+		expect(wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"])).toBe(
+			false,
+		);
 	});
 });
 

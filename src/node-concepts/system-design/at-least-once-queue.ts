@@ -92,7 +92,7 @@ export class AtLeastOnceQueue<T> {
 			nowMs,
 			this.options.visibilityTimeoutMs,
 		);
-		for (let index = 0; index < this.records.length; ) {
+		for (let index = 0; index < this.records.length;) {
 			const record = this.records[index]!;
 			if (record.availableAtMs > nowMs) {
 				index++;

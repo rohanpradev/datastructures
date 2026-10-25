@@ -120,4 +120,3 @@ Every prefix answer can be built from smaller prefix answers.
 
 - Time: `O(n * m)`
 - Space: `O(n * m)`
-

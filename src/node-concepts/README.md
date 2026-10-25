@@ -4,27 +4,27 @@ This folder teaches interview-grade JavaScript runtime concepts with runnable Bu
 
 ## Topic Index
 
-| Topic | File | Why it matters in interviews |
-| --- | --- | --- |
-| Event loop ordering | `basics/event-loop.ts` | Explains sync work, microtasks, timers, and why CPU work blocks requests |
-| Promises | `basics/promise.ts`, `basics/promise-types.ts` | Covers `all`, `allSettled`, `race`, `any`, chaining, and error recovery |
-| Async generators | `basics/generator-function.ts` | Shows cancellable step-by-step workflows |
-| Concurrency queue | `async/concurrent-operations.ts` | Handles bounded parallelism, backpressure, and result/error collection |
-| Circuit breaker | `async/circuit-breaker.ts` | Prevents cascading failure when dependencies are slow or down |
-| Timeout, retry, abort | `async/resilience.ts` | Builds dependency calls with cancellation, validated retry budgets, and capped linear backoff |
-| WebSocket pub/sub | `async/pub-sub.ts` | Teaches real-time fanout, channel subscription, and in-memory limits |
-| Bun server and image workers | `server.ts`, `worker/worker.ts` | Separates fast I/O routes from native image processing work |
-| Bun runtime APIs | `bun-runtime/` | Covers file I/O, image processing, globbing, subprocesses, password hashing, cookies, and Bun Shell |
-| Modern Bun APIs | `bun-runtime/modern-apis.ts` | Covers strict JSONL/JSON5 validation, Markdown boundaries, CSRF, archives, and cron previews |
-| Bun SQLite | `bun-runtime/sqlite.ts` | Uses in-memory SQL, strict parameters, and transactions without an external service |
-| Rate limiters | `system-design/rate-limiter.ts` | Models token bucket and sliding window throttling |
-| LRU cache | `system-design/lru-cache.ts` | Models hot-data caching and eviction |
-| ID generation | `system-design/id-generation.ts` | Covers Base62 public IDs and Snowflake-style distributed IDs |
-| Consistent hashing | `system-design/consistent-hash.ts` | Maps keys to nodes while minimizing remaps on node changes |
-| Bloom filter | `system-design/bloom-filter.ts` | Trades small false-positive risk for fast negative membership checks |
-| Load balancing | `system-design/load-balancer.ts` | Compares round robin with lifecycle-safe least connections |
-| Replication quorums | `system-design/replication-quorum.ts` | Models N/R/W overlap and availability trade-offs without overclaiming consistency |
-| At-least-once queue | `system-design/at-least-once-queue.ts` | Models visibility leases, redelivery, acknowledgements, delayed retries, and dead letters |
+| Topic                        | File                                           | Why it matters in interviews                                                                        |
+| ---------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Event loop ordering          | `basics/event-loop.ts`                         | Explains sync work, microtasks, timers, and why CPU work blocks requests                            |
+| Promises                     | `basics/promise.ts`, `basics/promise-types.ts` | Covers `all`, `allSettled`, `race`, `any`, chaining, and error recovery                             |
+| Async generators             | `basics/generator-function.ts`                 | Shows cancellable step-by-step workflows                                                            |
+| Concurrency queue            | `async/concurrent-operations.ts`               | Handles bounded parallelism, backpressure, and result/error collection                              |
+| Circuit breaker              | `async/circuit-breaker.ts`                     | Prevents cascading failure when dependencies are slow or down                                       |
+| Timeout, retry, abort        | `async/resilience.ts`                          | Builds dependency calls with cancellation, validated retry budgets, and capped linear backoff       |
+| WebSocket pub/sub            | `async/pub-sub.ts`                             | Teaches real-time fanout, channel subscription, and in-memory limits                                |
+| Bun server and image workers | `server.ts`, `worker/worker.ts`                | Separates fast I/O routes from native image processing work                                         |
+| Bun runtime APIs             | `bun-runtime/`                                 | Covers file I/O, image processing, globbing, subprocesses, password hashing, cookies, and Bun Shell |
+| Modern Bun APIs              | `bun-runtime/modern-apis.ts`                   | Covers strict JSONL/JSON5 validation, Markdown boundaries, CSRF, archives, and cron previews        |
+| Bun SQLite                   | `bun-runtime/sqlite.ts`                        | Uses in-memory SQL, strict parameters, and transactions without an external service                 |
+| Rate limiters                | `system-design/rate-limiter.ts`                | Models token bucket and sliding window throttling                                                   |
+| LRU cache                    | `system-design/lru-cache.ts`                   | Models hot-data caching and eviction                                                                |
+| ID generation                | `system-design/id-generation.ts`               | Covers Base62 public IDs and Snowflake-style distributed IDs                                        |
+| Consistent hashing           | `system-design/consistent-hash.ts`             | Maps keys to nodes while minimizing remaps on node changes                                          |
+| Bloom filter                 | `system-design/bloom-filter.ts`                | Trades small false-positive risk for fast negative membership checks                                |
+| Load balancing               | `system-design/load-balancer.ts`               | Compares round robin with lifecycle-safe least connections                                          |
+| Replication quorums          | `system-design/replication-quorum.ts`          | Models N/R/W overlap and availability trade-offs without overclaiming consistency                   |
+| At-least-once queue          | `system-design/at-least-once-queue.ts`         | Models visibility leases, redelivery, acknowledgements, delayed retries, and dead letters           |
 
 ## How To Study A Topic
 
@@ -102,4 +102,5 @@ Use this checklist for every backend example and test:
 bun run check
 ```
 
-This runs Biome, stable TypeScript 7 typechecking, documentation integrity, and all Bun tests.
+This checks Bun formatting, Biome lint, Bun and TypeScript 7 types,
+documentation integrity, the practice catalog, and all Bun tests.

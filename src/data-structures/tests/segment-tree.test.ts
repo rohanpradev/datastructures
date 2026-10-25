@@ -26,14 +26,18 @@ describe("SegmentTree", () => {
 	});
 
 	test("preserves order for a noncommutative reducer across every interval", () => {
-		const values = Array.from({ length: 13 }, (_, i) => String.fromCharCode(97 + i));
+		const values = Array.from({ length: 13 }, (_, i) =>
+			String.fromCharCode(97 + i),
+		);
 		const tree = new SegmentTree(values, "", (left, right) => left + right);
 		for (const replacement of ["c", "XY", ""]) {
 			values[2] = replacement;
 			tree.set(2, replacement);
 			for (let start = 0; start <= values.length; start++) {
 				for (let end = start; end <= values.length; end++) {
-					expect(tree.query(start, end)).toBe(values.slice(start, end).join(""));
+					expect(tree.query(start, end)).toBe(
+						values.slice(start, end).join(""),
+					);
 				}
 			}
 		}
@@ -117,7 +121,9 @@ describe("SegmentTree", () => {
 				const end = Math.max(a, b);
 				const slice = values.slice(start, end);
 				expect(sum.query(start, end)).toBe(slice.reduce((a, b) => a + b, 0));
-				expect(minimum.query(start, end)).toBe(slice.reduce((a, b) => Math.min(a, b), Infinity));
+				expect(minimum.query(start, end)).toBe(
+					slice.reduce((a, b) => Math.min(a, b), Infinity),
+				);
 			}
 		}
 	});

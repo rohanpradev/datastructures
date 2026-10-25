@@ -102,4 +102,3 @@ Complexity:
 
 - Time: `O(1)` because it always loops 32 times
 - Space: `O(1)`
-

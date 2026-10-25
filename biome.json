@@ -17,10 +17,7 @@
 		]
 	},
 	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab",
-		"lineWidth": 80,
-		"lineEnding": "lf"
+		"enabled": false
 	},
 	"linter": {
 		"enabled": true,
@@ -44,16 +41,6 @@
 				"useLiteralKeys": "off",
 				"useOptionalChain": "off"
 			}
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
-	"json": {
-		"formatter": {
-			"trailingCommas": "none"
 		}
 	}
 }

@@ -487,12 +487,12 @@ flowchart LR
 
 ### Bottlenecks And Trade-Offs
 
-| Decision | Option A | Option B | Trade-off |
-| --- | --- | --- | --- |
-| Code generation | Sequential Base62 | Random code | Sequential is compact but enumerable. Random needs collision checks. |
-| Redirect status | 301 | 302 | 301 caches aggressively. 302 preserves analytics/control. |
-| Cache | Cache-aside | Write-through | Cache-aside is simple. Write-through lowers first-read latency but adds write coupling. |
-| Analytics | Sync write | Async event | Sync is simpler but hurts p99. Async can lose events unless durable. |
+| Decision        | Option A          | Option B      | Trade-off                                                                               |
+| --------------- | ----------------- | ------------- | --------------------------------------------------------------------------------------- |
+| Code generation | Sequential Base62 | Random code   | Sequential is compact but enumerable. Random needs collision checks.                    |
+| Redirect status | 301               | 302           | 301 caches aggressively. 302 preserves analytics/control.                               |
+| Cache           | Cache-aside       | Write-through | Cache-aside is simple. Write-through lowers first-read latency but adds write coupling. |
+| Analytics       | Sync write        | Async event   | Sync is simpler but hurts p99. Async can lose events unless durable.                    |
 
 ### Observability
 

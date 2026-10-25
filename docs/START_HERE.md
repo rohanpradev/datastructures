@@ -9,11 +9,10 @@ readiness, system design, and current AI-era interview formats.
 For a broad view of interview rounds beyond algorithms and design, start with
 the [Software Engineering Interview Guide](./SOFTWARE_ENGINEERING_INTERVIEW_GUIDE.md).
 For the newest additions, use the
-[October 20 quality upgrade](./UPGRADE_2026_10_20.md): current dependencies,
-deterministic checkpoint recovery, safer runtime primitives, and robust practice
-validation. The
-[October 19 research upgrade](./UPGRADE_2026_10_19.md): persistent reviews,
-segment-tree range queries, and a real-time failure lab. The
+[October 24 Bun upgrade](./UPGRADE_2026_10_24.md): Bun 1.4.4, built-in formatting,
+updated dependencies, and CI verification. For earlier additions, use the
+[persistent review guide](./PRACTICE_REVIEW.md) and
+[real-time failure lab](./REALTIME_SYSTEMS_LAB.md). The
 [September 22 interview refresh](./INTERVIEW_UPGRADE_2026_09.md): five runnable
 problems, six design mocks, current employer sources, and a two-week route.
 
@@ -59,6 +58,10 @@ missed edge case, next review.
 
 ## Current Tooling Baseline
 
+The runtime is pinned to Bun 1.4.4, released October 22 and checked October 24, 2026. Bun formats the repository through `[fmt]` in `bunfig.toml`; Biome supplies
+lint rules. `minimumReleaseAge = "1d"` preserves the one-day dependency age
+policy, with the documented exclusions in `bunfig.toml`.
+
 This repo follows the current official Bun guidance for TypeScript projects:
 run TypeScript directly with Bun, keep static checking in a separate command,
 use `@types/bun`, `moduleResolution: "bundler"`, `module: "Preserve"`,
@@ -66,6 +69,13 @@ use `@types/bun`, `moduleResolution: "bundler"`, `module: "Preserve"`,
 includes `exactOptionalPropertyTypes` and indexed-signature bracket access;
 `noUncheckedIndexedAccess` remains a documented backlog because the algorithm
 track needs focused indexing fixes before it can be enabled globally.
+
+```bash
+bun run format        # Apply Bun formatting
+bun run format:check  # Check formatting without changing files
+bun run lint          # Check Biome lint rules
+bun run fix           # Apply Biome fixes, then Bun formatting
+```
 
 References:
 

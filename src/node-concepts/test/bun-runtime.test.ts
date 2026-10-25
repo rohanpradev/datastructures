@@ -100,6 +100,59 @@ describe("Bun file I/O and Glob", () => {
 		expect(matchesGlob("*.ts", "index.ts")).toBe(true);
 		expect(matchesGlob("*.ts", "src/index.ts")).toBe(false);
 	});
+
+	test("scans source files with Bun 1.4.4 extglob exclusions", async () => {
+		await mkdir(join(tempDir, "nested"));
+		for (const path of [
+			"a.ts",
+			"a.test.ts",
+			"nested/b.ts",
+			"nested/b.test.ts",
+			"nested/c.js",
+		]) {
+			await Bun.write(join(tempDir, path), "");
+		}
+
+		expect(await scanFiles(tempDir, "**/!(*.test).ts")).toEqual([
+			"a.ts",
+			"nested/b.ts",
+		]);
+	});
+
+	test("matches extglob alternatives and zero-padded brace ranges", async () => {
+		expect(matchesGlob("src/@(app|lib)/**/*.ts", "src/app/a/b.ts")).toBe(true);
+		expect(matchesGlob("src/@(app|lib)/**/*.ts", "src/lib/a.ts")).toBe(true);
+		expect(matchesGlob("src/@(app|lib)/**/*.ts", "src/test/a.ts")).toBe(false);
+		for (const path of [
+			"shard-01.json",
+			"shard-02.json",
+			"shard-03.json",
+			"shard-04.json",
+			"shard-2.json",
+		]) {
+			await Bun.write(join(tempDir, path), "{}");
+		}
+
+		expect(await scanFiles(tempDir, "shard-{01..03}.json")).toEqual([
+			"shard-01.json",
+			"shard-02.json",
+			"shard-03.json",
+		]);
+	});
+
+	test("escapes formerly literal patterns and preserves plain route groups", () => {
+		// Extglobs and brace ranges gained meaning in 1.4.4. Escape literal
+		// punctuation when the filename itself contains that syntax.
+		expect(matchesGlob("*(1).txt", "copy(1).txt")).toBe(false);
+		expect(matchesGlob("*[(]1).txt", "copy(1).txt")).toBe(true);
+		expect(matchesGlob("shard-{1..3}.json", "shard-{1..3}.json")).toBe(false);
+		expect(matchesGlob("shard-[{]1..3[}].json", "shard-{1..3}.json")).toBe(
+			true,
+		);
+		expect(matchesGlob("app/(marketing)/**", "app/(marketing)/index.ts")).toBe(
+			true,
+		);
+	});
 });
 
 describe("processSampleImageWithBun", () => {
@@ -146,7 +199,9 @@ describe("Bun hashing, password, and cookie APIs", () => {
 	test("hashes and verifies passwords", async () => {
 		const hash = await hashPassword("correct horse battery staple");
 
-		expect(await verifyPassword("correct horse battery staple", hash)).toBe(true);
+		expect(await verifyPassword("correct horse battery staple", hash)).toBe(
+			true,
+		);
 		expect(await verifyPassword("wrong password", hash)).toBe(false);
 	});
 
@@ -179,7 +234,9 @@ describe("Modern Bun API Patterns", () => {
 	const isProgressEvent = (value: unknown): value is ProgressEvent => {
 		if (!value || typeof value !== "object") return false;
 		const candidate = value as Partial<ProgressEvent>;
-		return typeof candidate.score === "number" && typeof candidate.slug === "string";
+		return (
+			typeof candidate.score === "number" && typeof candidate.slug === "string"
+		);
 	};
 
 	test("strictly parses and validates complete JSONL imports", () => {
@@ -204,7 +261,9 @@ describe("Modern Bun API Patterns", () => {
 	test("parses human-friendly JSON5 but keeps domain validation explicit", () => {
 		const config = parseJson5Config(
 			"{ level: 'advanced', minutes: 45, topics: ['queues',], }",
-			(value): value is { level: string; minutes: number; topics: string[] } => {
+			(
+				value,
+			): value is { level: string; minutes: number; topics: string[] } => {
 				if (!value || typeof value !== "object") return false;
 				const candidate = value as Record<string, unknown>;
 				return (
@@ -238,7 +297,11 @@ describe("Modern Bun API Patterns", () => {
 
 		expect(verifyCsrfToken(token, secret, 60_000)).toBe(true);
 		expect(
-			verifyCsrfToken(token, "another-secure-secret-with-32-characters", 60_000),
+			verifyCsrfToken(
+				token,
+				"another-secure-secret-with-32-characters",
+				60_000,
+			),
 		).toBe(false);
 	});
 
@@ -258,7 +321,10 @@ describe("Modern Bun API Patterns", () => {
 
 	test("previews UTC cron schedules without registering a job", () => {
 		expect(
-			nextCronOccurrence("0 9 * * MON-FRI", new Date("2026-07-17T10:00:00Z"))?.toISOString(),
+			nextCronOccurrence(
+				"0 9 * * MON-FRI",
+				new Date("2026-07-17T10:00:00Z"),
+			)?.toISOString(),
 		).toBe("2026-07-20T09:00:00.000Z");
 	});
 });

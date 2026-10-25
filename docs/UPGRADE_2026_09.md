@@ -1,21 +1,20 @@
 # September 2026 maintenance update
 
-Package metadata was checked against the live npm registry on September 22,
-2026. CI uses the same Bun version as `packageManager`.
+Package metadata was checked against the live npm registry on September 22, 2026. CI uses the same Bun version as `packageManager`.
 
-| Component | Version |
-|---|---|
-| Bun runtime and types | 1.4.2 |
-| TypeScript | 7.0.2 |
-| Biome | 2.5.14 |
-| LangChain core | 1.2.12 |
-| LangGraph | 1.4.17 |
-| LangGraph checkpoint | 1.1.5 |
-| MCP server | 2.0.0 |
-| AI SDK | 7.0.109 |
-| Scalar API reference | 1.70.0 |
-| Zod | 4.6.5 |
-| Drizzle ORM and Kit | 1.0.0-rc.4 |
+| Component             | Version    |
+| --------------------- | ---------- |
+| Bun runtime and types | 1.4.2      |
+| TypeScript            | 7.0.2      |
+| Biome                 | 2.5.14     |
+| LangChain core        | 1.2.12     |
+| LangGraph             | 1.4.17     |
+| LangGraph checkpoint  | 1.1.5      |
+| MCP server            | 2.0.0      |
+| AI SDK                | 7.0.109    |
+| Scalar API reference  | 1.70.0     |
+| Zod                   | 4.6.5      |
+| Drizzle ORM and Kit   | 1.0.0-rc.4 |
 
 Drizzle follows the official `rc` channel for v1, with ORM and Kit pinned
 together. The npm `latest` tags still refer to pre-v1 stable releases. The

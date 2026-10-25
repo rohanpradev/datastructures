@@ -75,30 +75,30 @@ Result: [[1,6], [8,10], [15,18]]
  * // → [[1,6],[8,10],[15,18]]
  */
 export function mergeIntervals(
-  intervals: Array<[number, number]>,
+	intervals: Array<[number, number]>,
 ): Array<[number, number]> {
-  if (intervals.length === 0) return [];
+	if (intervals.length === 0) return [];
 
-  // Step 1: Sort intervals by their start value
-  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+	// Step 1: Sort intervals by their start value
+	const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
 
-  const result: Array<[number, number]> = [];
+	const result: Array<[number, number]> = [];
 
-  // Step 2: Iterate through sorted intervals
-  for (const [start, end] of sorted) {
-    const last = result[result.length - 1];
+	// Step 2: Iterate through sorted intervals
+	for (const [start, end] of sorted) {
+		const last = result[result.length - 1];
 
-    // Case A: No overlap → add new interval
-    if (!last || last[1] < start) {
-      result.push([start, end]);
-    }
-    // Case B: Overlap → merge with the last interval
-    else {
-      last[1] = Math.max(last[1], end);
-    }
-  }
+		// Case A: No overlap → add new interval
+		if (!last || last[1] < start) {
+			result.push([start, end]);
+		}
+		// Case B: Overlap → merge with the last interval
+		else {
+			last[1] = Math.max(last[1], end);
+		}
+	}
 
-  return result;
+	return result;
 }
 ```
 
@@ -199,32 +199,32 @@ The middle seat (`index 2`) maximizes the distance to the closest occupied seat.
  * to the closest occupied seat.
  */
 export function findBestSeat(seats: number[]): number {
-  let bestIndex = -1;
-  let maxEmptyLength = 0;
+	let bestIndex = -1;
+	let maxEmptyLength = 0;
 
-  // Index of the last occupied seat
-  let lastOccupiedIndex = 0;
+	// Index of the last occupied seat
+	let lastOccupiedIndex = 0;
 
-  // Scan for the next occupied seat
-  for (let currentIndex = 1; currentIndex < seats.length; currentIndex++) {
-    if (seats[currentIndex] === 1) {
-      // Number of empty seats between two occupied seats
-      const emptyLength = currentIndex - lastOccupiedIndex - 1;
+	// Scan for the next occupied seat
+	for (let currentIndex = 1; currentIndex < seats.length; currentIndex++) {
+		if (seats[currentIndex] === 1) {
+			// Number of empty seats between two occupied seats
+			const emptyLength = currentIndex - lastOccupiedIndex - 1;
 
-      // Update best seat if this stretch is longer
-      if (emptyLength > maxEmptyLength) {
-        maxEmptyLength = emptyLength;
+			// Update best seat if this stretch is longer
+			if (emptyLength > maxEmptyLength) {
+				maxEmptyLength = emptyLength;
 
-        // Best seat is the middle of the empty stretch
-        bestIndex = Math.floor((lastOccupiedIndex + currentIndex) / 2);
-      }
+				// Best seat is the middle of the empty stretch
+				bestIndex = Math.floor((lastOccupiedIndex + currentIndex) / 2);
+			}
 
-      // Move pointer to current occupied seat
-      lastOccupiedIndex = currentIndex;
-    }
-  }
+			// Move pointer to current occupied seat
+			lastOccupiedIndex = currentIndex;
+		}
+	}
 
-  return bestIndex;
+	return bestIndex;
 }
 ```
 
@@ -335,25 +335,25 @@ This allows finding a zero-sum subarray in **linear time**.
 
 ```ts
 export function zeroSumSubarray(nums: number[]): number[] | -1 {
-  let prefixSum = 0;
-  const prefixSumIndex = new Map<number, number>();
+	let prefixSum = 0;
+	const prefixSumIndex = new Map<number, number>();
 
-  for (let i = 0; i < nums.length; i++) {
-    prefixSum += nums[i];
+	for (let i = 0; i < nums.length; i++) {
+		prefixSum += nums[i];
 
-    if (prefixSum === 0) {
-      return nums.slice(0, i + 1);
-    }
+		if (prefixSum === 0) {
+			return nums.slice(0, i + 1);
+		}
 
-    if (prefixSumIndex.has(prefixSum)) {
-      const startIndex = prefixSumIndex.get(prefixSum)! + 1;
-      return nums.slice(startIndex, i + 1);
-    }
+		if (prefixSumIndex.has(prefixSum)) {
+			const startIndex = prefixSumIndex.get(prefixSum)! + 1;
+			return nums.slice(startIndex, i + 1);
+		}
 
-    prefixSumIndex.set(prefixSum, i);
-  }
+		prefixSumIndex.set(prefixSum, i);
+	}
 
-  return -1;
+	return -1;
 }
 ```
 
@@ -483,27 +483,27 @@ By sorting and selecting medians from the largest possible values, we ensure the
  * maxMedianSum([1,2,3,4,5,6]) // 8
  */
 export function maxMedianSum(nums: number[]): number {
-  // Step 1: Sort the array in ascending order
-  nums.sort((a, b) => a - b);
+	// Step 1: Sort the array in ascending order
+	nums.sort((a, b) => a - b);
 
-  const n = nums.length;
-  const groups = Math.floor(n / 3);
-  let sum = 0;
+	const n = nums.length;
+	const groups = Math.floor(n / 3);
+	let sum = 0;
 
-  /*
+	/*
     Start from the second-largest element.
     Each step skips the largest element of the group
     and picks the median.
   */
-  let index = n - 2;
+	let index = n - 2;
 
-  // Step 2: Collect medians
-  for (let i = 0; i < groups; i++) {
-    sum += nums[index];
-    index -= 2;
-  }
+	// Step 2: Collect medians
+	for (let i = 0; i < groups; i++) {
+		sum += nums[index];
+		index -= 2;
+	}
 
-  return sum;
+	return sum;
 }
 ```
 
@@ -615,27 +615,27 @@ Result: [3, 5]
 
 ```ts
 export function missingNumbers(nums: number[]): [number, number] {
-  const n = nums.length + 2;
-  const expectedSum = (n * (n + 1)) / 2;
-  const actualSum = nums.reduce((a, b) => a + b, 0);
-  const missingSum = expectedSum - actualSum;
+	const n = nums.length + 2;
+	const expectedSum = (n * (n + 1)) / 2;
+	const actualSum = nums.reduce((a, b) => a + b, 0);
+	const missingSum = expectedSum - actualSum;
 
-  const mid = Math.floor(missingSum / 2);
-  const expectedLeftSum = (mid * (mid + 1)) / 2;
-  const expectedRightSum = expectedSum - expectedLeftSum;
+	const mid = Math.floor(missingSum / 2);
+	const expectedLeftSum = (mid * (mid + 1)) / 2;
+	const expectedRightSum = expectedSum - expectedLeftSum;
 
-  let actualLeftSum = 0;
-  let actualRightSum = 0;
+	let actualLeftSum = 0;
+	let actualRightSum = 0;
 
-  for (const num of nums) {
-    if (num <= mid) actualLeftSum += num;
-    else actualRightSum += num;
-  }
+	for (const num of nums) {
+		if (num <= mid) actualLeftSum += num;
+		else actualRightSum += num;
+	}
 
-  const firstMissing = expectedLeftSum - actualLeftSum;
-  const secondMissing = expectedRightSum - actualRightSum;
+	const firstMissing = expectedLeftSum - actualLeftSum;
+	const secondMissing = expectedRightSum - actualRightSum;
 
-  return [firstMissing, secondMissing];
+	return [firstMissing, secondMissing];
 }
 ```
 
@@ -727,19 +727,19 @@ Output: 2
 
 ```ts
 export function majorityElement(nums: number[]): number {
-  let candidate: number | null = null;
-  let count = 0;
+	let candidate: number | null = null;
+	let count = 0;
 
-  for (const num of nums) {
-    if (count === 0) {
-      candidate = num; // pick a new candidate
-    }
+	for (const num of nums) {
+		if (count === 0) {
+			candidate = num; // pick a new candidate
+		}
 
-    if (num === candidate) count++;
-    else count--;
-  }
+		if (num === candidate) count++;
+		else count--;
+	}
 
-  return candidate!;
+	return candidate!;
 }
 ```
 
@@ -869,38 +869,38 @@ Return [2, 4]
 
 ```ts
 export function sweetAndSavoury(
-  numbers: number[],
-  targetSum: number,
+	numbers: number[],
+	targetSum: number,
 ): [number, number] | null {
-  const sortedNumbers = [...numbers].sort((a, b) => a - b);
+	const sortedNumbers = [...numbers].sort((a, b) => a - b);
 
-  let leftIndex = 0;
-  let rightIndex = sortedNumbers.length - 1;
+	let leftIndex = 0;
+	let rightIndex = sortedNumbers.length - 1;
 
-  let closestValidSum = -Infinity;
-  let closestPair: [number, number] | null = null;
+	let closestValidSum = -Infinity;
+	let closestPair: [number, number] | null = null;
 
-  while (leftIndex < rightIndex) {
-    const leftValue = sortedNumbers[leftIndex];
-    const rightValue = sortedNumbers[rightIndex];
-    const currentSum = leftValue + rightValue;
+	while (leftIndex < rightIndex) {
+		const leftValue = sortedNumbers[leftIndex];
+		const rightValue = sortedNumbers[rightIndex];
+		const currentSum = leftValue + rightValue;
 
-    if (currentSum === targetSum) {
-      return [leftValue, rightValue];
-    }
+		if (currentSum === targetSum) {
+			return [leftValue, rightValue];
+		}
 
-    if (currentSum < targetSum) {
-      if (currentSum > closestValidSum) {
-        closestValidSum = currentSum;
-        closestPair = [leftValue, rightValue];
-      }
-      leftIndex++;
-    } else {
-      rightIndex--;
-    }
-  }
+		if (currentSum < targetSum) {
+			if (currentSum > closestValidSum) {
+				closestValidSum = currentSum;
+				closestPair = [leftValue, rightValue];
+			}
+			leftIndex++;
+		} else {
+			rightIndex--;
+		}
+	}
 
-  return closestPair;
+	return closestPair;
 }
 ```
 
@@ -1045,55 +1045,55 @@ Each river is discovered by **exploring all connected 1s** before moving on.
 
 ```ts
 export function riverSizes(matrix: number[][]): number[] {
-  // Store the size of each discovered river
-  const riverSizes: number[] = [];
+	// Store the size of each discovered river
+	const riverSizes: number[] = [];
 
-  // Directions for moving up, down, left, and right
-  const directions = [
-    [1, 0], // down
-    [-1, 0], // up
-    [0, 1], // right
-    [0, -1], // left
-  ];
+	// Directions for moving up, down, left, and right
+	const directions = [
+		[1, 0], // down
+		[-1, 0], // up
+		[0, 1], // right
+		[0, -1], // left
+	];
 
-  /**
-   * Depth-First Search to explore a river starting from (row, col).
-   */
-  function dfs(row: number, col: number): number {
-    // Stop if out of bounds or not part of a river
-    if (
-      row < 0 ||
-      row >= matrix.length ||
-      col < 0 ||
-      col >= matrix[0].length ||
-      matrix[row][col] === 0
-    ) {
-      return 0;
-    }
+	/**
+	 * Depth-First Search to explore a river starting from (row, col).
+	 */
+	function dfs(row: number, col: number): number {
+		// Stop if out of bounds or not part of a river
+		if (
+			row < 0 ||
+			row >= matrix.length ||
+			col < 0 ||
+			col >= matrix[0].length ||
+			matrix[row][col] === 0
+		) {
+			return 0;
+		}
 
-    // Mark as visited
-    matrix[row][col] = 0;
+		// Mark as visited
+		matrix[row][col] = 0;
 
-    let currentRiverSize = 1;
+		let currentRiverSize = 1;
 
-    // Explore neighbors
-    for (const [rowOffset, colOffset] of directions) {
-      currentRiverSize += dfs(row + rowOffset, col + colOffset);
-    }
+		// Explore neighbors
+		for (const [rowOffset, colOffset] of directions) {
+			currentRiverSize += dfs(row + rowOffset, col + colOffset);
+		}
 
-    return currentRiverSize;
-  }
+		return currentRiverSize;
+	}
 
-  // Traverse the matrix
-  for (let row = 0; row < matrix.length; row++) {
-    for (let col = 0; col < matrix[0].length; col++) {
-      if (matrix[row][col] === 1) {
-        riverSizes.push(dfs(row, col));
-      }
-    }
-  }
+	// Traverse the matrix
+	for (let row = 0; row < matrix.length; row++) {
+		for (let col = 0; col < matrix[0].length; col++) {
+			if (matrix[row][col] === 1) {
+				riverSizes.push(dfs(row, col));
+			}
+		}
+	}
 
-  return riverSizes;
+	return riverSizes;
 }
 ```
 
@@ -1256,58 +1256,58 @@ Final:
 
 ```ts
 export function removeIslands(matrix: number[][]): number[][] {
-  const rows = matrix.length;
-  const cols = matrix[0].length;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
 
-  const directions = [
-    [1, 0], // down
-    [-1, 0], // up
-    [0, 1], // right
-    [0, -1], // left
-  ];
+	const directions = [
+		[1, 0], // down
+		[-1, 0], // up
+		[0, 1], // right
+		[0, -1], // left
+	];
 
-  function dfs(row: number, col: number): void {
-    if (
-      row < 0 ||
-      row >= rows ||
-      col < 0 ||
-      col >= cols ||
-      matrix[row][col] !== 1
-    ) {
-      return;
-    }
+	function dfs(row: number, col: number): void {
+		if (
+			row < 0 ||
+			row >= rows ||
+			col < 0 ||
+			col >= cols ||
+			matrix[row][col] !== 1
+		) {
+			return;
+		}
 
-    // Mark as safe using a temporary value
-    matrix[row][col] = 2;
+		// Mark as safe using a temporary value
+		matrix[row][col] = 2;
 
-    for (const [dr, dc] of directions) {
-      dfs(row + dr, col + dc);
-    }
-  }
+		for (const [dr, dc] of directions) {
+			dfs(row + dr, col + dc);
+		}
+	}
 
-  // Step 1: Mark all border-connected land as safe
-  for (let col = 0; col < cols; col++) {
-    if (matrix[0][col] === 1) dfs(0, col);
-    if (matrix[rows - 1][col] === 1) dfs(rows - 1, col);
-  }
+	// Step 1: Mark all border-connected land as safe
+	for (let col = 0; col < cols; col++) {
+		if (matrix[0][col] === 1) dfs(0, col);
+		if (matrix[rows - 1][col] === 1) dfs(rows - 1, col);
+	}
 
-  for (let row = 0; row < rows; row++) {
-    if (matrix[row][0] === 1) dfs(row, 0);
-    if (matrix[row][cols - 1] === 1) dfs(row, cols - 1);
-  }
+	for (let row = 0; row < rows; row++) {
+		if (matrix[row][0] === 1) dfs(row, 0);
+		if (matrix[row][cols - 1] === 1) dfs(row, cols - 1);
+	}
 
-  // Step 2: Remove islands and restore safe land
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      if (matrix[row][col] === 1) {
-        matrix[row][col] = 0; // remove island
-      } else if (matrix[row][col] === 2) {
-        matrix[row][col] = 1; // restore safe land
-      }
-    }
-  }
+	// Step 2: Remove islands and restore safe land
+	for (let row = 0; row < rows; row++) {
+		for (let col = 0; col < cols; col++) {
+			if (matrix[row][col] === 1) {
+				matrix[row][col] = 0; // remove island
+			} else if (matrix[row][col] === 2) {
+				matrix[row][col] = 1; // restore safe land
+			}
+		}
+	}
 
-  return matrix;
+	return matrix;
 }
 ```
 
@@ -1490,59 +1490,59 @@ This is similar to:
  * If conversion is impossible, returns -1.
  */
 export function minimumPassMatrix(matrix: number[][]): number {
-  const rows = matrix.length;
-  const cols = matrix[0].length;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
 
-  const queue: Array<[number, number]> = [];
-  let negativeCount = 0;
+	const queue: Array<[number, number]> = [];
+	let negativeCount = 0;
 
-  // Initialize queue with all positive numbers
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (matrix[r][c] > 0) queue.push([r, c]);
-      else if (matrix[r][c] < 0) negativeCount++;
-    }
-  }
+	// Initialize queue with all positive numbers
+	for (let r = 0; r < rows; r++) {
+		for (let c = 0; c < cols; c++) {
+			if (matrix[r][c] > 0) queue.push([r, c]);
+			else if (matrix[r][c] < 0) negativeCount++;
+		}
+	}
 
-  const directions: Array<[number, number]> = [
-    [1, 0], // down
-    [-1, 0], // up
-    [0, 1], // right
-    [0, -1], // left
-  ];
+	const directions: Array<[number, number]> = [
+		[1, 0], // down
+		[-1, 0], // up
+		[0, 1], // right
+		[0, -1], // left
+	];
 
-  let passes = 0;
-  let head = 0;
+	let passes = 0;
+	let head = 0;
 
-  // BFS by levels (each level = one pass)
-  while (head < queue.length && negativeCount > 0) {
-    const levelEnd = queue.length;
+	// BFS by levels (each level = one pass)
+	while (head < queue.length && negativeCount > 0) {
+		const levelEnd = queue.length;
 
-    while (head < levelEnd) {
-      const [row, col] = queue[head++]!;
+		while (head < levelEnd) {
+			const [row, col] = queue[head++]!;
 
-      for (const [dr, dc] of directions) {
-        const newRow = row + dr;
-        const newCol = col + dc;
+			for (const [dr, dc] of directions) {
+				const newRow = row + dr;
+				const newCol = col + dc;
 
-        if (
-          newRow >= 0 &&
-          newRow < rows &&
-          newCol >= 0 &&
-          newCol < cols &&
-          matrix[newRow][newCol] < 0
-        ) {
-          matrix[newRow][newCol] *= -1;
-          negativeCount--;
-          queue.push([newRow, newCol]);
-        }
-      }
-    }
+				if (
+					newRow >= 0 &&
+					newRow < rows &&
+					newCol >= 0 &&
+					newCol < cols &&
+					matrix[newRow][newCol] < 0
+				) {
+					matrix[newRow][newCol] *= -1;
+					negativeCount--;
+					queue.push([newRow, newCol]);
+				}
+			}
+		}
 
-    passes++;
-  }
+		passes++;
+	}
 
-  return negativeCount === 0 ? passes : -1;
+	return negativeCount === 0 ? passes : -1;
 }
 ```
 
@@ -1650,21 +1650,21 @@ Result: [["abc", "bcd", "cde"], ["abd"], ["abcd", "cdef"]]
  * // → [["abc","bcd","cde"],["abd"]]
  */
 export function groupStringsByDifferences(strings: string[]): string[][] {
-  const map: Map<string, string[]> = new Map();
+	const map: Map<string, string[]> = new Map();
 
-  for (const str of strings) {
-    // Compute difference pattern
-    const diffs: number[] = [];
-    for (let i = 1; i < str.length; i++) {
-      diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
-    }
+	for (const str of strings) {
+		// Compute difference pattern
+		const diffs: number[] = [];
+		for (let i = 1; i < str.length; i++) {
+			diffs.push(str.charCodeAt(i) - str.charCodeAt(i - 1));
+		}
 
-    const key = diffs.join(",");
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(str);
-  }
+		const key = diffs.join(",");
+		if (!map.has(key)) map.set(key, []);
+		map.get(key)!.push(str);
+	}
 
-  return Array.from(map.values());
+	return Array.from(map.values());
 }
 ```
 
@@ -1788,39 +1788,39 @@ Result:
  * // → ["London", "Paris", "Berlin", "Rome"]
  */
 export function restoreTravelPath<T extends string | number>(
-  pairs: Array<[T, T]>,
+	pairs: Array<[T, T]>,
 ): T[] {
-  // Map each place to the place visited immediately after it
-  const nextPlace = new Map<T, T>();
+	// Map each place to the place visited immediately after it
+	const nextPlace = new Map<T, T>();
 
-  // Track start and end appearances
-  const starts = new Set<T>();
-  const ends = new Set<T>();
+	// Track start and end appearances
+	const starts = new Set<T>();
+	const ends = new Set<T>();
 
-  // Build the graph
-  for (const [from, to] of pairs) {
-    nextPlace.set(from, to);
-    starts.add(from);
-    ends.add(to);
-  }
+	// Build the graph
+	for (const [from, to] of pairs) {
+		nextPlace.set(from, to);
+		starts.add(from);
+		ends.add(to);
+	}
 
-  // Find the starting place (no incoming edge)
-  let start: T | undefined;
-  for (const place of starts) {
-    if (!ends.has(place)) {
-      start = place;
-      break;
-    }
-  }
+	// Find the starting place (no incoming edge)
+	let start: T | undefined;
+	for (const place of starts) {
+		if (!ends.has(place)) {
+			start = place;
+			break;
+		}
+	}
 
-  // Reconstruct the path
-  const path: T[] = [];
-  while (start !== undefined) {
-    path.push(start);
-    start = nextPlace.get(start);
-  }
+	// Reconstruct the path
+	const path: T[] = [];
+	while (start !== undefined) {
+		path.push(start);
+		start = nextPlace.get(start);
+	}
 
-  return path;
+	return path;
 }
 ```
 
@@ -1939,66 +1939,66 @@ Result: 6
 
 ```ts
 function maxExpressionValue(matrix: (number | string)[][]): number {
-  const rows = matrix.length;
-  const cols = matrix[0].length;
-  let maxValue = -Infinity;
+	const rows = matrix.length;
+	const cols = matrix[0].length;
+	let maxValue = -Infinity;
 
-  const evaluateTokens = (tokens: (number | string)[]) => {
-    let result = tokens[0] as number;
-    for (let i = 1; i < tokens.length; i += 2) {
-      const op = tokens[i] as string;
-      const num = tokens[i + 1] as number;
-      switch (op) {
-        case "+":
-          result += num;
-          break;
-        case "-":
-          result -= num;
-          break;
-        case "*":
-          result *= num;
-          break;
-        case "/":
-          result /= num;
-          break;
-      }
-    }
-    return result;
-  };
+	const evaluateTokens = (tokens: (number | string)[]) => {
+		let result = tokens[0] as number;
+		for (let i = 1; i < tokens.length; i += 2) {
+			const op = tokens[i] as string;
+			const num = tokens[i + 1] as number;
+			switch (op) {
+				case "+":
+					result += num;
+					break;
+				case "-":
+					result -= num;
+					break;
+				case "*":
+					result *= num;
+					break;
+				case "/":
+					result /= num;
+					break;
+			}
+		}
+		return result;
+	};
 
-  const processLine = (line: (number | string)[]) => {
-    let tokens: (number | string)[] = [];
-    for (const val of line) {
-      if (typeof val === "number") {
-        if (
-          tokens.length === 0 ||
-          typeof tokens[tokens.length - 1] === "string"
-        ) {
-          tokens.push(val);
-        } else {
-          if (tokens.length >= 3)
-            maxValue = Math.max(maxValue, evaluateTokens(tokens));
-          tokens = [val];
-        }
-      } else {
-        tokens.push(val);
-      }
-    }
-    if (tokens.length >= 3)
-      maxValue = Math.max(maxValue, evaluateTokens(tokens));
-  };
+	const processLine = (line: (number | string)[]) => {
+		let tokens: (number | string)[] = [];
+		for (const val of line) {
+			if (typeof val === "number") {
+				if (
+					tokens.length === 0 ||
+					typeof tokens[tokens.length - 1] === "string"
+				) {
+					tokens.push(val);
+				} else {
+					if (tokens.length >= 3)
+						maxValue = Math.max(maxValue, evaluateTokens(tokens));
+					tokens = [val];
+				}
+			} else {
+				tokens.push(val);
+			}
+		}
+		if (tokens.length >= 3)
+			maxValue = Math.max(maxValue, evaluateTokens(tokens));
+	};
 
-  // Process all rows
-  for (let r = 0; r < rows; r++) processLine(matrix[r]);
+	// Process all rows
+	for (let r = 0; r < rows; r++) processLine(matrix[r]);
 
-  // Process all columns
-  for (let c = 0; c < cols; c++) {
-    const column: (number | string)[] = [];
-    for (let r = 0; r < rows; r++) column.push(matrix[r][c]);
-    processLine(column);
-  }
+	// Process all columns
+	for (let c = 0; c < cols; c++) {
+		const column: (number | string)[] = [];
+		for (let r = 0; r < rows; r++) column.push(matrix[r][c]);
+		processLine(column);
+	}
 
-  return maxValue;
+	return maxValue;
 }
 ```
 
@@ -2099,23 +2099,23 @@ Result: 70
  * @returns Number of minutes until next departure, or -1 if none
  */
 export function nextDeparture(
-  departures: string[],
-  currentTime: string,
+	departures: string[],
+	currentTime: string,
 ): number {
-  const toMinutes = (time: string) => {
-    const [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
-  };
+	const toMinutes = (time: string) => {
+		const [h, m] = time.split(":").map(Number);
+		return h * 60 + m;
+	};
 
-  const current = toMinutes(currentTime);
+	const current = toMinutes(currentTime);
 
-  const departuresInMinutes = departures.map(toMinutes).sort((a, b) => a - b);
+	const departuresInMinutes = departures.map(toMinutes).sort((a, b) => a - b);
 
-  for (const dep of departuresInMinutes) {
-    if (dep > current) return dep - current;
-  }
+	for (const dep of departuresInMinutes) {
+		if (dep > current) return dep - current;
+	}
 
-  return -1;
+	return -1;
 }
 ```
 
@@ -2228,49 +2228,49 @@ Longest found: "bb"
  * // → "bab"
  */
 export function longestPalindromeSubString(input: string): string {
-  let longestStartIndex = 0;
-  let longestLength = 0;
+	let longestStartIndex = 0;
+	let longestLength = 0;
 
-  function expandAroundCenter(
-    leftIndex: number,
-    rightIndex: number,
-  ): [number, number] {
-    while (
-      leftIndex >= 0 &&
-      rightIndex < input.length &&
-      input[leftIndex] === input[rightIndex]
-    ) {
-      leftIndex--;
-      rightIndex++;
-    }
+	function expandAroundCenter(
+		leftIndex: number,
+		rightIndex: number,
+	): [number, number] {
+		while (
+			leftIndex >= 0 &&
+			rightIndex < input.length &&
+			input[leftIndex] === input[rightIndex]
+		) {
+			leftIndex--;
+			rightIndex++;
+		}
 
-    return [leftIndex + 1, rightIndex - 1];
-  }
+		return [leftIndex + 1, rightIndex - 1];
+	}
 
-  for (let currentIndex = 0; currentIndex < input.length; currentIndex++) {
-    // Odd-length palindrome
-    const [oddStart, oddEnd] = expandAroundCenter(currentIndex, currentIndex);
-    const oddLength = oddEnd - oddStart + 1;
+	for (let currentIndex = 0; currentIndex < input.length; currentIndex++) {
+		// Odd-length palindrome
+		const [oddStart, oddEnd] = expandAroundCenter(currentIndex, currentIndex);
+		const oddLength = oddEnd - oddStart + 1;
 
-    if (oddLength > longestLength) {
-      longestStartIndex = oddStart;
-      longestLength = oddLength;
-    }
+		if (oddLength > longestLength) {
+			longestStartIndex = oddStart;
+			longestLength = oddLength;
+		}
 
-    // Even-length palindrome
-    const [evenStart, evenEnd] = expandAroundCenter(
-      currentIndex,
-      currentIndex + 1,
-    );
-    const evenLength = evenEnd - evenStart + 1;
+		// Even-length palindrome
+		const [evenStart, evenEnd] = expandAroundCenter(
+			currentIndex,
+			currentIndex + 1,
+		);
+		const evenLength = evenEnd - evenStart + 1;
 
-    if (evenLength > longestLength) {
-      longestStartIndex = evenStart;
-      longestLength = evenLength;
-    }
-  }
+		if (evenLength > longestLength) {
+			longestStartIndex = evenStart;
+			longestLength = evenLength;
+		}
+	}
 
-  return input.slice(longestStartIndex, longestStartIndex + longestLength);
+	return input.slice(longestStartIndex, longestStartIndex + longestLength);
 }
 ```
 
@@ -2376,28 +2376,28 @@ This avoids sorting the entire array.
  * // → [1,2]
  */
 export function topK(nums: number[], k: number): number[] {
-  const result: number[] = [];
-  const freqMap = new Map<number, number>();
-  const buckets: number[][] = Array.from({ length: nums.length + 1 }, () => []);
+	const result: number[] = [];
+	const freqMap = new Map<number, number>();
+	const buckets: number[][] = Array.from({ length: nums.length + 1 }, () => []);
 
-  // Step 1: Count frequency
-  for (const num of nums) {
-    freqMap.set(num, (freqMap.get(num) ?? 0) + 1);
-  }
+	// Step 1: Count frequency
+	for (const num of nums) {
+		freqMap.set(num, (freqMap.get(num) ?? 0) + 1);
+	}
 
-  // Step 2: Place numbers into frequency buckets
-  for (const [num, freq] of freqMap) {
-    buckets[freq].push(num);
-  }
+	// Step 2: Place numbers into frequency buckets
+	for (const [num, freq] of freqMap) {
+		buckets[freq].push(num);
+	}
 
-  // Step 3: Traverse buckets from highest frequency
-  for (let i = nums.length; i >= 0 && result.length < k; i--) {
-    for (const num of buckets[i]) {
-      if (result.length < k) result.push(num);
-    }
-  }
+	// Step 3: Traverse buckets from highest frequency
+	for (let i = nums.length; i >= 0 && result.length < k; i--) {
+		for (const num of buckets[i]) {
+			if (result.length < k) result.push(num);
+		}
+	}
 
-  return result;
+	return result;
 }
 ```
 
@@ -2509,23 +2509,23 @@ Found target at (2,2)
  * searchInSortedMatrix(matrix, 20); // → -1
  */
 export function searchInSortedMatrix(
-  matrix: number[][],
-  target: number,
+	matrix: number[][],
+	target: number,
 ): [number, number] | -1 {
-  if (matrix.length === 0 || matrix[0].length === 0) return -1;
+	if (matrix.length === 0 || matrix[0].length === 0) return -1;
 
-  let row = 0;
-  let col = matrix[0].length - 1;
+	let row = 0;
+	let col = matrix[0].length - 1;
 
-  while (row < matrix.length && col >= 0) {
-    const current = matrix[row][col];
+	while (row < matrix.length && col >= 0) {
+		const current = matrix[row][col];
 
-    if (current === target) return [row, col];
-    if (current > target) col--;
-    else row++;
-  }
+		if (current === target) return [row, col];
+		if (current > target) col--;
+		else row++;
+	}
 
-  return -1;
+	return -1;
 }
 ```
 
@@ -2612,30 +2612,30 @@ Result: [1, 1, 2, 2, 3, 3]
  * // → [1,1,2,2,3,3]
  */
 export function threeNumbersSort(
-  nums: number[],
-  order: [number, number, number],
+	nums: number[],
+	order: [number, number, number],
 ): number[] {
-  let firstIdx = 0;
-  let lastIdx = nums.length - 1;
+	let firstIdx = 0;
+	let lastIdx = nums.length - 1;
 
-  // Pass 1: move order[0] to the front
-  for (let i = 0; i <= lastIdx; i++) {
-    if (nums[i] === order[0]) {
-      [nums[firstIdx], nums[i]] = [nums[i], nums[firstIdx]];
-      firstIdx++;
-    }
-  }
+	// Pass 1: move order[0] to the front
+	for (let i = 0; i <= lastIdx; i++) {
+		if (nums[i] === order[0]) {
+			[nums[firstIdx], nums[i]] = [nums[i], nums[firstIdx]];
+			firstIdx++;
+		}
+	}
 
-  // Pass 2: move order[2] to the back
-  // Stop at firstIdx to avoid overwriting order[0]
-  for (let i = nums.length - 1; i >= firstIdx; i--) {
-    if (nums[i] === order[2]) {
-      [nums[lastIdx], nums[i]] = [nums[i], nums[lastIdx]];
-      lastIdx--;
-    }
-  }
+	// Pass 2: move order[2] to the back
+	// Stop at firstIdx to avoid overwriting order[0]
+	for (let i = nums.length - 1; i >= firstIdx; i--) {
+		if (nums[i] === order[2]) {
+			[nums[lastIdx], nums[i]] = [nums[i], nums[lastIdx]];
+			lastIdx--;
+		}
+	}
 
-  return nums;
+	return nums;
 }
 ```
 

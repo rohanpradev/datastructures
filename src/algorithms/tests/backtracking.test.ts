@@ -57,12 +57,27 @@ describe("wordSearch", () => {
 	];
 
 	test("finds words by walking adjacent cells", () => {
-		expect(wordSearch(board.map((row) => [...row]), "ABCCED")).toBe(true);
-		expect(wordSearch(board.map((row) => [...row]), "SEE")).toBe(true);
+		expect(
+			wordSearch(
+				board.map((row) => [...row]),
+				"ABCCED",
+			),
+		).toBe(true);
+		expect(
+			wordSearch(
+				board.map((row) => [...row]),
+				"SEE",
+			),
+		).toBe(true);
 	});
 
 	test("does not reuse cells in the same path", () => {
-		expect(wordSearch(board.map((row) => [...row]), "ABCB")).toBe(false);
+		expect(
+			wordSearch(
+				board.map((row) => [...row]),
+				"ABCB",
+			),
+		).toBe(false);
 	});
 
 	test("handles empty word and empty board", () => {

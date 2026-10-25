@@ -95,28 +95,28 @@ bun run practice -- --random expert
 
 ## 8-Week Plan
 
-| Week | Focus | Practice target | Exit criteria |
-| --- | --- | --- | --- |
-| 1 | JavaScript and TypeScript fundamentals | `src/javascript-concepts`, `src/node-concepts/basics` | Explain closures, equality, promises, generators, event-loop order, and type boundaries. |
-| 2 | Arrays, strings, and sorting | `src/algorithms/arrays`, `src/algorithms/strings`, `src/algorithms/sorting` | Recognize two pointers, sliding window, prefix sum, binary search, and sorting trade-offs. |
-| 3 | Linked lists, stacks, queues, hash tables | `src/data-structures` | Implement each structure from scratch and defend operation complexity. |
-| 4 | Trees, BSTs, tries, heaps, graphs | `src/data-structures` | Traverse recursively/iteratively, use heap ordering, and choose BFS/DFS/topological patterns. |
-| 5 | Recursion, backtracking, DP, bit manipulation | `src/algorithms` | State recurrence/invariant before code and identify overlapping subproblems. |
-| 6 | Mixed interview patterns | `src/algorithms/interview-patterns` and FAANG guides | Solve unknown problems under time limits with clear verbal reasoning. |
-| 6 extension | Mutable range queries | `src/data-structures/fenwick-tree`, [segment-tree guide](./src/data-structures/segment-tree/SEGMENT_TREE_GUIDE.md) | Choose prefix sums, Fenwick, or segment tree; preserve half-open bounds and ordered combination. |
-| 7 | Bun, backend fundamentals, and AI-era interview drills | `src/node-concepts/bun-runtime`, `src/node-concepts/async`, `docs/AI_INTERVIEW_TRENDS_2026.md` | Use Bun file/Shell/test APIs, `bun:sqlite`, Bun.SQL/Redis discussion, retries, circuit breakers, code review, debugging, and AI-assisted/no-AI protocols. |
-| 8 | Enterprise system design primitives | `src/node-concepts/system-design`, `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md` | Explain in-memory implementation, production distributed upgrade, SLOs, observability, security, bottlenecks, and failure modes. |
+| Week        | Focus                                                  | Practice target                                                                                                    | Exit criteria                                                                                                                                             |
+| ----------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1           | JavaScript and TypeScript fundamentals                 | `src/javascript-concepts`, `src/node-concepts/basics`                                                              | Explain closures, equality, promises, generators, event-loop order, and type boundaries.                                                                  |
+| 2           | Arrays, strings, and sorting                           | `src/algorithms/arrays`, `src/algorithms/strings`, `src/algorithms/sorting`                                        | Recognize two pointers, sliding window, prefix sum, binary search, and sorting trade-offs.                                                                |
+| 3           | Linked lists, stacks, queues, hash tables              | `src/data-structures`                                                                                              | Implement each structure from scratch and defend operation complexity.                                                                                    |
+| 4           | Trees, BSTs, tries, heaps, graphs                      | `src/data-structures`                                                                                              | Traverse recursively/iteratively, use heap ordering, and choose BFS/DFS/topological patterns.                                                             |
+| 5           | Recursion, backtracking, DP, bit manipulation          | `src/algorithms`                                                                                                   | State recurrence/invariant before code and identify overlapping subproblems.                                                                              |
+| 6           | Mixed interview patterns                               | `src/algorithms/interview-patterns` and FAANG guides                                                               | Solve unknown problems under time limits with clear verbal reasoning.                                                                                     |
+| 6 extension | Mutable range queries                                  | `src/data-structures/fenwick-tree`, [segment-tree guide](./src/data-structures/segment-tree/SEGMENT_TREE_GUIDE.md) | Choose prefix sums, Fenwick, or segment tree; preserve half-open bounds and ordered combination.                                                          |
+| 7           | Bun, backend fundamentals, and AI-era interview drills | `src/node-concepts/bun-runtime`, `src/node-concepts/async`, `docs/AI_INTERVIEW_TRENDS_2026.md`                     | Use Bun file/Shell/test APIs, `bun:sqlite`, Bun.SQL/Redis discussion, retries, circuit breakers, code review, debugging, and AI-assisted/no-AI protocols. |
+| 8           | Enterprise system design primitives                    | `src/node-concepts/system-design`, `docs/ENTERPRISE_SYSTEM_DESIGN_CURRICULUM.md`                                   | Explain in-memory implementation, production distributed upgrade, SLOs, observability, security, bottlenecks, and failure modes.                          |
 
 ## 12-Week Expert Extension
 
 Use this after the 8-week plan or for senior/staff prep.
 
-| Week | Focus | Output |
-| --- | --- | --- |
-| 9 | Distributed caching and rate limiting | Design a multi-tenant API gateway with limiter, cache, Redis upgrade, and telemetry. |
-| 10 | Feeds, queues, SQL, and async resilience | Design fanout, Bun.SQL-backed state, retries, dead-letter queues, idempotency, and backpressure. |
-| 11 | AI/RAG system design | Design retrieval, ACL filtering, prompt-injection defenses, evaluation, fallback, and cost controls. |
-| 12 | Mock loop | Run one coding, one debugging, one AI-assisted, one system design, and one behavioral/story round. |
+| Week | Focus                                    | Output                                                                                               |
+| ---- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 9    | Distributed caching and rate limiting    | Design a multi-tenant API gateway with limiter, cache, Redis upgrade, and telemetry.                 |
+| 10   | Feeds, queues, SQL, and async resilience | Design fanout, Bun.SQL-backed state, retries, dead-letter queues, idempotency, and backpressure.     |
+| 11   | AI/RAG system design                     | Design retrieval, ACL filtering, prompt-injection defenses, evaluation, fallback, and cost controls. |
+| 12   | Mock loop                                | Run one coding, one debugging, one AI-assisted, one system design, and one behavioral/story round.   |
 
 ## Bun-Focused Skills
 
@@ -163,14 +163,14 @@ bun run practice:audit
 
 Rate each attempt from 0 to 5:
 
-| Score | Meaning |
-| --- | --- |
-| 0 | Could not identify the pattern. |
-| 1 | Identified the pattern but needed heavy hints. |
-| 2 | Brute force worked, optimized version did not. |
-| 3 | Optimized solution passed after debugging. |
-| 4 | Passed cleanly and explained complexity. |
-| 5 | Passed cleanly, handled follow-ups, and explained trade-offs. |
+| Score | Meaning                                                       |
+| ----- | ------------------------------------------------------------- |
+| 0     | Could not identify the pattern.                               |
+| 1     | Identified the pattern but needed heavy hints.                |
+| 2     | Brute force worked, optimized version did not.                |
+| 3     | Optimized solution passed after debugging.                    |
+| 4     | Passed cleanly and explained complexity.                      |
+| 5     | Passed cleanly, handled follow-ups, and explained trade-offs. |
 
 ## References
 

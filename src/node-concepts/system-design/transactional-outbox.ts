@@ -44,12 +44,16 @@ export class TransactionalOutbox {
 		}
 		this.db.transaction(() => {
 			this.db
-				.query(`INSERT INTO outbox_records(key, value) VALUES (?, ?)
-				ON CONFLICT(key) DO UPDATE SET value = excluded.value`)
+				.query(
+					`INSERT INTO outbox_records(key, value) VALUES (?, ?)
+				ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+				)
 				.run(key, value);
 			this.db
-				.query(`INSERT INTO outbox_events(event_id, key, value)
-				VALUES (?, ?, ?)`)
+				.query(
+					`INSERT INTO outbox_events(event_id, key, value)
+				VALUES (?, ?, ?)`,
+				)
 				.run(eventId, key, value);
 		})();
 	}

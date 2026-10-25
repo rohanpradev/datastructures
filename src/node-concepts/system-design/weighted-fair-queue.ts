@@ -4,8 +4,10 @@ export interface FairQueueResult<TTenant extends string, TValue> {
 	cost: number;
 }
 
-interface ScheduledWork<TTenant extends string, TValue>
-	extends FairQueueResult<TTenant, TValue> {
+interface ScheduledWork<TTenant extends string, TValue> extends FairQueueResult<
+	TTenant,
+	TValue
+> {
 	sequence: number;
 	virtualFinish: number;
 }
