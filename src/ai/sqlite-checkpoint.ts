@@ -141,19 +141,36 @@ export class DrizzleSqliteCheckpointer extends BaseCheckpointSaver<number> {
 		if (key.checkpointId)
 			conditions.push(eq(graphCheckpoints.checkpointId, key.checkpointId));
 
-		const rows = await this.db
-			.select()
-			.from(graphCheckpoints)
-			.where(and(...conditions))
-			.orderBy(desc(graphCheckpoints.checkpointId));
-
 		let yielded = 0;
-		for (const row of rows) {
-			const tuple = await this.hydrateTuple(row);
-			if (!metadataMatches(tuple.metadata, options.filter)) continue;
-			yield tuple;
-			yielded += 1;
-			if (options.limit !== undefined && yielded >= options.limit) return;
+		let cursor: string | undefined;
+		while (true) {
+			const batchSize = Math.min(
+				100,
+				options.filter ? 100 : (options.limit ?? 100) - yielded,
+			);
+			const rows = await this.db
+				.select()
+				.from(graphCheckpoints)
+				.where(
+					and(
+						...conditions,
+						...(cursor ? [lt(graphCheckpoints.checkpointId, cursor)] : []),
+					),
+				)
+				.orderBy(desc(graphCheckpoints.checkpointId))
+				.limit(batchSize);
+			for (const row of rows) {
+				const metadata = (await this.serde.loadsTyped(
+					row.metadataType,
+					row.metadata,
+				)) as CheckpointMetadata;
+				if (!metadataMatches(metadata, options.filter)) continue;
+				yield await this.hydrateTuple(row);
+				yielded++;
+				if (options.limit !== undefined && yielded >= options.limit) return;
+			}
+			if (rows.length < batchSize) return;
+			cursor = rows.at(-1)!.checkpointId;
 		}
 	}
 

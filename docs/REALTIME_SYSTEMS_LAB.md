@@ -28,7 +28,10 @@ to reuse the database. Tests use separate temporary or in-memory stores.
 | Restart        | Stop the server, then restart with the same database | Committed history survives; process counters restart at zero                 |
 | Bounded replay | While disconnected, publish more than 25 events      | HTTP pagination catches up; a socket with a large backlog is asked to resync |
 
-The stream keeps at most 200 visible rows per tab. That is a presentation bound;
+On a fresh room view, the stream loads the latest 200 events, then catches up
+from that cursor; reconnects recover from the tab's existing cursor. Older
+events remain available through the paginated event API. The stream keeps at
+most 200 visible rows per tab. That is a presentation bound;
 older committed records remain in SQLite. Browsers restored from their page
 cache reconnect and restart metrics polling; an explicit manual disconnect
 stays disconnected until you choose **Reconnect**.

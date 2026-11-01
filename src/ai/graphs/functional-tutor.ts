@@ -65,7 +65,7 @@ export class FunctionalTutorWorkflow implements TutorRunner {
 		const generateAnswer = task(
 			"functional_generate_answer",
 			async (input: FunctionalRunInput & { citations: LearningResource[] }) => {
-				const history = await repository.listMessages(input.threadId);
+				const history = await repository.listMessages(input.threadId, 40);
 				return tutorModel.generate({
 					citations: input.citations,
 					history,
@@ -83,8 +83,8 @@ export class FunctionalTutorWorkflow implements TutorRunner {
 					input.runId,
 					input.prompt,
 					input.generation.text,
+					metrics(input.generation),
 				);
-				await repository.completeRun(input.runId, metrics(input.generation));
 				return true;
 			},
 		);
