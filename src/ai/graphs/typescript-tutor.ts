@@ -46,7 +46,7 @@ export class TypeScriptTutorGraph {
 				};
 			})
 			.addNode("generate_answer", async (state) => {
-				const history = await repository.listMessages(state.threadId);
+				const history = await repository.listMessages(state.threadId, 40);
 				const generation = await tutorModel.generate({
 					citations: state.citations,
 					history,
@@ -73,8 +73,8 @@ export class TypeScriptTutorGraph {
 					state.runId,
 					state.prompt,
 					state.answer,
+					state.generation,
 				);
-				await repository.completeRun(state.runId, state.generation);
 				return { status: "completed" as const };
 			})
 			.addEdge(START, "retrieve_context")

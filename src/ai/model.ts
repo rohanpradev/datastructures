@@ -36,6 +36,21 @@ function toModelMessages(
 			(message) => message.role === "user" || message.role === "assistant",
 		)
 		.map((message) => ({ content: messageText(message), role: message.role }));
+	// Keep a contiguous suffix of complete turns within a conservative byte budget.
+	// Bytes are a provider-independent proxy, not an exact model token count.
+	let remaining = 32_000;
+	let start = messages.length;
+	for (let i = messages.length - 2; i >= 0; i -= 2) {
+		if (messages[i]?.role !== "user" || messages[i + 1]?.role !== "assistant")
+			break;
+		const size =
+			Buffer.byteLength(String(messages[i].content)) +
+			Buffer.byteLength(String(messages[i + 1].content));
+		if (size > remaining) break;
+		remaining -= size;
+		start = i;
+	}
+	messages.splice(0, start);
 	messages.push({ content: prompt, role: "user" });
 	return messages;
 }

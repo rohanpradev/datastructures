@@ -5,6 +5,16 @@ import { join } from "node:path";
 import { DurableEventLog } from "@/node-concepts/system-design/durable-event-log";
 
 describe("DurableEventLog", () => {
+	test("loads only the newest room events in ascending cursor order", () => {
+		using log = new DurableEventLog();
+		for (let i = 0; i < 205; i++) log.append("a", String(i), `event ${i}`);
+		log.append("b", "other", "other room");
+		const recent = log.recent("a");
+		expect(recent).toHaveLength(200);
+		expect(recent[0]?.text).toBe("event 5");
+		expect(recent.at(-1)?.text).toBe("event 204");
+		expect(log.read("a", recent.at(-1)!.sequence).events).toEqual([]);
+	});
 	test("deduplicates matching retries and rejects conflicting payloads atomically", () => {
 		using log = new DurableEventLog();
 		const first = log.append("orders", "event-1", "packed");

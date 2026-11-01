@@ -153,6 +153,21 @@ export class DurableEventLog {
 		};
 	}
 
+	/** Most recent events for a new viewer; subsequent reads use the cursor. */
+	recent(room: string, limit = 200): RoomEvent[] {
+		validateRoom(room);
+		if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
+			throw new EventLogError("limit must be an integer from 1 to 200", 400);
+		}
+		return this.db
+			.query<RoomEvent, [string, number]>(
+				`SELECT sequence, room, event_id AS eventId, text, created_at AS createdAt
+			 FROM room_events WHERE room = ? ORDER BY sequence DESC LIMIT ?`,
+			)
+			.all(room, limit)
+			.reverse();
+	}
+
 	close(): void {
 		this.db.close();
 	}

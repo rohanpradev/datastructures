@@ -73,6 +73,9 @@ export function createRealtimeLab(
 				const room = route[1];
 				validateRoom(room);
 				if (request.method === "GET") {
+					if (url.searchParams.get("recent") === "1") {
+						return json({ events: log.recent(room) });
+					}
 					return json(
 						log.read(
 							room,

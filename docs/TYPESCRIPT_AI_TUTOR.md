@@ -93,6 +93,12 @@ This guard is scoped to one server process; multi-process hosting needs a
 shared lease or transaction-backed admission mechanism. Calling the graph
 classes directly bypasses the transport orchestrator's guard.
 
+Generation uses at most the latest 40 stored messages and a 32,000-byte
+budget for complete earlier turns. This is a conservative size bound, not an
+exact token count; model context limits vary. Full conversation history remains
+available through the thread API. A crash before a turn is committed can leave
+a run marked running; operational recovery requires reconciling abandoned runs.
+
 JSON requests are limited to 64 KiB while streaming, including requests without
 `Content-Length`. Invalid JSON/UTF-8 returns 400, oversized bodies return 413,
 and invalid models or prompts return 422. Malformed path UUIDs return 400.

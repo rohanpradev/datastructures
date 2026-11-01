@@ -3,6 +3,10 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta
+			name="description"
+			content="Explore durable events, retries, and replay in an interactive real-time systems lab."
+		/>
 		<title>Systems in motion · Real-time lab</title>
 		<style>
 			:root {
@@ -472,6 +476,7 @@
 				cursor = 0,
 				socket,
 				generation = 0,
+				roomGeneration = 0,
 				online = true,
 				suspended = false,
 				timer,
@@ -480,7 +485,7 @@
 				$("feedback").textContent = text;
 			};
 
-			function show(event, source) {
+			function show(event, source, scroll = true) {
 				// The single server emits ordered room events. Replay may overlap the
 				// last delivered event, so a cursor suppresses duplicates in this view.
 				if (event.sequence <= cursor) return;
@@ -503,7 +508,17 @@
 				// Bound the DOM independently of retained database history.
 				if ($("events").children.length > 200)
 					$("events").firstElementChild.remove();
-				$("events").scrollTop = $("events").scrollHeight;
+				if (scroll) scrollEvents();
+			}
+
+			function scrollEvents() {
+				const events = $("events");
+				events.scrollTop = events.scrollHeight;
+			}
+
+			function showBatch(events, source) {
+				for (const event of events) show(event, source, false);
+				if (events.length) scrollEvents();
 			}
 
 			async function connect() {
@@ -513,6 +528,14 @@
 				if (!online) return;
 				$("status").textContent = "Catching up";
 				try {
+					if (cursor === 0) {
+						const response = await fetch(`/api/rooms/${room}/events?recent=1`);
+						if (!response.ok)
+							throw new Error("History temporarily unavailable");
+						const page = await response.json();
+						if (attempt !== generation) return;
+						showBatch(page.events, "Recent history");
+					}
 					let more;
 					do {
 						const response = await fetch(
@@ -522,7 +545,7 @@
 							throw new Error("History temporarily unavailable");
 						const page = await response.json();
 						if (attempt !== generation) return;
-						for (const event of page.events) show(event, "HTTP replay");
+						showBatch(page.events, "HTTP replay");
 						more = page.hasMore;
 					} while (more);
 					if (attempt !== generation || !online) return;
@@ -536,7 +559,7 @@
 						if (attempt !== generation) return;
 						const message = JSON.parse(data);
 						if (message.type === "snapshot") {
-							for (const event of message.events) show(event, "Socket replay");
+							showBatch(message.events, "Socket replay");
 						}
 						if (message.type === "event") show(message.event, "Live");
 						if (message.type === "resync_required")
@@ -560,6 +583,8 @@
 			}
 
 			async function publish(payload) {
+				const publishRoom = room;
+				const publishGeneration = roomGeneration;
 				$("send").disabled = true;
 				$("retry").disabled = true;
 				try {
@@ -573,14 +598,19 @@
 						throw new Error(`${response.status}: ${result.error}`);
 					// Do not advance the delivery cursor from a POST response: doing so
 					// could skip earlier messages still in flight on the subscription.
+					if (publishRoom !== room || publishGeneration !== roomGeneration)
+						return;
 					feedback(
 						`${response.status} · ${result.created ? "Committed" : "Existing event returned; no second write"} · sequence ${result.event.sequence}`,
 					);
 				} catch (error) {
-					feedback(`${error.message}. Retry keeps the original event ID.`);
+					if (publishRoom === room && publishGeneration === roomGeneration)
+						feedback(`${error.message}. Retry keeps the original event ID.`);
 				} finally {
-					$("send").disabled = false;
-					$("retry").disabled = !lastWrite;
+					if (publishRoom === room && publishGeneration === roomGeneration) {
+						$("send").disabled = false;
+						$("retry").disabled = !lastWrite;
+					}
 				}
 				await metrics();
 			}
@@ -606,9 +636,11 @@
 			};
 			$("room-form").onsubmit = (event) => {
 				event.preventDefault();
+				roomGeneration++;
 				room = $("room").value;
 				cursor = 0;
 				lastWrite = undefined;
+				$("send").disabled = false;
 				$("retry").disabled = true;
 				$("events").replaceChildren();
 				$("empty").hidden = false;

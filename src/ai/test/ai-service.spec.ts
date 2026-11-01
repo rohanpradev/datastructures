@@ -598,10 +598,41 @@ describe("TypeScript AI tutor service", () => {
 			result.runId,
 			new Error("private provider details"),
 		);
-		const failure = await api(new Request(path));
+		expect(
+			(await repository.getRun(result.threadId, result.runId))?.status,
+		).toBe("completed");
+		const failedId = Bun.randomUUIDv7();
+		await repository.startRun({
+			id: failedId,
+			threadId: result.threadId,
+			modelId: "test/model",
+		});
+		await repository.failRun(failedId, new Error("private provider details"));
+		const failure = await api(
+			new Request(
+				`http://localhost/v1/threads/${result.threadId}/runs/${failedId}`,
+			),
+		);
 		expect(await failure.json()).toMatchObject({
 			run: { status: "failed", error: "The tutor run failed." },
 		});
+	});
+
+	test("rolls back a turn if completing its run fails", async () => {
+		const threadId = Bun.randomUUIDv7();
+		const runId = Bun.randomUUIDv7();
+		await repository.ensureThread(threadId, "question");
+		await repository.startRun({ id: runId, threadId, modelId: "test/model" });
+		database.client
+			.exec(`CREATE TRIGGER reject_completion BEFORE UPDATE ON tutor_runs
+			WHEN NEW.status = 'completed' BEGIN SELECT RAISE(ABORT, 'test failure'); END`);
+		await expect(
+			repository.appendTurn(threadId, runId, "question", "answer", {
+				totalTokens: 1,
+			}),
+		).rejects.toThrow();
+		expect(await repository.listMessages(threadId)).toEqual([]);
+		expect((await repository.getRun(threadId, runId))?.status).toBe("running");
 	});
 
 	test("returns client errors for malformed path IDs", async () => {

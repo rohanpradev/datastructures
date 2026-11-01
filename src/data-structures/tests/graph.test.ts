@@ -234,6 +234,16 @@ describe("Graph - DFS", () => {
 		graph.addVertex("A");
 		expect(graph.dfs("A")).toEqual(["A"]);
 	});
+
+	test("preserves recursive order with cross edges and handles deep paths", () => {
+		const graph = new Graph<number>(true);
+		graph.addEdge(0, 1).addEdge(0, 2).addEdge(1, 2).addEdge(1, 3);
+		expect(graph.dfs(0)).toEqual([0, 1, 2, 3]);
+		for (let i = 3; i < 20000; i++) graph.addEdge(i, i + 1);
+		const result = graph.dfs(0);
+		expect(result).toHaveLength(20001);
+		expect(result[20000]).toBe(20000);
+	});
 });
 
 describe("Graph - Utility Methods", () => {

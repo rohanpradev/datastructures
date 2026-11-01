@@ -255,7 +255,7 @@ class Graph<T = string> {
 	}
 
 	/**
-	 * Depth-First Search traversal (recursive)
+	 * Depth-First Search traversal (iterative)
 	 * Time Complexity: O(V + E)
 	 * Space Complexity: O(V)
 	 *
@@ -270,22 +270,25 @@ class Graph<T = string> {
 	dfs(start: T): T[] {
 		if (!this.adjacencyList.has(start)) return [];
 
-		const result: T[] = [];
-		const visited = new Set<T>();
-
-		const dfsHelper = (vertex: T): void => {
-			visited.add(vertex);
-			result.push(vertex);
-
-			const neighbors = this.adjacencyList.get(vertex)!;
-			for (const neighbor of neighbors) {
-				if (!visited.has(neighbor)) {
-					dfsHelper(neighbor);
-				}
+		const result: T[] = [start];
+		const visited = new Set<T>([start]);
+		// A frame retains the next edge, matching recursive neighbor order
+		// without consuming the JavaScript call stack on deep graphs.
+		const stack = [{ vertex: start, next: 0 }];
+		while (stack.length > 0) {
+			const frame = stack[stack.length - 1];
+			const neighbors = this.adjacencyList.get(frame.vertex)!;
+			if (frame.next === neighbors.length) {
+				stack.pop();
+				continue;
 			}
-		};
-
-		dfsHelper(start);
+			const neighbor = neighbors[frame.next++];
+			if (!visited.has(neighbor)) {
+				visited.add(neighbor);
+				result.push(neighbor);
+				stack.push({ vertex: neighbor, next: 0 });
+			}
+		}
 		return result;
 	}
 

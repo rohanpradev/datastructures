@@ -109,12 +109,20 @@ export class TutorRepository {
 		return thread;
 	}
 
-	async listMessages(threadId: string): Promise<TutorMessage[]> {
-		const messages = await this.db
+	async listMessages(
+		threadId: string,
+		recentLimit?: number,
+	): Promise<TutorMessage[]> {
+		const query = this.db
 			.select()
 			.from(tutorMessages)
-			.where(eq(tutorMessages.threadId, threadId))
-			.orderBy(asc(tutorMessages.sequence));
+			.where(eq(tutorMessages.threadId, threadId));
+		const messages =
+			recentLimit === undefined
+				? await query.orderBy(asc(tutorMessages.sequence))
+				: (
+						await query.orderBy(desc(tutorMessages.sequence)).limit(recentLimit)
+					).reverse();
 
 		// JSON columns are statically typed by Drizzle, but persisted data still
 		// crosses a runtime trust boundary. AI SDK validation prevents malformed
@@ -151,6 +159,13 @@ export class TutorRepository {
 		runId: string,
 		userText: string,
 		assistantText: string,
+		metrics?: {
+			finishReason?: string | undefined;
+			inputTokens?: number | undefined;
+			outputTokens?: number | undefined;
+			responseTimeMs?: number | undefined;
+			totalTokens?: number | undefined;
+		},
 	): Promise<void> {
 		this.db.transaction((tx) => {
 			const [existing] = tx
@@ -198,6 +213,12 @@ export class TutorRepository {
 				.set({ updatedAt: now })
 				.where(eq(tutorThreads.id, threadId))
 				.run();
+			if (metrics) {
+				tx.update(tutorRuns)
+					.set({ ...metrics, completedAt: now, status: "completed" })
+					.where(eq(tutorRuns.id, runId))
+					.run();
+			}
 		});
 	}
 
@@ -239,7 +260,7 @@ export class TutorRepository {
 				status: "completed",
 				totalTokens: metrics.totalTokens,
 			})
-			.where(eq(tutorRuns.id, runId));
+			.where(and(eq(tutorRuns.id, runId), eq(tutorRuns.status, "running")));
 	}
 
 	async failRun(runId: string, error: unknown): Promise<void> {
@@ -250,7 +271,7 @@ export class TutorRepository {
 				error: error instanceof Error ? error.message : String(error),
 				status: "failed",
 			})
-			.where(eq(tutorRuns.id, runId));
+			.where(and(eq(tutorRuns.id, runId), eq(tutorRuns.status, "running")));
 	}
 
 	async getRun(threadId: string, runId: string): Promise<TutorRun | undefined> {
